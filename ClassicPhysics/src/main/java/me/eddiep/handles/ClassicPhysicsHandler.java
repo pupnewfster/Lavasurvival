@@ -142,7 +142,7 @@ public final class ClassicPhysicsHandler implements Listener {
         newBlock = cevent.getNewBlock();
 
         QueuedBlock qblock = new QueuedBlock(block.getX(), block.getY(), block.getZ(), newBlock, block.getWorld(), System.nanoTime());
-        if (physicBlocks.size() >= MAX_QUEUE_SIZE) {
+        if (physicBlocks.size() >= MAX_QUEUE_SIZE && !this.blocking) {
             this.blocking = true;
             ClassicPhysics.INSTANCE.log("To many queued blocks! Rejecting all future queued blocks until queueing empties");
             return;
