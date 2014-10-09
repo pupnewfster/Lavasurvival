@@ -1,7 +1,7 @@
 package me.eddiep.game;
 
 import me.eddiep.Lavasurvival;
-import net.minecraft.util.org.apache.commons.io.FileUtils;
+import me.eddiep.system.FileUtils;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
@@ -40,7 +40,7 @@ public class LavaMap {
     }
 
     public static LavaMap load(String file) throws IOException {
-        String contents = FileUtils.readFileToString(new File(file));
+        String contents = FileUtils.readAllText(file);
 
         LavaMap map = Lavasurvival.GSON.fromJson(contents, LavaMap.class);
 

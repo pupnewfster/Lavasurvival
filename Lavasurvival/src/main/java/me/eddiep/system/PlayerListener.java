@@ -1,9 +1,11 @@
 package me.eddiep.system;
 
-import com.sun.org.apache.xalan.internal.xsltc.dom.ArrayNodeListIterator;
 import me.eddiep.Lavasurvival;
 import me.eddiep.game.Gamemode;
 import me.eddiep.game.shop.ShopFactory;
+import me.eddiep.ranks.UUIDs;
+import me.eddiep.ranks.UserInfo;
+import me.eddiep.ranks.UserManager;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.Sign;
@@ -16,13 +18,9 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
-import org.bukkit.event.player.AsyncPlayerChatEvent;
-import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.event.player.PlayerRespawnEvent;
+import org.bukkit.event.player.*;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.metadata.FixedMetadataValue;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -40,11 +38,16 @@ public class PlayerListener implements Listener {
             Material.WOOD_PLATE,
             Material.BEDROCK
     }));
+    UserManager um = new UserManager();
+    UUIDs get = new UUIDs();
 
     @EventHandler(priority = EventPriority.MONITOR)
     public void onChat(AsyncPlayerChatEvent event) {
-        if (Gamemode.voting) {
-            Player player = event.getPlayer();
+        Player player = event.getPlayer();
+        UserInfo u = um.getUser(player.getUniqueId());
+        if(u.getRank() != null)
+            event.setFormat(ChatColor.translateAlternateColorCodes('&', u.getRank().getTitle()) + " " + player.getName() + ": " + event.getMessage());
+        if (Gamemode.getCurrentGame() != null && Gamemode.voting) {
             event.setCancelled(true);
             if (voted.contains(player)) {
                 player.sendMessage(ChatColor.RED + "" + ChatColor.BOLD + "You already voted!");
@@ -73,11 +76,10 @@ public class PlayerListener implements Listener {
                 }
             }
 
-            if (!player.isOp()) {
+            if (!player.isOp())
                 player.sendMessage(ChatColor.RED + "No talking during the vote!");
-            } else {
+            else
                 event.setCancelled(false);
-            }
         }
     }
 
@@ -86,33 +88,31 @@ public class PlayerListener implements Listener {
         event.setCancelled(true);
         Material material = event.getBlock().getType();
         if (invalidBlocks.contains(material) ||
-                Gamemode.getCurrentGame().isAlive(event.getPlayer()))
+                (Gamemode.getCurrentGame() != null && Gamemode.getCurrentGame().isAlive(event.getPlayer())))
             return;
-
-        String state = Gamemode.getCurrentGame().isDead(event.getPlayer()) ? ChatColor.RED + "DEAD" : ChatColor.GRAY + "SPECTATING";
-
-        event.getPlayer().sendMessage("You are " + state + ChatColor.RESET + ". You cannot delete or place blocks!");
+        if(Gamemode.getCurrentGame() != null) {
+            String state = Gamemode.getCurrentGame().isDead(event.getPlayer()) ? ChatColor.RED + "DEAD" : ChatColor.GRAY + "SPECTATING";
+            event.getPlayer().sendMessage("You are " + state + ChatColor.RESET + ". You cannot delete or place blocks!");
+        }
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void blockInteract(PlayerInteractEvent event) {
-        if (Gamemode.getCurrentGame().isSpectator(event.getPlayer())) {
+        if (Gamemode.getCurrentGame() != null && Gamemode.getCurrentGame().isSpectator(event.getPlayer())) {
             event.setCancelled(true);
             if (event.getAction() == Action.RIGHT_CLICK_BLOCK &&
                     event.getClickedBlock().getState() instanceof Sign &&
                     ((Sign)event.getClickedBlock().getState()).getLine(0).contains("Right click")) {
                 Gamemode.getCurrentGame().playerJoin(event.getPlayer());
             }
-        } else if (Gamemode.getCurrentGame().isDead(event.getPlayer())) {
+        } else if (Gamemode.getCurrentGame() != null && Gamemode.getCurrentGame().isDead(event.getPlayer())) {
             event.setCancelled(true);
             if (event.getAction() == Action.RIGHT_CLICK_BLOCK &&
                     event.getClickedBlock().getState() instanceof Sign &&
                     ((Sign)event.getClickedBlock().getState()).getLine(0).contains("Right click")) {
                 event.getPlayer().sendMessage("Sorry you can't join, you're dead :/");
             }
-
-        }
-        else if (Gamemode.getCurrentGame().isAlive(event.getPlayer())) {
+        } else if (Gamemode.getCurrentGame() != null && Gamemode.getCurrentGame().isAlive(event.getPlayer())) {
             if (event.getAction() == Action.LEFT_CLICK_BLOCK) {
                 Block block = event.getClickedBlock();
                 if (invalidBlocks.contains(block.getType()))
@@ -121,7 +121,6 @@ public class PlayerListener implements Listener {
                     event.getPlayer().sendMessage(ChatColor.BOLD + "" + ChatColor.RED + "You are building to high!");
                     return;
                 }
-
                 if (survival) {
                     Inventory inventory = event.getPlayer().getInventory();
                     int index = inventory.first(block.getType());
@@ -140,7 +139,6 @@ public class PlayerListener implements Listener {
                         stack.setAmount(stack.getAmount() + 1);
                     }
                 }
-
                 block.setType(Material.AIR);
             }
         }
@@ -149,7 +147,7 @@ public class PlayerListener implements Listener {
     @EventHandler(priority = EventPriority.HIGHEST)
     public void blockPlace(final BlockPlaceEvent event) {
         event.setCancelled(true);
-        if (Gamemode.getCurrentGame().isAlive(event.getPlayer())) {
+        if (Gamemode.getCurrentGame() != null && Gamemode.getCurrentGame().isAlive(event.getPlayer())) {
             if (event.getPlayer().getInventory().contains(event.getBlockPlaced().getType())) {
 
                 if (event.getBlockPlaced().getLocation().getBlockY() >= Gamemode.getCurrentMap().getLavaY()) {
@@ -182,8 +180,19 @@ public class PlayerListener implements Listener {
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
+    public void playerQuit(PlayerQuitEvent event) {
+        um.getUser(event.getPlayer().getUniqueId()).logOut();
+    }
+
+    @EventHandler(priority = EventPriority.HIGHEST)
     public void playerJoin(PlayerJoinEvent event) {
-        event.getPlayer().teleport(Gamemode.getCurrentWorld().getSpawnLocation());
+        um.addUser(event.getPlayer());
+        um.parseUser(event.getPlayer());
+        if(!get.hasJoined(event.getPlayer().getUniqueId()))
+            get.addUUID(event.getPlayer().getUniqueId());
+
+        if(Gamemode.getCurrentGame() != null)
+            event.getPlayer().teleport(Gamemode.getCurrentWorld().getSpawnLocation());
 
         Inventory inv = event.getPlayer().getInventory();
         if (BukkitUtils.isInventoryEmpty(inv)) {
@@ -196,10 +205,10 @@ public class PlayerListener implements Listener {
 
         ShopFactory.validateInventory(inv);
 
-        if (!Gamemode.getCurrentGame().isDead(event.getPlayer()))
+        if (Gamemode.getCurrentGame() != null && !Gamemode.getCurrentGame().isDead(event.getPlayer()))
             Gamemode.getCurrentGame().setSpectator(event.getPlayer());
-
-        event.getPlayer().setScoreboard(Gamemode.getScoreboard());
+        if(Gamemode.getCurrentGame() != null)
+            event.getPlayer().setScoreboard(Gamemode.getScoreboard());
     }
 
     @EventHandler (priority = EventPriority.HIGHEST)
@@ -211,7 +220,8 @@ public class PlayerListener implements Listener {
 
     @EventHandler (priority = EventPriority.HIGHEST)
     public void onRespawn(PlayerRespawnEvent event) {
-        event.setRespawnLocation(Gamemode.getCurrentWorld().getSpawnLocation());
+        if(Gamemode.getCurrentGame() != null)
+            event.setRespawnLocation(Gamemode.getCurrentWorld().getSpawnLocation());
     }
 
     public void cleanup() {
