@@ -12,6 +12,7 @@ import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.scoreboard.Team;
 
 import java.io.IOException;
+import java.util.Collection;
 import java.util.Random;
 
 public abstract class Gamemode {
@@ -109,7 +110,7 @@ public abstract class Gamemode {
         clearTeam(dead);
         clearTeam(spec);
 
-        Player[] players = Bukkit.getServer().getOnlinePlayers();
+        Collection<? extends Player> players = Bukkit.getOnlinePlayers();
         for (Player p : players) {
             p.teleport(getCurrentWorld().getSpawnLocation());
 

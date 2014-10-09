@@ -7,6 +7,7 @@ import me.eddiep.game.shop.ShopFactory;
 import me.eddiep.system.PlayerListener;
 import me.eddiep.system.setup.SetupMap;
 import net.milkbowl.vault.economy.Economy;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.command.Command;
@@ -19,6 +20,7 @@ import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.UUID;
 
@@ -183,7 +185,7 @@ public class Lavasurvival extends JavaPlugin {
     private final Runnable MONEY_VIEWER = new Runnable() {
         @Override
         public void run() {
-            Player[] players = getServer().getOnlinePlayers();
+            Collection<? extends Player> players = Bukkit.getOnlinePlayers();
             for (Player player : players) {
                 Inventory inv = player.getInventory();
 
