@@ -1,6 +1,5 @@
 package me.eddiep.handles;
 
-import net.minecraft.server.v1_7_R3.Block;
 import org.bukkit.Material;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.Event;
