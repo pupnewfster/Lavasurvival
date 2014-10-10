@@ -14,6 +14,8 @@ import me.eddiep.ranks.UserManager;
 import me.eddiep.system.PlayerListener;
 import me.eddiep.system.setup.SetupMap;
 import net.milkbowl.vault.economy.Economy;
+import net.njay.MenuFramework;
+import net.njay.MenuRegistry;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -49,6 +51,7 @@ public class Lavasurvival extends JavaPlugin {
         INSTANCE = this;
         getDataFolder().mkdir();
         init();
+        setupShops();
 
         /*log("Attaching to Vault..");//Commented out for now as this was disabling plugin from working at all
         if (!setupEcon()) {
@@ -94,6 +97,8 @@ public class Lavasurvival extends JavaPlugin {
     }
 
     private void setupShops() {
+        MenuFramework.enable(new MenuRegistry(this, RankShop.class, BlockShopCatagory.class));
+
         ArrayList<String> lore = new ArrayList<String>();
         lore.add(ChatColor.ITALIC + "" + ChatColor.GOLD + "Buy more blocks!");
 

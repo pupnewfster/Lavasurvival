@@ -13,25 +13,22 @@ import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.inventory.Inventory;
 
-import static org.bukkit.ChatColor.*;
-import static org.bukkit.ChatColor.BOLD;
-
-@MenuInventory(slots = 5, name = "Rank Shop")
+@MenuInventory(slots = 9, name = "Rank Shop")
 public class RankShop extends Menu {
     public RankShop(MenuManager manager, Inventory inv) {
         super(manager, inv);
     }
 
     @MenuItem(
-            slot = 0,
-            item = @ItemStackAnnotation(material = (Material.WOOD), name = "Basic", lore = { "§l§6Start buying blocks from the block shop!", "500 ggs" })
+            slot = 2,
+            item = @ItemStackAnnotation(material = (Material.WOOD), name = "Basic", lore = { "§l§6Start buying blocks!", "500 ggs" })
     )
     public void BasicRank(MenuPlayer player) {
         buyRank(player, "Basic");
     }
 
     @MenuItem(
-            slot = 1,
+            slot = 3,
             item = @ItemStackAnnotation(material = (Material.IRON_BLOCK), name = "Advanced", lore = { "§l§6Buy more durable blocks!", "30,000 ggs"})
     )
     public void AdvanceRank(MenuPlayer player) {
@@ -39,24 +36,24 @@ public class RankShop extends Menu {
     }
 
     @MenuItem(
-            slot = 2,
-            item = @ItemStackAnnotation(material = (Material.LAVA_BUCKET), name = "Survivor", lore = { "§l§6Are you a survivor? Prove yourself!", "120,000 ggs"})
+            slot = 4,
+            item = @ItemStackAnnotation(material = (Material.LAVA_BUCKET), name = "Survivor", lore = { "§l§6Are you a survivor?", "§l§6Prove yourself!", "120,000 ggs"})
     )
     public void SurvivorRank(MenuPlayer player) {
         buyRank(player, "Survivor");
     }
 
     @MenuItem(
-            slot = 3,
-            item = @ItemStackAnnotation(material = (Material.APPLE), name = "Trusted", lore = { "§l§6Decorate that nice house with some furniture!", "230,000 ggs"})
+            slot = 5,
+            item = @ItemStackAnnotation(material = (Material.APPLE), name = "Trusted", lore = { "§l§6Decorate that nice", "§l§6house with some", "§l§6furniture!", "230,000 ggs"})
     )
     public void TrustedRank(MenuPlayer player) {
         buyRank(player, "Trusted");
     }
 
     @MenuItem(
-            slot = 3,
-            item = @ItemStackAnnotation(material = (Material.GOLDEN_APPLE), name = "Elder", lore = { "§l§6Only true elders can achieve this rank..are you one of them?", "610,000 ggs"})
+            slot = 6,
+            item = @ItemStackAnnotation(material = (Material.GOLDEN_APPLE), name = "Elder", lore = { "§l§6Only true elders", "§l§6can achieve this", "§l§6rank..are you", "§l§6one of them?", "610,000 ggs"})
     )
     public void ElderRank(MenuPlayer player) {
         buyRank(player, "Elder");
@@ -71,7 +68,7 @@ public class RankShop extends Menu {
             player.getBukkit().sendMessage(ChatColor.RED + "You are already the " + RANK + " rank..");
         } else if (curNum > thisRank) {
             player.getBukkit().sendMessage(ChatColor.RED + "You cannot buy a lower rank..");
-        } else if (curNum - 1 < thisRank) {
+        } else if (thisRank - 1 != curNum) {
             player.getBukkit().sendMessage(ChatColor.RED + "You must first buy the " + manager.getRank(RANK).getPrevious().getName() + " rank!");
         } else {
             user.setRank(user.getRank().getNext());

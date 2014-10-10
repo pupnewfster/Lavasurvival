@@ -19,6 +19,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.Plugin;
 
+import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 
@@ -26,10 +27,14 @@ public class Shop implements Listener {
     private ItemStack opener;
     private String shopName;
     private Plugin plugin;
-    private Class<? extends Menu> menu;
+    private Constructor<? extends Menu> menu;
 
     public Shop(Class<? extends Menu> class_) {
-        this.menu = class_;
+        try {
+            menu = class_.getConstructor(MenuManager.class, Inventory.class);
+        } catch (NoSuchMethodException e) {
+            e.printStackTrace();
+        }
     }
 
     public ItemStack createOpenItem(Material material, String ShopName, List<String> descriptions) {
@@ -69,7 +74,19 @@ public class Shop implements Listener {
         if (event.getAction() == Action.RIGHT_CLICK_BLOCK || event.getAction() == Action.RIGHT_CLICK_AIR) {
             if (event.getItem() != null && event.getItem().equals(opener)) {
                 MenuPlayer player = MenuFramework.getPlayerManager().getPlayer(event.getPlayer());
-                player.setActiveMenu(menu);
+                try {
+                    Menu menuObj = menu.newInstance(player.getMenuManager(), null);
+                    player.setActiveMenu(menuObj);
+                } catch (InstantiationException e) {
+                    e.printStackTrace();
+                    return;
+                } catch (IllegalAccessException e) {
+                    e.printStackTrace();
+                    return;
+                } catch (InvocationTargetException e) {
+                    e.printStackTrace();
+                    return;
+                }
                 event.setCancelled(true);
             }
         }
