@@ -93,22 +93,36 @@ public class RankManager {
                 configFileRanks.createNewFile();
                 YamlConfiguration configRanks = YamlConfiguration.loadConfiguration(configFileRanks);
                 configRanks.set("New.permissions", Arrays.asList(""));
+                configRanks.set("New..buyable", false);
                 configRanks.set("New.rankTitle", "&f[&7New&f]");
                 configRanks.set("Basic.permissions", Arrays.asList(""));
+                configRanks.set("Basic.buyable", true);
                 configRanks.set("Basic.rankTitle", "&f[&bBasic&f]");
                 configRanks.set("Basic.previousRank", "New");
                 configRanks.set("Advanced.permissions", Arrays.asList(""));
+                configRanks.set("Advanced.buyable", true);
                 configRanks.set("Advanced.rankTitle", "&f[&1Advanced&f]");
                 configRanks.set("Advanced.previousRank", "Basic");
                 configRanks.set("Survivor.permissions", Arrays.asList(""));
+                configRanks.set("Survivor.buyable", true);
                 configRanks.set("Survivor.rankTitle", "&f[&4Survivor&f]");
                 configRanks.set("Survivor.previousRank", "Advanced");
                 configRanks.set("Trusted.permissions", Arrays.asList(""));
+                configRanks.set("Trusted.buyable", true);
                 configRanks.set("Trusted.rankTitle", "&8[&fTrusted&8]&f");
                 configRanks.set("Trusted.previousRank", "Survivor");
-                configRanks.set("Elder.permissions", Arrays.asList("lavasurvival.setup", "lavasurvival.promote", "lavasurvival.demote", "lavasurvival.setrank"));
+                configRanks.set("Elder.permissions", Arrays.asList(""));
+                configRanks.set("Elder.buyable", true);
                 configRanks.set("Elder.rankTitle", "&f[&0Elder&f]");
                 configRanks.set("Elder.previousRank", "Trusted");
+                configRanks.set("Op.permissions", Arrays.asList("lavasurvival.setup", "lavasurvival.promote", "lavasurvival.demote", "lavasurvival.setrank"));
+                configRanks.set("Admin.buyable", false);
+                configRanks.set("Op.rankTitle", "&f[&6Op&f]");
+                configRanks.set("Op.previousRank", "Elder");
+                configRanks.set("Admin.permissions", Arrays.asList(""));
+                configRanks.set("Admin.buyable", false);
+                configRanks.set("Admin.rankTitle", "&f[&cAdmin&f]");
+                configRanks.set("Admin.previousRank", "Op");
                 configRanks.save(configFileRanks);
             } catch (Exception e){}
     }

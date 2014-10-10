@@ -13,12 +13,15 @@ public class Rank {
     private Rank next;
     private String title = "";
     private String name = "";
+    private boolean buyable = false;
 
     public Rank(String name) {
         this.name = name;
         YamlConfiguration configRanks = YamlConfiguration.loadConfiguration(configFileRanks);
         if(configRanks.contains(getName() + ".rankTitle"))
             this.title = configRanks.getString(getName() + ".rankTitle");
+        if(configRanks.contains(getName() + ".buyable"))
+            this.buyable = configRanks.getBoolean(getName() + ".buyable");
         if(configRanks.contains(getName() + ".previousRank")) {
             RankManager rm = new RankManager();
             this.previous = rm.getRank(configRanks.getString(getName() + ".previousRank"));
@@ -37,6 +40,10 @@ public class Rank {
 
     public Rank getNext() {
         return this.next;
+    }
+
+    public boolean isBuyable() {
+        return this.buyable;
     }
 
     private void setPerms() {
