@@ -23,8 +23,7 @@ public class Rank {
         if(configRanks.contains(getName() + ".buyable"))
             this.buyable = configRanks.getBoolean(getName() + ".buyable");
         if(configRanks.contains(getName() + ".previousRank")) {
-            RankManager rm = new RankManager();
-            this.previous = rm.getRank(configRanks.getString(getName() + ".previousRank"));
+            this.previous = Lavasurvival.INSTANCE.getRankManager().getRank(configRanks.getString(getName() + ".previousRank"));
             this.previous.setNext(this);
         }
         setPerms();

@@ -41,7 +41,7 @@ public class RankManager {
             ranks.put(name, new Rank(name));
             order.add(ranks.get(name));
         }
-        UserManager um = new UserManager();
+        UserManager um = Lavasurvival.INSTANCE.getUserManager();
         um.readUsers();
         BukkitScheduler scheduler = Bukkit.getServer().getScheduler();
         scheduler.scheduleSyncDelayedTask(Lavasurvival.INSTANCE, new Runnable() {
