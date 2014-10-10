@@ -5,7 +5,7 @@ load: POSTWORLD
 authors: [hypereddie, pupnewfster]
 website: eddiep.me
 softdepend: [ClassicPhysics]
-depend: [Vault, BossShop]
+depend: [Vault]
 commands:
   setupmap:
     description: Setup and add a new lavasurvival map!

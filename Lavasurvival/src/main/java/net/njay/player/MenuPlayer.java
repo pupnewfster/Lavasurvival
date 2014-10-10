@@ -1,11 +1,8 @@
 package net.njay.player;
 
 import net.njay.Menu;
-import net.njay.MenuFramework;
 import net.njay.MenuManager;
 import org.bukkit.entity.Player;
-
-import javax.annotation.Nullable;
 
 /**
  * Class to represent a custom Player wrapper
@@ -15,9 +12,7 @@ public class MenuPlayer {
     /**
      * The MenuManager
      */
-    protected
-    @Nullable
-    MenuManager menuManager;
+    protected MenuManager menuManager;
 
     /**
      * The Bukkit Player
