@@ -53,12 +53,12 @@ public class Lavasurvival extends JavaPlugin {
         init();
         setupShops();
 
-        /*log("Attaching to Vault..");//Commented out for now as this was disabling plugin from working at all
+        log("Attaching to Vault..");//Commented out for now as this was disabling plugin from working at all
         if (!setupEcon()) {
             log("Disabling, no Vault dependency found!");
             getServer().getPluginManager().disablePlugin(this);
             return;
-        }*/
+        }
 
         /*log("Making money viewer task..");
         moneyViewer = getServer().getScheduler().scheduleSyncRepeatingTask(this, MONEY_VIEWER, 0, 25);*/
@@ -183,7 +183,10 @@ public class Lavasurvival extends JavaPlugin {
     }
 
     public static void globalMessage(String message) {
-        Gamemode.getCurrentGame().globalMessage(message);
+        if(Gamemode.getCurrentGame() != null    )
+            Gamemode.getCurrentGame().globalMessage(message);
+        else //Sends to everyone
+            Bukkit.broadcastMessage(message);
     }
 
     private final Runnable MONEY_VIEWER = new Runnable() {

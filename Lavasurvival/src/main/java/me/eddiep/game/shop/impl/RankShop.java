@@ -24,7 +24,7 @@ public class RankShop extends Menu {
             item = @ItemStackAnnotation(material = (Material.WOOD), name = "Basic", lore = { "§l§6Start buying blocks!", "500 ggs" })
     )
     public void BasicRank(MenuPlayer player) {
-        buyRank(player, "Basic");
+        buyRank(player, "Basic", 500);
     }
 
     @MenuItem(
@@ -32,7 +32,7 @@ public class RankShop extends Menu {
             item = @ItemStackAnnotation(material = (Material.IRON_BLOCK), name = "Advanced", lore = { "§l§6Buy more durable blocks!", "30,000 ggs"})
     )
     public void AdvanceRank(MenuPlayer player) {
-        buyRank(player, "Advanced");
+        buyRank(player, "Advanced", 30000);
     }
 
     @MenuItem(
@@ -40,7 +40,7 @@ public class RankShop extends Menu {
             item = @ItemStackAnnotation(material = (Material.LAVA_BUCKET), name = "Survivor", lore = { "§l§6Are you a survivor?", "§l§6Prove yourself!", "120,000 ggs"})
     )
     public void SurvivorRank(MenuPlayer player) {
-        buyRank(player, "Survivor");
+        buyRank(player, "Survivor", 120000);
     }
 
     @MenuItem(
@@ -48,7 +48,7 @@ public class RankShop extends Menu {
             item = @ItemStackAnnotation(material = (Material.APPLE), name = "Trusted", lore = { "§l§6Decorate that nice", "§l§6house with some", "§l§6furniture!", "230,000 ggs"})
     )
     public void TrustedRank(MenuPlayer player) {
-        buyRank(player, "Trusted");
+        buyRank(player, "Trusted", 230000);
     }
 
     @MenuItem(
@@ -56,10 +56,10 @@ public class RankShop extends Menu {
             item = @ItemStackAnnotation(material = (Material.GOLDEN_APPLE), name = "Elder", lore = { "§l§6Only true elders", "§l§6can achieve this", "§l§6rank..are you", "§l§6one of them?", "610,000 ggs"})
     )
     public void ElderRank(MenuPlayer player) {
-        buyRank(player, "Elder");
+        buyRank(player, "Elder", 610000);
     }
 
-    public void buyRank(MenuPlayer player, String RANK) {
+    public void buyRank(MenuPlayer player, String RANK, double price) {
         RankManager manager = Lavasurvival.INSTANCE.getRankManager();
         UserInfo user = Lavasurvival.INSTANCE.getUserManager().getUser(player.getBukkit().getUniqueId());
         int curNum = manager.getOrder().indexOf(user.getRank());
@@ -70,8 +70,11 @@ public class RankShop extends Menu {
             player.getBukkit().sendMessage(ChatColor.RED + "You cannot buy a lower rank..");
         } else if (thisRank - 1 != curNum) {
             player.getBukkit().sendMessage(ChatColor.RED + "You must first buy the " + manager.getRank(RANK).getPrevious().getName() + " rank!");
+        } else if (!Lavasurvival.INSTANCE.getEconomy().hasAccount(player.getBukkit()) || Lavasurvival.INSTANCE.getEconomy().getBalance(player.getBukkit()) < price) {
+            player.getBukkit().sendMessage(ChatColor.RED + "You do not have enough money to buy the " + manager.getRank(RANK).getPrevious().getName() + " rank!");
         } else {
             user.setRank(user.getRank().getNext());
+            Lavasurvival.INSTANCE.getEconomy().withdrawPlayer(player.getBukkit(), price);
             Lavasurvival.globalMessage(user.getPlayer().getDisplayName() + ChatColor.GREEN + " just bought the " + user.getRank().getName() + " rank!");
             player.getBukkit().getOpenInventory().close();
         }

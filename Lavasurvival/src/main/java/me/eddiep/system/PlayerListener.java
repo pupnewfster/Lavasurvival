@@ -191,6 +191,9 @@ public class PlayerListener implements Listener {
         if(!get.hasJoined(event.getPlayer().getUniqueId()))
             get.addUUID(event.getPlayer().getUniqueId());
 
+        if(!Lavasurvival.INSTANCE.getEconomy().hasAccount(event.getPlayer()))
+            Lavasurvival.INSTANCE.getEconomy().createPlayerAccount(event.getPlayer());
+
         if(Gamemode.getCurrentGame() != null)
             event.getPlayer().teleport(Gamemode.getCurrentWorld().getSpawnLocation());
 
