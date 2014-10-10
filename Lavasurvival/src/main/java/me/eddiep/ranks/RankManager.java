@@ -109,7 +109,8 @@ public class RankManager {
                 configRanks.set("Elder.permissions", Arrays.asList(""));
                 configRanks.set("Elder.rankTitle", "&f[&0Elder&f]");
                 configRanks.set("Elder.previousRank", "Trusted");
-                configRanks.set("Op.permissions", Arrays.asList("lavasurvival.setup", "lavasurvival.promote", "lavasurvival.demote", "lavasurvival.setrank"));
+                configRanks.set("Op.permissions", Arrays.asList("lavasurvival.setup", "lavasurvival.promote", "lavasurvival.demote", "lavasurvival.setrank",
+                        "lavasurvival.voteSpeak"));
                 configRanks.set("Op.rankTitle", "&f[&6Op&f]");
                 configRanks.set("Op.previousRank", "Elder");
                 configRanks.set("Admin.permissions", Arrays.asList(""));

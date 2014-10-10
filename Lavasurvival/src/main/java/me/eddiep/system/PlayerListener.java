@@ -76,7 +76,7 @@ public class PlayerListener implements Listener {
                 }
             }
 
-            if (!player.isOp())
+            if (!player.hasPermission("lavasurvival.voteSpeak"))
                 player.sendMessage(ChatColor.RED + "No talking during the vote!");
             else
                 event.setCancelled(false);
@@ -216,7 +216,8 @@ public class PlayerListener implements Listener {
 
     @EventHandler (priority = EventPriority.HIGHEST)
     public void playerDeath(PlayerDeathEvent event) {
-        Gamemode.getCurrentGame().setDead(event.getEntity());
+        if(Gamemode.getCurrentGame() != null)
+            Gamemode.getCurrentGame().setDead(event.getEntity());
         event.getEntity().getInventory().clear();
 
     }
