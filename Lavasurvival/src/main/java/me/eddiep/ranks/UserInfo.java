@@ -19,20 +19,18 @@ public class UserInfo {
 
     public UserInfo(Player p) {
         YamlConfiguration configUsers = YamlConfiguration.loadConfiguration(configFileUsers);
-        RankManager rm = new RankManager();
         this.bukkitPlayer = p;
         this.userUUID = this.bukkitPlayer.getUniqueId();
         if(configUsers.contains(getUUID().toString() + ".rank"))
-            this.rank = rm.getRank(configUsers.getString(getUUID().toString() + ".rank"));
+            this.rank = Lavasurvival.INSTANCE.getRankManager().getRank(configUsers.getString(getUUID().toString() + ".rank"));
         givePerms();
     }
 
     public UserInfo(UUID uuid) {
         this.userUUID = uuid;
         YamlConfiguration configUsers = YamlConfiguration.loadConfiguration(configFileUsers);
-        RankManager rm = new RankManager();
         if(configUsers.contains(getUUID().toString() + ".rank"))
-            this.rank = rm.getRank(configUsers.getString(getUUID().toString() + ".rank"));
+            this.rank = Lavasurvival.INSTANCE.getRankManager().getRank(configUsers.getString(getUUID().toString() + ".rank"));
     }
 
     public void logOut() {
