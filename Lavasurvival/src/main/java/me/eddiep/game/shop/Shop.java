@@ -1,6 +1,10 @@
 package me.eddiep.game.shop;
 
 import me.eddiep.Lavasurvival;
+import net.njay.Menu;
+import net.njay.MenuFramework;
+import net.njay.MenuManager;
+import net.njay.player.MenuPlayer;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.event.EventHandler;
@@ -10,20 +14,22 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.Plugin;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 
 public class Shop implements Listener {
-    private String bossShopName;
     private ItemStack opener;
     private String shopName;
     private Plugin plugin;
+    private Class<? extends Menu> menu;
 
-    public Shop(String bossShopName) {
-        this.bossShopName = bossShopName;
+    public Shop(Class<? extends Menu> class_) {
+        this.menu = class_;
     }
 
     public ItemStack createOpenItem(Material material, String ShopName, List<String> descriptions) {
@@ -62,7 +68,8 @@ public class Shop implements Listener {
     public void onPlayerInteract(PlayerInteractEvent event) {
         if (event.getAction() == Action.RIGHT_CLICK_BLOCK || event.getAction() == Action.RIGHT_CLICK_AIR) {
             if (event.getItem() != null && event.getItem().equals(opener)) {
-                event.getPlayer().sendMessage("We got no shop yet son.");
+                MenuPlayer player = MenuFramework.getPlayerManager().getPlayer(event.getPlayer());
+                player.setActiveMenu(menu);
                 event.setCancelled(true);
             }
         }

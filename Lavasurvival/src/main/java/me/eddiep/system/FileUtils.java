@@ -252,4 +252,15 @@ public class FileUtils {
     public static boolean exists(String filePath) {
         return new File(filePath).exists();
     }
+
+    public static String readAllText(String file) throws IOException {
+
+        String[] lines = readAllLines(file);
+        StringBuilder builder = new StringBuilder();
+        for (String s : lines) {
+            builder.append(s).append("\n");
+        }
+
+        return builder.toString();
+    }
 }

@@ -4,6 +4,8 @@ import com.google.gson.Gson;
 import me.eddiep.game.Gamemode;
 import me.eddiep.game.impl.LavaFlood;
 import me.eddiep.game.shop.ShopFactory;
+import me.eddiep.game.shop.impl.BlockShopCatagory;
+import me.eddiep.game.shop.impl.RankShop;
 import me.eddiep.system.PlayerListener;
 import me.eddiep.system.setup.SetupMap;
 import net.milkbowl.vault.economy.Economy;
@@ -83,8 +85,8 @@ public class Lavasurvival extends JavaPlugin {
         ArrayList<String> lore2 = new ArrayList<String>();
         lore2.add(ChatColor.ITALIC + "" + ChatColor.GREEN + "Level up!");
 
-        ShopFactory.createShop(this, "Block Shop", "Block Shop", Material.EMERALD, lore);
-        ShopFactory.createShop(this, "Rank Shop", "Block Shop", Material.EXP_BOTTLE, lore2);
+        ShopFactory.createShop(this, "Block Shop", BlockShopCatagory.class, Material.EMERALD, lore);
+        ShopFactory.createShop(this, "Rank Shop", RankShop.class, Material.EXP_BOTTLE, lore2);
     }
 
     private boolean setupEcon() {

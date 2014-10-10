@@ -4,8 +4,6 @@ import java.lang.reflect.Array;
 import java.util.Arrays;
 import java.util.Collection;
 
-import org.apache.commons.lang.Validate;
-
 /**
  * Represents a wrapper around an array class of an arbitrary reference type,
  * which properly implements "value" hash code and equality functions.
@@ -41,7 +39,7 @@ public final class ArrayWrapper<E> {
 	 * @param array The new wrapped array.
 	 */
 	public void setArray(E[] array){
-		Validate.notNull(array, "The array must not be null.");
+		if (array == null) throw new IllegalArgumentException("The array must not be null!");
 		_array = array;
 	}
 	

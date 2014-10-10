@@ -1,18 +1,12 @@
 package net.njay;
 
 import com.google.common.collect.Lists;
-
-import javax.annotation.Nullable;
 import java.util.List;
 
 public class MenuManager {
 
-    private
-    @Nullable
-    Menu currentMenu = null; //what is this horrific formatting
-    private
-    @Nullable
-    Menu previousMenu = null;
+    private Menu currentMenu = null; //what is this horrific formatting
+    private Menu previousMenu = null;
 
     private List<Menu> menus;
 

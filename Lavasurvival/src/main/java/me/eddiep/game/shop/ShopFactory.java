@@ -1,5 +1,6 @@
 package me.eddiep.game.shop;
 
+import net.njay.Menu;
 import org.bukkit.Material;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
@@ -12,8 +13,8 @@ import java.util.List;
 public class ShopFactory {
     private static ArrayList<Shop> shops = new ArrayList<Shop>();
 
-    public static Shop createShop(Plugin plugin, String ShopName, String bossShopName, Material material, List<String> description) {
-        Shop shop = new Shop(bossShopName);
+    public static Shop createShop(Plugin plugin, String ShopName, Class<? extends Menu> shopMenu, Material material, List<String> description) {
+        Shop shop = new Shop(shopMenu);
 
         shop.createOpenItem(material, ShopName, description);
 
