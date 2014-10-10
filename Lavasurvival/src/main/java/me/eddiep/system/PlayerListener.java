@@ -38,8 +38,8 @@ public class PlayerListener implements Listener {
             Material.WOOD_PLATE,
             Material.BEDROCK
     }));
-    UserManager um = new UserManager();
-    UUIDs get = new UUIDs();
+    UserManager um = Lavasurvival.INSTANCE.getUserManager();
+    UUIDs get = Lavasurvival.INSTANCE.getUUIDs();
 
     @EventHandler(priority = EventPriority.MONITOR)
     public void onChat(AsyncPlayerChatEvent event) {
