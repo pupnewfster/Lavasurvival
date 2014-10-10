@@ -183,7 +183,7 @@ public class Lavasurvival extends JavaPlugin {
     }
 
     public static void globalMessage(String message) {
-        if(Gamemode.getCurrentGame() != null    )
+        if(Gamemode.getCurrentGame() != null)
             Gamemode.getCurrentGame().globalMessage(message);
         else //Sends to everyone
             Bukkit.broadcastMessage(message);
