@@ -84,7 +84,6 @@ public abstract class Gamemode {
 
         if (map == null) {
             String[] files = LavaMap.getPossibleMaps();
-
             lastMap = currentmap;
 
             do {

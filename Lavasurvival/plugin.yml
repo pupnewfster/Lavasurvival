@@ -1,0 +1,72 @@
+name: Lavasurvival
+main: me.eddiep.Lavasurvival
+version: 0.1
+load: POSTWORLD
+authors: [hypereddie, pupnewfster]
+website: eddiep.me
+softdepend: [ClassicPhysics]
+depend: [Vault, BossShop]
+commands:
+  setupmap:
+    description: Setup and add a new lavasurvival map!
+    usage: /<command>
+    permission: lavasurvival.setup
+    permission-message: You don't have <permission>
+  join:
+    description: Join the lavasurvival game!
+    usage: /<command>
+    permission: lavasurvival.join
+    permission-message: You don't have <permission>
+    aliases: [j]
+  lvote:
+    description: Vote for a map!
+    usage: /<command> <number>
+    permission: lavasurvival.lvote
+    permission-message: You don't have <permission>
+    aliases: [vote, v]
+  promote:
+    description: Promote a player!
+    usage: /<command> <player>
+    permission: lavasurvival.promote
+    permission-message: You don't have <permission>
+    aliases: [pr]
+  demote:
+    description: Demotes a player!
+    usage: /<command> <player>
+    permission: lavasurvival.demote
+    permission-message: You don't have <permission>
+    aliases: [de]
+  setrank:
+    description: Set a player's rank!
+    usage: /<command> <player> <rank>
+    permission: lavasurvival.setrank
+    permission-message: You don't have <permission>
+    aliases: [rank]
+permissions:
+    lavasurvival.*:
+        description: lavasurvival's permission nodes
+        children:
+            lavasurvival.setup: true
+            lavasurvival.join: true
+            lavasurvival.lvote: true
+            lavasurvival.promote: true
+            lavasurvival.demote: true
+            lavasurvival.setrank: true
+    lavasurvival.lvote:
+        description: Allows you to vote for maps.
+        default: true
+    lavasurvival.join:
+        description: Allows you to join a game of lava survival.
+        default: true
+    lavasurvival.setup:
+        description: Allows you to setup and add a new lava survival map.
+        default: op
+    lavasurvival.promote:
+        description: Allows you to promote a player.
+        default: op
+    lavasurvival.demote:
+        description: Allows you to demote a player.
+        default: op
+    lavasurvival.setrank:
+        description: Allows you to set a player's rank.
+        default: op
