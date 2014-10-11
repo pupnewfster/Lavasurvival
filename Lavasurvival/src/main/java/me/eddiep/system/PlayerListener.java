@@ -10,17 +10,18 @@ import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.Sign;
 import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
-import org.bukkit.event.HandlerList;
-import org.bukkit.event.Listener;
+import org.bukkit.event.*;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
+import org.bukkit.event.inventory.CraftItemEvent;
+import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.*;
 import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.PlayerInventory;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -117,7 +118,7 @@ public class PlayerListener implements Listener {
                 if (invalidBlocks.contains(block.getType()))
                     return;
                 if (block.getLocation().getBlockY() >= Gamemode.getCurrentMap().getLavaY()) {
-                    event.getPlayer().sendMessage(ChatColor.BOLD + "" + ChatColor.RED + "You are building to high!");
+                    event.getPlayer().sendMessage(ChatColor.RED + "" + ChatColor.BOLD + "You are building to high!");
                     return;
                 }
                 if (survival) {
@@ -141,6 +142,14 @@ public class PlayerListener implements Listener {
                 block.setType(Material.AIR);
             }
         }
+        if (event.getAction() == Action.RIGHT_CLICK_BLOCK && !event.getPlayer().isSneaking() &&
+                (event.getClickedBlock() instanceof InventoryHolder || event.getClickedBlock().getType().equals(Material.WORKBENCH)))
+            event.setCancelled(true);//Disable opening block's with inventories
+    }
+
+    @EventHandler(priority = EventPriority.HIGHEST)
+    public void itemCraft(CraftItemEvent event) {
+        event.setCancelled(true);
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
