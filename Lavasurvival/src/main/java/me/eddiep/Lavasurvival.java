@@ -51,7 +51,7 @@ public class Lavasurvival extends JavaPlugin {
         getDataFolder().mkdir();
         init();
 
-        log("Attaching to Vault..");//Commented out for now as this was disabling plugin from working at all
+        log("Attaching to Vault..");
         if (!setupEcon()) {
             log("Disabling, no Vault dependency found!");
             getServer().getPluginManager().disablePlugin(this);
@@ -114,7 +114,9 @@ public class Lavasurvival extends JavaPlugin {
         if(!configFileUsers.exists())
             try {
                 configFileUsers.createNewFile();
-            } catch (Exception e) {}
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         userManager = new UserManager();
         rankManager = new RankManager();
         uuiDs = new UUIDs();
@@ -217,8 +219,6 @@ public class Lavasurvival extends JavaPlugin {
                     inv.setItem(inv.firstEmpty(), item);
                     continue;
                 }
-
-
 
                 ItemStack item = inv.getItem(index);
 

@@ -61,7 +61,9 @@ public class UserInfo {
         configUsers.set(getUUID().toString() + ".rank", r.getName());
         try {
             configUsers.save(configFileUsers);
-        } catch (Exception e){}
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         refreshPerms();
     }
 

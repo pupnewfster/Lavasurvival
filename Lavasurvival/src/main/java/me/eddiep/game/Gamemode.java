@@ -196,8 +196,6 @@ public abstract class Gamemode {
                 double reward = calculateReward(player);
                 Lavasurvival.INSTANCE.getEconomy().depositPlayer(player, reward);
 
-
-
                 player.getPlayer().sendMessage(ChatColor.GREEN + "+ " + ChatColor.GOLD + "You won " + ChatColor.BOLD + reward + ChatColor.RESET + "" + ChatColor.GOLD + " GGs!");
             }
         }

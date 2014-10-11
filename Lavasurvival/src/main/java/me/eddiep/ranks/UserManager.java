@@ -54,7 +54,9 @@ public class UserManager {
         configUsers.set(player.getUniqueId().toString() + ".rank", "New");
         try {
             configUsers.save(configFileUsers);
-        } catch (Exception e){}
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     public void updateUserRank(UserInfo u, Rank r) {
@@ -64,7 +66,9 @@ public class UserManager {
         configUsers.set(u.getUUID().toString() + ".rank", r.getName());
         try {
             configUsers.save(configFileUsers);
-        } catch (Exception e){}
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         u.updateRank(r);
     }
 }

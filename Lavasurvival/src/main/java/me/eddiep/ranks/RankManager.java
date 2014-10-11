@@ -117,6 +117,8 @@ public class RankManager {
                 configRanks.set("Admin.rankTitle", "&f[&cAdmin&f]");
                 configRanks.set("Admin.previousRank", "Op");
                 configRanks.save(configFileRanks);
-            } catch (Exception e){}
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
     }
 }
