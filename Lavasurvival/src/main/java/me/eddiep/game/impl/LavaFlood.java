@@ -1,11 +1,10 @@
 package me.eddiep.game.impl;
 
+import me.eddiep.Lavasurvival;
 import me.eddiep.game.Gamemode;
+import me.eddiep.ranks.Rank;
 import me.eddiep.system.TimeUtils;
-import org.bukkit.ChatColor;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.OfflinePlayer;
+import org.bukkit.*;
 import org.bukkit.entity.Player;
 import org.bukkit.scoreboard.DisplaySlot;
 import org.bukkit.scoreboard.Objective;
@@ -18,6 +17,7 @@ public class LavaFlood extends Gamemode {
     private int bonus;
     private Objective objective;
     private Score bonusScore;
+    private boolean doubleReward;
     @Override
     public void start() {
         super.start();
@@ -31,16 +31,24 @@ public class LavaFlood extends Gamemode {
         objective.setDisplaySlot(DisplaySlot.SIDEBAR);
         objective.setDisplayName("Lava Pour");
         bonusScore = objective.getScore(ChatColor.BOLD + "" + ChatColor.GOLD + "Reward Bonus");
-        bonus = Gamemode.RANDOM.nextInt(300) + 50;
+        bonus = Gamemode.RANDOM.nextInt(80) + 50;
         bonusScore.setScore(bonus);
 
-        Gamemode.getPlayerListener().survival = RANDOM.nextBoolean();
+        Gamemode.getPlayerListener().survival = false;
+        doubleReward = Math.random() < 0.25;
 
-        if (Gamemode.getPlayerListener().survival) {
+
+        if (doubleReward) {
+            globalMessage("" + ChatColor.BOLD + ChatColor.GREEN + "All rewards this round are doubled!");
+            globalMessage("but.." + ChatColor.BOLD + ChatColor.RED + "THE TIME HAS BEEN CUT IN HALF");
+
+            duration *= 0.5;
+        }
+        /*if (Gamemode.getPlayerListener().survival) {
             globalMessage("The building style will be " + ChatColor.BOLD + "" + ChatColor.RED + "SURVIVAL STYLE");
         } else {
             globalMessage("The building style will be " + ChatColor.BOLD + "" + ChatColor.RED + "CLASSIC STYLE");
-        }
+        }*/
     }
 
     @Override
@@ -48,10 +56,6 @@ public class LavaFlood extends Gamemode {
         super.playerJoin(player);
 
         bonus += Gamemode.RANDOM.nextInt(10);
-
-        if (Gamemode.RANDOM.nextInt(500) < 100) {
-            bonus += Gamemode.RANDOM.nextInt(100) + 50;
-        }
 
         bonusScore.setScore(bonus);
     }
@@ -112,6 +116,9 @@ public class LavaFlood extends Gamemode {
 
     @Override
     public double calculateReward(OfflinePlayer player) {
-        return 100.0; //TODO Get amount from classic version
+        if (doubleReward)
+            return (super.getDefaultReward(player) + bonus) * 2.0;
+
+        return super.getDefaultReward(player) + bonus;
     }
 }

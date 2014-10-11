@@ -76,6 +76,12 @@ public class LavaMap {
         world.setAnimalSpawnLimit(0);
         world.setMonsterSpawnLimit(0);
         world.setAnimalSpawnLimit(0);
+        try {
+            Lavasurvival.log("Backing up " + world.getName() + "...");
+            FileUtils.copyDirectory(world.getWorldFolder(), new File(Lavasurvival.INSTANCE.getDataFolder(), world.getName()));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
         for (Entity entity : world.getEntities()) {
             entity.remove();

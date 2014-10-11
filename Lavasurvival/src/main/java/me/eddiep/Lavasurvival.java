@@ -225,6 +225,12 @@ public class Lavasurvival extends JavaPlugin {
                 meta.setLore(lore);
                 item.setItemMeta(meta);
             }
+
+            try {
+                Thread.sleep(3000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
         }
     };
 }

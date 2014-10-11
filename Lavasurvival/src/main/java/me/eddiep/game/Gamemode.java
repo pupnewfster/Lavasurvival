@@ -2,6 +2,8 @@ package me.eddiep.game;
 
 import me.eddiep.Lavasurvival;
 import me.eddiep.game.impl.LavaFlood;
+import me.eddiep.ranks.Rank;
+import me.eddiep.system.FileUtils;
 import me.eddiep.system.PhysicsListener;
 import me.eddiep.system.PlayerListener;
 import mkremins.fanciful.FancyMessage;
@@ -11,13 +13,13 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.scoreboard.Team;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.Random;
 
 public abstract class Gamemode {
     public static final Material[] DEFAULT_BLOCKS = new Material[] {
-            Material.STONE,
             Material.COBBLESTONE,
             Material.DIRT,
             Material.GRASS,
@@ -127,6 +129,14 @@ public abstract class Gamemode {
             boolean success = Bukkit.unloadWorld(lastMap.getWorld(), false);
             if (!success)
                 Lavasurvival.log("Failed to unload last map! A manual unload may be required..");
+            else {
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        restoreBackup(lastMap.getWorld());
+                    }
+                }).start();
+            }
         }
 
         tickTask = Bukkit.getScheduler().scheduleSyncRepeatingTask(Lavasurvival.INSTANCE, new Runnable() {
@@ -135,6 +145,15 @@ public abstract class Gamemode {
                 onTick();
             }
         }, 0, 1);
+    }
+
+    private void restoreBackup(World world) {
+        Lavasurvival.log("Restoring backup of " + world.getName());
+        try {
+            FileUtils.copyDirectory(new File(Lavasurvival.INSTANCE.getDataFolder(), world.getName()), world.getWorldFolder());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     protected abstract void onTick();
@@ -290,6 +309,46 @@ public abstract class Gamemode {
                 }
             }, 40); //2 seconds
         }
+    }
+
+    protected double getDefaultReward(OfflinePlayer player) {
+        Player onlinePlayer = player.getPlayer();
+        if (onlinePlayer == null)
+            return 0.0;
+
+        double base = 100.0;
+        Rank rank = Lavasurvival.INSTANCE.getUserManager().getUser(player.getUniqueId()).getRank();
+        double bonusAdd = 8.0 * (1 + Lavasurvival.INSTANCE.getRankManager().getOrder().indexOf(rank));
+
+        Location loc = onlinePlayer.getLocation();
+
+        return base + (bonusAdd * Math.min(recursiveFill(loc.getWorld(), loc.getBlockX(), loc.getBlockY(), loc.getBlockZ(), 0), 100));
+    }
+
+
+
+    private boolean isLiquid(Material material) {
+        return material == Material.WATER || material == Material.STATIONARY_WATER ||
+                material == Material.LAVA || material == Material.STATIONARY_LAVA;
+    }
+
+    private int recursiveFill(World world, int x, int y, int z, int curBlockCount) {
+        if (curBlockCount >= 100) return curBlockCount;
+
+        for (int xadd = -1; xadd <= 1; xadd++) {
+            for (int yadd = -1; yadd <= 1; yadd++) {
+                for (int zadd = -1; zadd <= 1; zadd++) {
+                    if (!world.getBlockAt(x+ xadd, y + yadd, z + zadd).getType().isSolid() && !isLiquid(world.getBlockAt(x + xadd, y + yadd, z + zadd).getType())) {
+                        curBlockCount = Math.min(curBlockCount + 1, 100);
+                        curBlockCount = recursiveFill(world, x + xadd, y + yadd, z + zadd, curBlockCount);
+
+                        if (curBlockCount >= 100) return curBlockCount;
+                    }
+                }
+            }
+        }
+
+        return curBlockCount;
     }
 
     protected void setNextGame(Gamemode game) {
