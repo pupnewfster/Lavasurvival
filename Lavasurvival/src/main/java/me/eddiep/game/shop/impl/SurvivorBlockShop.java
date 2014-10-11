@@ -26,15 +26,7 @@ public class SurvivorBlockShop extends Menu {
         player.setActiveMenu(new BlockShopCatagory(player.getMenuManager(), null));
     }
 
-    private void buyBlock(MenuPlayer player, Material mat, double price) {
-        UserInfo u = Lavasurvival.INSTANCE.getUserManager().getUser(player.getBukkit().getUniqueId());
-        if(u.ownsBlock(mat))
-            player.getBukkit().sendMessage(ChatColor.RED + "You already own that block..");
-        else if (!Lavasurvival.INSTANCE.getEconomy().hasAccount(player.getBukkit()) || Lavasurvival.INSTANCE.getEconomy().getBalance(player.getBukkit()) < price) {
-            player.getBukkit().sendMessage(ChatColor.RED + "You do not have enough money to buy the block type " + mat.toString().replaceAll("_", " ").toLowerCase() + "..");
-        } else {
-            u.addBlock(mat);
-            player.getBukkit().sendMessage(ChatColor.GREEN + "You bought the block type " + mat.toString().replaceAll("_", " ").toLowerCase() + "!");
-        }
+    private UserInfo getUser(MenuPlayer player) {
+        return Lavasurvival.INSTANCE.getUserManager().getUser(player.getBukkit().getUniqueId());
     }
 }

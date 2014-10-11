@@ -5,15 +5,16 @@ import java.util.ArrayList;
 import java.util.UUID;
 import me.eddiep.Lavasurvival;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
+import org.bukkit.material.MaterialData;
 import org.bukkit.permissions.PermissionAttachment;
 
 public class UserInfo {
     private File configFileUsers = new File(Lavasurvival.INSTANCE.getDataFolder(), "userinfo.yml");
-    private ArrayList<Material> ownedBlocks = new ArrayList<Material>();
-    private ArrayList<String> permissions = new ArrayList<String>();
+    private ArrayList<MaterialData> ownedBlocks = new ArrayList<MaterialData>();
     private PermissionAttachment attachment;
     private Player bukkitPlayer;
     private UUID userUUID;
@@ -68,7 +69,6 @@ public class UserInfo {
     }
 
     public void givePerms() {
-        YamlConfiguration configUsers = YamlConfiguration.loadConfiguration(configFileUsers);
         this.attachment = this.bukkitPlayer.addAttachment(Lavasurvival.INSTANCE);
         for(String node : this.rank.getNodes())
             setPerm(node);
@@ -90,7 +90,6 @@ public class UserInfo {
     }
 
     public void refreshPerms() {
-        this.permissions.clear();
         removePerms();
         givePerms();
     }
@@ -109,8 +108,15 @@ public class UserInfo {
     }
 
     public void addBlock(Material type) {
-        if(!this.ownedBlocks.contains(type))
-            this.ownedBlocks.add(type);
+        MaterialData dat = new MaterialData(type);
+        if(!this.ownedBlocks.contains(dat))
+            this.ownedBlocks.add(dat);
+    }
+
+    public void addBlock(Material type, byte data) {
+        MaterialData dat = new MaterialData(type, data);
+        if(!this.ownedBlocks.contains(dat))
+            this.ownedBlocks.add(dat);
     }
 
     public void clearBlocks() {
@@ -118,6 +124,36 @@ public class UserInfo {
     }
 
     public boolean ownsBlock(Material type) {
-        return this.ownedBlocks.contains(type);
+        return this.ownedBlocks.contains(new MaterialData(type));
+    }
+
+    public boolean ownsBlock(Material type, byte data) {
+        return this.ownedBlocks.contains(new MaterialData(type, data));
+    }
+
+    public void buyBlock(Material mat, double price, byte data) {
+        if(this.bukkitPlayer == null)
+            return;
+        if(ownsBlock(mat, data))
+            getPlayer().sendMessage(ChatColor.RED + "You already own that block..");
+        else if (!Lavasurvival.INSTANCE.getEconomy().hasAccount(getPlayer()) || Lavasurvival.INSTANCE.getEconomy().getBalance(getPlayer()) < price) {
+            getPlayer().sendMessage(ChatColor.RED + "You do not have enough money to buy the block type " + mat.toString().replaceAll("_", " ").toLowerCase() + " with datavalue " + data + "..");
+        } else {
+            addBlock(mat, data);
+            getPlayer().sendMessage(ChatColor.GREEN + "You bought the block type " + mat.toString().replaceAll("_", " ").toLowerCase() + " with datavalue " + data + "!");
+        }
+    }
+
+    public void buyBlock(Material mat, double price) {
+        if(this.bukkitPlayer == null)
+            return;
+        if(ownsBlock(mat))
+            getPlayer().sendMessage(ChatColor.RED + "You already own that block..");
+        else if (!Lavasurvival.INSTANCE.getEconomy().hasAccount(getPlayer()) || Lavasurvival.INSTANCE.getEconomy().getBalance(getPlayer()) < price) {
+            getPlayer().sendMessage(ChatColor.RED + "You do not have enough money to buy the block type " + mat.toString().replaceAll("_", " ").toLowerCase() + "..");
+        } else {
+            addBlock(mat);
+            getPlayer().sendMessage(ChatColor.GREEN + "You bought the block type " + mat.toString().replaceAll("_", " ").toLowerCase() + "!");
+        }
     }
 }

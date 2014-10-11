@@ -8,7 +8,6 @@ import net.njay.annotation.ItemStackAnnotation;
 import net.njay.annotation.MenuInventory;
 import net.njay.annotation.MenuItem;
 import net.njay.player.MenuPlayer;
-import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.inventory.Inventory;
 
@@ -28,21 +27,37 @@ public class BasicBlockShop extends Menu {
 
     @MenuItem(
         slot = 1,
-        item = @ItemStackAnnotation(material = (Material.STONE), name = "Stone", lore = {"150 ggs"})
+        item = @ItemStackAnnotation(material = (Material.GRAVEL), name = "Gravel", lore = {"75 ggs"})
     )
-    public void buyStone(MenuPlayer player) {
-        buyBlock(player, Material.STONE, 150);
+    public void buyGravel(MenuPlayer player) {
+        getUser(player).buyBlock(Material.GRAVEL, 75);
     }
 
-    private void buyBlock(MenuPlayer player, Material mat, double price) {
-        UserInfo u = Lavasurvival.INSTANCE.getUserManager().getUser(player.getBukkit().getUniqueId());
-        if(u.ownsBlock(mat))
-            player.getBukkit().sendMessage(ChatColor.RED + "You already own that block..");
-        else if (!Lavasurvival.INSTANCE.getEconomy().hasAccount(player.getBukkit()) || Lavasurvival.INSTANCE.getEconomy().getBalance(player.getBukkit()) < price) {
-            player.getBukkit().sendMessage(ChatColor.RED + "You do not have enough money to buy the block type " + mat.toString().replaceAll("_", " ").toLowerCase() + "..");
-        } else {
-            u.addBlock(mat);
-            player.getBukkit().sendMessage(ChatColor.GREEN + "You bought the block type " + mat.toString().replaceAll("_", " ").toLowerCase() + "!");
-        }
+    @MenuItem(
+        slot = 2,
+        item = @ItemStackAnnotation(material = (Material.STONE), name = "Stone", lore = {"100 ggs"})
+    )
+    public void buyStone(MenuPlayer player) {
+        getUser(player).buyBlock(Material.STONE, 100);
+    }
+
+    @MenuItem(
+        slot = 3,
+        item = @ItemStackAnnotation(material = (Material.SANDSTONE), name = "Sandstone", lore = {"180 ggs"})
+    )
+    public void buySandstone(MenuPlayer player) {
+        getUser(player).buyBlock(Material.SANDSTONE, 180);
+    }
+
+    @MenuItem(
+        slot = 4,
+        item = @ItemStackAnnotation(material = (Material.BRICK), name = "Brick", lore = {"200 ggs"})
+    )
+    public void buyBrick(MenuPlayer player) {
+        getUser(player).buyBlock(Material.BRICK, 200);
+    }
+
+    private UserInfo getUser(MenuPlayer player) {
+        return Lavasurvival.INSTANCE.getUserManager().getUser(player.getBukkit().getUniqueId());
     }
 }
