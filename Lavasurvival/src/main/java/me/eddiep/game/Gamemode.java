@@ -2,6 +2,8 @@ package me.eddiep.game;
 
 import me.eddiep.Lavasurvival;
 import me.eddiep.game.impl.LavaFlood;
+import me.eddiep.ranks.UserInfo;
+import me.eddiep.ranks.UserManager;
 import me.eddiep.system.PhysicsListener;
 import me.eddiep.system.PlayerListener;
 import mkremins.fanciful.FancyMessage;
@@ -143,6 +145,9 @@ public abstract class Gamemode {
 
     public void endRound() {
         end();
+        UserManager um = Lavasurvival.INSTANCE.getUserManager();
+        for(UserInfo u : um.getUsers().values())
+            u.clearBlocks();
 
         int amount = alive.getSize();
         if (amount == 0) {

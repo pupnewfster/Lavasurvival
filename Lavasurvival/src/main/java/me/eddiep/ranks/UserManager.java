@@ -23,7 +23,10 @@ public class UserManager {
         scheduler.scheduleSyncDelayedTask(Lavasurvival.INSTANCE, new Runnable() {
             @Override
             public void run() {
-                players.put(p.getUniqueId(), new UserInfo(p));
+                if(players.containsKey(p.getUniqueId()))
+                    players.get(p.getUniqueId()).setPlayer(p);
+                else
+                    players.put(p.getUniqueId(), new UserInfo(p));
                 players.get(p.getUniqueId()).givePerms();
             }
         });
@@ -31,10 +34,6 @@ public class UserManager {
 
     public HashMap<UUID, UserInfo> getUsers() {
         return players;
-    }
-
-    public void removeUser(UUID uuid) {
-        players.remove(uuid);
     }
 
     public UserInfo getUser(UUID uuid) {

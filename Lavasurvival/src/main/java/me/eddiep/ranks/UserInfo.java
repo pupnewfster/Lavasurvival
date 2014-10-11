@@ -5,12 +5,14 @@ import java.util.ArrayList;
 import java.util.UUID;
 import me.eddiep.Lavasurvival;
 import org.bukkit.Bukkit;
+import org.bukkit.Material;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.permissions.PermissionAttachment;
 
 public class UserInfo {
     private File configFileUsers = new File(Lavasurvival.INSTANCE.getDataFolder(), "userinfo.yml");
+    private ArrayList<Material> ownedBlocks = new ArrayList<Material>();
     private ArrayList<String> permissions = new ArrayList<String>();
     private PermissionAttachment attachment;
     private Player bukkitPlayer;
@@ -91,22 +93,29 @@ public class UserInfo {
         givePerms();
     }
 
+    public void setPlayer(Player p) {
+        this.bukkitPlayer = p;
+    }
+
     public void removePerms() {
-        for(String p : this.attachment.getPermissions().keySet())
+        for (String p : this.attachment.getPermissions().keySet())
             this.attachment.unsetPermission(p);
-    }
-
-    public void addPerm(String permission) {
-        setPerm(permission);
-    }
-
-    public void removePerm(String permission) {
-        this.attachment.unsetPermission(permission);
-        if(this.permissions.contains(permission))
-            this.permissions.remove(permission);
     }
 
     public Player getPlayer() {
         return this.bukkitPlayer;
+    }
+
+    public void addBlock(Material type) {
+        if(!this.ownedBlocks.contains(type))
+            this.ownedBlocks.add(type);
+    }
+
+    public void clearBlocks() {
+        this.ownedBlocks.clear();
+    }
+
+    public boolean ownsBlock(Material type) {
+        return this.ownedBlocks.contains(type);
     }
 }

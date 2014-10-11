@@ -87,8 +87,7 @@ public class PlayerListener implements Listener {
     public void blockBreak(BlockBreakEvent event) {
         event.setCancelled(true);
         Material material = event.getBlock().getType();
-        if (invalidBlocks.contains(material) ||
-                (Gamemode.getCurrentGame() != null && Gamemode.getCurrentGame().isAlive(event.getPlayer())))
+        if (invalidBlocks.contains(material) || (Gamemode.getCurrentGame() != null && Gamemode.getCurrentGame().isAlive(event.getPlayer())))
             return;
         if(Gamemode.getCurrentGame() != null) {
             String state = Gamemode.getCurrentGame().isDead(event.getPlayer()) ? ChatColor.RED + "DEAD" : ChatColor.GRAY + "SPECTATING";

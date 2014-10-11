@@ -84,9 +84,8 @@ public class Lavasurvival extends JavaPlugin {
             Gamemode.cleanup();
             ShopFactory.cleanup();
 
-            for (UUID uuid : setups.keySet()) {
+            for (UUID uuid : setups.keySet())
                 setups.get(uuid).end();
-            }
             setups.clear();
 
             getServer().getScheduler().cancelTask(moneyViewer);
@@ -113,12 +112,9 @@ public class Lavasurvival extends JavaPlugin {
     private void init() {
         File configFileUsers = new File(getDataFolder(), "userinfo.yml");
         if(!configFileUsers.exists())
-        {
             try {
                 configFileUsers.createNewFile();
-            } catch (Exception e) {
-            }
-        }
+            } catch (Exception e) {}
         userManager = new UserManager();
         rankManager = new RankManager();
         uuiDs = new UUIDs();
