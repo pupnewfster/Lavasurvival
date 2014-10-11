@@ -13,11 +13,11 @@ public class CmdSetupMap extends Cmd {
                 SetupMap s = Lavasurvival.INSTANCE.getSetups().get(p.getUniqueId());
                 s.sendMessage("Aborted..");
                 s.end();
-                Lavasurvival.INSTANCE.getSetups().remove(p.getUniqueId());
+                Lavasurvival.INSTANCE.removeFromSetup(p.getUniqueId());
             } else {
                 SetupMap setup = new SetupMap(p, Lavasurvival.INSTANCE);
                 setup.start();
-                Lavasurvival.INSTANCE.getSetups().put(p.getUniqueId(), setup);
+                Lavasurvival.INSTANCE.addToSetup(p.getUniqueId(), setup);
             }
         } else
             sender.sendMessage("This command can only be used in game..");

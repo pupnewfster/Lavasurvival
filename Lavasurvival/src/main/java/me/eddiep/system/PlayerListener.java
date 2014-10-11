@@ -38,8 +38,8 @@ public class PlayerListener implements Listener {
             Material.WOOD_PLATE,
             Material.BEDROCK
     }));
-    UserManager um = new UserManager();
-    UUIDs get = new UUIDs();
+    UserManager um = Lavasurvival.INSTANCE.getUserManager();
+    UUIDs get = Lavasurvival.INSTANCE.getUUIDs();
 
     @EventHandler(priority = EventPriority.MONITOR)
     public void onChat(AsyncPlayerChatEvent event) {
@@ -76,7 +76,7 @@ public class PlayerListener implements Listener {
                 }
             }
 
-            if (!player.isOp())
+            if (!player.hasPermission("lavasurvival.voteSpeak"))
                 player.sendMessage(ChatColor.RED + "No talking during the vote!");
             else
                 event.setCancelled(false);
@@ -87,8 +87,7 @@ public class PlayerListener implements Listener {
     public void blockBreak(BlockBreakEvent event) {
         event.setCancelled(true);
         Material material = event.getBlock().getType();
-        if (invalidBlocks.contains(material) ||
-                (Gamemode.getCurrentGame() != null && Gamemode.getCurrentGame().isAlive(event.getPlayer())))
+        if (invalidBlocks.contains(material) || (Gamemode.getCurrentGame() != null && Gamemode.getCurrentGame().isAlive(event.getPlayer())))
             return;
         if(Gamemode.getCurrentGame() != null) {
             String state = Gamemode.getCurrentGame().isDead(event.getPlayer()) ? ChatColor.RED + "DEAD" : ChatColor.GRAY + "SPECTATING";
@@ -191,6 +190,9 @@ public class PlayerListener implements Listener {
         if(!get.hasJoined(event.getPlayer().getUniqueId()))
             get.addUUID(event.getPlayer().getUniqueId());
 
+        if(!Lavasurvival.INSTANCE.getEconomy().hasAccount(event.getPlayer()))
+            Lavasurvival.INSTANCE.getEconomy().createPlayerAccount(event.getPlayer());
+
         if(Gamemode.getCurrentGame() != null)
             event.getPlayer().teleport(Gamemode.getCurrentWorld().getSpawnLocation());
 
@@ -213,7 +215,8 @@ public class PlayerListener implements Listener {
 
     @EventHandler (priority = EventPriority.HIGHEST)
     public void playerDeath(PlayerDeathEvent event) {
-        Gamemode.getCurrentGame().setDead(event.getEntity());
+        if(Gamemode.getCurrentGame() != null)
+            Gamemode.getCurrentGame().setDead(event.getEntity());
         event.getEntity().getInventory().clear();
 
     }

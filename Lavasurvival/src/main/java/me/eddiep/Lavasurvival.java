@@ -6,8 +6,7 @@ import me.eddiep.game.Gamemode;
 import me.eddiep.game.LavaMap;
 import me.eddiep.game.impl.LavaFlood;
 import me.eddiep.game.shop.ShopFactory;
-import me.eddiep.game.shop.impl.BlockShopCatagory;
-import me.eddiep.game.shop.impl.RankShop;
+import me.eddiep.game.shop.impl.*;
 import me.eddiep.ranks.RankManager;
 import me.eddiep.ranks.UUIDs;
 import me.eddiep.ranks.UserManager;
@@ -51,14 +50,15 @@ public class Lavasurvival extends JavaPlugin {
         INSTANCE = this;
         getDataFolder().mkdir();
         init();
-        setupShops();
 
-        /*log("Attaching to Vault..");//Commented out for now as this was disabling plugin from working at all
+        log("Attaching to Vault..");//Commented out for now as this was disabling plugin from working at all
         if (!setupEcon()) {
             log("Disabling, no Vault dependency found!");
             getServer().getPluginManager().disablePlugin(this);
             return;
-        }*/
+        }
+        //Setup the shops after connecting to vault
+        setupShops();
 
         /*log("Making money viewer task..");
         moneyViewer = getServer().getScheduler().scheduleSyncRepeatingTask(this, MONEY_VIEWER, 0, 25);*/
@@ -84,9 +84,8 @@ public class Lavasurvival extends JavaPlugin {
             Gamemode.cleanup();
             ShopFactory.cleanup();
 
-            for (UUID uuid : setups.keySet()) {
+            for (UUID uuid : setups.keySet())
                 setups.get(uuid).end();
-            }
             setups.clear();
 
             getServer().getScheduler().cancelTask(moneyViewer);
@@ -97,13 +96,14 @@ public class Lavasurvival extends JavaPlugin {
     }
 
     private void setupShops() {
-        MenuFramework.enable(new MenuRegistry(this, RankShop.class, BlockShopCatagory.class));
+        MenuFramework.enable(new MenuRegistry(this, RankShop.class, BlockShopCatagory.class, BasicBlockShop.class,
+                AdvancedBlockShop.class, SurvivorBlockShop.class, TrustedBlockShop.class, ElderBlockShop.class));
 
         ArrayList<String> lore = new ArrayList<String>();
-        lore.add(ChatColor.ITALIC + "" + ChatColor.GOLD + "Buy more blocks!");
+        lore.add(ChatColor.GOLD + "" + ChatColor.ITALIC + "Buy more blocks!");
 
         ArrayList<String> lore2 = new ArrayList<String>();
-        lore2.add(ChatColor.ITALIC + "" + ChatColor.GREEN + "Level up!");
+        lore2.add(ChatColor.GREEN + "" + ChatColor.ITALIC + "Level up!");
 
         ShopFactory.createShop(this, "Block Shop", BlockShopCatagory.class, Material.EMERALD, lore);
         ShopFactory.createShop(this, "Rank Shop", RankShop.class, Material.EXP_BOTTLE, lore2);
@@ -112,12 +112,9 @@ public class Lavasurvival extends JavaPlugin {
     private void init() {
         File configFileUsers = new File(getDataFolder(), "userinfo.yml");
         if(!configFileUsers.exists())
-        {
             try {
                 configFileUsers.createNewFile();
-            } catch (Exception e) {
-            }
-        }
+            } catch (Exception e) {}
         userManager = new UserManager();
         rankManager = new RankManager();
         uuiDs = new UUIDs();
@@ -156,6 +153,10 @@ public class Lavasurvival extends JavaPlugin {
         setups.remove(uuid);
     }
 
+    public void addToSetup(UUID uuid, SetupMap setup) {
+        setups.put(uuid, setup);
+    }
+
     public static void log(String message) {
         INSTANCE.getLogger().info(message);
     }
@@ -183,7 +184,10 @@ public class Lavasurvival extends JavaPlugin {
     }
 
     public static void globalMessage(String message) {
-        Gamemode.getCurrentGame().globalMessage(message);
+        if(Gamemode.getCurrentGame() != null)
+            Gamemode.getCurrentGame().globalMessage(message);
+        else //Sends to everyone
+            Bukkit.broadcastMessage(message);
     }
 
     private final Runnable MONEY_VIEWER = new Runnable() {

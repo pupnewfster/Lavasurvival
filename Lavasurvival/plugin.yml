@@ -53,6 +53,7 @@ permissions:
             lavasurvival.promote: true
             lavasurvival.demote: true
             lavasurvival.setrank: true
+            lavasurvival.voteSpeak: true
     lavasurvival.lvote:
         description: Allows you to vote for maps.
         default: true
@@ -70,4 +71,7 @@ permissions:
         default: op
     lavasurvival.setrank:
         description: Allows you to set a player's rank.
+        default: op
+    lavasurvival.voteSpeak:
+        description: Allows you to speak during votes.
         default: op
