@@ -15,13 +15,13 @@ public class Rank {
     private String name = "";
 
     public Rank(String name) {
-        this.name = name;
         YamlConfiguration configRanks = YamlConfiguration.loadConfiguration(configFileRanks);
+        this.name = name;
         if (configRanks.contains(getName() + ".rankTitle"))
             this.title = configRanks.getString(getName() + ".rankTitle");
         if (configRanks.contains(getName() + ".previousRank")) {
             this.previous = Lavasurvival.INSTANCE.getRankManager().getRank(configRanks.getString(getName() + ".previousRank"));
-            this.previous.setNext(this);
+            getPrevious().setNext(this);
         }
         setPerms();
     }
@@ -43,23 +43,6 @@ public class Rank {
             this.permissions.add(node);
     }
 
-    public void refreshPerms() {
-        this.permissions.clear();
-        setPerms();
-        if (this.next != null)
-            this.next.refreshPerms();
-    }
-
-    public void addPerm(String permission) {
-        this.permissions.add(permission);
-        refreshPerms();
-    }
-
-    public void removePerm(String permission) {
-        this.permissions.remove(permission);
-        refreshPerms();
-    }
-
     public ArrayList<String> getNodes() {
         return this.permissions;
     }
@@ -74,9 +57,5 @@ public class Rank {
 
     public Rank getPrevious() {
         return this.previous;
-    }
-
-    public void setPrevious(Rank r) {
-        this.previous = r;
     }
 }

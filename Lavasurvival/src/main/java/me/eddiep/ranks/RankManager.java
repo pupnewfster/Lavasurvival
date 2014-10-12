@@ -15,11 +15,11 @@ import java.util.HashMap;
 public class RankManager {
     private static HashMap<String, Rank> ranks = new HashMap<String, Rank>();
     private static ArrayList<Rank> order = new ArrayList<Rank>();
-    private static ArrayList<String> names = new ArrayList<String>();
     private File configFileRanks = new File(Lavasurvival.INSTANCE.getDataFolder(), "ranks.yml");
 
     public void readRanks() {
         YamlConfiguration configRanks = YamlConfiguration.loadConfiguration(configFileRanks);
+        ArrayList<String> names = new ArrayList<String>();
         for (String rank : configRanks.getKeys(false)) {
             if (configRanks.contains(rank + ".previousRank")) {
                 if (names.contains(configRanks.getString(rank + ".previousRank")))
@@ -71,20 +71,12 @@ public class RankManager {
         return order;
     }
 
-    public Rank getRank(int index) {
-        if (order.size() - 1 < index)
-            return null;
-        return order.get(index);
-    }
-
     public Rank getRank(String name) {
         return ranks.get(name);
     }
 
     public boolean hasRank(Rank rank, Rank check) {//Useful to check if player already bought a rank
-        if (!order.contains(check) || !order.contains(rank))
-            return false;
-        return order.indexOf(rank) - order.indexOf(check) >= 0;
+        return !(rank == null || check == null || !order.contains(check) || !order.contains(rank)) && order.indexOf(rank) - order.indexOf(check) >= 0;
     }
 
     public void setRanks() {

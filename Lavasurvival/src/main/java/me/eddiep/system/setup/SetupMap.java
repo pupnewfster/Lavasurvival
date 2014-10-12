@@ -101,9 +101,8 @@ public class SetupMap implements Listener {
                     int x = setupPlayer.getLocation().getBlockX();
                     int z = setupPlayer.getLocation().getBlockZ();
                     int startY = setupPlayer.getLocation().getBlockY();
-                    while (!setupPlayer.getWorld().getBlockAt(x, startY, z).getType().isSolid()) {
+                    while (!setupPlayer.getWorld().getBlockAt(x, startY, z).getType().isSolid())
                         startY--;
-                    }
 
                     int dif = map.getLavaY() - startY;
                     map.setHeight(dif);
@@ -125,33 +124,27 @@ public class SetupMap implements Listener {
                     minz = maxz = event.getPlayer().getLocation().getZ();
 
                     Location temp = new Location(world, minx, miny, minz);
-                    while (!world.getBlockAt(temp).getType().isSolid()) {
+                    while (!world.getBlockAt(temp).getType().isSolid())
                         temp.setX(temp.getX() - 1);
-                    }
                     temp.setX(temp.getX() + 1);
-                    while (!world.getBlockAt(temp).getType().isSolid()) {
+                    while (!world.getBlockAt(temp).getType().isSolid())
                         temp.setY(temp.getY() - 1);
-                    }
                     temp.setY(temp.getY() + 1);
-                    while (!world.getBlockAt(temp).getType().isSolid()) {
+                    while (!world.getBlockAt(temp).getType().isSolid())
                         temp.setZ(temp.getZ() - 1);
-                    }
                     temp.setY(temp.getY() - 1);
                     temp.setX(temp.getX() - 1);
 
 
                     Location temp2 = new Location(world, maxx, maxy, maxz);
-                    while (!world.getBlockAt(temp2).getType().isSolid()) {
+                    while (!world.getBlockAt(temp2).getType().isSolid())
                         temp2.setX(temp2.getX() + 1);
-                    }
                     temp2.setX(temp2.getX() - 1);
-                    while (!world.getBlockAt(temp2).getType().isSolid()) {
+                    while (!world.getBlockAt(temp2).getType().isSolid())
                         temp2.setY(temp2.getY() + 1);
-                    }
                     temp2.setY(temp2.getY() - 1);
-                    while (!world.getBlockAt(temp2).getType().isSolid()) {
+                    while (!world.getBlockAt(temp2).getType().isSolid())
                         temp2.setZ(temp2.getZ() + 1);
-                    }
                     temp2.setY(temp2.getY() + 1);
                     temp2.setX(temp2.getX() + 1);
 
@@ -175,11 +168,9 @@ public class SetupMap implements Listener {
             event.setCancelled(true);
             if (event.getBlock().getState() instanceof Sign) {
                 map.setSignLocation(event.getBlock().getLocation());
-
                 finish();
-            } else {
+            } else
                 sendMessage("That's not a sign..");
-            }
         }
     }
 

@@ -29,10 +29,9 @@ public class ShopFactory {
     }
 
     public static Shop findShop(String shopName) {
-        for (Shop shop : shops) {
+        for (Shop shop : shops)
             if (shop.getShopName().equals(shopName))
                 return shop;
-        }
         return null;
     }
 
@@ -49,18 +48,16 @@ public class ShopFactory {
     }
 
     public static Inventory validateInventory(Inventory inventory) {
-        for (Shop shop : shops) {
+        for (Shop shop : shops)
             if (!inventory.contains(shop.getOpener()))
                 inventory.setItem(inventory.firstEmpty(), shop.getOpener());
-        }
 
         return inventory;
     }
 
     public static void cleanup() {
-        for (Shop shop : shops) {
+        for (Shop shop : shops)
             shop.unregister();
-        }
         shops.clear();
     }
 }

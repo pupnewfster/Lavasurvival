@@ -48,12 +48,10 @@ public class LavaMap {
 
         ArrayList<String> maps = new ArrayList<String>();
         File[] files = configDir.listFiles();
-        if (files != null) {
-            for (File f : files) {
+        if (files != null)
+            for (File f : files)
                 if (f.getAbsolutePath().endsWith(".map"))
                     maps.add(f.getAbsolutePath());
-            }
-        }
 
         return maps.toArray(new String[maps.size()]);
     }
@@ -82,9 +80,7 @@ public class LavaMap {
             e.printStackTrace();
         }
 
-        for (Entity entity : world.getEntities()) {
-            entity.remove();
-        }
+        world.getEntities().clear();
 
         Block block = world.getBlockAt(signx, signy - 1, signz).getRelative(BlockFace.UP);
         if (!(block.getState() instanceof Sign)) {
@@ -96,9 +92,8 @@ public class LavaMap {
 
     private World loadOrGetWorld(String worldName) {
         World world = Bukkit.getWorld(worldName);
-        if (world == null) {
+        if (world == null)
             world = Bukkit.getServer().createWorld(new WorldCreator(worldName));
-        }
         return world;
     }
 

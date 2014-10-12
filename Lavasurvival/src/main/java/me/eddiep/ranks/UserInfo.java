@@ -24,7 +24,7 @@ public class UserInfo {
     public UserInfo(Player p) {
         YamlConfiguration configUsers = YamlConfiguration.loadConfiguration(configFileUsers);
         this.bukkitPlayer = p;
-        this.userUUID = this.bukkitPlayer.getUniqueId();
+        this.userUUID = p.getUniqueId();
         if (configUsers.contains(getUUID().toString() + ".rank"))
             this.rank = Lavasurvival.INSTANCE.getRankManager().getRank(configUsers.getString(getUUID().toString() + ".rank"));
         givePerms();
@@ -42,15 +42,15 @@ public class UserInfo {
     }
 
     public UUID getUUID() {
-        if (this.bukkitPlayer == null)
+        if (getPlayer() == null)
             return this.userUUID;
-        return this.bukkitPlayer.getUniqueId();
+        return getPlayer().getUniqueId();
     }
 
     public String getName() {
-        if (this.bukkitPlayer == null)
-            return Bukkit.getOfflinePlayer(this.userUUID).getName();
-        return this.bukkitPlayer.getName();
+        if (getPlayer() == null)
+            return Bukkit.getOfflinePlayer(getUUID()).getName();
+        return getPlayer().getName();
     }
 
     public Rank getRank() {
@@ -70,7 +70,7 @@ public class UserInfo {
     }
 
     public void givePerms() {
-        this.attachment = this.bukkitPlayer.addAttachment(Lavasurvival.INSTANCE);
+        this.attachment = getPlayer().addAttachment(Lavasurvival.INSTANCE);
         for (String node : this.rank.getNodes())
             setPerm(node);
     }
@@ -86,7 +86,7 @@ public class UserInfo {
 
     public void updateRank(Rank r) {
         this.rank = r;
-        if (this.bukkitPlayer != null)
+        if (getPlayer() != null)
             refreshPerms();
     }
 
@@ -108,13 +108,13 @@ public class UserInfo {
         this.bukkitPlayer = p;
     }
 
-    public void addBlock(Material type) {
+    private void addBlock(Material type) {
         MaterialData dat = new MaterialData(type);
         if (!this.ownedBlocks.contains(dat))
             this.ownedBlocks.add(dat);
     }
 
-    public void addBlock(Material type, byte data) {
+    private void addBlock(Material type, byte data) {
         MaterialData dat = new MaterialData(type, data);
         if (!this.ownedBlocks.contains(dat))
             this.ownedBlocks.add(dat);
@@ -133,7 +133,7 @@ public class UserInfo {
     }
 
     public void buyBlock(Material mat, double price, byte data) {
-        if (this.bukkitPlayer == null)
+        if (getPlayer() == null)
             return;
         if (ownsBlock(mat, data))
             getPlayer().sendMessage(ChatColor.RED + "You already own that block..");
@@ -146,7 +146,7 @@ public class UserInfo {
     }
 
     public void buyBlock(Material mat, double price) {
-        if (this.bukkitPlayer == null)
+        if (getPlayer() == null)
             return;
         if (ownsBlock(mat))
             getPlayer().sendMessage(ChatColor.RED + "You already own that block..");

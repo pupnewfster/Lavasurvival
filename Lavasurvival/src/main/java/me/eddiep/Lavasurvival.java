@@ -28,10 +28,7 @@ import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.UUID;
+import java.util.*;
 
 public class Lavasurvival extends JavaPlugin {
     public static final Gson GSON = new Gson();
@@ -96,7 +93,7 @@ public class Lavasurvival extends JavaPlugin {
     public static void globalMessage(String message) {
         if (Gamemode.getCurrentGame() != null)
             Gamemode.getCurrentGame().globalMessage(message);
-        else //Sends to everyone
+        else //Sends to everyone if no game to send to
             Bukkit.broadcastMessage(message);
     }
 
@@ -118,14 +115,13 @@ public class Lavasurvival extends JavaPlugin {
         /*log("Making money viewer task..");
         moneyViewer = getServer().getScheduler().scheduleSyncRepeatingTask(this, MONEY_VIEWER, 0, 25);*/
 
-        getServer().getPluginManager().registerEvents(new PlayerListener(), this);
-
         LavaFlood flood = new LavaFlood();
         if (LavaMap.getPossibleMaps().length > 0) {
             flood.prepare();
             flood.start();
             running = true;
-        }
+        } else //Only schedule a listener if no maps. If maps then it already is initialized through Gamemode.prepare()
+            getServer().getPluginManager().registerEvents(new PlayerListener(), this);
     }
 
     @Override
@@ -218,21 +214,33 @@ public class Lavasurvival extends JavaPlugin {
         return setups;
     }
 
-    @Override
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
+        return getCmd(cmd.getName()).commandUse(sender, args);
+    }
+
+    public List<String> onTabComplete(CommandSender sender, Command cmd, String label, String[] args) {
+        if(sender == null || cmd == null)
+            return null;
+        List<String> tab = getCmd(cmd.getName()).tabComplete(sender, args);
+        if(tab == null || tab.isEmpty())
+            return null;
+        return tab;
+    }
+
+    private Cmd getCmd(String name) {
         Cmd com = new Cmd();
-        if (cmd.getName().equalsIgnoreCase("promote"))
+        if (name.equalsIgnoreCase("promote"))
             com = new CmdPromote();
-        else if (cmd.getName().equalsIgnoreCase("demote"))
+        else if (name.equalsIgnoreCase("demote"))
             com = new CmdDemote();
-        else if (cmd.getName().equalsIgnoreCase("setrank"))
+        else if (name.equalsIgnoreCase("setrank"))
             com = new CmdSetrank();
-        else if (cmd.getName().equalsIgnoreCase("join"))
+        else if (name.equalsIgnoreCase("join"))
             com = new CmdJoin();
-        else if (cmd.getName().equalsIgnoreCase("lvote"))
+        else if (name.equalsIgnoreCase("lvote"))
             com = new CmdLVote();
-        else if (cmd.getName().equalsIgnoreCase("setupmap"))
+        else if (name.equalsIgnoreCase("setupmap"))
             com = new CmdSetupMap();
-        return com.commandUse(sender, args);
+        return com;
     }
 }

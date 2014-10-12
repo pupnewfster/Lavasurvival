@@ -64,15 +64,15 @@ public class RankShop extends Menu {
         UserInfo user = Lavasurvival.INSTANCE.getUserManager().getUser(player.getBukkit().getUniqueId());
         int curNum = manager.getOrder().indexOf(user.getRank());
         int thisRank = manager.getOrder().indexOf(manager.getRank(RANK));
-        if (curNum == thisRank) {
+        if (curNum == thisRank)
             player.getBukkit().sendMessage(ChatColor.RED + "You are already the " + RANK + " rank..");
-        } else if (curNum > thisRank) {
+        else if (curNum > thisRank)
             player.getBukkit().sendMessage(ChatColor.RED + "You cannot buy a lower rank..");
-        } else if (thisRank - 1 != curNum) {
+        else if (thisRank - 1 != curNum)
             player.getBukkit().sendMessage(ChatColor.RED + "You must first buy the " + manager.getRank(RANK).getPrevious().getName() + " rank!");
-        } else if (!Lavasurvival.INSTANCE.getEconomy().hasAccount(player.getBukkit()) || Lavasurvival.INSTANCE.getEconomy().getBalance(player.getBukkit()) < price) {
+        else if (!Lavasurvival.INSTANCE.getEconomy().hasAccount(player.getBukkit()) || Lavasurvival.INSTANCE.getEconomy().getBalance(player.getBukkit()) < price)
             player.getBukkit().sendMessage(ChatColor.RED + "You do not have enough money to buy the " + manager.getRank(RANK).getPrevious().getName() + " rank!");
-        } else {
+        else {
             user.setRank(user.getRank().getNext());
             Lavasurvival.INSTANCE.getEconomy().withdrawPlayer(player.getBukkit(), price);
             Lavasurvival.globalMessage(user.getPlayer().getDisplayName() + ChatColor.GREEN + " just bought the " + user.getRank().getName() + " rank!");

@@ -32,7 +32,7 @@ public class LavaFlood extends Gamemode {
         objective = getScoreboard().registerNewObjective("game", "dummy");
         objective.setDisplaySlot(DisplaySlot.SIDEBAR);
         objective.setDisplayName("Lava Pour");
-        bonusScore = objective.getScore(ChatColor.BOLD + "" + ChatColor.GOLD + "Reward Bonus");
+        bonusScore = objective.getScore(ChatColor.GOLD + "" + ChatColor.BOLD + "Reward Bonus");
         bonus = Gamemode.RANDOM.nextInt(80) + 50;
         bonusScore.setScore(bonus);
 
@@ -46,11 +46,10 @@ public class LavaFlood extends Gamemode {
 
             duration *= 0.5;
         }
-        /*if (Gamemode.getPlayerListener().survival) {
-            globalMessage("The building style will be " + ChatColor.BOLD + "" + ChatColor.RED + "SURVIVAL STYLE");
-        } else {
-            globalMessage("The building style will be " + ChatColor.BOLD + "" + ChatColor.RED + "CLASSIC STYLE");
-        }*/
+        /*if (Gamemode.getPlayerListener().survival)
+            globalMessage("The building style will be " + ChatColor.RED + "" + ChatColor.BOLD + "SURVIVAL STYLE");
+        else
+            globalMessage("The building style will be " + ChatColor.RED + "" + ChatColor.BOLD + "CLASSIC STYLE");*/
     }
 
     @Override
@@ -110,9 +109,8 @@ public class LavaFlood extends Gamemode {
                     getCurrentWorld().strikeLightning(lavaPoint);
                     globalMessage("The round will end in " + ChatColor.DARK_RED + TimeUtils.toFriendlyTime(duration - since));
                 }
-            } else {
+            } else
                 endRound();
-            }
         }
     }
 

@@ -70,32 +70,22 @@ public class Shop implements Listener {
 
     @EventHandler(priority = EventPriority.LOWEST)
     public void onPlayerInteract(PlayerInteractEvent event) {
-        if (event.getAction() == Action.RIGHT_CLICK_BLOCK || event.getAction() == Action.RIGHT_CLICK_AIR) {
-            if (event.getItem() != null && event.getItem().equals(opener)) {
-                MenuPlayer player = MenuFramework.getPlayerManager().getPlayer(event.getPlayer());
-                try {
-                    Menu menuObj = menu.newInstance(player.getMenuManager(), null);
-                    player.setActiveMenu(menuObj);
-                } catch (InstantiationException e) {
-                    e.printStackTrace();
-                    return;
-                } catch (IllegalAccessException e) {
-                    e.printStackTrace();
-                    return;
-                } catch (InvocationTargetException e) {
-                    e.printStackTrace();
-                    return;
-                }
+        if ((event.getAction() == Action.RIGHT_CLICK_BLOCK || event.getAction() == Action.RIGHT_CLICK_AIR) && event.getItem() != null && event.getItem().equals(opener)) {
+            MenuPlayer player = MenuFramework.getPlayerManager().getPlayer(event.getPlayer());
+            try {
+                Menu menuObj = menu.newInstance(player.getMenuManager(), null);
+                player.setActiveMenu(menuObj);
                 event.setCancelled(true);
+            } catch (Exception e) {
+                e.printStackTrace();
             }
         }
     }
 
     @EventHandler(priority = EventPriority.LOWEST)
     public void onInventoryClick(InventoryClickEvent event) {
-        if (event.getCurrentItem() != null && event.getCurrentItem().equals(opener)) {
+        if (event.getCurrentItem() != null && event.getCurrentItem().equals(opener))
             event.setCancelled(true);
-        }
     }
 
     public String getShopName() {
