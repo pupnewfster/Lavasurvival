@@ -80,7 +80,8 @@ public class LavaMap {
             e.printStackTrace();
         }
 
-        world.getEntities().clear();
+        for (Entity entity : world.getEntities())
+            entity.remove();
 
         Block block = world.getBlockAt(signx, signy - 1, signz).getRelative(BlockFace.UP);
         if (!(block.getState() instanceof Sign)) {
