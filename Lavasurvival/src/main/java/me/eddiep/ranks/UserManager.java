@@ -1,20 +1,21 @@
 package me.eddiep.ranks;
 
-import java.io.File;
-import java.util.HashMap;
-import java.util.UUID;
 import me.eddiep.Lavasurvival;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitScheduler;
 
+import java.io.File;
+import java.util.HashMap;
+import java.util.UUID;
+
 public class UserManager {
-    private File configFileUsers = new File(Lavasurvival.INSTANCE.getDataFolder(), "userinfo.yml");
     private static HashMap<UUID, UserInfo> players = new HashMap<UUID, UserInfo>();
+    private File configFileUsers = new File(Lavasurvival.INSTANCE.getDataFolder(), "userinfo.yml");
 
     public void readUsers() {
-        for(Player p : Bukkit.getOnlinePlayers())
+        for (Player p : Bukkit.getOnlinePlayers())
             parseUser(p);
     }
 
@@ -23,7 +24,7 @@ public class UserManager {
         scheduler.scheduleSyncDelayedTask(Lavasurvival.INSTANCE, new Runnable() {
             @Override
             public void run() {
-                if(players.containsKey(p.getUniqueId()))
+                if (players.containsKey(p.getUniqueId()))
                     players.get(p.getUniqueId()).setPlayer(p);
                 else
                     players.put(p.getUniqueId(), new UserInfo(p));
@@ -37,19 +38,19 @@ public class UserManager {
     }
 
     public UserInfo getUser(UUID uuid) {
-        if(!players.containsKey(uuid))
+        if (!players.containsKey(uuid))
             return new UserInfo(uuid);
         return players.get(uuid);
     }
 
     public void unload() {
-        for(UUID uuid : players.keySet())
+        for (UUID uuid : players.keySet())
             players.get(uuid).removePerms();
     }
 
     public void addUser(Player player) {
         YamlConfiguration configUsers = YamlConfiguration.loadConfiguration(configFileUsers);
-        if(configUsers.contains(player.getUniqueId().toString()))
+        if (configUsers.contains(player.getUniqueId().toString()))
             return;
         configUsers.set(player.getUniqueId().toString() + ".rank", "New");
         try {
@@ -60,7 +61,7 @@ public class UserManager {
     }
 
     public void updateUserRank(UserInfo u, Rank r) {
-        if(r == null)
+        if (r == null)
             return;
         YamlConfiguration configUsers = YamlConfiguration.loadConfiguration(configFileUsers);
         configUsers.set(u.getUUID().toString() + ".rank", r.getName());

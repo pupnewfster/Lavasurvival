@@ -7,7 +7,6 @@ import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.Sign;
 import org.bukkit.entity.Entity;
-import org.bukkit.util.FileUtil;
 import org.bukkit.util.Vector;
 
 import java.io.File;
@@ -33,12 +32,6 @@ public class LavaMap {
     private volatile World world;
     private volatile boolean poured;
 
-    public void save() throws IOException {
-        String json = Lavasurvival.GSON.toJson(this);
-
-        me.eddiep.system.FileUtils.writeText(new File(Lavasurvival.INSTANCE.getDataFolder(), "maps/" + name + ".map").getAbsolutePath(), json);
-    }
-
     public static LavaMap load(String file) throws IOException {
         String contents = FileUtils.readAllText(file);
 
@@ -63,6 +56,12 @@ public class LavaMap {
         }
 
         return maps.toArray(new String[maps.size()]);
+    }
+
+    public void save() throws IOException {
+        String json = Lavasurvival.GSON.toJson(this);
+
+        me.eddiep.system.FileUtils.writeText(new File(Lavasurvival.INSTANCE.getDataFolder(), "maps/" + name + ".map").getAbsolutePath(), json);
     }
 
     public Location getLavaSpawnAsLocation() {
@@ -92,7 +91,7 @@ public class LavaMap {
             block.setType(Material.SIGN_POST);
         }
 
-        joinSign = (Sign)block.getState();
+        joinSign = (Sign) block.getState();
     }
 
     private World loadOrGetWorld(String worldName) {
@@ -115,12 +114,16 @@ public class LavaMap {
         return mapSpawn;
     }
 
-    public void setWorldName(String worldName) {
-        this.worldName = worldName;
+    public void setMapSpawn(Location mapSpawn) {
+        this.mapSpawn = new Vector(mapSpawn.getX(), mapSpawn.getY(), mapSpawn.getZ());
     }
 
     public String getWorldName() {
         return worldName;
+    }
+
+    public void setWorldName(String worldName) {
+        this.worldName = worldName;
     }
 
     public void setLavaSpawn(Location lavaSpawn) {
@@ -141,16 +144,12 @@ public class LavaMap {
         return lavaz;
     }
 
-    public void setHeight(int height) {
-        this.mapHeight = height;
-    }
-
     public int getHeight() {
         return mapHeight;
     }
 
-    public void setMapSpawn(Location mapSpawn) {
-        this.mapSpawn = new Vector(mapSpawn.getX(), mapSpawn.getY(), mapSpawn.getZ());
+    public void setHeight(int height) {
+        this.mapHeight = height;
     }
 
     public void setSafeZoneBounds(Location temp, Location temp2) {
@@ -158,12 +157,12 @@ public class LavaMap {
         this.maxSafeZone = new Vector(temp2.getX(), temp2.getY(), temp2.getZ());
     }
 
-    public void setName(String name) {
-        this.name = name;
-    }
-
     public String getName() {
         return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     public void setSignLocation(Location signLocation) {

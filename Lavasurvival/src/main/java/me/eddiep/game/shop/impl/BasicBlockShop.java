@@ -18,40 +18,40 @@ public class BasicBlockShop extends Menu {
     }
 
     @MenuItem(
-        slot = 0,
-        item = @ItemStackAnnotation(material = (Material.EMERALD), name = "Back to block shop", lore = {"§6§oBuy more blocks!"})
+            slot = 0,
+            item = @ItemStackAnnotation(material = (Material.EMERALD), name = "Back to block shop", lore = {"§6§oBuy more blocks!"})
     )
     public void backToMenu(MenuPlayer player) {
         player.setActiveMenu(new BlockShopCatagory(player.getMenuManager(), null));
     }
 
     @MenuItem(
-        slot = 1,
-        item = @ItemStackAnnotation(material = (Material.GRAVEL), name = "Gravel", lore = {"75 ggs"})
+            slot = 1,
+            item = @ItemStackAnnotation(material = (Material.GRAVEL), name = "Gravel", lore = {"75 ggs"})
     )
     public void buyGravel(MenuPlayer player) {
         getUser(player).buyBlock(Material.GRAVEL, 75);
     }
 
     @MenuItem(
-        slot = 2,
-        item = @ItemStackAnnotation(material = (Material.STONE), name = "Stone", lore = {"100 ggs"})
+            slot = 2,
+            item = @ItemStackAnnotation(material = (Material.STONE), name = "Stone", lore = {"100 ggs"})
     )
     public void buyStone(MenuPlayer player) {
         getUser(player).buyBlock(Material.STONE, 100);
     }
 
     @MenuItem(
-        slot = 3,
-        item = @ItemStackAnnotation(material = (Material.SANDSTONE), name = "Sandstone", lore = {"180 ggs"})
+            slot = 3,
+            item = @ItemStackAnnotation(material = (Material.SANDSTONE), name = "Sandstone", lore = {"180 ggs"})
     )
     public void buySandstone(MenuPlayer player) {
         getUser(player).buyBlock(Material.SANDSTONE, 180);
     }
 
     @MenuItem(
-        slot = 4,
-        item = @ItemStackAnnotation(material = (Material.BRICK), name = "Brick", lore = {"200 ggs"})
+            slot = 4,
+            item = @ItemStackAnnotation(material = (Material.BRICK), name = "Brick", lore = {"200 ggs"})
     )
     public void buyBrick(MenuPlayer player) {
         getUser(player).buyBlock(Material.BRICK, 200);

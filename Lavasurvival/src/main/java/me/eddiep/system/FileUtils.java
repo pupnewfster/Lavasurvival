@@ -1,15 +1,6 @@
 package me.eddiep.system;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.LineNumberReader;
-import java.io.OutputStream;
-import java.io.PrintWriter;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.Formatter;
 import java.util.List;
@@ -39,19 +30,21 @@ public class FileUtils {
      * The filename for the IRC Controllers file.
      */
     public static final String IRCCONTROLLERS_FILE = "ranks" + File.separator + "IRCControllers";
+
     /**
      * Creates all the files and directories that MCForge needs.
      */
     public static void createFilesAndDirs() {
         try {
             createIfNotExist("ranks", "IRCControllers");
-        }
-        catch (IOException ignored) {
+        } catch (IOException ignored) {
         }
     }
+
     /**
      * Creates the directory/file if it doesn't exist.
-     * @param path - The directory to create.
+     *
+     * @param path     - The directory to create.
      * @param fileName - The file to create.
      * @param contents - The contents inside the file.
      * @throws IOException - Signals that an I/O exception has occurred.
@@ -71,8 +64,7 @@ public class FileUtils {
             try {
                 writer.close();
                 writer.flush();
-            }
-            finally {
+            } finally {
                 writer = null;
             }
         }
@@ -81,8 +73,8 @@ public class FileUtils {
     /**
      * Create all child directories contained in <b>filepath</b> if they
      * do not exist
-     * @param filepath
-     *                The full filepath to create child directories for
+     *
+     * @param filepath The full filepath to create child directories for
      */
     public static void createChildDirectories(String filepath) {
         String[] dirs = filepath.split("\\/");
@@ -97,9 +89,8 @@ public class FileUtils {
     /**
      * Creates a file if it does not exists.
      *
-     * @param path - The directory of the file
+     * @param path     - The directory of the file
      * @param fileName - The name of the file
-     *
      * @throws IOException - If there's a problem writing the file
      */
     public static void createIfNotExist(String path, String fileName) throws IOException {
@@ -110,7 +101,6 @@ public class FileUtils {
      * Creates a file if it does not exists.
      *
      * @param fileName - The name of the file
-     *
      * @throws IOException - If there's a problem writing the file
      */
     public static void createIfNotExist(String fileName) throws IOException {
@@ -136,8 +126,7 @@ public class FileUtils {
      * Writes the specified line to the specified file, creating the file if doesn't exist
      *
      * @param filePath - The path of the file to write to
-     * @param text - The text to write to the specified file
-     *
+     * @param text     - The text to write to the specified file
      * @throws IOException If there's an error while writing to the file
      */
     public static void writeText(String filePath, String text) throws IOException {
@@ -151,8 +140,7 @@ public class FileUtils {
      * Writes the specified string array to the specified file, creating the file if it doesn't exist
      *
      * @param filePath - The path of the file to write to
-     * @param lines - The string array to write to the specified file
-     *
+     * @param lines    - The string array to write to the specified file
      * @throws IOException If there's an error while writing to the file
      */
     public static void writeLines(String filePath, String... lines) throws IOException {
@@ -168,7 +156,6 @@ public class FileUtils {
      * Reads the contents of the specified file
      *
      * @param filePath - The path of the file to read from
-     *
      * @return A string array with the contents of the read file
      * @throws IOException If there's an error while reading from the file
      */
@@ -181,7 +168,6 @@ public class FileUtils {
      * Reads the contents of the specified file
      *
      * @param filePath - The path of the file to read from
-     *
      * @return A string list with the contents of the read file
      * @throws IOException If there's an error while reading from the file
      */
@@ -199,18 +185,17 @@ public class FileUtils {
      * Copy an existing file to a new location.
      *
      * @param sourcePath The original file to be copied
-     * @param newPath The new location for the copy to go
-     *
+     * @param newPath    The new location for the copy to go
      * @return Returns true if the copy was successful, returns false if an error occurred.
      */
     public static boolean copyFile(String sourcePath, String newPath) {
         InputStream inStream = null;
         OutputStream outStream = null;
 
-        try{
+        try {
 
-            File afile =new File(sourcePath);
-            File bfile =new File(newPath);
+            File afile = new File(sourcePath);
+            File bfile = new File(newPath);
 
             inStream = new FileInputStream(afile);
             outStream = new FileOutputStream(bfile);
@@ -218,7 +203,7 @@ public class FileUtils {
             byte[] buffer = new byte[1024];
 
             int length;
-            while ((length = inStream.read(buffer)) > 0){
+            while ((length = inStream.read(buffer)) > 0) {
                 outStream.write(buffer, 0, length);
             }
 
@@ -227,16 +212,16 @@ public class FileUtils {
 
             return true;
 
-        }catch(IOException e){
+        } catch (IOException e) {
             e.printStackTrace();
             return false;
         }
     }
 
     public static void copyDirectory(File src, File dest) throws IOException {
-        if(src.isDirectory()){
+        if (src.isDirectory()) {
             //if directory not exists, create it
-            if(!dest.exists()) {
+            if (!dest.exists()) {
                 dest.mkdir();
             }
 
@@ -261,7 +246,7 @@ public class FileUtils {
 
             int length;
             //copy the file content in bytes
-            while ((length = in.read(buffer)) > 0){
+            while ((length = in.read(buffer)) > 0) {
                 out.write(buffer, 0, length);
             }
 
@@ -274,13 +259,13 @@ public class FileUtils {
      * Gets the total number of lines the specified file has
      *
      * @param filePath - The path of the file to check for
-     *
      * @return An integer representing the number of lines the file has
      * @throws IOException If there's an error while reading from the file
      */
     public static int getLineNumber(String filePath) throws IOException {
         return readToList(filePath).size();
     }
+
     /**
      * Checks whether the specified file exists
      *

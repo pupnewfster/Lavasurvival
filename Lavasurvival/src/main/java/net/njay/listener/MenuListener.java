@@ -58,7 +58,8 @@ public class MenuListener implements Listener {
     public void onClose(InventoryCloseEvent e) {
         MenuPlayer player = MenuFramework.getPlayerManager().getPlayer((Player) e.getPlayer());
         if (player.getMenuManager().getCurrentMenu() == null) return;
-        if (!player.getMenuManager().getCurrentMenu().getInventory().getName().equals(e.getInventory().getName())) return;
+        if (!player.getMenuManager().getCurrentMenu().getInventory().getName().equals(e.getInventory().getName()))
+            return;
         MenuInventory menuInventory = player.getMenuManager().getCurrentMenu().getClass().getAnnotation(MenuInventory.class);
         if (menuInventory == null || menuInventory.onClose() == null) return;
         if (menuInventory.onClose() != Menu.class) new MenuOpener(player, menuInventory.onClose());

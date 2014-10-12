@@ -110,10 +110,10 @@ public class ItemUtils {
         int level = 1;
         List<String> parts = Lists.newArrayList(Splitter.on(":").limit(2).split(parse));
         Enchantment enchant = Enchantment.getByName(parts.get(0).toUpperCase().replace(" ", "_"));
-        if(enchant == null) {
+        if (enchant == null) {
             return null;
         }
-        if(parts.size() > 1) {
+        if (parts.size() > 1) {
             try {
                 level = Integer.parseInt(parts.get(1));
             } catch (NumberFormatException e) {

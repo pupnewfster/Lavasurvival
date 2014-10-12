@@ -60,21 +60,11 @@ public class MenuPlayer {
     /**
      * Sets a menu instance as the current menu and removes any other instances
      *
-     * @param menu Menu instance that you which to set as the current menu
+     * @param menu       Menu instance that you which to set as the current menu
      * @param regenerate Whether or not to regenerate the menu from scratch
      */
     public void setActiveMenuAndReplace(Menu menu, boolean regenerate) {
-       menuManager.setActiveMenuAndReplace(menu, regenerate);
-        getBukkit().openInventory(menuManager.getCurrentMenu().getInventory());
-    }
-
-    /**
-     * Sets the active menu for this player
-     *
-     * @param clazz class of the Menu
-     */
-    public void setActiveMenu(Class<? extends Menu> clazz) {
-        menuManager.setPreviouslyOpenedActiveMenu(clazz);
+        menuManager.setActiveMenuAndReplace(menu, regenerate);
         getBukkit().openInventory(menuManager.getCurrentMenu().getInventory());
     }
 
@@ -92,5 +82,15 @@ public class MenuPlayer {
      */
     public Menu getActiveMenu() {
         return menuManager.getCurrentMenu();
+    }
+
+    /**
+     * Sets the active menu for this player
+     *
+     * @param clazz class of the Menu
+     */
+    public void setActiveMenu(Class<? extends Menu> clazz) {
+        menuManager.setPreviouslyOpenedActiveMenu(clazz);
+        getBukkit().openInventory(menuManager.getCurrentMenu().getInventory());
     }
 }

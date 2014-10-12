@@ -8,8 +8,8 @@ import org.bukkit.entity.Player;
 public class CmdJoin extends Cmd {
     public boolean commandUse(CommandSender sender, String[] args) {
         if (sender instanceof Player) {
-            Player p = (Player)sender;
-            if(Gamemode.getCurrentGame() == null) {
+            Player p = (Player) sender;
+            if (Gamemode.getCurrentGame() == null) {
                 sender.sendMessage(ChatColor.DARK_RED + "Error: there is no game running.");
                 return true;
             }

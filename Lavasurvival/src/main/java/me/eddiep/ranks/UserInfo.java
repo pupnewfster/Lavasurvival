@@ -1,8 +1,5 @@
 package me.eddiep.ranks;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.UUID;
 import me.eddiep.Lavasurvival;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -11,6 +8,10 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.material.MaterialData;
 import org.bukkit.permissions.PermissionAttachment;
+
+import java.io.File;
+import java.util.ArrayList;
+import java.util.UUID;
 
 public class UserInfo {
     private File configFileUsers = new File(Lavasurvival.INSTANCE.getDataFolder(), "userinfo.yml");
@@ -24,7 +25,7 @@ public class UserInfo {
         YamlConfiguration configUsers = YamlConfiguration.loadConfiguration(configFileUsers);
         this.bukkitPlayer = p;
         this.userUUID = this.bukkitPlayer.getUniqueId();
-        if(configUsers.contains(getUUID().toString() + ".rank"))
+        if (configUsers.contains(getUUID().toString() + ".rank"))
             this.rank = Lavasurvival.INSTANCE.getRankManager().getRank(configUsers.getString(getUUID().toString() + ".rank"));
         givePerms();
     }
@@ -32,7 +33,7 @@ public class UserInfo {
     public UserInfo(UUID uuid) {
         this.userUUID = uuid;
         YamlConfiguration configUsers = YamlConfiguration.loadConfiguration(configFileUsers);
-        if(configUsers.contains(getUUID().toString() + ".rank"))
+        if (configUsers.contains(getUUID().toString() + ".rank"))
             this.rank = Lavasurvival.INSTANCE.getRankManager().getRank(configUsers.getString(getUUID().toString() + ".rank"));
     }
 
@@ -41,13 +42,13 @@ public class UserInfo {
     }
 
     public UUID getUUID() {
-        if(this.bukkitPlayer == null)
+        if (this.bukkitPlayer == null)
             return this.userUUID;
         return this.bukkitPlayer.getUniqueId();
     }
 
     public String getName() {
-        if(this.bukkitPlayer == null)
+        if (this.bukkitPlayer == null)
             return Bukkit.getOfflinePlayer(this.userUUID).getName();
         return this.bukkitPlayer.getName();
     }
@@ -70,14 +71,14 @@ public class UserInfo {
 
     public void givePerms() {
         this.attachment = this.bukkitPlayer.addAttachment(Lavasurvival.INSTANCE);
-        for(String node : this.rank.getNodes())
+        for (String node : this.rank.getNodes())
             setPerm(node);
     }
 
     private void setPerm(String node) {
-        if(node.equals("") || node.equals("-*"))
+        if (node.equals("") || node.equals("-*"))
             return;
-        if(node.startsWith("-"))
+        if (node.startsWith("-"))
             this.attachment.setPermission(node.replaceFirst("-", ""), false);
         else
             this.attachment.setPermission(node, true);
@@ -85,17 +86,13 @@ public class UserInfo {
 
     public void updateRank(Rank r) {
         this.rank = r;
-        if(this.bukkitPlayer != null)
+        if (this.bukkitPlayer != null)
             refreshPerms();
     }
 
     public void refreshPerms() {
         removePerms();
         givePerms();
-    }
-
-    public void setPlayer(Player p) {
-        this.bukkitPlayer = p;
     }
 
     public void removePerms() {
@@ -107,15 +104,19 @@ public class UserInfo {
         return this.bukkitPlayer;
     }
 
+    public void setPlayer(Player p) {
+        this.bukkitPlayer = p;
+    }
+
     public void addBlock(Material type) {
         MaterialData dat = new MaterialData(type);
-        if(!this.ownedBlocks.contains(dat))
+        if (!this.ownedBlocks.contains(dat))
             this.ownedBlocks.add(dat);
     }
 
     public void addBlock(Material type, byte data) {
         MaterialData dat = new MaterialData(type, data);
-        if(!this.ownedBlocks.contains(dat))
+        if (!this.ownedBlocks.contains(dat))
             this.ownedBlocks.add(dat);
     }
 
@@ -132,9 +133,9 @@ public class UserInfo {
     }
 
     public void buyBlock(Material mat, double price, byte data) {
-        if(this.bukkitPlayer == null)
+        if (this.bukkitPlayer == null)
             return;
-        if(ownsBlock(mat, data))
+        if (ownsBlock(mat, data))
             getPlayer().sendMessage(ChatColor.RED + "You already own that block..");
         else if (!Lavasurvival.INSTANCE.getEconomy().hasAccount(getPlayer()) || Lavasurvival.INSTANCE.getEconomy().getBalance(getPlayer()) < price) {
             getPlayer().sendMessage(ChatColor.RED + "You do not have enough money to buy the block type " + mat.toString().replaceAll("_", " ").toLowerCase() + " with datavalue " + data + "..");
@@ -145,9 +146,9 @@ public class UserInfo {
     }
 
     public void buyBlock(Material mat, double price) {
-        if(this.bukkitPlayer == null)
+        if (this.bukkitPlayer == null)
             return;
-        if(ownsBlock(mat))
+        if (ownsBlock(mat))
             getPlayer().sendMessage(ChatColor.RED + "You already own that block..");
         else if (!Lavasurvival.INSTANCE.getEconomy().hasAccount(getPlayer()) || Lavasurvival.INSTANCE.getEconomy().getBalance(getPlayer()) < price) {
             getPlayer().sendMessage(ChatColor.RED + "You do not have enough money to buy the block type " + mat.toString().replaceAll("_", " ").toLowerCase() + "..");

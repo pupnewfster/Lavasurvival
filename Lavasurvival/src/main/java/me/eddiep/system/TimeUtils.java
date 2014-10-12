@@ -1,7 +1,5 @@
 package me.eddiep.system;
 
-import org.bukkit.ChatColor;
-
 public class TimeUtils {
 
     public static String toFriendlyTime(long duration) {

@@ -1,6 +1,5 @@
 package me.eddiep.game.shop;
 
-import me.eddiep.Lavasurvival;
 import net.njay.Menu;
 import net.njay.MenuFramework;
 import net.njay.MenuManager;

@@ -6,30 +6,32 @@ import me.eddiep.game.shop.ShopFactory;
 import me.eddiep.ranks.UUIDs;
 import me.eddiep.ranks.UserInfo;
 import me.eddiep.ranks.UserManager;
-import org.bukkit.*;
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.Material;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.block.Block;
 import org.bukkit.block.Sign;
 import org.bukkit.entity.Player;
-import org.bukkit.event.*;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
+import org.bukkit.event.HandlerList;
+import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.inventory.CraftItemEvent;
-import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.*;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.PlayerInventory;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 
 public class PlayerListener implements Listener {
-    public boolean survival = false;
-    public ArrayList<OfflinePlayer> voted = new ArrayList<OfflinePlayer>();
-    public final ArrayList<Material> invalidBlocks = new ArrayList<Material>(Arrays.asList(new Material[] {
+    public final ArrayList<Material> invalidBlocks = new ArrayList<Material>(Arrays.asList(new Material[]{
             Material.OBSIDIAN,
             Material.IRON_DOOR,
             Material.IRON_DOOR_BLOCK,
@@ -39,6 +41,8 @@ public class PlayerListener implements Listener {
             Material.WOOD_PLATE,
             Material.BEDROCK
     }));
+    public boolean survival = false;
+    public ArrayList<OfflinePlayer> voted = new ArrayList<OfflinePlayer>();
     UserManager um = Lavasurvival.INSTANCE.getUserManager();
     UUIDs get = Lavasurvival.INSTANCE.getUUIDs();
 
@@ -46,7 +50,7 @@ public class PlayerListener implements Listener {
     public void onChat(AsyncPlayerChatEvent event) {
         Player player = event.getPlayer();
         UserInfo u = um.getUser(player.getUniqueId());
-        if(u.getRank() != null)
+        if (u.getRank() != null)
             event.setFormat(ChatColor.translateAlternateColorCodes('&', u.getRank().getTitle()) + " " + player.getName() + ": " + event.getMessage());
         if (Gamemode.getCurrentGame() != null && Gamemode.voting) {
             event.setCancelled(true);
@@ -90,7 +94,7 @@ public class PlayerListener implements Listener {
         Material material = event.getBlock().getType();
         if (invalidBlocks.contains(material) || (Gamemode.getCurrentGame() != null && Gamemode.getCurrentGame().isAlive(event.getPlayer())))
             return;
-        if(Gamemode.getCurrentGame() != null) {
+        if (Gamemode.getCurrentGame() != null) {
             String state = Gamemode.getCurrentGame().isDead(event.getPlayer()) ? ChatColor.RED + "DEAD" : ChatColor.GRAY + "SPECTATING";
             event.getPlayer().sendMessage("You are " + state + ChatColor.RESET + ". You cannot delete or place blocks!");
         }
@@ -102,14 +106,14 @@ public class PlayerListener implements Listener {
             event.setCancelled(true);
             if (event.getAction() == Action.RIGHT_CLICK_BLOCK &&
                     event.getClickedBlock().getState() instanceof Sign &&
-                    ((Sign)event.getClickedBlock().getState()).getLine(0).contains("Right click")) {
+                    ((Sign) event.getClickedBlock().getState()).getLine(0).contains("Right click")) {
                 Gamemode.getCurrentGame().playerJoin(event.getPlayer());
             }
         } else if (Gamemode.getCurrentGame() != null && Gamemode.getCurrentGame().isDead(event.getPlayer())) {
             event.setCancelled(true);
             if (event.getAction() == Action.RIGHT_CLICK_BLOCK &&
                     event.getClickedBlock().getState() instanceof Sign &&
-                    ((Sign)event.getClickedBlock().getState()).getLine(0).contains("Right click")) {
+                    ((Sign) event.getClickedBlock().getState()).getLine(0).contains("Right click")) {
                 event.getPlayer().sendMessage("Sorry you can't join, you're dead :/");
             }
         } else if (Gamemode.getCurrentGame() != null && Gamemode.getCurrentGame().isAlive(event.getPlayer())) {
@@ -155,34 +159,31 @@ public class PlayerListener implements Listener {
     @EventHandler(priority = EventPriority.HIGHEST)
     public void blockPlace(final BlockPlaceEvent event) {
         event.setCancelled(true);
-        if (Gamemode.getCurrentGame() != null && Gamemode.getCurrentGame().isAlive(event.getPlayer())) {
-            if (event.getPlayer().getInventory().contains(event.getBlockPlaced().getType())) {
-
-                if (event.getBlockPlaced().getLocation().getBlockY() >= Gamemode.getCurrentMap().getLavaY()) {
-                    event.getPlayer().sendMessage(ChatColor.BOLD + "" + ChatColor.RED + "You are building to high!");
-                    return;
-                }
-
-                event.setCancelled(false);
-                if (!survival) {
-                    final int index = event.getPlayer().getInventory().first(event.getBlockPlaced().getType());
-                    final ItemStack itm = event.getPlayer().getInventory().getItem(index);
-                    final int amount = itm.getAmount();
-                    final Material material = itm.getType();
-                    Bukkit.getScheduler().scheduleSyncDelayedTask(Lavasurvival.INSTANCE, new Runnable() {
-                        @Override
-                        public void run() {
-                            ItemStack itm = event.getPlayer().getInventory().getItem(index);
-                            if (itm == null) {
-                                itm = new ItemStack(material, amount);
-                                event.getPlayer().getInventory().setItem(index, itm);
-                                return;
-                            }
-                            itm.setType(material);
-                            itm.setAmount(amount);
+        if (Gamemode.getCurrentGame() != null && Gamemode.getCurrentGame().isAlive(event.getPlayer()) &&
+                event.getPlayer().getInventory().contains(event.getBlockPlaced().getType())) {
+            if (event.getBlockPlaced().getLocation().getBlockY() >= Gamemode.getCurrentMap().getLavaY()) {
+                event.getPlayer().sendMessage(ChatColor.BOLD + "" + ChatColor.RED + "You are building to high!");
+                return;
+            }
+            event.setCancelled(false);
+            if (!survival) {
+                final int index = event.getPlayer().getInventory().first(event.getBlockPlaced().getType());
+                final ItemStack itm = event.getPlayer().getInventory().getItem(index);
+                final int amount = itm.getAmount();
+                final Material material = itm.getType();
+                Bukkit.getScheduler().scheduleSyncDelayedTask(Lavasurvival.INSTANCE, new Runnable() {
+                    @Override
+                    public void run() {
+                        ItemStack itm = event.getPlayer().getInventory().getItem(index);
+                        if (itm == null) {
+                            itm = new ItemStack(material, amount);
+                            event.getPlayer().getInventory().setItem(index, itm);
+                            return;
                         }
-                    }, 2);
-                }
+                        itm.setType(material);
+                        itm.setAmount(amount);
+                    }
+                }, 2);
             }
         }
     }
@@ -196,13 +197,13 @@ public class PlayerListener implements Listener {
     public void playerJoin(PlayerJoinEvent event) {
         um.addUser(event.getPlayer());
         um.parseUser(event.getPlayer());
-        if(!get.hasJoined(event.getPlayer().getUniqueId()))
+        if (!get.hasJoined(event.getPlayer().getUniqueId()))
             get.addUUID(event.getPlayer().getUniqueId());
 
-        if(!Lavasurvival.INSTANCE.getEconomy().hasAccount(event.getPlayer()))
+        if (!Lavasurvival.INSTANCE.getEconomy().hasAccount(event.getPlayer()))
             Lavasurvival.INSTANCE.getEconomy().createPlayerAccount(event.getPlayer());
 
-        if(Gamemode.getCurrentGame() != null)
+        if (Gamemode.getCurrentGame() != null)
             event.getPlayer().teleport(Gamemode.getCurrentWorld().getSpawnLocation());
 
         Inventory inv = event.getPlayer().getInventory();
@@ -218,21 +219,21 @@ public class PlayerListener implements Listener {
 
         if (Gamemode.getCurrentGame() != null && !Gamemode.getCurrentGame().isDead(event.getPlayer()))
             Gamemode.getCurrentGame().setSpectator(event.getPlayer());
-        if(Gamemode.getCurrentGame() != null)
+        if (Gamemode.getCurrentGame() != null)
             event.getPlayer().setScoreboard(Gamemode.getScoreboard());
     }
 
-    @EventHandler (priority = EventPriority.HIGHEST)
+    @EventHandler(priority = EventPriority.HIGHEST)
     public void playerDeath(PlayerDeathEvent event) {
-        if(Gamemode.getCurrentGame() != null)
+        if (Gamemode.getCurrentGame() != null)
             Gamemode.getCurrentGame().setDead(event.getEntity());
         event.getEntity().getInventory().clear();
 
     }
 
-    @EventHandler (priority = EventPriority.HIGHEST)
+    @EventHandler(priority = EventPriority.HIGHEST)
     public void onRespawn(PlayerRespawnEvent event) {
-        if(Gamemode.getCurrentGame() != null)
+        if (Gamemode.getCurrentGame() != null)
             event.setRespawnLocation(Gamemode.getCurrentWorld().getSpawnLocation());
     }
 

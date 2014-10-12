@@ -24,15 +24,6 @@ public class MenuRegistry {
     private Plugin plugin;
 
     /**
-     * Gets the Bukkit Plugin
-     *
-     * @return the Plugin
-     */
-    public Plugin getPlugin() {
-        return this.plugin;
-    }
-
-    /**
      * Initializes the framework
      *
      * @param plugin the plugin to initialize framework for
@@ -47,6 +38,15 @@ public class MenuRegistry {
     }
 
     /**
+     * Gets the Bukkit Plugin
+     *
+     * @return the Plugin
+     */
+    public Plugin getPlugin() {
+        return this.plugin;
+    }
+
+    /**
      * Adds the Menu to the loaded list of Menus
      *
      * @param clazz a class which extends Menu
@@ -57,7 +57,7 @@ public class MenuRegistry {
         for (Method m : clazz.getDeclaredMethods()) {
             if (m.isAnnotationPresent(MenuItem.class)) {
                 methods.add(m);
-            }else if (m.isAnnotationPresent(PreProcessor.class)){
+            } else if (m.isAnnotationPresent(PreProcessor.class)) {
                 preProcessors.add(m);
             }
         }
@@ -108,7 +108,7 @@ public class MenuRegistry {
                 }
             }
         }
-        for (Method m : loadedPreprocessors.get(clazz)){
+        for (Method m : loadedPreprocessors.get(clazz)) {
             try {
                 m.invoke(menu, inv);
             } catch (IllegalAccessException e) {

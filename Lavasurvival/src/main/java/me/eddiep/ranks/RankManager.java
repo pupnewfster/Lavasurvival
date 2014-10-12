@@ -1,10 +1,5 @@
 package me.eddiep.ranks;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
 import me.eddiep.Lavasurvival;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -12,32 +7,37 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.permissions.Permission;
 import org.bukkit.scheduler.BukkitScheduler;
 
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+
 public class RankManager {
-    private File configFileRanks = new File(Lavasurvival.INSTANCE.getDataFolder(), "ranks.yml");
     private static HashMap<String, Rank> ranks = new HashMap<String, Rank>();
     private static ArrayList<Rank> order = new ArrayList<Rank>();
     private static ArrayList<String> names = new ArrayList<String>();
+    private File configFileRanks = new File(Lavasurvival.INSTANCE.getDataFolder(), "ranks.yml");
 
     public void readRanks() {
         YamlConfiguration configRanks = YamlConfiguration.loadConfiguration(configFileRanks);
-        for(String rank : configRanks.getKeys(false)) {
-            if(configRanks.contains(rank + ".previousRank")) {
-                if(names.contains(configRanks.getString(rank + ".previousRank")))
+        for (String rank : configRanks.getKeys(false)) {
+            if (configRanks.contains(rank + ".previousRank")) {
+                if (names.contains(configRanks.getString(rank + ".previousRank")))
                     names.add(names.indexOf(configRanks.getString(rank + ".previousRank")) + 1, rank);
                 else {
                     String previous = configRanks.getString(rank + ".previousRank");
-                    while(configRanks.contains(previous + ".previousRank")) {
+                    while (configRanks.contains(previous + ".previousRank")) {
                         previous = configRanks.getString(previous + ".previousRank");
-                        if(names.contains(previous)) {
+                        if (names.contains(previous)) {
                             names.add(names.indexOf(previous) + 1, rank);
                             break;
                         }
                     }
                 }
-            } else if(!names.contains(rank))
+            } else if (!names.contains(rank))
                 names.add(0, rank);
         }
-        for(String name : names) {
+        for (String name : names) {
             ranks.put(name, new Rank(name));
             order.add(ranks.get(name));
         }
@@ -56,11 +56,11 @@ public class RankManager {
 
     private void updatePerms() {
         ArrayList<String> p = new ArrayList<String>();
-        for(Permission perm : Bukkit.getPluginManager().getPermissions()) {
-            for(String t : perm.getChildren().keySet())
-                if(!p.contains(t))
+        for (Permission perm : Bukkit.getPluginManager().getPermissions()) {
+            for (String t : perm.getChildren().keySet())
+                if (!p.contains(t))
                     p.add(t);
-            if(!p.contains(perm.getName())) {
+            if (!p.contains(perm.getName())) {
                 perm.addParent("*", true);
                 p.add(perm.getName());
             }
@@ -72,7 +72,7 @@ public class RankManager {
     }
 
     public Rank getRank(int index) {
-        if(order.size() - 1 < index)
+        if (order.size() - 1 < index)
             return null;
         return order.get(index);
     }
@@ -82,13 +82,13 @@ public class RankManager {
     }
 
     public boolean hasRank(Rank rank, Rank check) {//Useful to check if player already bought a rank
-        if(!order.contains(check) || !order.contains(rank))
+        if (!order.contains(check) || !order.contains(rank))
             return false;
         return order.indexOf(rank) - order.indexOf(check) >= 0;
     }
 
     public void setRanks() {
-        if(!configFileRanks.exists())
+        if (!configFileRanks.exists())
             try {
                 configFileRanks.createNewFile();
                 YamlConfiguration configRanks = YamlConfiguration.loadConfiguration(configFileRanks);

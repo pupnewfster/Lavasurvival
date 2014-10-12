@@ -17,8 +17,21 @@ public class PhysicsListener implements Listener {
     private static final HashMap<Material, Integer> ticksToMelt = new HashMap<Material, Integer>();
 
     private ArrayList<Integer> tasks = new ArrayList<Integer>();
+
     public PhysicsListener() {
         setup();
+    }
+
+    private static void setup() {
+        if (ticksToMelt.size() > 0)
+            return;
+
+        ticksToMelt.put(Material.STONE, (60 * 3) * 20);
+        ticksToMelt.put(Material.WOOD, 45 * 20);
+        ticksToMelt.put(Material.DIRT, (60 * 2) * 20);
+        ticksToMelt.put(Material.GRASS, (60 * 2) * 20);
+        ticksToMelt.put(Material.SAND, 60 * 20);
+        ticksToMelt.put(Material.COBBLESTONE, (55 * 3) * 20);
     }
 
     @EventHandler(priority = EventPriority.MONITOR)
@@ -48,17 +61,5 @@ public class PhysicsListener implements Listener {
     public void cleanup() {
         cancelAllTasks();
         HandlerList.unregisterAll(this);
-    }
-
-    private static void setup() {
-        if (ticksToMelt.size() > 0)
-            return;
-
-        ticksToMelt.put(Material.STONE, (60 * 3) * 20);
-        ticksToMelt.put(Material.WOOD, 45 * 20);
-        ticksToMelt.put(Material.DIRT, (60 * 2) * 20);
-        ticksToMelt.put(Material.GRASS, (60 * 2) * 20);
-        ticksToMelt.put(Material.SAND, 60 * 20);
-        ticksToMelt.put(Material.COBBLESTONE, (55 * 3) * 20);
     }
 }

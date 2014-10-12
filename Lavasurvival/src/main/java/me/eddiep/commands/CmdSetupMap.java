@@ -8,7 +8,7 @@ import org.bukkit.entity.Player;
 public class CmdSetupMap extends Cmd {
     public boolean commandUse(CommandSender sender, String[] args) {
         if (sender instanceof Player) {
-            Player p = (Player)sender;
+            Player p = (Player) sender;
             if (Lavasurvival.INSTANCE.getSetups().containsKey(p.getUniqueId())) {
                 SetupMap s = Lavasurvival.INSTANCE.getSetups().get(p.getUniqueId());
                 s.sendMessage("Aborted..");

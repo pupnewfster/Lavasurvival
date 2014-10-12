@@ -12,7 +12,7 @@ public class MenuFramework {
      *
      * @param registry Registry to initialize MenuFramework
      */
-    public static void enable(MenuRegistry registry){
+    public static void enable(MenuRegistry registry) {
         MenuFramework.registry = registry;
         MenuFramework.playerManager = new MenuPlayerManager();
     }
@@ -20,10 +20,10 @@ public class MenuFramework {
     /**
      * Enable the Menu Framework with a custom player manager using a extension of MenuPlayer
      *
-     * @param registry Registry to initialize MenuFramework
+     * @param registry      Registry to initialize MenuFramework
      * @param playerManager Custom Player Manager
      */
-    public static void enable(MenuRegistry registry, MenuPlayerManager playerManager){
+    public static void enable(MenuRegistry registry, MenuPlayerManager playerManager) {
         MenuFramework.registry = registry;
         MenuFramework.playerManager = playerManager;
     }
@@ -31,11 +31,15 @@ public class MenuFramework {
     /**
      * @return Current menu registry
      */
-    public static MenuRegistry getRegistry(){ return registry; }
+    public static MenuRegistry getRegistry() {
+        return registry;
+    }
 
     /**
      * @return Current player manager
      */
-    public static MenuPlayerManager getPlayerManager(){ return playerManager; }
+    public static MenuPlayerManager getPlayerManager() {
+        return playerManager;
+    }
 
 }

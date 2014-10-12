@@ -1,10 +1,10 @@
 package me.eddiep.ranks;
 
-import java.io.File;
-import java.util.ArrayList;
-
 import me.eddiep.Lavasurvival;
 import org.bukkit.configuration.file.YamlConfiguration;
+
+import java.io.File;
+import java.util.ArrayList;
 
 public class Rank {
     private File configFileRanks = new File(Lavasurvival.INSTANCE.getDataFolder(), "ranks.yml");
@@ -17,40 +17,36 @@ public class Rank {
     public Rank(String name) {
         this.name = name;
         YamlConfiguration configRanks = YamlConfiguration.loadConfiguration(configFileRanks);
-        if(configRanks.contains(getName() + ".rankTitle"))
+        if (configRanks.contains(getName() + ".rankTitle"))
             this.title = configRanks.getString(getName() + ".rankTitle");
-        if(configRanks.contains(getName() + ".previousRank")) {
+        if (configRanks.contains(getName() + ".previousRank")) {
             this.previous = Lavasurvival.INSTANCE.getRankManager().getRank(configRanks.getString(getName() + ".previousRank"));
             this.previous.setNext(this);
         }
         setPerms();
     }
 
-    public void setNext(Rank r) {
-        this.next = r;
-    }
-
-    public void setPrevious(Rank r) {
-        this.previous = r;
-    }
-
     public Rank getNext() {
         return this.next;
     }
 
+    public void setNext(Rank r) {
+        this.next = r;
+    }
+
     private void setPerms() {
-        if(this.previous != null)
-            for(String node : this.previous.getNodes())
+        if (this.previous != null)
+            for (String node : this.previous.getNodes())
                 this.permissions.add(node);
         YamlConfiguration configRanks = YamlConfiguration.loadConfiguration(configFileRanks);
-        for(String node : configRanks.getStringList(getName() + ".permissions"))
+        for (String node : configRanks.getStringList(getName() + ".permissions"))
             this.permissions.add(node);
     }
 
     public void refreshPerms() {
         this.permissions.clear();
         setPerms();
-        if(this.next != null)
+        if (this.next != null)
             this.next.refreshPerms();
     }
 
@@ -78,5 +74,9 @@ public class Rank {
 
     public Rank getPrevious() {
         return this.previous;
+    }
+
+    public void setPrevious(Rank r) {
+        this.previous = r;
     }
 }

@@ -1,6 +1,7 @@
 package net.njay;
 
 import com.google.common.collect.Lists;
+
 import java.util.List;
 
 public class MenuManager {
@@ -33,7 +34,7 @@ public class MenuManager {
     /**
      * Sets a menu instance as the current menu and removes any other saved instances
      *
-     * @param menu Menu instance that you which to set as the current menu
+     * @param menu       Menu instance that you which to set as the current menu
      * @param regenerate Whether or not to regenerate the menu from scratch
      */
     public void setActiveMenuAndReplace(Menu menu, boolean regenerate) {

@@ -1,11 +1,12 @@
 package me.eddiep.commands;
 
-import java.util.UUID;
 import me.eddiep.ranks.UserInfo;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+
+import java.util.UUID;
 
 public class CmdPromote extends Cmd {
     public boolean commandUse(CommandSender sender, String[] args) {
@@ -15,9 +16,9 @@ public class CmdPromote extends Cmd {
         }
         UUID uuid = get.getID(args[0]);
         Player target;
-        if(uuid == null) {
+        if (uuid == null) {
             uuid = get.getOfflineID(args[0]);
-            if(uuid == null) {
+            if (uuid == null) {
                 sender.sendMessage(ChatColor.DARK_RED + "Error: Invalid player.");
                 return true;
             }
@@ -25,14 +26,14 @@ public class CmdPromote extends Cmd {
         } else
             target = sender.getServer().getPlayer(uuid);
         UserInfo u = um.getUser(uuid);
-        if(u.getRank().getNext() == null) {
+        if (u.getRank().getNext() == null) {
             sender.sendMessage(ChatColor.DARK_RED + "Error: " + target.getName() + " is already the highest rank.");
             return true;
         }
         String name = "Console";
         if (sender instanceof Player) {
             Player player = (Player) sender;
-            if(rm.hasRank(um.getUser(player.getUniqueId()).getRank(), u.getRank())) {
+            if (rm.hasRank(um.getUser(player.getUniqueId()).getRank(), u.getRank())) {
                 player.sendMessage(ChatColor.DARK_RED + "Error: You may not promote people to same rank as yourself.");
                 return true;
             }

@@ -3,9 +3,9 @@ package me.eddiep.game;
 import me.eddiep.Lavasurvival;
 import me.eddiep.game.impl.LavaFlood;
 import me.eddiep.ranks.Rank;
-import me.eddiep.system.FileUtils;
 import me.eddiep.ranks.UserInfo;
 import me.eddiep.ranks.UserManager;
+import me.eddiep.system.FileUtils;
 import me.eddiep.system.PhysicsListener;
 import me.eddiep.system.PlayerListener;
 import mkremins.fanciful.FancyMessage;
@@ -21,7 +21,7 @@ import java.util.Collection;
 import java.util.Random;
 
 public abstract class Gamemode {
-    public static final Material[] DEFAULT_BLOCKS = new Material[] {
+    public static final Material[] DEFAULT_BLOCKS = new Material[]{
             Material.COBBLESTONE,
             Material.DIRT,
             Material.GRASS,
@@ -29,18 +29,17 @@ public abstract class Gamemode {
             Material.SAND
     };
     public static final ItemStack SHOP_OPENER = new ItemStack(Material.EMERALD, 1);
-    public static final Class[] GAMES = new Class[] {
+    public static final Class[] GAMES = new Class[]{
             LavaFlood.class
     };
 
     public static final int VOTE_COUNT = 3;
     public static LavaMap[] nextMaps = new LavaMap[VOTE_COUNT];
     public static int[] votes = new int[VOTE_COUNT];
+    public static final Random RANDOM = new Random();
     public static boolean voting = false;
-
     private static LavaMap lastMap;
     private static LavaMap currentmap;
-    public static final Random RANDOM = new Random();
     private static Team alive;
     private static Team dead;
     private static Team spec;
@@ -48,14 +47,44 @@ public abstract class Gamemode {
     private static PlayerListener listener;
     private static PhysicsListener physicsListener;
     private static Gamemode currentgame;
-
+    protected boolean poured;
     private int tickTask;
     private Gamemode nextGame;
     private LavaMap map;
-    protected boolean poured;
 
     public static PlayerListener getPlayerListener() {
         return listener;
+    }
+
+    public static void clearTeam(Team team) {
+        for (OfflinePlayer p : team.getPlayers()) {
+            team.removePlayer(p);
+        }
+    }
+
+    public static LavaMap getCurrentMap() {
+        return currentmap;
+    }
+
+    public static World getCurrentWorld() {
+        return currentmap.getWorld();
+    }
+
+    public static Gamemode getCurrentGame() {
+        return currentgame;
+    }
+
+    public static Scoreboard getScoreboard() {
+        return scoreboard;
+    }
+
+    public static void cleanup() {
+        clearTeam(alive);
+        clearTeam(dead);
+        clearTeam(spec);
+
+        listener.cleanup();
+        physicsListener.cleanup();
     }
 
     public void prepare() {
@@ -165,14 +194,13 @@ public abstract class Gamemode {
     public void endRound() {
         end();
         UserManager um = Lavasurvival.INSTANCE.getUserManager();
-        for(UserInfo u : um.getUsers().values())
+        for (UserInfo u : um.getUsers().values())
             u.clearBlocks();
 
         int amount = alive.getSize();
         if (amount == 0) {
             globalMessage("No one survived..");
-        }
-        else if (amount <= 45) {
+        } else if (amount <= 45) {
             globalMessage("Congratulations to the survivors!");
 
             String survivors = "";
@@ -223,7 +251,7 @@ public abstract class Gamemode {
                                 break;
                             }
                         }
-                    } while(found);
+                    } while (found);
 
                     try {
                         nextMaps[i] = LavaMap.load(next);
@@ -328,8 +356,6 @@ public abstract class Gamemode {
         return base + (bonusAdd * Math.min(recursiveFill(loc.getWorld(), loc.getBlockX(), loc.getBlockY(), loc.getBlockZ(), 0), 100));
     }
 
-
-
     private boolean isLiquid(Material material) {
         return material == Material.WATER || material == Material.STATIONARY_WATER ||
                 material == Material.LAVA || material == Material.STATIONARY_LAVA;
@@ -341,7 +367,7 @@ public abstract class Gamemode {
         for (int xadd = -1; xadd <= 1; xadd++) {
             for (int yadd = -1; yadd <= 1; yadd++) {
                 for (int zadd = -1; zadd <= 1; zadd++) {
-                    if (!world.getBlockAt(x+ xadd, y + yadd, z + zadd).getType().isSolid() && !isLiquid(world.getBlockAt(x + xadd, y + yadd, z + zadd).getType())) {
+                    if (!world.getBlockAt(x + xadd, y + yadd, z + zadd).getType().isSolid() && !isLiquid(world.getBlockAt(x + xadd, y + yadd, z + zadd).getType())) {
                         curBlockCount = Math.min(curBlockCount + 1, 100);
                         curBlockCount = recursiveFill(world, x + xadd, y + yadd, z + zadd, curBlockCount);
 
@@ -412,28 +438,6 @@ public abstract class Gamemode {
         return spec.hasPlayer(player);
     }
 
-    public static void clearTeam(Team team) {
-        for (OfflinePlayer p : team.getPlayers()) {
-            team.removePlayer(p);
-        }
-    }
-
-    public static LavaMap getCurrentMap() {
-        return currentmap;
-    }
-
-    public static World getCurrentWorld() {
-        return currentmap.getWorld();
-    }
-
-    public static Gamemode getCurrentGame() {
-        return currentgame;
-    }
-
-    public static Scoreboard getScoreboard() {
-        return scoreboard;
-    }
-
     public void globalMessage(String message) {
         for (Player p : getCurrentWorld().getPlayers()) {
             p.sendMessage(ChatColor.RED + "[Lavasurvival] " + ChatColor.RESET + message);
@@ -450,14 +454,5 @@ public abstract class Gamemode {
         for (Player p : getCurrentWorld().getPlayers()) {
             rawMessage.send(p);
         }
-    }
-
-    public static void cleanup() {
-        clearTeam(alive);
-        clearTeam(dead);
-        clearTeam(spec);
-
-        listener.cleanup();
-        physicsListener.cleanup();
     }
 }

@@ -20,40 +20,40 @@ public class RankShop extends Menu {
     }
 
     @MenuItem(
-        slot = 2,
-        item = @ItemStackAnnotation(material = (Material.WOOD), name = "Basic", lore = { "§l§6Start buying blocks!", "500 ggs" })
+            slot = 2,
+            item = @ItemStackAnnotation(material = (Material.WOOD), name = "Basic", lore = {"§l§6Start buying blocks!", "500 ggs"})
     )
     public void BasicRank(MenuPlayer player) {
         buyRank(player, "Basic", 500);
     }
 
     @MenuItem(
-        slot = 3,
-        item = @ItemStackAnnotation(material = (Material.IRON_BLOCK), name = "Advanced", lore = { "§6§lBuy more durable blocks!", "30,000 ggs"})
+            slot = 3,
+            item = @ItemStackAnnotation(material = (Material.IRON_BLOCK), name = "Advanced", lore = {"§6§lBuy more durable blocks!", "30,000 ggs"})
     )
     public void AdvanceRank(MenuPlayer player) {
         buyRank(player, "Advanced", 30000);
     }
 
     @MenuItem(
-        slot = 4,
-        item = @ItemStackAnnotation(material = (Material.LAVA_BUCKET), name = "Survivor", lore = { "§6§lAre you a survivor?", "§6§lProve yourself!", "120,000 ggs"})
+            slot = 4,
+            item = @ItemStackAnnotation(material = (Material.LAVA_BUCKET), name = "Survivor", lore = {"§6§lAre you a survivor?", "§6§lProve yourself!", "120,000 ggs"})
     )
     public void SurvivorRank(MenuPlayer player) {
         buyRank(player, "Survivor", 120000);
     }
 
     @MenuItem(
-        slot = 5,
-        item = @ItemStackAnnotation(material = (Material.APPLE), name = "Trusted", lore = { "§6§lDecorate that nice", "§6§lhouse with some", "§6§lfurniture!", "230,000 ggs"})
+            slot = 5,
+            item = @ItemStackAnnotation(material = (Material.APPLE), name = "Trusted", lore = {"§6§lDecorate that nice", "§6§lhouse with some", "§6§lfurniture!", "230,000 ggs"})
     )
     public void TrustedRank(MenuPlayer player) {
         buyRank(player, "Trusted", 230000);
     }
 
     @MenuItem(
-        slot = 6,
-        item = @ItemStackAnnotation(material = (Material.GOLDEN_APPLE), name = "Elder", lore = { "§6§lOnly true elders", "§6§lcan achieve this", "§6§lrank..are you", "§6§lone of them?", "610,000 ggs"})
+            slot = 6,
+            item = @ItemStackAnnotation(material = (Material.GOLDEN_APPLE), name = "Elder", lore = {"§6§lOnly true elders", "§6§lcan achieve this", "§6§lrank..are you", "§6§lone of them?", "610,000 ggs"})
     )
     public void ElderRank(MenuPlayer player) {
         buyRank(player, "Elder", 610000);

@@ -1,12 +1,13 @@
 package me.eddiep.commands;
 
-import java.util.UUID;
 import me.eddiep.ranks.Rank;
 import me.eddiep.ranks.UserInfo;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+
+import java.util.UUID;
 
 public class CmdSetrank extends Cmd {
     public boolean commandUse(CommandSender sender, String[] args) {
@@ -15,9 +16,9 @@ public class CmdSetrank extends Cmd {
             return true;
         }
         UUID uuid = get.getID(args[0]);
-        if(uuid == null) {
+        if (uuid == null) {
             uuid = get.getOfflineID(args[0]);
-            if(uuid == null) {
+            if (uuid == null) {
                 sender.sendMessage(ChatColor.DARK_RED + "Error: Invalid player.");
                 return true;
             }
@@ -27,14 +28,14 @@ public class CmdSetrank extends Cmd {
         if (args[1].length() > 1)//should normally be true but if not we do not want any errors
             rName = args[1].substring(0, 1).toUpperCase() + args[1].substring(1).toLowerCase();
         Rank r = rm.getRank(rName);
-        if(r == null) {
+        if (r == null) {
             sender.sendMessage(ChatColor.DARK_RED + "Error: That rank does not exist");
             return true;
         }
         String name = "Console";
         if (sender instanceof Player) {
             Player player = (Player) sender;
-            if(rm.hasRank(um.getUser(player.getUniqueId()).getRank(), r)) {
+            if (rm.hasRank(um.getUser(player.getUniqueId()).getRank(), r)) {
                 player.sendMessage(ChatColor.DARK_RED + "Error: You may not change the rank of someone higher than you.");
                 return true;
             }
@@ -46,7 +47,7 @@ public class CmdSetrank extends Cmd {
     }
 
     private String ownership(String name) {
-        if(name.endsWith("s"))
+        if (name.endsWith("s"))
             return name + "'";
         return name + "'s";
     }

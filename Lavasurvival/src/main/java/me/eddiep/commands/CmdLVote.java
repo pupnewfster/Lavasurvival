@@ -9,8 +9,8 @@ import org.bukkit.entity.Player;
 public class CmdLVote extends Cmd {
     public boolean commandUse(CommandSender sender, String[] args) {
         if (sender instanceof Player) {
-            Player player = (Player)sender;
-            if(Gamemode.getCurrentGame() == null) {
+            Player player = (Player) sender;
+            if (Gamemode.getCurrentGame() == null) {
                 sender.sendMessage(ChatColor.DARK_RED + "Error: there is no game running.");
                 return true;
             }

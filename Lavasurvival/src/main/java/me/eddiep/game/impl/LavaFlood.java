@@ -1,10 +1,11 @@
 package me.eddiep.game.impl;
 
-import me.eddiep.Lavasurvival;
 import me.eddiep.game.Gamemode;
-import me.eddiep.ranks.Rank;
 import me.eddiep.system.TimeUtils;
-import org.bukkit.*;
+import org.bukkit.ChatColor;
+import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.scoreboard.DisplaySlot;
 import org.bukkit.scoreboard.Objective;
@@ -18,6 +19,7 @@ public class LavaFlood extends Gamemode {
     private Objective objective;
     private Score bonusScore;
     private boolean doubleReward;
+
     @Override
     public void start() {
         super.start();
@@ -81,7 +83,7 @@ public class LavaFlood extends Gamemode {
         objective.setDisplayName("Lava Pour: " + ChatColor.BOLD + time);
 
         if (!super.poured && since < duration) {
-            int nextMinute = (int)Math.floor((since / 1000.0) / 60.0);
+            int nextMinute = (int) Math.floor((since / 1000.0) / 60.0);
             if (nextMinute != lastMinute) {
                 lastMinute = nextMinute;
 
@@ -100,7 +102,7 @@ public class LavaFlood extends Gamemode {
             objective.setDisplayName("Time Till Round End");
         } else {
             if (since < duration) {
-                int nextMinute = (int)Math.floor((since / 1000.0) / 60.0);
+                int nextMinute = (int) Math.floor((since / 1000.0) / 60.0);
                 if (nextMinute != lastMinute) {
                     lastMinute = nextMinute;
 

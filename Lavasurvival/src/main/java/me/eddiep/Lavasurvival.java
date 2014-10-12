@@ -26,21 +26,79 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
+
 import java.io.File;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.UUID;
 
 public class Lavasurvival extends JavaPlugin {
     public static final Gson GSON = new Gson();
     public static Lavasurvival INSTANCE;
+    private final Runnable MONEY_VIEWER = new Runnable() {
+        @Override
+        public void run() {
+            Collection<? extends Player> players = Bukkit.getOnlinePlayers();
+            for (Player player : players) {
+                Inventory inv = player.getInventory();
 
+                ShopFactory.validateInventory(inv);
+
+                int index = inv.first(Material.GOLD_INGOT);
+
+                if (index == -1) {
+                    ItemStack item = new ItemStack(Material.GOLD_INGOT);
+
+                    ItemMeta meta = item.getItemMeta();
+                    meta.setDisplayName(ChatColor.GOLD + "Balance");
+
+                    ArrayList<String> lore = new ArrayList<String>();
+                    lore.add(ChatColor.ITALIC + "Current Balance: " + ChatColor.RESET + econ.format(econ.getBalance(player)));
+
+                    meta.setLore(lore);
+
+                    item.setItemMeta(meta);
+
+                    inv.setItem(inv.firstEmpty(), item);
+                    continue;
+                }
+
+                ItemStack item = inv.getItem(index);
+
+                ItemMeta meta = item.getItemMeta();
+                ArrayList<String> lore = new ArrayList<String>();
+                lore.add(ChatColor.ITALIC + "Current Balance: " + ChatColor.RESET + econ.format(econ.getBalance(player)));
+
+                meta.setLore(lore);
+                item.setItemMeta(meta);
+            }
+
+            try {
+                Thread.sleep(3000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+    };
     private HashMap<UUID, SetupMap> setups = new HashMap<UUID, SetupMap>();
     private Economy econ;
     private RankManager rankManager;
     private UUIDs uuiDs;
     private UserManager userManager;
     private boolean running = false;
-
     private int moneyViewer;
+
+    public static void log(String message) {
+        INSTANCE.getLogger().info(message);
+    }
+
+    public static void globalMessage(String message) {
+        if (Gamemode.getCurrentGame() != null)
+            Gamemode.getCurrentGame().globalMessage(message);
+        else //Sends to everyone
+            Bukkit.broadcastMessage(message);
+    }
 
     @Override
     public void onEnable() {
@@ -63,7 +121,7 @@ public class Lavasurvival extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new PlayerListener(), this);
 
         LavaFlood flood = new LavaFlood();
-        if(LavaMap.getPossibleMaps().length > 0) {
+        if (LavaMap.getPossibleMaps().length > 0) {
             flood.prepare();
             flood.start();
             running = true;
@@ -108,7 +166,7 @@ public class Lavasurvival extends JavaPlugin {
 
     private void init() {
         File configFileUsers = new File(getDataFolder(), "userinfo.yml");
-        if(!configFileUsers.exists())
+        if (!configFileUsers.exists())
             try {
                 configFileUsers.createNewFile();
             } catch (Exception e) {
@@ -156,10 +214,6 @@ public class Lavasurvival extends JavaPlugin {
         setups.put(uuid, setup);
     }
 
-    public static void log(String message) {
-        INSTANCE.getLogger().info(message);
-    }
-
     public HashMap<UUID, SetupMap> getSetups() {
         return setups;
     }
@@ -167,11 +221,11 @@ public class Lavasurvival extends JavaPlugin {
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
         Cmd com = new Cmd();
-        if(cmd.getName().equalsIgnoreCase("promote"))
+        if (cmd.getName().equalsIgnoreCase("promote"))
             com = new CmdPromote();
-        else if(cmd.getName().equalsIgnoreCase("demote"))
+        else if (cmd.getName().equalsIgnoreCase("demote"))
             com = new CmdDemote();
-        else if(cmd.getName().equalsIgnoreCase("setrank"))
+        else if (cmd.getName().equalsIgnoreCase("setrank"))
             com = new CmdSetrank();
         else if (cmd.getName().equalsIgnoreCase("join"))
             com = new CmdJoin();
@@ -181,57 +235,4 @@ public class Lavasurvival extends JavaPlugin {
             com = new CmdSetupMap();
         return com.commandUse(sender, args);
     }
-
-    public static void globalMessage(String message) {
-        if(Gamemode.getCurrentGame() != null)
-            Gamemode.getCurrentGame().globalMessage(message);
-        else //Sends to everyone
-            Bukkit.broadcastMessage(message);
-    }
-
-    private final Runnable MONEY_VIEWER = new Runnable() {
-        @Override
-        public void run() {
-            Collection<? extends Player> players = Bukkit.getOnlinePlayers();
-            for (Player player : players) {
-                Inventory inv = player.getInventory();
-
-                ShopFactory.validateInventory(inv);
-
-                int index = inv.first(Material.GOLD_INGOT);
-
-                if (index == -1) {
-                    ItemStack item = new ItemStack(Material.GOLD_INGOT);
-
-                    ItemMeta meta = item.getItemMeta();
-                    meta.setDisplayName(ChatColor.GOLD + "Balance");
-
-                    ArrayList<String> lore = new ArrayList<String>();
-                    lore.add(ChatColor.ITALIC + "Current Balance: " + ChatColor.RESET + econ.format(econ.getBalance(player)));
-
-                    meta.setLore(lore);
-
-                    item.setItemMeta(meta);
-
-                    inv.setItem(inv.firstEmpty(), item);
-                    continue;
-                }
-
-                ItemStack item = inv.getItem(index);
-
-                ItemMeta meta = item.getItemMeta();
-                ArrayList<String> lore = new ArrayList<String>();
-                lore.add(ChatColor.ITALIC + "Current Balance: " + ChatColor.RESET + econ.format(econ.getBalance(player)));
-
-                meta.setLore(lore);
-                item.setItemMeta(meta);
-            }
-
-            try {
-                Thread.sleep(3000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }
-    };
 }
