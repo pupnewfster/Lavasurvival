@@ -7,14 +7,18 @@ import org.bukkit.event.HandlerList;
 import org.bukkit.event.block.BlockPhysicsEvent;
 
 public class ClassicPhysicsEvent extends Event implements Cancellable {
+    private static final HandlerList handlers = new HandlerList();
     private BlockPhysicsEvent originalEvent;
     private Material newBlock;
     private boolean cancel;
-    private static final HandlerList handlers = new HandlerList();
 
     public ClassicPhysicsEvent(BlockPhysicsEvent event, Material newBlock) {
         this.originalEvent = event;
         this.newBlock = newBlock;
+    }
+
+    public static HandlerList getHandlerList() {
+        return handlers;
     }
 
     public Material getNewBlock() {
@@ -30,10 +34,6 @@ public class ClassicPhysicsEvent extends Event implements Cancellable {
     }
 
     public HandlerList getHandlers() {
-        return handlers;
-    }
-
-    public static HandlerList getHandlerList() {
         return handlers;
     }
 

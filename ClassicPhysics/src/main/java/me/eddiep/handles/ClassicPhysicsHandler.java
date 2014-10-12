@@ -18,12 +18,49 @@ import java.util.Iterator;
 import java.util.List;
 
 public final class ClassicPhysicsHandler implements Listener {
+    private static final int MAX_QUEUE_SIZE = 7000;
     private ArrayList<QueuedBlock> physicBlocks = new ArrayList<QueuedBlock>();
     private ArrayList<Material> validClassicBlocks = new ArrayList<Material>();
     private Plugin owner;
     private int taskId;
     private boolean blocking = false;
-    private static final int MAX_QUEUE_SIZE = 7000;
+    private final Runnable PHYSICS_TICK = new Runnable() {
+
+        @Override
+        public void run() {
+            ArrayList<QueuedBlock> toPlace = new ArrayList<QueuedBlock>();
+            Iterator<QueuedBlock> blocks = physicBlocks.iterator();
+            while (blocks.hasNext()) {
+                QueuedBlock block = blocks.next();
+                World world = block.getWorld();
+                if (!hasPhysicsSpeed(world)) {
+                    setPhysicSpeed(world, 800);
+                }
+                if (!hasPhysicsLevel(world)) {
+                    setPhysicLevel(world, 1);
+                }
+                long speed = world.getMetadata("physicsSpeed").get(0).asLong(); //I should be safe with this...
+                long now = System.nanoTime();
+
+                long timePassed = (now - block.getTickOccurred()) / 1000000;
+                if (timePassed >= speed) {
+                    toPlace.add(block);
+                    blocks.remove();
+                }
+            }
+
+            for (QueuedBlock block : toPlace) {
+                World world = block.getWorld();
+                world.getBlockAt(block.getX(), block.getY(), block.getZ()).setType(block.getBlockType());
+            }
+            toPlace.clear();
+
+            if (blocking) {
+                if (physicBlocks.size() == 0)
+                    blocking = false;
+            }
+        }
+    };
 
     public ClassicPhysicsHandler(Plugin plugin) {
         this.owner = plugin;
@@ -151,44 +188,6 @@ public final class ClassicPhysicsHandler implements Listener {
         physicBlocks.add(qblock);
     }
 
-    private final Runnable PHYSICS_TICK = new Runnable() {
-
-        @Override
-        public void run() {
-            ArrayList<QueuedBlock> toPlace = new ArrayList<QueuedBlock>();
-            Iterator<QueuedBlock> blocks = physicBlocks.iterator();
-            while (blocks.hasNext()) {
-                QueuedBlock block = blocks.next();
-                World world = block.getWorld();
-                if (!hasPhysicsSpeed(world)) {
-                    setPhysicSpeed(world, 800);
-                }
-                if (!hasPhysicsLevel(world)) {
-                    setPhysicLevel(world, 1);
-                }
-                long speed = world.getMetadata("physicsSpeed").get(0).asLong(); //I should be safe with this...
-                long now = System.nanoTime();
-
-                long timePassed = (now - block.getTickOccurred()) / 1000000;
-                if (timePassed >= speed) {
-                    toPlace.add(block);
-                    blocks.remove();
-                }
-            }
-
-            for (QueuedBlock block : toPlace) {
-                World world = block.getWorld();
-                world.getBlockAt(block.getX(), block.getY(), block.getZ()).setType(block.getBlockType());
-            }
-            toPlace.clear();
-
-            if (blocking) {
-                if (physicBlocks.size() == 0)
-                    blocking = false;
-            }
-        }
-    };
-
     private class QueuedBlock {
         private int x;
         private int y;
@@ -217,6 +216,7 @@ public final class ClassicPhysicsHandler implements Listener {
         public int getY() {
             return y;
         }
+
         public int getZ() {
             return z;
         }

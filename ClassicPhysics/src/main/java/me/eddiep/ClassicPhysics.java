@@ -1,6 +1,5 @@
 package me.eddiep;
 
-import me.eddiep.handles.ClassicPhysicsEvent;
 import me.eddiep.handles.ClassicPhysicsHandler;
 import org.bukkit.ChatColor;
 import org.bukkit.World;
@@ -12,8 +11,8 @@ import org.bukkit.plugin.java.JavaPlugin;
 import java.util.List;
 
 public class ClassicPhysics extends JavaPlugin {
-    private ClassicPhysicsHandler handler;
     public static ClassicPhysics INSTANCE;
+    private ClassicPhysicsHandler handler;
 
     @Override
     public void onEnable() {
@@ -50,7 +49,7 @@ public class ClassicPhysics extends JavaPlugin {
 
                 World world = null;
                 if (sender instanceof Player)
-                    world = ((Player)sender).getWorld();
+                    world = ((Player) sender).getWorld();
 
                 if (args.length >= 3) {
                     world = getServer().getWorld(args[2]);
@@ -74,7 +73,7 @@ public class ClassicPhysics extends JavaPlugin {
 
                 World world = null;
                 if (sender instanceof Player)
-                    world = ((Player)sender).getWorld();
+                    world = ((Player) sender).getWorld();
 
                 if (args.length >= 3) {
                     world = getServer().getWorld(args[2]);
