@@ -1,13 +1,17 @@
 package me.eddiep.ranks;
 
 import me.eddiep.Lavasurvival;
+import me.eddiep.game.Gamemode;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
+import org.bukkit.block.BlockFace;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.material.MaterialData;
 import org.bukkit.permissions.PermissionAttachment;
+import org.bukkit.scheduler.BukkitScheduler;
+import org.bukkit.scheduler.BukkitTask;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -17,6 +21,8 @@ public class UserInfo {
     private File configFileUsers = new File(Lavasurvival.INSTANCE.getDataFolder(), "userinfo.yml");
     private ArrayList<MaterialData> ownedBlocks = new ArrayList<MaterialData>();
     private PermissionAttachment attachment;
+    private boolean inWater = false;
+    private int taskID = 0;
     private Player bukkitPlayer;
     private UUID userUUID;
     private Rank rank;
@@ -98,6 +104,29 @@ public class UserInfo {
     public void removePerms() {
         for (String p : this.attachment.getPermissions().keySet())
             this.attachment.unsetPermission(p);
+    }
+
+    public boolean isInWater() {
+        return this.inWater;
+    }
+
+    public void setInWater(boolean value) {
+        this.inWater = value;
+        BukkitScheduler scheduler = Bukkit.getServer().getScheduler();
+        if(!isInWater())
+            scheduler.cancelTask(this.taskID);
+        if(value && getPlayer() != null && Gamemode.getCurrentGame() != null && Gamemode.WATER_DAMAGE != 0 && Gamemode.getCurrentGame().isAlive(getPlayer()))
+            this.taskID = scheduler.scheduleSyncDelayedTask(Lavasurvival.INSTANCE, new Runnable() {
+                @Override
+                public void run() {
+                    if(isInWater() && getPlayer() != null) {
+                        getPlayer().damage(Gamemode.WATER_DAMAGE);
+                        setInWater(getPlayer().getLocation().getBlock().getType().equals(Material.WATER) || getPlayer().getLocation().getBlock().getType().equals(Material.STATIONARY_WATER) ||
+                                getPlayer().getLocation().getBlock().getRelative(BlockFace.UP).getType().equals(Material.WATER) ||
+                                getPlayer().getLocation().getBlock().getRelative(BlockFace.UP).getType().equals(Material.STATIONARY_WATER));
+                    }
+                }
+            }, (int)(20 * Gamemode.DAMAGE_FREQUENCY));
     }
 
     public Player getPlayer() {

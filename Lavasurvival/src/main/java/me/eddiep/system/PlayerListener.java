@@ -6,11 +6,9 @@ import me.eddiep.game.shop.ShopFactory;
 import me.eddiep.ranks.UUIDs;
 import me.eddiep.ranks.UserInfo;
 import me.eddiep.ranks.UserManager;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.Material;
-import org.bukkit.OfflinePlayer;
+import org.bukkit.*;
 import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
 import org.bukkit.block.Sign;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -20,6 +18,8 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
+import org.bukkit.event.entity.EntityRegainHealthEvent;
+import org.bukkit.event.entity.FoodLevelChangeEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.inventory.CraftItemEvent;
 import org.bukkit.event.player.*;
@@ -90,7 +90,8 @@ public class PlayerListener implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void blockBreak(BlockBreakEvent event) {
-        event.setCancelled(true);
+        if(!event.getPlayer().getGameMode().equals(GameMode.CREATIVE))//Allows players in creative to edit maps
+            event.setCancelled(true);
         Material material = event.getBlock().getType();
         if (invalidBlocks.contains(material) || (Gamemode.getCurrentGame() != null && Gamemode.getCurrentGame().isAlive(event.getPlayer())))
             return;
@@ -158,7 +159,8 @@ public class PlayerListener implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void blockPlace(final BlockPlaceEvent event) {
-        event.setCancelled(true);
+        if(!event.getPlayer().getGameMode().equals(GameMode.CREATIVE))//Allows players in creative to edit maps
+            event.setCancelled(true);
         if (Gamemode.getCurrentGame() != null && Gamemode.getCurrentGame().isAlive(event.getPlayer()) &&
                 event.getPlayer().getInventory().contains(event.getBlockPlaced().getType())) {
             if (event.getBlockPlaced().getLocation().getBlockY() >= Gamemode.getCurrentMap().getLavaY()) {
@@ -221,6 +223,35 @@ public class PlayerListener implements Listener {
             Gamemode.getCurrentGame().setSpectator(event.getPlayer());
         if (Gamemode.getCurrentGame() != null)
             event.getPlayer().setScoreboard(Gamemode.getScoreboard());
+    }
+
+    @EventHandler(priority = EventPriority.HIGHEST)
+    public void foodLevelChange(FoodLevelChangeEvent event) {
+        event.setCancelled(true);//Can uncancel if a gamemode has food lvl change enabled
+    }
+
+    @EventHandler(priority = EventPriority.HIGHEST)
+    public void healthRegen(EntityRegainHealthEvent event) {
+        if(event.getEntity() instanceof Player)
+            event.setCancelled(true);//Can uncancel if a gamemode has regaining health enabled
+    }
+
+    @EventHandler(priority = EventPriority.HIGHEST)
+    public void playerMove(PlayerMoveEvent event) {
+        if (Gamemode.getCurrentGame() != null && Gamemode.WATER_DAMAGE != 0 && Gamemode.getCurrentGame().isAlive(event.getPlayer()) &&
+                (event.getFrom().getBlockX() != event.getTo().getBlockX() || event.getFrom().getBlockY() != event.getTo().getBlockY() ||
+                event.getFrom().getBlockZ() != event.getTo().getBlockZ())) {
+            UserInfo u = um.getUser(event.getPlayer().getUniqueId());
+            if(event.getTo().getBlock().getType().equals(Material.WATER) || event.getTo().getBlock().getType().equals(Material.STATIONARY_WATER) ||
+                    event.getTo().getBlock().getRelative(BlockFace.UP).getType().equals(Material.WATER) ||
+                    event.getTo().getBlock().getRelative(BlockFace.UP).getType().equals(Material.STATIONARY_WATER)) {
+                if(!u.isInWater()) {
+                    event.getPlayer().damage(Gamemode.WATER_DAMAGE);
+                    u.setInWater(true);
+                }
+            } else if(u.isInWater())
+                u.setInWater(false);
+        }
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)

@@ -38,6 +38,8 @@ public abstract class Gamemode {
     public static int[] votes = new int[VOTE_COUNT];
     public static final Random RANDOM = new Random();
     public static boolean voting = false;
+    public static double WATER_DAMAGE = 0;
+    public static double DAMAGE_FREQUENCY = 3;
     private static LavaMap lastMap;
     private static LavaMap currentmap;
     private static Team alive;
