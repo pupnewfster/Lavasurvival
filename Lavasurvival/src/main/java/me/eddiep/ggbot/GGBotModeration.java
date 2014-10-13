@@ -24,7 +24,7 @@ public class GGBotModeration {//Based off of Janet
     GGBotWarn warns = Lavasurvival.INSTANCE.getGGBotWarn();
 
     public void initiate() {//now has its own function instead of reading them all every time Janet was re-initiated
-        Bukkit.getConsoleSender().sendMessage(ChatColor.AQUA + "Janet initiating...");
+        Bukkit.getConsoleSender().sendMessage(ChatColor.AQUA + "GGBot initiating...");
         File customConfigFileCensors = new File(Lavasurvival.INSTANCE.getDataFolder(), "censors.yml");
         if(!customConfigFileCensors.exists())
             try {
