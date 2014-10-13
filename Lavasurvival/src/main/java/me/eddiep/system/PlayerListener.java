@@ -227,13 +227,14 @@ public class PlayerListener implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void foodLevelChange(FoodLevelChangeEvent event) {
-        event.setCancelled(true);//Can uncancel if a gamemode has food lvl change enabled
+        if(!survival)
+            event.setCancelled(true);
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void healthRegen(EntityRegainHealthEvent event) {
-        if(event.getEntity() instanceof Player)
-            event.setCancelled(true);//Can uncancel if a gamemode has regaining health enabled
+        if(event.getEntity() instanceof Player && !survival)
+            event.setCancelled(true);
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
