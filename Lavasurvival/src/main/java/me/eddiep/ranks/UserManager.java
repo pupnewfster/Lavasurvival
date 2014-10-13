@@ -4,7 +4,6 @@ import me.eddiep.Lavasurvival;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
-import org.bukkit.scheduler.BukkitScheduler;
 
 import java.io.File;
 import java.util.HashMap;
@@ -20,8 +19,7 @@ public class UserManager {
     }
 
     public void parseUser(final Player p) {
-        BukkitScheduler scheduler = Bukkit.getServer().getScheduler();
-        scheduler.scheduleSyncDelayedTask(Lavasurvival.INSTANCE, new Runnable() {
+        Bukkit.getScheduler().scheduleSyncDelayedTask(Lavasurvival.INSTANCE, new Runnable() {
             @Override
             public void run() {
                 if (players.containsKey(p.getUniqueId()))

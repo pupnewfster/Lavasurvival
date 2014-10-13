@@ -3,6 +3,7 @@ package me.eddiep.system;
 import me.eddiep.Lavasurvival;
 import me.eddiep.game.Gamemode;
 import me.eddiep.game.shop.ShopFactory;
+import me.eddiep.ggbot.GGBotModeration;
 import me.eddiep.ranks.UUIDs;
 import me.eddiep.ranks.UserInfo;
 import me.eddiep.ranks.UserManager;
@@ -45,13 +46,17 @@ public class PlayerListener implements Listener {
     public ArrayList<OfflinePlayer> voted = new ArrayList<OfflinePlayer>();
     UserManager um = Lavasurvival.INSTANCE.getUserManager();
     UUIDs get = Lavasurvival.INSTANCE.getUUIDs();
+    GGBotModeration bot = Lavasurvival.INSTANCE.getGGBotModeration();
 
     @EventHandler(priority = EventPriority.MONITOR)
     public void onChat(AsyncPlayerChatEvent event) {
+        if(event.isCancelled())
+            return;
         Player player = event.getPlayer();
         UserInfo u = um.getUser(player.getUniqueId());
         if (u.getRank() != null)
-            event.setFormat(ChatColor.translateAlternateColorCodes('&', u.getRank().getTitle()) + " " + player.getName() + ": " + event.getMessage());
+            event.setFormat(ChatColor.translateAlternateColorCodes('&', u.getRank().getTitle()) + " " + player.getName() + ": " +
+                    bot.logChat(player.getUniqueId(), event.getMessage()));
         if (Gamemode.getCurrentGame() != null && Gamemode.voting) {
             event.setCancelled(true);
             if (voted.contains(player)) {
@@ -158,6 +163,12 @@ public class PlayerListener implements Listener {
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
+    public void dropItem(PlayerDropItemEvent event) {
+        if(!survival)
+            event.setCancelled(true);
+    }
+
+    @EventHandler(priority = EventPriority.HIGHEST)
     public void blockPlace(final BlockPlaceEvent event) {
         if(!event.getPlayer().getGameMode().equals(GameMode.CREATIVE))//Allows players in creative to edit maps
             event.setCancelled(true);
@@ -173,12 +184,13 @@ public class PlayerListener implements Listener {
                 final ItemStack itm = event.getPlayer().getInventory().getItem(index);
                 final int amount = itm.getAmount();
                 final Material material = itm.getType();
+                final short data = itm.getDurability();
                 Bukkit.getScheduler().scheduleSyncDelayedTask(Lavasurvival.INSTANCE, new Runnable() {
                     @Override
                     public void run() {
                         ItemStack itm = event.getPlayer().getInventory().getItem(index);
                         if (itm == null) {
-                            itm = new ItemStack(material, amount);
+                            itm = new ItemStack(material, amount, data);
                             event.getPlayer().getInventory().setItem(index, itm);
                             return;
                         }
@@ -193,6 +205,7 @@ public class PlayerListener implements Listener {
     @EventHandler(priority = EventPriority.HIGHEST)
     public void playerQuit(PlayerQuitEvent event) {
         um.getUser(event.getPlayer().getUniqueId()).logOut();
+        Lavasurvival.INSTANCE.getGGBotModeration().removePlayer(event.getPlayer().getUniqueId());
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
@@ -211,10 +224,11 @@ public class PlayerListener implements Listener {
         Inventory inv = event.getPlayer().getInventory();
         if (BukkitUtils.isInventoryEmpty(inv)) {
             ItemStack[] items = new ItemStack[Gamemode.DEFAULT_BLOCKS.length];
-            for (int i = 0; i < Gamemode.DEFAULT_BLOCKS.length; i++) {
+            for (int i = 0; i < Gamemode.DEFAULT_BLOCKS.length; i++)
                 items[i] = new ItemStack(Gamemode.DEFAULT_BLOCKS[i], 1);
-            }
             inv.addItem(items);
+            UserInfo u = um.getUser(event.getPlayer().getUniqueId());
+            u.giveBoughtBlocks();
         }
 
         ShopFactory.validateInventory(inv);
@@ -239,9 +253,9 @@ public class PlayerListener implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void playerMove(PlayerMoveEvent event) {
-        if (Gamemode.getCurrentGame() != null && Gamemode.WATER_DAMAGE != 0 && Gamemode.getCurrentGame().isAlive(event.getPlayer()) &&
-                (event.getFrom().getBlockX() != event.getTo().getBlockX() || event.getFrom().getBlockY() != event.getTo().getBlockY() ||
-                event.getFrom().getBlockZ() != event.getTo().getBlockZ())) {
+        boolean locationChanged = event.getFrom().getBlockX() != event.getTo().getBlockX() || event.getFrom().getBlockY() != event.getTo().getBlockY() ||
+                event.getFrom().getBlockZ() != event.getTo().getBlockZ();
+        if (Gamemode.getCurrentGame() != null && Gamemode.WATER_DAMAGE != 0 && Gamemode.getCurrentGame().isAlive(event.getPlayer()) && locationChanged) {
             UserInfo u = um.getUser(event.getPlayer().getUniqueId());
             if(event.getTo().getBlock().getType().equals(Material.WATER) || event.getTo().getBlock().getType().equals(Material.STATIONARY_WATER) ||
                     event.getTo().getBlock().getRelative(BlockFace.UP).getType().equals(Material.WATER) ||

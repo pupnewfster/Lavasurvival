@@ -10,8 +10,6 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.material.MaterialData;
 import org.bukkit.permissions.PermissionAttachment;
-import org.bukkit.scheduler.BukkitScheduler;
-import org.bukkit.scheduler.BukkitTask;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -112,21 +110,20 @@ public class UserInfo {
 
     public void setInWater(boolean value) {
         this.inWater = value;
-        BukkitScheduler scheduler = Bukkit.getServer().getScheduler();
         if(!isInWater())
-            scheduler.cancelTask(this.taskID);
+            Bukkit.getScheduler().cancelTask(this.taskID);
         if(value && getPlayer() != null && Gamemode.getCurrentGame() != null && Gamemode.WATER_DAMAGE != 0 && Gamemode.getCurrentGame().isAlive(getPlayer()))
-            this.taskID = scheduler.scheduleSyncDelayedTask(Lavasurvival.INSTANCE, new Runnable() {
+            this.taskID = Bukkit.getScheduler().scheduleSyncDelayedTask(Lavasurvival.INSTANCE, new Runnable() {
                 @Override
                 public void run() {
-                    if(isInWater() && getPlayer() != null) {
+                    if (isInWater() && getPlayer() != null) {
                         getPlayer().damage(Gamemode.WATER_DAMAGE);
                         setInWater(getPlayer().getLocation().getBlock().getType().equals(Material.WATER) || getPlayer().getLocation().getBlock().getType().equals(Material.STATIONARY_WATER) ||
                                 getPlayer().getLocation().getBlock().getRelative(BlockFace.UP).getType().equals(Material.WATER) ||
                                 getPlayer().getLocation().getBlock().getRelative(BlockFace.UP).getType().equals(Material.STATIONARY_WATER));
                     }
                 }
-            }, (int)(20 * Gamemode.DAMAGE_FREQUENCY));
+            }, (int) (20 * Gamemode.DAMAGE_FREQUENCY));
     }
 
     public Player getPlayer() {
@@ -139,17 +136,32 @@ public class UserInfo {
 
     private void addBlock(Material type) {
         MaterialData dat = new MaterialData(type);
-        if (!this.ownedBlocks.contains(dat))
+        if (!this.ownedBlocks.contains(dat)) {
             this.ownedBlocks.add(dat);
+            if(getPlayer() != null)
+                getPlayer().getInventory().addItem(dat.toItemStack(1));
+        }
+    }
+
+    public void giveBoughtBlocks() {
+        if(getPlayer() != null)
+            for(MaterialData dat : this.ownedBlocks)
+                getPlayer().getInventory().addItem(dat.toItemStack(1));
     }
 
     private void addBlock(Material type, byte data) {
         MaterialData dat = new MaterialData(type, data);
-        if (!this.ownedBlocks.contains(dat))
+        if (!this.ownedBlocks.contains(dat)) {
             this.ownedBlocks.add(dat);
+            if(getPlayer() != null)
+                getPlayer().getInventory().addItem(dat.toItemStack(1));
+        }
     }
 
     public void clearBlocks() {
+        if(getPlayer() != null)
+            for(MaterialData dat : this.ownedBlocks)
+                getPlayer().getInventory().remove(dat.toItemStack());
         this.ownedBlocks.clear();
     }
 

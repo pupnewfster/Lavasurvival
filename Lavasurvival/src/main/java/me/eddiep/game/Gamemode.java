@@ -130,9 +130,8 @@ public abstract class Gamemode {
                     e.printStackTrace();
                 }
             } while (true);
-        } else {
+        } else
             currentmap = map;
-        }
 
         currentmap.prepare();
     }
@@ -221,14 +220,13 @@ public abstract class Gamemode {
             globalMessage("Congratulations to all " + amount + " survivors!");
         }
 
-        for (OfflinePlayer player : alive.getPlayers()) {
+        for (OfflinePlayer player : alive.getPlayers())
             if (player.isOnline()) {
                 double reward = calculateReward(player);
                 Lavasurvival.INSTANCE.getEconomy().depositPlayer(player, reward);
 
                 player.getPlayer().sendMessage(ChatColor.GREEN + "+ " + ChatColor.GOLD + "You won " + ChatColor.BOLD + reward + ChatColor.RESET + "" + ChatColor.GOLD + " GGs!");
             }
-        }
 
         new Thread(new Runnable() {
             @Override
@@ -247,12 +245,11 @@ public abstract class Gamemode {
                         if (currentmap.getFilePath().equals(next))
                             continue;
 
-                        for (int z = 0; z < i; z++) {
+                        for (int z = 0; z < i; z++)
                             if (nextMaps[z] != null && nextMaps[z].getFilePath().equals(next)) {
                                 found = true;
                                 break;
                             }
-                        }
                     } while (found);
 
                     try {
@@ -281,17 +278,16 @@ public abstract class Gamemode {
 
                 try {
                     Thread.sleep(50000);
-                } catch (InterruptedException ignored) {
-                }
+                } catch (InterruptedException ignored) { }
 
                 voting = false;
                 LavaMap next = null;
                 int highest = 0;
 
                 for (int i = 0; i < nextMaps.length; i++) {
-                    if (next == null) {
+                    if (next == null)
                         next = nextMaps[i];
-                    } else if (votes[i] > highest) {
+                    else if (votes[i] > highest) {
                         highest = votes[i];
                         next = nextMaps[i];
                     }
@@ -323,9 +319,7 @@ public abstract class Gamemode {
         Class<?> nextGameClass = GAMES[RANDOM.nextInt(GAMES.length)];
         try {
             return (Gamemode) nextGameClass.newInstance();
-        } catch (InstantiationException e) {
-            e.printStackTrace();
-        } catch (IllegalAccessException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return null;
@@ -364,20 +358,19 @@ public abstract class Gamemode {
     }
 
     private int recursiveFill(World world, int x, int y, int z, int curBlockCount) {
-        if (curBlockCount >= 100) return curBlockCount;
+        if (curBlockCount >= 100)
+            return curBlockCount;
 
-        for (int xadd = -1; xadd <= 1; xadd++) {
-            for (int yadd = -1; yadd <= 1; yadd++) {
-                for (int zadd = -1; zadd <= 1; zadd++) {
+        for (int xadd = -1; xadd <= 1; xadd++)
+            for (int yadd = -1; yadd <= 1; yadd++)
+                for (int zadd = -1; zadd <= 1; zadd++)
                     if (!world.getBlockAt(x + xadd, y + yadd, z + zadd).getType().isSolid() && !isLiquid(world.getBlockAt(x + xadd, y + yadd, z + zadd).getType())) {
                         curBlockCount = Math.min(curBlockCount + 1, 100);
                         curBlockCount = recursiveFill(world, x + xadd, y + yadd, z + zadd, curBlockCount);
 
-                        if (curBlockCount >= 100) return curBlockCount;
+                        if (curBlockCount >= 100)
+                            return curBlockCount;
                     }
-                }
-            }
-        }
 
         return curBlockCount;
     }
@@ -394,6 +387,7 @@ public abstract class Gamemode {
     public void playerJoin(Player player) {
         setAlive(player);
         player.teleport(new Location(getCurrentWorld(), getCurrentMap().getMapSpawn().getX(), getCurrentMap().getMapSpawn().getY(), getCurrentMap().getMapSpawn().getZ()));
+        player.setGameMode(GameMode.SURVIVAL);
         globalMessageNoPrefix(ChatColor.GREEN + "+ " + player.getDisplayName() + ChatColor.RESET + " has joined the game!");
     }
 
@@ -441,20 +435,17 @@ public abstract class Gamemode {
     }
 
     public void globalMessage(String message) {
-        for (Player p : getCurrentWorld().getPlayers()) {
+        for (Player p : getCurrentWorld().getPlayers())
             p.sendMessage(ChatColor.RED + "[Lavasurvival] " + ChatColor.RESET + message);
-        }
     }
 
     public void globalMessageNoPrefix(String message) {
-        for (Player p : getCurrentWorld().getPlayers()) {
+        for (Player p : getCurrentWorld().getPlayers())
             p.sendMessage(message);
-        }
     }
 
     public void globalRawMessage(FancyMessage rawMessage) {
-        for (Player p : getCurrentWorld().getPlayers()) {
+        for (Player p : getCurrentWorld().getPlayers())
             rawMessage.send(p);
-        }
     }
 }

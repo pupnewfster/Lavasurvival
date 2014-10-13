@@ -5,7 +5,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.permissions.Permission;
-import org.bukkit.scheduler.BukkitScheduler;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -43,8 +42,7 @@ public class RankManager {
         }
         UserManager um = Lavasurvival.INSTANCE.getUserManager();
         um.readUsers();
-        BukkitScheduler scheduler = Bukkit.getServer().getScheduler();
-        scheduler.scheduleSyncDelayedTask(Lavasurvival.INSTANCE, new Runnable() {
+        Bukkit.getScheduler().scheduleSyncDelayedTask(Lavasurvival.INSTANCE, new Runnable() {
             @Override
             public void run() {
                 Bukkit.getConsoleSender().sendMessage(ChatColor.AQUA + "Retrieving all permissions.");

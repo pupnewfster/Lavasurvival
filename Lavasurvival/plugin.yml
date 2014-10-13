@@ -54,6 +54,10 @@ permissions:
             lavasurvival.demote: true
             lavasurvival.setrank: true
             lavasurvival.voteSpeak: true
+            lavasurvival.spamchat: true
+            lavasurvival.language: true
+            lavasurvival.advertise: true
+            lavasurvival.caps: true
     lavasurvival.lvote:
         description: Allows you to vote for maps.
         default: true
@@ -74,4 +78,16 @@ permissions:
         default: op
     lavasurvival.voteSpeak:
         description: Allows you to speak during votes.
+        default: op
+    lavasurvival.language:
+        description: Allows you to use bad language.
+        default: op
+    lavasurvival.spamchat:
+        description: Allows you to spam the chat.
+        default: op
+    lavasurvival.advertise:
+        description: Allows you to advertise.
+        default: op
+    lavasurvival.caps:
+        description: Allows you to use caps.
         default: op

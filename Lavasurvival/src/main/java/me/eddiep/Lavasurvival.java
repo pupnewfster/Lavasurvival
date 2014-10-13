@@ -7,9 +7,8 @@ import me.eddiep.game.LavaMap;
 import me.eddiep.game.impl.LavaFlood;
 import me.eddiep.game.shop.ShopFactory;
 import me.eddiep.game.shop.impl.*;
-import me.eddiep.ranks.RankManager;
-import me.eddiep.ranks.UUIDs;
-import me.eddiep.ranks.UserManager;
+import me.eddiep.ggbot.*;
+import me.eddiep.ranks.*;
 import me.eddiep.system.PlayerListener;
 import me.eddiep.system.setup.SetupMap;
 import net.milkbowl.vault.economy.Economy;
@@ -81,6 +80,9 @@ public class Lavasurvival extends JavaPlugin {
     private HashMap<UUID, SetupMap> setups = new HashMap<UUID, SetupMap>();
     private Economy econ;
     private RankManager rankManager;
+    private GGBot ggbot;
+    private GGBotModeration ggbotModeration;
+    private GGBotWarn ggbotWarn;
     private UUIDs uuiDs;
     private UserManager userManager;
     private boolean running = false;
@@ -100,7 +102,6 @@ public class Lavasurvival extends JavaPlugin {
     @Override
     public void onEnable() {
         INSTANCE = this;
-        getDataFolder().mkdir();
         init();
 
         log("Attaching to Vault..");
@@ -161,6 +162,8 @@ public class Lavasurvival extends JavaPlugin {
     }
 
     private void init() {
+        getDataFolder().mkdir();
+        new File(getDataFolder() + "/maps").mkdir();
         File configFileUsers = new File(getDataFolder(), "userinfo.yml");
         if (!configFileUsers.exists())
             try {
@@ -171,9 +174,13 @@ public class Lavasurvival extends JavaPlugin {
         userManager = new UserManager();
         rankManager = new RankManager();
         uuiDs = new UUIDs();
+        ggbot = new GGBot();
+        ggbotModeration = new GGBotModeration();
+        ggbotWarn = new GGBotWarn();
         rankManager.setRanks();
         rankManager.readRanks();
         uuiDs.initiate();
+        ggbotModeration.initiate();
     }
 
     private boolean setupEcon() {
@@ -200,6 +207,14 @@ public class Lavasurvival extends JavaPlugin {
 
     public UserManager getUserManager() {
         return userManager;
+    }
+
+    public GGBotWarn getGGBotWarn() {
+        return ggbotWarn;
+    }
+
+    public GGBotModeration getGGBotModeration() {
+        return ggbotModeration;
     }
 
     public void removeFromSetup(UUID uuid) {

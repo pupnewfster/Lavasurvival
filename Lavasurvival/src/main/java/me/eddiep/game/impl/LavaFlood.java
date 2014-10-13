@@ -41,8 +41,8 @@ public class LavaFlood extends Gamemode {
 
 
         if (doubleReward) {
-            globalMessage("" + ChatColor.BOLD + ChatColor.GREEN + "All rewards this round are doubled!");
-            globalMessage("but.." + ChatColor.BOLD + ChatColor.RED + "THE TIME HAS BEEN CUT IN HALF");
+            globalMessage("" + ChatColor.GREEN + ChatColor.BOLD + "All rewards this round are doubled!");
+            globalMessage("but.." + ChatColor.RED + ChatColor.BOLD + "THE TIME HAS BEEN CUT IN HALF");
 
             duration *= 0.5;
         }
@@ -87,7 +87,7 @@ public class LavaFlood extends Gamemode {
                 lastMinute = nextMinute;
 
                 Location lavaPoint = getCurrentMap().getLavaSpawnAsLocation();
-                getCurrentWorld().strikeLightning(lavaPoint);
+                getCurrentWorld().strikeLightningEffect(lavaPoint);//Changed to just effect not to kill unknowing player nearby
                 globalMessage("The lava will pour in " + ChatColor.DARK_RED + TimeUtils.toFriendlyTime(duration - since));
             }
         } else if (!super.poured) {
