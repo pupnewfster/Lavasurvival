@@ -95,26 +95,16 @@ public final class ClassicPhysicsHandler implements Listener {
 
         if(validClassicBlocks.contains(checking.getType())) {
             boolean lava = checking.getType().equals(Material.LAVA) || checking.getType().equals(Material.STATIONARY_LAVA);
-            if(checking.getRelative(BlockFace.NORTH).getType().equals(Material.AIR)) {
-                checking.getRelative(BlockFace.NORTH).setType(checking.getType());
-                updatePhys(checking.getRelative(BlockFace.NORTH), lava);
-            }
-            if(checking.getRelative(BlockFace.EAST).getType().equals(Material.AIR)) {
-                checking.getRelative(BlockFace.EAST).setType(checking.getType());
-                updatePhys(checking.getRelative(BlockFace.EAST), lava);
-            }
-            if(checking.getRelative(BlockFace.SOUTH).getType().equals(Material.AIR)) {
-                checking.getRelative(BlockFace.SOUTH).setType(checking.getType());
-                updatePhys(checking.getRelative(BlockFace.SOUTH), lava);
-            }
-            if(checking.getRelative(BlockFace.WEST).getType().equals(Material.AIR)) {
-                checking.getRelative(BlockFace.WEST).setType(checking.getType());
-                updatePhys(checking.getRelative(BlockFace.WEST), lava);
-            }
-            if(checking.getRelative(ClassicPhysics.TYPE.equals(PhysicsType.REVERSE) ? BlockFace.UP : BlockFace.DOWN).getType().equals(Material.AIR)) {
-                checking.getRelative(ClassicPhysics.TYPE.equals(PhysicsType.REVERSE) ? BlockFace.UP : BlockFace.DOWN).setType(checking.getType());
-                updatePhys(checking.getRelative(ClassicPhysics.TYPE.equals(PhysicsType.REVERSE) ? BlockFace.UP : BlockFace.DOWN), lava);
-            }
+            if(checking.getRelative(BlockFace.NORTH).getType().equals(Material.AIR))
+                updatePhys(checking.getRelative(BlockFace.NORTH), checking.getType(), lava);
+            if(checking.getRelative(BlockFace.EAST).getType().equals(Material.AIR))
+                updatePhys(checking.getRelative(BlockFace.EAST), checking.getType(), lava);
+            if(checking.getRelative(BlockFace.SOUTH).getType().equals(Material.AIR))
+                updatePhys(checking.getRelative(BlockFace.SOUTH), checking.getType(), lava);
+            if(checking.getRelative(BlockFace.WEST).getType().equals(Material.AIR))
+                updatePhys(checking.getRelative(BlockFace.WEST), checking.getType(), lava);
+            if(checking.getRelative(ClassicPhysics.TYPE.equals(PhysicsType.REVERSE) ? BlockFace.UP : BlockFace.DOWN).getType().equals(Material.AIR))
+                updatePhys(checking.getRelative(ClassicPhysics.TYPE.equals(PhysicsType.REVERSE) ? BlockFace.UP : BlockFace.DOWN), checking.getType(), lava);
         }
 
         if (validClassicBlocks.contains(down)) {
@@ -134,10 +124,13 @@ public final class ClassicPhysicsHandler implements Listener {
             handleEvent(event, up);
     }
 
-    private void updatePhys(final Block toUpdate, boolean lava) {
+    private void updatePhys(final Block toUpdate, final Material newType, boolean lava) {
         Bukkit.getScheduler().scheduleSyncDelayedTask(ClassicPhysics.INSTANCE, new Runnable() {
             @Override
             public void run() {
+                if(!toUpdate.getType().equals(Material.AIR)) //Check if block still needs to be replaced
+                    return;
+                toUpdate.setType(newType);
                 Bukkit.getPluginManager().callEvent(new BlockPhysicsEvent(toUpdate, 0));
             }
         }, lava ? 30: 5);
