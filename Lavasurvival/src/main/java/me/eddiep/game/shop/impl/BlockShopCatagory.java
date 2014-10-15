@@ -23,7 +23,7 @@ public class BlockShopCatagory extends Menu {
 
     @MenuItem(
             slot = 2,
-            item = @ItemStackAnnotation(material = (Material.WOOD), name = "Buy more blocks!")
+            item = @ItemStackAnnotation(material = (Material.WOOD), name = "Basic Shop!")
     )
     public void BasicRank(MenuPlayer player) {
         UserInfo u = Lavasurvival.INSTANCE.getUserManager().getUser(player.getBukkit().getUniqueId());

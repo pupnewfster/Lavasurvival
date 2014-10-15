@@ -15,7 +15,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
-import org.bukkit.scheduler.BukkitScheduler;
 
 public class GGBotModeration {//Based off of Janet
     private static HashMap<UUID,Long[]> lastChat = new HashMap<UUID,Long[]>();
@@ -338,8 +337,7 @@ public class GGBotModeration {//Based off of Janet
     }
 
     private void delayedWarn(final UUID uuid, final String reason) {
-        BukkitScheduler scheduler = Bukkit.getServer().getScheduler();
-        scheduler.scheduleSyncDelayedTask(Lavasurvival.INSTANCE, new Runnable() {
+        Bukkit.getScheduler().scheduleSyncDelayedTask(Lavasurvival.INSTANCE, new Runnable() {
             @Override
             public void run() {
                 warns.warn(uuid, reason);

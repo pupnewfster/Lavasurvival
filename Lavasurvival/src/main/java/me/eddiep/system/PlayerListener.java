@@ -60,7 +60,10 @@ public class PlayerListener implements Listener {
         if (Gamemode.getCurrentGame() != null && Gamemode.voting) {
             event.setCancelled(true);
             if (voted.contains(player)) {
-                player.sendMessage(ChatColor.RED + "" + ChatColor.BOLD + "You already voted!");
+                if (player.hasPermission("lavasurvival.voteSpeak"))
+                    event.setCancelled(false);
+                else
+                    player.sendMessage(ChatColor.RED + "" + ChatColor.BOLD + "You already voted!");
                 return;
             }
             try {
@@ -76,14 +79,13 @@ public class PlayerListener implements Listener {
                 return;
             } catch (Throwable t) {
                 String map = event.getMessage();
-                for (int i = 0; i < Gamemode.nextMaps.length; i++) {
+                for (int i = 0; i < Gamemode.nextMaps.length; i++)
                     if (map.equalsIgnoreCase(Gamemode.nextMaps[i].getName())) {
                         voted.add(player);
                         Gamemode.votes[i]++;
                         player.sendMessage(ChatColor.GREEN + "+ " + ChatColor.RESET + "" + ChatColor.BOLD + "You voted for " + Gamemode.nextMaps[i].getName() + "!");
                         return;
                     }
-                }
             }
 
             if (!player.hasPermission("lavasurvival.voteSpeak"))
@@ -175,7 +177,7 @@ public class PlayerListener implements Listener {
         if (Gamemode.getCurrentGame() != null && Gamemode.getCurrentGame().isAlive(event.getPlayer()) &&
                 event.getPlayer().getInventory().contains(event.getBlockPlaced().getType())) {
             if (event.getBlockPlaced().getLocation().getBlockY() >= Gamemode.getCurrentMap().getLavaY()) {
-                event.getPlayer().sendMessage(ChatColor.BOLD + "" + ChatColor.RED + "You are building to high!");
+                event.getPlayer().sendMessage(ChatColor.RED + "" + ChatColor.BOLD + "You are building to high!");
                 return;
             }
             event.setCancelled(false);

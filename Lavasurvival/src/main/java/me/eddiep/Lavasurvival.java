@@ -80,7 +80,6 @@ public class Lavasurvival extends JavaPlugin {
     private HashMap<UUID, SetupMap> setups = new HashMap<UUID, SetupMap>();
     private Economy econ;
     private RankManager rankManager;
-    private Random r = new Random();
     private GGBot ggbot;
     private GGBotModeration ggbotModeration;
     private GGBotWarn ggbotWarn;
@@ -118,9 +117,8 @@ public class Lavasurvival extends JavaPlugin {
         moneyViewer = getServer().getScheduler().scheduleSyncRepeatingTask(this, MONEY_VIEWER, 0, 25);*/
         Flood flood = new Flood();
         if (LavaMap.getPossibleMaps().length > 0) {
-            //ClassicPhysics.INSTANCE.setPhysicsType(PhysicsType.RISE);
             flood.prepare();
-            flood.start(r.nextInt(100) < 75);
+            flood.start(Gamemode.RANDOM.nextInt(100) < 75);
             running = true;
         } else //Only schedule a listener if no maps. If maps then it already is initialized through Gamemode.prepare()
             getServer().getPluginManager().registerEvents(new PlayerListener(), this);
@@ -204,10 +202,6 @@ public class Lavasurvival extends JavaPlugin {
 
     public UUIDs getUUIDs() {
         return uuiDs;
-    }
-
-    public Random getRandom() {
-        return r;
     }
 
     public UserManager getUserManager() {

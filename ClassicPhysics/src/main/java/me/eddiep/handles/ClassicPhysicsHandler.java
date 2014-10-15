@@ -2,6 +2,7 @@ package me.eddiep.handles;
 
 import me.eddiep.ClassicPhysics;
 import me.eddiep.PhysicsType;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Block;
@@ -92,8 +93,29 @@ public final class ClassicPhysicsHandler implements Listener {
         Material down = checking.getRelative(BlockFace.DOWN).getType();
         Material up = checking.getRelative(BlockFace.UP).getType();
 
-        if (ClassicPhysics.TYPE.equals(PhysicsType.RISE) && validClassicBlocks.contains(checking.getType()) && up != null && up.equals(Material.AIR))
-            event.getBlock().getRelative(BlockFace.UP).setType(checking.getType());
+        if(validClassicBlocks.contains(checking.getType())) {
+            boolean lava = checking.getType().equals(Material.LAVA) || checking.getType().equals(Material.STATIONARY_LAVA);
+            if(checking.getRelative(BlockFace.NORTH).getType().equals(Material.AIR)) {
+                checking.getRelative(BlockFace.NORTH).setType(checking.getType());
+                updatePhys(checking.getRelative(BlockFace.NORTH), lava);
+            }
+            if(checking.getRelative(BlockFace.EAST).getType().equals(Material.AIR)) {
+                checking.getRelative(BlockFace.EAST).setType(checking.getType());
+                updatePhys(checking.getRelative(BlockFace.EAST), lava);
+            }
+            if(checking.getRelative(BlockFace.SOUTH).getType().equals(Material.AIR)) {
+                checking.getRelative(BlockFace.SOUTH).setType(checking.getType());
+                updatePhys(checking.getRelative(BlockFace.SOUTH), lava);
+            }
+            if(checking.getRelative(BlockFace.WEST).getType().equals(Material.AIR)) {
+                checking.getRelative(BlockFace.WEST).setType(checking.getType());
+                updatePhys(checking.getRelative(BlockFace.WEST), lava);
+            }
+            if(checking.getRelative(ClassicPhysics.TYPE.equals(PhysicsType.REVERSE) ? BlockFace.UP : BlockFace.DOWN).getType().equals(Material.AIR)) {
+                checking.getRelative(ClassicPhysics.TYPE.equals(PhysicsType.REVERSE) ? BlockFace.UP : BlockFace.DOWN).setType(checking.getType());
+                updatePhys(checking.getRelative(ClassicPhysics.TYPE.equals(PhysicsType.REVERSE) ? BlockFace.UP : BlockFace.DOWN), lava);
+            }
+        }
 
         if (validClassicBlocks.contains(down)) {
             event.setCancelled(true);
@@ -110,6 +132,15 @@ public final class ClassicPhysicsHandler implements Listener {
             handleEvent(event, west);
         if (validClassicBlocks.contains(up))
             handleEvent(event, up);
+    }
+
+    private void updatePhys(final Block toUpdate, boolean lava) {
+        Bukkit.getScheduler().scheduleSyncDelayedTask(ClassicPhysics.INSTANCE, new Runnable() {
+            @Override
+            public void run() {
+                Bukkit.getPluginManager().callEvent(new BlockPhysicsEvent(toUpdate, 0));
+            }
+        }, lava ? 30: 5);
     }
 
     public List<Material> getValidPhysicBlocks() {

@@ -97,17 +97,17 @@ public abstract class Gamemode {
         if (alive == null) {
             alive = scoreboard.registerNewTeam("Alive");
             alive.setDisplayName("Alive");
-            alive.setPrefix(ChatColor.GREEN + "[Alive]");
+            alive.setPrefix(ChatColor.GREEN + "[Alive] ");
         }
         if (dead == null) {
             dead = scoreboard.registerNewTeam("Dead");
             dead.setDisplayName("Dead");
-            dead.setPrefix(ChatColor.RED + "[Dead]");
+            dead.setPrefix(ChatColor.RED + "[Dead] ");
         }
         if (spec == null) {
             spec = scoreboard.registerNewTeam("Spectator");
             spec.setDisplayName("Spectator");
-            spec.setPrefix(ChatColor.GRAY + "[Spec]");
+            spec.setPrefix(ChatColor.GRAY + "[Spec] ");
         }
         if (listener == null) {
             listener = new PlayerListener();
@@ -141,6 +141,7 @@ public abstract class Gamemode {
         Lavasurvival.log("New game on " + getCurrentWorld().getName());
 
         LAVA = lava;
+        WATER_DAMAGE = LAVA ? 0 : 1;
 
         clearTeam(alive);
         clearTeam(dead);
@@ -334,7 +335,7 @@ public abstract class Gamemode {
             Bukkit.getScheduler().scheduleSyncDelayedTask(Lavasurvival.INSTANCE, new Runnable() {
                 @Override
                 public void run() {
-                    nextGame.start(Lavasurvival.INSTANCE.getRandom().nextInt(100) < 75);//Makes whether it is a lava game or a water game change each round
+                    nextGame.start(RANDOM.nextInt(100) < 75);//Makes whether it is a lava game or a water game change each round
                 }
             }, 40); //2 seconds
         }
@@ -390,6 +391,7 @@ public abstract class Gamemode {
         setAlive(player);
         player.teleport(new Location(getCurrentWorld(), getCurrentMap().getMapSpawn().getX(), getCurrentMap().getMapSpawn().getY(), getCurrentMap().getMapSpawn().getZ()));
         player.setGameMode(GameMode.SURVIVAL);
+        player.setHealth(20);
         globalMessageNoPrefix(ChatColor.GREEN + "+ " + player.getDisplayName() + ChatColor.RESET + " has joined the game!");
     }
 
@@ -449,5 +451,9 @@ public abstract class Gamemode {
     public void globalRawMessage(FancyMessage rawMessage) {
         for (Player p : getCurrentWorld().getPlayers())
             rawMessage.send(p);
+    }
+
+    protected Material getMat() {
+        return LAVA ? Material.STATIONARY_LAVA : Material.STATIONARY_WATER;
     }
 }
