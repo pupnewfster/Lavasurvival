@@ -13,6 +13,10 @@ import org.bukkit.scoreboard.Score;
 public class Rise extends Gamemode {
     private long gameStart;
     private long duration;
+
+
+    private long timeOut;
+
     private int lastMinute;
     private int bonus;
     private Objective objective;
@@ -25,13 +29,16 @@ public class Rise extends Gamemode {
     public void start(boolean lava) {
         super.start(lava);
         duration = Gamemode.RANDOM.nextInt(240000) + 180000;
-        globalMessage("The " + (LAVA ? "lava" : "water") + " will pour in " + ChatColor.DARK_RED + TimeUtils.toFriendlyTime(duration));
+        timeOut = Gamemode.RANDOM.nextInt(45000) + 30000;
+        globalMessage("The current gamemode is " + ChatColor.RED + ChatColor.BOLD + "RISE");
+        globalMessage("The " + (LAVA ? "lava" : "water") + " will rise every " + ChatColor.DARK_RED + TimeUtils.toFriendlyTime(timeOut));
+        globalMessage("You have " + ChatColor.DARK_RED + TimeUtils.toFriendlyTime(duration) + ChatColor.RESET + " to prepare!");
         gameStart = System.currentTimeMillis();
         lastMinute = 0;
 
         objective = getScoreboard().registerNewObjective("game", "dummy");
         objective.setDisplaySlot(DisplaySlot.SIDEBAR);
-        objective.setDisplayName((LAVA ? "Lava" : "Water") + "Pour");
+        objective.setDisplayName("Prepare Time");
         bonusScore = objective.getScore(ChatColor.GOLD + "" + ChatColor.BOLD + "Reward Bonus");
         bonus = Gamemode.RANDOM.nextInt(80) + 50;
         bonusScore.setScore(bonus);
@@ -42,7 +49,7 @@ public class Rise extends Gamemode {
 
         if (doubleReward) {
             globalMessage("" + ChatColor.GREEN + ChatColor.BOLD + "All rewards this round are doubled!");
-            globalMessage("but.." + ChatColor.RED + ChatColor.BOLD + "THE TIME HAS BEEN CUT IN HALF");
+            globalMessage("but.." + ChatColor.RED + ChatColor.BOLD + "THE PREPARE TIME HAS BEEN CUT IN HALF");
 
             duration *= 0.5;
         }
@@ -80,7 +87,7 @@ public class Rise extends Gamemode {
         int seconds = (int) (((duration - since) / 1000) % 60);
 
         String time = (minutes < 10 ? "0" + minutes : minutes) + ":" + (seconds < 10 ? "0" + seconds : seconds);
-        objective.setDisplayName((LAVA ? "Lava" : "Water") + " Pour: " + ChatColor.BOLD + time);
+        objective.setDisplayName((!super.poured ? "Prepare Time: " : "Next Pour: ") + ChatColor.BOLD + time);
 
         if (!super.poured && since < duration) {
             int nextMinute = (int) Math.floor((since / 1000.0) / 60.0);
@@ -89,51 +96,50 @@ public class Rise extends Gamemode {
 
                 Location lavaPoint = getCurrentMap().getLavaSpawnAsLocation();
                 getCurrentWorld().strikeLightningEffect(lavaPoint);//Changed to just effect not to kill unknowing player nearby
-                globalMessage("The " + (LAVA ? "lava" : "water") + " will pour in " + ChatColor.DARK_RED + TimeUtils.toFriendlyTime(duration - since));
+                globalMessage("The " + (LAVA ? "lava" : "water") + " will rise in " + ChatColor.DARK_RED + TimeUtils.toFriendlyTime(duration - since));
             }
         } else if (!super.poured) {
             super.poured = true;
             globalMessage(ChatColor.DARK_RED + "Here comes the " + (LAVA ? "lava" : "water") + "!");
 
-            gameStart = System.currentTimeMillis();
-            getCurrentMap().getLavaSpawnAsLocation().getBlock().setType(getMat());
-            duration = Gamemode.RANDOM.nextInt(240000) + 180000;
-            objective.setDisplayName("Time Till Round End");
-            liquidUp(16);
-        } else {
-            if (since < duration) {
-                int nextMinute = (int) Math.floor((since / 1000.0) / 60.0);
-                if (nextMinute != lastMinute) {
-                    lastMinute = nextMinute;
-
-                    Location lavaPoint = getCurrentMap().getLavaSpawnAsLocation();
-                    getCurrentWorld().strikeLightningEffect(lavaPoint);
-                    globalMessage("The round will end in " + ChatColor.DARK_RED + TimeUtils.toFriendlyTime(duration - since));
-                }
-            } else
-                endRound();
+            duration = timeOut; //The duration will not change
+            objective.setDisplayName("Time Till Next Pour");
+            pourAndAdvance(timeOut / 1000L);
         }
     }
 
-    private void liquidUp(final int time) {
+    private void liquidUp(final long time) {
         sched = Bukkit.getScheduler().scheduleSyncDelayedTask(Lavasurvival.INSTANCE, new Runnable() {
             @Override
             public void run() {
-                Location l = getCurrentMap().getLavaSpawnAsLocation();
-                final Location loc = new Location(l.getWorld(), l.getX(), l.getY() + lvl, l.getZ());
-                if(loc.getBlock().getType().equals(Material.AIR)) {
-                    loc.getBlock().setType(getMat());
-                    Bukkit.getScheduler().scheduleSyncDelayedTask(Lavasurvival.INSTANCE, new Runnable() {
-                        @Override
-                        public void run() {
-                            Bukkit.getPluginManager().callEvent(new BlockPhysicsEvent(loc.getBlock(), 0));
-                        }
-                    }, LAVA ? 30 : 5);
-                    lvl++;
-                    liquidUp(time);
-                }
+                pourAndAdvance(time);
             }
         }, 20 * time);
+    }
+
+    private void pourAndAdvance(long time) {
+        final Location loc = getCurrentMap().getLavaSpawnAsLocation(0, -(getCurrentMap().getHeight()) + lvl, 0);
+
+        if (loc.getBlockY() > getCurrentMap().getLavaY()) { //If we have passed the original lava spawn, that means the previous pour was the last one
+            super.endRound(); //Thus, we should end the game
+            return;
+        }
+
+        //if(loc.getBlock().getType().equals(Material.AIR)) { //We don't need to check this
+        loc.getBlock().setType(getMat());
+
+        gameStart = System.currentTimeMillis(); //Set the last event to now
+        getCurrentWorld().strikeLightningEffect(loc); //Actions are better than words :3
+
+        Bukkit.getScheduler().scheduleSyncDelayedTask(Lavasurvival.INSTANCE, new Runnable() {
+            @Override
+            public void run() {
+                Bukkit.getPluginManager().callEvent(new BlockPhysicsEvent(loc.getBlock(), 0)); //Force a physics check
+            }
+        }, LAVA ? 30 : 5);
+
+        lvl++;
+        if (loc.getBlockY() <= getCurrentMap().getLavaY()) liquidUp(time); //Only advance up if we are still less than the actual lava spawn or if we are at the lava spawn (the next check will end the game, see above)
     }
 
     @Override

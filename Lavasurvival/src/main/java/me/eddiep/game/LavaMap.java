@@ -66,6 +66,10 @@ public class LavaMap {
         return world.getBlockAt(lavax, lavay, lavaz).getLocation();
     }
 
+    public Location getLavaSpawnAsLocation(int xoffset, int yoffset, int zoffet) {
+        return world.getBlockAt(lavax + xoffset, lavay + yoffset, lavaz + zoffet).getLocation();
+    }
+
     public void prepare() {
         world = loadOrGetWorld(worldName);
         world.setAutoSave(false);

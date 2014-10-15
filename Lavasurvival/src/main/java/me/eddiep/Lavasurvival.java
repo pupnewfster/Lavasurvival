@@ -115,7 +115,7 @@ public class Lavasurvival extends JavaPlugin {
 
         /*log("Making money viewer task..");
         moneyViewer = getServer().getScheduler().scheduleSyncRepeatingTask(this, MONEY_VIEWER, 0, 25);*/
-        Flood flood = new Flood();
+        Rise flood = new Rise();
         if (LavaMap.getPossibleMaps().length > 0) {
             flood.prepare();
             flood.start(Gamemode.RANDOM.nextInt(100) < 75);
