@@ -1,7 +1,7 @@
 package me.eddiep.game;
 
 import me.eddiep.Lavasurvival;
-import me.eddiep.game.impl.LavaFlood;
+import me.eddiep.game.impl.Flood;
 import me.eddiep.ranks.Rank;
 import me.eddiep.ranks.UserInfo;
 import me.eddiep.ranks.UserManager;
@@ -30,7 +30,7 @@ public abstract class Gamemode {
     };
     public static final ItemStack SHOP_OPENER = new ItemStack(Material.EMERALD, 1);
     public static final Class[] GAMES = new Class[]{
-            LavaFlood.class
+            Flood.class
     };
 
     public static final int VOTE_COUNT = 3;
@@ -40,6 +40,7 @@ public abstract class Gamemode {
     public static boolean voting = false;
     public static double WATER_DAMAGE = 0;
     public static double DAMAGE_FREQUENCY = 3;
+    public static boolean LAVA = true;
     private static LavaMap lastMap;
     private static LavaMap currentmap;
     private static Team alive;
@@ -136,8 +137,10 @@ public abstract class Gamemode {
         currentmap.prepare();
     }
 
-    public void start() {
+    public void start(boolean lava) {
         Lavasurvival.log("New game on " + getCurrentWorld().getName());
+
+        LAVA = lava;
 
         clearTeam(alive);
         clearTeam(dead);
@@ -231,7 +234,6 @@ public abstract class Gamemode {
         new Thread(new Runnable() {
             @Override
             public void run() {
-                String msg = "";
                 String[] files = LavaMap.getPossibleMaps();
                 FancyMessage message = new FancyMessage("");
                 for (int i = 0; i < nextMaps.length; i++) {
@@ -332,7 +334,7 @@ public abstract class Gamemode {
             Bukkit.getScheduler().scheduleSyncDelayedTask(Lavasurvival.INSTANCE, new Runnable() {
                 @Override
                 public void run() {
-                    nextGame.start();
+                    nextGame.start(Lavasurvival.INSTANCE.getRandom().nextInt(100) < 75);//Makes whether it is a lava game or a water game change each round
                 }
             }, 40); //2 seconds
         }

@@ -12,6 +12,7 @@ import java.util.List;
 
 public class ClassicPhysics extends JavaPlugin {
     public static ClassicPhysics INSTANCE;
+    public static PhysicsType TYPE = PhysicsType.CLASSIC;
     private ClassicPhysicsHandler handler;
 
     @Override
@@ -94,6 +95,10 @@ public class ClassicPhysics extends JavaPlugin {
             }
         }
         return false;
+    }
+
+    public void setPhysicsType(PhysicsType t) {
+        TYPE = t;
     }
 
     public ClassicPhysicsHandler getPhysicsHandler() {

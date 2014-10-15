@@ -103,7 +103,7 @@ public class RankManager {
                         "lavasurvival.voteSpeak"));
                 configRanks.set("Op.rankTitle", "&f[&6Op&f]");
                 configRanks.set("Op.previousRank", "Elder");
-                configRanks.set("Admin.permissions", Arrays.asList(""));
+                configRanks.set("Admin.permissions", Arrays.asList("lavasurvival.spamchat", "lavasurvival.language", "lavasurvival.advertise", "lavasurvival.caps"));
                 configRanks.set("Admin.rankTitle", "&f[&cAdmin&f]");
                 configRanks.set("Admin.previousRank", "Op");
                 configRanks.save(configFileRanks);

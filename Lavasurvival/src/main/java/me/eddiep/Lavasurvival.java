@@ -4,7 +4,7 @@ import com.google.gson.Gson;
 import me.eddiep.commands.*;
 import me.eddiep.game.Gamemode;
 import me.eddiep.game.LavaMap;
-import me.eddiep.game.impl.LavaFlood;
+import me.eddiep.game.impl.*;
 import me.eddiep.game.shop.ShopFactory;
 import me.eddiep.game.shop.impl.*;
 import me.eddiep.ggbot.*;
@@ -80,6 +80,7 @@ public class Lavasurvival extends JavaPlugin {
     private HashMap<UUID, SetupMap> setups = new HashMap<UUID, SetupMap>();
     private Economy econ;
     private RankManager rankManager;
+    private Random r = new Random();
     private GGBot ggbot;
     private GGBotModeration ggbotModeration;
     private GGBotWarn ggbotWarn;
@@ -115,11 +116,11 @@ public class Lavasurvival extends JavaPlugin {
 
         /*log("Making money viewer task..");
         moneyViewer = getServer().getScheduler().scheduleSyncRepeatingTask(this, MONEY_VIEWER, 0, 25);*/
-
-        LavaFlood flood = new LavaFlood();
+        Flood flood = new Flood();
         if (LavaMap.getPossibleMaps().length > 0) {
+            //ClassicPhysics.INSTANCE.setPhysicsType(PhysicsType.RISE);
             flood.prepare();
-            flood.start();
+            flood.start(r.nextInt(100) < 75);
             running = true;
         } else //Only schedule a listener if no maps. If maps then it already is initialized through Gamemode.prepare()
             getServer().getPluginManager().registerEvents(new PlayerListener(), this);
@@ -174,9 +175,9 @@ public class Lavasurvival extends JavaPlugin {
         userManager = new UserManager();
         rankManager = new RankManager();
         uuiDs = new UUIDs();
-        ggbot = new GGBot();
-        ggbotModeration = new GGBotModeration();
         ggbotWarn = new GGBotWarn();
+        ggbotModeration = new GGBotModeration();
+        ggbot = new GGBot();
         rankManager.setRanks();
         rankManager.readRanks();
         uuiDs.initiate();
@@ -203,6 +204,10 @@ public class Lavasurvival extends JavaPlugin {
 
     public UUIDs getUUIDs() {
         return uuiDs;
+    }
+
+    public Random getRandom() {
+        return r;
     }
 
     public UserManager getUserManager() {

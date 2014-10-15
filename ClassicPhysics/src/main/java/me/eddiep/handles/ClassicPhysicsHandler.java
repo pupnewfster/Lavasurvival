@@ -1,6 +1,7 @@
 package me.eddiep.handles;
 
 import me.eddiep.ClassicPhysics;
+import me.eddiep.PhysicsType;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Block;
@@ -33,12 +34,10 @@ public final class ClassicPhysicsHandler implements Listener {
             while (blocks.hasNext()) {
                 QueuedBlock block = blocks.next();
                 World world = block.getWorld();
-                if (!hasPhysicsSpeed(world)) {
+                if (!hasPhysicsSpeed(world))
                     setPhysicSpeed(world, 800);
-                }
-                if (!hasPhysicsLevel(world)) {
+                if (!hasPhysicsLevel(world))
                     setPhysicLevel(world, 1);
-                }
                 long speed = world.getMetadata("physicsSpeed").get(0).asLong(); //I should be safe with this...
                 long now = System.nanoTime();
 
@@ -49,16 +48,12 @@ public final class ClassicPhysicsHandler implements Listener {
                 }
             }
 
-            for (QueuedBlock block : toPlace) {
-                World world = block.getWorld();
-                world.getBlockAt(block.getX(), block.getY(), block.getZ()).setType(block.getBlockType());
-            }
+            for (QueuedBlock block : toPlace)
+                block.getWorld().getBlockAt(block.getX(), block.getY(), block.getZ()).setType(block.getBlockType());
             toPlace.clear();
 
-            if (blocking) {
-                if (physicBlocks.size() == 0)
-                    blocking = false;
-            }
+            if (blocking && physicBlocks.size() == 0)
+                blocking = false;
         }
     };
 
@@ -86,6 +81,9 @@ public final class ClassicPhysicsHandler implements Listener {
 
     @EventHandler(priority = EventPriority.LOWEST)
     public void onPhysicsUpdate(BlockPhysicsEvent event) {
+        if(ClassicPhysics.TYPE.equals(PhysicsType.DEFAULT))
+            return;
+
         Block checking = event.getBlock();
         Material east = checking.getRelative(BlockFace.EAST).getType();
         Material north = checking.getRelative(BlockFace.NORTH).getType();
@@ -93,6 +91,9 @@ public final class ClassicPhysicsHandler implements Listener {
         Material west = checking.getRelative(BlockFace.WEST).getType();
         Material down = checking.getRelative(BlockFace.DOWN).getType();
         Material up = checking.getRelative(BlockFace.UP).getType();
+
+        if (ClassicPhysics.TYPE.equals(PhysicsType.RISE) && validClassicBlocks.contains(checking.getType()) && up != null && up.equals(Material.AIR))
+            event.getBlock().getRelative(BlockFace.UP).setType(checking.getType());
 
         if (validClassicBlocks.contains(down)) {
             event.setCancelled(true);
@@ -172,9 +173,8 @@ public final class ClassicPhysicsHandler implements Listener {
         cevent.setCancelled(block.getType().isSolid());
 
         owner.getServer().getPluginManager().callEvent(cevent);
-        if (cevent.isCancelled()) {
+        if (cevent.isCancelled())
             return;
-        }
 
         newBlock = cevent.getNewBlock();
 
