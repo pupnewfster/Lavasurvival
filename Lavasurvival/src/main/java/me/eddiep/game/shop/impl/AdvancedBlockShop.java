@@ -8,13 +8,23 @@ import net.njay.annotation.ItemStackAnnotation;
 import net.njay.annotation.MenuInventory;
 import net.njay.annotation.MenuItem;
 import net.njay.player.MenuPlayer;
+import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.inventory.Inventory;
 
 @MenuInventory(slots = 18, name = "Advanced Block Shop")
 public class AdvancedBlockShop extends Menu {
+    private static final String RANK = "Advanced";
+    private boolean isCorrectRank = true;
+
     public AdvancedBlockShop(MenuManager manager, Inventory inv) {
         super(manager, inv);
+    }
+
+    public AdvancedBlockShop(MenuManager manager, Inventory inv, boolean isRanked) {
+        super(manager, inv);
+
+        this.isCorrectRank = isRanked;
     }
 
     @MenuItem(
@@ -30,6 +40,10 @@ public class AdvancedBlockShop extends Menu {
             item = @ItemStackAnnotation(material = (Material.STEP), durability = 0, name = "Stone slab", lore = {"70 ggs"})
     )
     public void buyStoneSlab(MenuPlayer player) {
+        if (!isCorrectRank) {
+            player.getBukkit().sendMessage(ChatColor.RED + "Sorry! You must be " + ChatColor.BOLD + ChatColor.ITALIC + RANK + ChatColor.RESET + ChatColor.RED + " to buy that block..");
+        }
+
         getUser(player).buyBlock(Material.STEP, 70, (byte) 0);
     }
 
@@ -38,6 +52,10 @@ public class AdvancedBlockShop extends Menu {
             item = @ItemStackAnnotation(material = (Material.STEP), durability = 1, name = "Sandstone slab", lore = {"70 ggs"})
     )
     public void buySandstoneSlab(MenuPlayer player) {
+        if (!isCorrectRank) {
+            player.getBukkit().sendMessage(ChatColor.RED + "Sorry! You must be " + ChatColor.BOLD + ChatColor.ITALIC + RANK + ChatColor.RESET + ChatColor.RED + " to buy that block..");
+        }
+
         getUser(player).buyBlock(Material.STEP, 70, (byte) 1);
     }
 
@@ -46,6 +64,10 @@ public class AdvancedBlockShop extends Menu {
             item = @ItemStackAnnotation(material = (Material.STEP), durability = 3, name = "Cobblestone slab", lore = {"70 ggs"})
     )
     public void buyCobbleSlab(MenuPlayer player) {
+        if (!isCorrectRank) {
+            player.getBukkit().sendMessage(ChatColor.RED + "Sorry! You must be " + ChatColor.BOLD + ChatColor.ITALIC + RANK + ChatColor.RESET + ChatColor.RED + " to buy that block..");
+        }
+
         getUser(player).buyBlock(Material.STEP, 70, (byte) 3);
     }
 
@@ -54,6 +76,10 @@ public class AdvancedBlockShop extends Menu {
             item = @ItemStackAnnotation(material = (Material.STEP), durability = 4, name = "Brick slab", lore = {"70 ggs"})
     )
     public void buyBrickSlab(MenuPlayer player) {
+        if (!isCorrectRank) {
+            player.getBukkit().sendMessage(ChatColor.RED + "Sorry! You must be " + ChatColor.BOLD + ChatColor.ITALIC + RANK + ChatColor.RESET + ChatColor.RED + " to buy that block..");
+        }
+
         getUser(player).buyBlock(Material.STEP, 70, (byte) 4);
     }
 
@@ -62,6 +88,10 @@ public class AdvancedBlockShop extends Menu {
             item = @ItemStackAnnotation(material = (Material.STEP), durability = 5, name = "Stone brick slab", lore = {"70 ggs"})
     )
     public void buyStonebrickSlab(MenuPlayer player) {
+        if (!isCorrectRank) {
+            player.getBukkit().sendMessage(ChatColor.RED + "Sorry! You must be " + ChatColor.BOLD + ChatColor.ITALIC + RANK + ChatColor.RESET + ChatColor.RED + " to buy that block..");
+        }
+
         getUser(player).buyBlock(Material.STEP, 70, (byte) 5);
     }
 
@@ -70,6 +100,10 @@ public class AdvancedBlockShop extends Menu {
             item = @ItemStackAnnotation(material = (Material.STEP), durability = 6, name = "Nether brick slab", lore = {"70 ggs"})
     )
     public void buyNetherBrickSlab(MenuPlayer player) {
+        if (!isCorrectRank) {
+            player.getBukkit().sendMessage(ChatColor.RED + "Sorry! You must be " + ChatColor.BOLD + ChatColor.ITALIC + RANK + ChatColor.RESET + ChatColor.RED + " to buy that block..");
+        }
+
         getUser(player).buyBlock(Material.STEP, 70, (byte) 6);
     }
 
@@ -78,6 +112,10 @@ public class AdvancedBlockShop extends Menu {
             item = @ItemStackAnnotation(material = (Material.STEP), durability = 7, name = "Quartz slab", lore = {"70 ggs"})
     )
     public void buyQuartzSlab(MenuPlayer player) {
+        if (!isCorrectRank) {
+            player.getBukkit().sendMessage(ChatColor.RED + "Sorry! You must be " + ChatColor.BOLD + ChatColor.ITALIC + RANK + ChatColor.RESET + ChatColor.RED + " to buy that block..");
+        }
+
         getUser(player).buyBlock(Material.STEP, 70, (byte) 7);
     }
 
@@ -86,6 +124,10 @@ public class AdvancedBlockShop extends Menu {
             item = @ItemStackAnnotation(material = (Material.WOOD_STEP), durability = 0, name = "Oak slab", lore = {"70 ggs"})
     )
     public void buyOakSlab(MenuPlayer player) {
+        if (!isCorrectRank) {
+            player.getBukkit().sendMessage(ChatColor.RED + "Sorry! You must be " + ChatColor.BOLD + ChatColor.ITALIC + RANK + ChatColor.RESET + ChatColor.RED + " to buy that block..");
+        }
+
         getUser(player).buyBlock(Material.WOOD_STEP, 70, (byte) 0);
     }
 
@@ -94,6 +136,10 @@ public class AdvancedBlockShop extends Menu {
             item = @ItemStackAnnotation(material = (Material.WOOD_STEP), durability = 1, name = "Spruce slab", lore = {"70 ggs"})
     )
     public void buySpruceSlab(MenuPlayer player) {
+        if (!isCorrectRank) {
+            player.getBukkit().sendMessage(ChatColor.RED + "Sorry! You must be " + ChatColor.BOLD + ChatColor.ITALIC + RANK + ChatColor.RESET + ChatColor.RED + " to buy that block..");
+        }
+
         getUser(player).buyBlock(Material.WOOD_STEP, 70, (byte) 1);
     }
 
@@ -102,6 +148,10 @@ public class AdvancedBlockShop extends Menu {
             item = @ItemStackAnnotation(material = (Material.WOOD_STEP), durability = 2, name = "Birch slab", lore = {"70 ggs"})
     )
     public void buyBirchSlab(MenuPlayer player) {
+        if (!isCorrectRank) {
+            player.getBukkit().sendMessage(ChatColor.RED + "Sorry! You must be " + ChatColor.BOLD + ChatColor.ITALIC + RANK + ChatColor.RESET + ChatColor.RED + " to buy that block..");
+        }
+
         getUser(player).buyBlock(Material.WOOD_STEP, 70, (byte) 2);
     }
 
@@ -110,6 +160,10 @@ public class AdvancedBlockShop extends Menu {
             item = @ItemStackAnnotation(material = (Material.WOOD_STEP), durability = 3, name = "Jungle slab", lore = {"70 ggs"})
     )
     public void buyJungleSlab(MenuPlayer player) {
+        if (!isCorrectRank) {
+            player.getBukkit().sendMessage(ChatColor.RED + "Sorry! You must be " + ChatColor.BOLD + ChatColor.ITALIC + RANK + ChatColor.RESET + ChatColor.RED + " to buy that block..");
+        }
+
         getUser(player).buyBlock(Material.WOOD_STEP, 70, (byte) 3);
     }
 
@@ -118,6 +172,10 @@ public class AdvancedBlockShop extends Menu {
             item = @ItemStackAnnotation(material = (Material.WOOD_STEP), durability = 4, name = "Acacia slab", lore = {"70 ggs"})
     )
     public void buyAcaciaSlab(MenuPlayer player) {
+        if (!isCorrectRank) {
+            player.getBukkit().sendMessage(ChatColor.RED + "Sorry! You must be " + ChatColor.BOLD + ChatColor.ITALIC + RANK + ChatColor.RESET + ChatColor.RED + " to buy that block..");
+        }
+
         getUser(player).buyBlock(Material.WOOD_STEP, 70, (byte) 4);
     }
 
@@ -126,6 +184,10 @@ public class AdvancedBlockShop extends Menu {
             item = @ItemStackAnnotation(material = (Material.WOOD_STEP), durability = 5, name = "Dark oak slab", lore = {"70 ggs"})
     )
     public void buyDarkOakSlab(MenuPlayer player) {
+        if (!isCorrectRank) {
+            player.getBukkit().sendMessage(ChatColor.RED + "Sorry! You must be " + ChatColor.BOLD + ChatColor.ITALIC + RANK + ChatColor.RESET + ChatColor.RED + " to buy that block..");
+        }
+
         getUser(player).buyBlock(Material.WOOD_STEP, 70, (byte) 5);
     }
 
@@ -134,6 +196,10 @@ public class AdvancedBlockShop extends Menu {
             item = @ItemStackAnnotation(material = (Material.MOSSY_COBBLESTONE), name = "Mossy cobblestone", lore = {"130 ggs"})
     )
     public void buyMossyCobble(MenuPlayer player) {
+        if (!isCorrectRank) {
+            player.getBukkit().sendMessage(ChatColor.RED + "Sorry! You must be " + ChatColor.BOLD + ChatColor.ITALIC + RANK + ChatColor.RESET + ChatColor.RED + " to buy that block..");
+        }
+
         getUser(player).buyBlock(Material.MOSSY_COBBLESTONE, 130);
     }
 
@@ -142,6 +208,10 @@ public class AdvancedBlockShop extends Menu {
             item = @ItemStackAnnotation(material = (Material.SMOOTH_BRICK), name = "Stone brick", lore = {"290 ggs"})
     )
     public void buyStoneBrick(MenuPlayer player) {
+        if (!isCorrectRank) {
+            player.getBukkit().sendMessage(ChatColor.RED + "Sorry! You must be " + ChatColor.BOLD + ChatColor.ITALIC + RANK + ChatColor.RESET + ChatColor.RED + " to buy that block..");
+        }
+
         getUser(player).buyBlock(Material.SMOOTH_BRICK, 290);
     }
 
@@ -150,6 +220,10 @@ public class AdvancedBlockShop extends Menu {
             item = @ItemStackAnnotation(material = (Material.GLASS), name = "Glass", lore = {"400 ggs"})
     )
     public void buyGlass(MenuPlayer player) {
+        if (!isCorrectRank) {
+            player.getBukkit().sendMessage(ChatColor.RED + "Sorry! You must be " + ChatColor.BOLD + ChatColor.ITALIC + RANK + ChatColor.RESET + ChatColor.RED + " to buy that block..");
+        }
+
         getUser(player).buyBlock(Material.GLASS, 400);
     }
 

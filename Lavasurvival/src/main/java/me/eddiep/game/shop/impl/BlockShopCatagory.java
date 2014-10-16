@@ -28,7 +28,7 @@ public class BlockShopCatagory extends Menu {
     public void BasicRank(MenuPlayer player) {
         UserInfo u = Lavasurvival.INSTANCE.getUserManager().getUser(player.getBukkit().getUniqueId());
         if (!rm.hasRank(u.getRank(), rm.getRank("Basic")))
-            player.getBukkit().sendMessage(ChatColor.RED + "You do not have access to the shop for the Basic rank..");
+            player.setActiveMenu(new BasicBlockShop(player.getMenuManager(), null, false));
         else
             player.setActiveMenu(new BasicBlockShop(player.getMenuManager(), null));
     }
@@ -40,7 +40,7 @@ public class BlockShopCatagory extends Menu {
     public void AdvanceRank(MenuPlayer player) {
         UserInfo u = Lavasurvival.INSTANCE.getUserManager().getUser(player.getBukkit().getUniqueId());
         if (!rm.hasRank(u.getRank(), rm.getRank("Advanced")))
-            player.getBukkit().sendMessage(ChatColor.RED + "You do not have access to the shop for the Advanced rank..");
+            player.setActiveMenu(new BasicBlockShop(player.getMenuManager(), null, false));
         else
             player.setActiveMenu(new AdvancedBlockShop(player.getMenuManager(), null));
     }
