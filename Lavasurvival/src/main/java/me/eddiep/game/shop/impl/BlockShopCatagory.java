@@ -15,8 +15,6 @@ import org.bukkit.inventory.Inventory;
 
 @MenuInventory(slots = 9, name = "Block Shop")
 public class BlockShopCatagory extends Menu {
-    RankManager rm = Lavasurvival.INSTANCE.getRankManager();
-
     public BlockShopCatagory(MenuManager manager, Inventory inv) {
         super(manager, inv);
     }
@@ -27,10 +25,7 @@ public class BlockShopCatagory extends Menu {
     )
     public void BasicRank(MenuPlayer player) {
         UserInfo u = Lavasurvival.INSTANCE.getUserManager().getUser(player.getBukkit().getUniqueId());
-        if (!rm.hasRank(u.getRank(), rm.getRank("Basic")))
-            player.setActiveMenu(new BasicBlockShop(player.getMenuManager(), null, false));
-        else
-            player.setActiveMenu(new BasicBlockShop(player.getMenuManager(), null));
+        player.setActiveMenu(new BasicBlockShop(player.getMenuManager(), null));
     }
 
     @MenuItem(
@@ -39,10 +34,7 @@ public class BlockShopCatagory extends Menu {
     )
     public void AdvanceRank(MenuPlayer player) {
         UserInfo u = Lavasurvival.INSTANCE.getUserManager().getUser(player.getBukkit().getUniqueId());
-        if (!rm.hasRank(u.getRank(), rm.getRank("Advanced")))
-            player.setActiveMenu(new BasicBlockShop(player.getMenuManager(), null, false));
-        else
-            player.setActiveMenu(new AdvancedBlockShop(player.getMenuManager(), null));
+        player.setActiveMenu(new AdvancedBlockShop(player.getMenuManager(), null));
     }
 
     @MenuItem(
@@ -51,10 +43,7 @@ public class BlockShopCatagory extends Menu {
     )
     public void SurvivorRank(MenuPlayer player) {
         UserInfo u = Lavasurvival.INSTANCE.getUserManager().getUser(player.getBukkit().getUniqueId());
-        if (!rm.hasRank(u.getRank(), rm.getRank("Survivor")))
-            player.getBukkit().sendMessage(ChatColor.RED + "You do not have access to the shop for the Survivor rank..");
-        else
-            player.setActiveMenu(new SurvivorBlockShop(player.getMenuManager(), null));
+        player.setActiveMenu(new SurvivorBlockShop(player.getMenuManager(), null));
     }
 
     @MenuItem(
@@ -63,10 +52,7 @@ public class BlockShopCatagory extends Menu {
     )
     public void TrustedRank(MenuPlayer player) {
         UserInfo u = Lavasurvival.INSTANCE.getUserManager().getUser(player.getBukkit().getUniqueId());
-        if (!rm.hasRank(u.getRank(), rm.getRank("Trusted")))
-            player.getBukkit().sendMessage(ChatColor.RED + "You do not have access to the shop for the Trusted rank..");
-        else
-            player.setActiveMenu(new TrustedBlockShop(player.getMenuManager(), null));
+        player.setActiveMenu(new TrustedBlockShop(player.getMenuManager(), null));
     }
 
     @MenuItem(
@@ -75,9 +61,6 @@ public class BlockShopCatagory extends Menu {
     )
     public void ElderRank(MenuPlayer player) {
         UserInfo u = Lavasurvival.INSTANCE.getUserManager().getUser(player.getBukkit().getUniqueId());
-        if (!rm.hasRank(u.getRank(), rm.getRank("Elder")))
-            player.getBukkit().sendMessage(ChatColor.RED + "You do not have access to the shop for the Elder rank..");
-        else
-            player.setActiveMenu(new ElderBlockShop(player.getMenuManager(), null));
+        player.setActiveMenu(new ElderBlockShop(player.getMenuManager(), null));
     }
 }
