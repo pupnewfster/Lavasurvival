@@ -4,7 +4,6 @@ import me.eddiep.game.Gamemode;
 import me.eddiep.system.TimeUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
-import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.scoreboard.DisplaySlot;
@@ -24,13 +23,13 @@ public class Flood extends Gamemode {
     public void start(boolean lava) {
         super.start(lava);
         duration = Gamemode.RANDOM.nextInt(240000) + 180000;
-        globalMessage("The " + (Gamemode.LAVA ? "lava" : "water") + " will pour in " + ChatColor.DARK_RED + TimeUtils.toFriendlyTime(duration));
+        globalMessage("The " + (LAVA ? "lava" : "water") + " will pour in " + ChatColor.DARK_RED + TimeUtils.toFriendlyTime(duration));
         gameStart = System.currentTimeMillis();
         lastMinute = 0;
 
         objective = getScoreboard().registerNewObjective("game", "dummy");
         objective.setDisplaySlot(DisplaySlot.SIDEBAR);
-        objective.setDisplayName((Gamemode.LAVA ? "Lava" : "Water") + "Pour");
+        objective.setDisplayName((LAVA ? "Lava" : "Water") + "Pour");
         bonusScore = objective.getScore(ChatColor.GOLD + "" + ChatColor.BOLD + "Reward Bonus");
         bonus = Gamemode.RANDOM.nextInt(80) + 50;
         bonusScore.setScore(bonus);
@@ -78,7 +77,7 @@ public class Flood extends Gamemode {
         int seconds = (int) (((duration - since) / 1000) % 60);
 
         String time = (minutes < 10 ? "0" + minutes : minutes) + ":" + (seconds < 10 ? "0" + seconds : seconds);
-        objective.setDisplayName((Gamemode.LAVA ? "Lava" : "Water") + " Pour: " + ChatColor.BOLD + time);
+        objective.setDisplayName((LAVA ? "Lava" : "Water") + " Pour: " + ChatColor.BOLD + time);
 
         if (!super.poured && since < duration) {
             int nextMinute = (int) Math.floor((since / 1000.0) / 60.0);
@@ -87,11 +86,11 @@ public class Flood extends Gamemode {
 
                 Location lavaPoint = getCurrentMap().getLavaSpawnAsLocation();
                 getCurrentWorld().strikeLightningEffect(lavaPoint);//Changed to just effect not to kill unknowing player nearby
-                globalMessage("The " + (Gamemode.LAVA ? "lava" : "water") + " will pour in " + ChatColor.DARK_RED + TimeUtils.toFriendlyTime(duration - since));
+                globalMessage("The " + (LAVA ? "lava" : "water") + " will pour in " + ChatColor.DARK_RED + TimeUtils.toFriendlyTime(duration - since));
             }
         } else if (!super.poured) {
             super.poured = true;
-            globalMessage(ChatColor.DARK_RED + "Here comes the " + (Gamemode.LAVA ? "lava" : "water") + "!");
+            globalMessage(ChatColor.DARK_RED + "Here comes the " + (LAVA ? "lava" : "water") + "!");
 
             gameStart = System.currentTimeMillis();
             getCurrentMap().getLavaSpawnAsLocation().getBlock().setType(getMat());
