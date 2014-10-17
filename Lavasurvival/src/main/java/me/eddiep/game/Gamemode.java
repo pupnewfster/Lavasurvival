@@ -23,6 +23,7 @@ import java.util.Random;
 
 public abstract class Gamemode {
     public static final Material[] DEFAULT_BLOCKS = new Material[]{
+            Material.TORCH,
             Material.COBBLESTONE,
             Material.DIRT,
             Material.GRASS,

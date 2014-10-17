@@ -27,34 +27,34 @@ public class PhysicsListener implements Listener {
         if (ticksToMelt.size() > 0)
             return;
         //Default blocks
-        ticksToMelt.put(new MaterialData(Material.WOOD), 45 * 20);
-        ticksToMelt.put(new MaterialData(Material.DIRT), (60 * 2) * 20);
-        ticksToMelt.put(new MaterialData(Material.GRASS), (60 * 2) * 20);
-        ticksToMelt.put(new MaterialData(Material.SAND), 60 * 20);
-        ticksToMelt.put(new MaterialData(Material.COBBLESTONE), (55 * 3) * 20);
+        ticksToMelt.put(new MaterialData(Material.TORCH), 20);
+        ticksToMelt.put(new MaterialData(Material.WOOD), 55 * 20);
+        ticksToMelt.put(new MaterialData(Material.DIRT), (100) * 20);
+        ticksToMelt.put(new MaterialData(Material.GRASS), (100) * 20);
+        ticksToMelt.put(new MaterialData(Material.SAND), 70 * 20);
+        ticksToMelt.put(new MaterialData(Material.COBBLESTONE), (165) * 20);
         //Calculate the rest of buyable items melt values then remove this comment
         //Basic blocks
-        ticksToMelt.put(new MaterialData(Material.GRAVEL), (55 * 3) * 20);
-        ticksToMelt.put(new MaterialData(Material.STONE), (60 * 3) * 20);
-        ticksToMelt.put(new MaterialData(Material.SANDSTONE), (55 * 3) * 20);
-        ticksToMelt.put(new MaterialData(Material.BRICK), (55 * 3) * 20);
+        ticksToMelt.put(new MaterialData(Material.GRAVEL), (140) * 20);
+        ticksToMelt.put(new MaterialData(Material.STONE), (190) * 20);
+        ticksToMelt.put(new MaterialData(Material.SANDSTONE), (180) * 20);
+        ticksToMelt.put(new MaterialData(Material.BRICK), (180) * 20);
 
         //Advanced blocks
-        ticksToMelt.put(new MaterialData(Material.STEP, (byte) 0), (55 * 3) * 20);//Stone slab
-        ticksToMelt.put(new MaterialData(Material.STEP, (byte) 3), (55 * 3) * 20);//Cobble slab
-        ticksToMelt.put(new MaterialData(Material.STEP, (byte) 4), (55 * 3) * 20);//Brick slab
-        ticksToMelt.put(new MaterialData(Material.STEP, (byte) 5), (55 * 3) * 20);//Stone brick slab
-        ticksToMelt.put(new MaterialData(Material.STEP, (byte) 6), (55 * 3) * 20);//Nether brick slab
-        ticksToMelt.put(new MaterialData(Material.STEP, (byte) 7), (55 * 3) * 20);//Quartz slab
-        ticksToMelt.put(new MaterialData(Material.WOOD_STEP, (byte) 0), (55 * 3) * 20);//Oak slab
-        ticksToMelt.put(new MaterialData(Material.WOOD_STEP, (byte) 1), (55 * 3) * 20);//Spruce slab
-        ticksToMelt.put(new MaterialData(Material.WOOD_STEP, (byte) 2), (55 * 3) * 20);//Birch slab
-        ticksToMelt.put(new MaterialData(Material.WOOD_STEP, (byte) 3), (55 * 3) * 20);//Jung;e slab
-        ticksToMelt.put(new MaterialData(Material.WOOD_STEP, (byte) 4), (55 * 3) * 20);//Acacia slab
-        ticksToMelt.put(new MaterialData(Material.WOOD_STEP, (byte) 5), (55 * 3) * 20);//Dark oak slab
-        ticksToMelt.put(new MaterialData(Material.MOSSY_COBBLESTONE), (55 * 3) * 20);
-        ticksToMelt.put(new MaterialData(Material.SMOOTH_BRICK), (55 * 3) * 20);
-        ticksToMelt.put(new MaterialData(Material.GLASS), (55 * 3) * 20);
+        ticksToMelt.put(new MaterialData(Material.STEP, (byte) 0), (170) * 20);//Stone slab
+        ticksToMelt.put(new MaterialData(Material.STEP, (byte) 3), (155) * 20);//Cobble slab
+        ticksToMelt.put(new MaterialData(Material.STEP, (byte) 4), (170) * 20);//Brick slab
+        ticksToMelt.put(new MaterialData(Material.STEP, (byte) 5), (175) * 20);//Stone brick slab
+        ticksToMelt.put(new MaterialData(Material.STEP, (byte) 7), (178) * 20);//Quartz slab
+        ticksToMelt.put(new MaterialData(Material.WOOD_STEP, (byte) 0), (50) * 20);//Oak slab
+        ticksToMelt.put(new MaterialData(Material.WOOD_STEP, (byte) 1), (50) * 20);//Spruce slab
+        ticksToMelt.put(new MaterialData(Material.WOOD_STEP, (byte) 2), (50) * 20);//Birch slab
+        ticksToMelt.put(new MaterialData(Material.WOOD_STEP, (byte) 3), (50) * 20);//Jung;e slab
+        ticksToMelt.put(new MaterialData(Material.WOOD_STEP, (byte) 4), (50) * 20);//Acacia slab
+        ticksToMelt.put(new MaterialData(Material.WOOD_STEP, (byte) 5), (50) * 20);//Dark oak slab
+        ticksToMelt.put(new MaterialData(Material.MOSSY_COBBLESTONE), (165) * 20);
+        ticksToMelt.put(new MaterialData(Material.SMOOTH_BRICK), (184) * 20);
+        ticksToMelt.put(new MaterialData(Material.GLASS), (188) * 20);
 
         //Survivor blocks
         //ticksToMelt.put(new MaterialData(Material.GLASS), (55 * 3) * 20);//Place holder block
@@ -63,7 +63,7 @@ public class PhysicsListener implements Listener {
         //ticksToMelt.put(new MaterialData(Material.GLASS), (55 * 3) * 20);//Place holder block
 
         //Elder blocks
-        //ticksToMelt.put(new MaterialData(Material.GLASS), (55 * 3) * 20);//Place holder block
+        ticksToMelt.put(new MaterialData(Material.STEP, (byte) 6), (55 * 3) * 20);//Nether brick slab
     }
 
     @EventHandler(priority = EventPriority.MONITOR)
