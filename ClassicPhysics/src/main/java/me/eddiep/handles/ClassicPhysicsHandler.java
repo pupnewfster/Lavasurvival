@@ -104,17 +104,16 @@ public final class ClassicPhysicsHandler implements Listener {
         Material up = checking.getRelative(BlockFace.UP).getType();
 
         if (validClassicBlocks.contains(checking.getType())) {
-            boolean lava = checking.getType().equals(Material.LAVA) || checking.getType().equals(Material.STATIONARY_LAVA);
             if (checking.getRelative(BlockFace.NORTH).getType().equals(Material.AIR))
-                updatePhys(checking.getRelative(BlockFace.NORTH), checking.getType(), lava);
+                updatePhys(checking.getRelative(BlockFace.NORTH), checking.getType());
             if (checking.getRelative(BlockFace.EAST).getType().equals(Material.AIR))
-                updatePhys(checking.getRelative(BlockFace.EAST), checking.getType(), lava);
+                updatePhys(checking.getRelative(BlockFace.EAST), checking.getType());
             if (checking.getRelative(BlockFace.SOUTH).getType().equals(Material.AIR))
-                updatePhys(checking.getRelative(BlockFace.SOUTH), checking.getType(), lava);
+                updatePhys(checking.getRelative(BlockFace.SOUTH), checking.getType());
             if (checking.getRelative(BlockFace.WEST).getType().equals(Material.AIR))
-                updatePhys(checking.getRelative(BlockFace.WEST), checking.getType(), lava);
+                updatePhys(checking.getRelative(BlockFace.WEST), checking.getType());
             if (checking.getRelative(ClassicPhysics.TYPE.equals(PhysicsType.REVERSE) ? BlockFace.UP : BlockFace.DOWN).getType().equals(Material.AIR))
-                updatePhys(checking.getRelative(ClassicPhysics.TYPE.equals(PhysicsType.REVERSE) ? BlockFace.UP : BlockFace.DOWN), checking.getType(), lava);
+                updatePhys(checking.getRelative(ClassicPhysics.TYPE.equals(PhysicsType.REVERSE) ? BlockFace.UP : BlockFace.DOWN), checking.getType());
         }
 
         if (validClassicBlocks.contains(down) || (ClassicPhysics.TYPE.equals(PhysicsType.REVERSE) && validClassicBlocks.contains(up))) {
@@ -134,7 +133,7 @@ public final class ClassicPhysicsHandler implements Listener {
             handleEvent(event, up);
     }
 
-    private void updatePhys(final Block toUpdate, final Material newType, boolean lava) {
+    private void updatePhys(final Block toUpdate, final Material newType) {
         Bukkit.getScheduler().scheduleSyncDelayedTask(ClassicPhysics.INSTANCE, new Runnable() {
             @Override
             public void run() {
@@ -143,7 +142,7 @@ public final class ClassicPhysicsHandler implements Listener {
                 toUpdate.setType(newType);
                 Bukkit.getPluginManager().callEvent(new BlockPhysicsEvent(toUpdate, 0));
             }
-        }, lava ? 30: 5);
+        }, 17);
     }
 
     public List<Material> getValidPhysicBlocks() {
