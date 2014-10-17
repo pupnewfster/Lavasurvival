@@ -10,6 +10,7 @@ import org.bukkit.block.BlockFace;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.BlockFromToEvent;
 import org.bukkit.event.block.BlockPhysicsEvent;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.plugin.Plugin;
@@ -80,42 +81,51 @@ public final class ClassicPhysicsHandler implements Listener {
         ClassicPhysicsHandler handler = ClassicPhysics.INSTANCE.getPhysicsHandler();
     }
 
+    @EventHandler
+    public void onBlockFromTo(BlockFromToEvent event) {
+        if (ClassicPhysics.TYPE.equals(PhysicsType.DEFAULT))
+            return;
+
+        if (ClassicPhysics.TYPE.equals(PhysicsType.REVERSE) && event.getFace().equals(BlockFace.DOWN) && validClassicBlocks.contains(event.getBlock().getType()))
+            event.setCancelled(true);
+    }
+
     @EventHandler(priority = EventPriority.LOWEST)
     public void onPhysicsUpdate(BlockPhysicsEvent event) {
-        if(ClassicPhysics.TYPE.equals(PhysicsType.DEFAULT))
+        if (ClassicPhysics.TYPE.equals(PhysicsType.DEFAULT))
             return;
 
         Block checking = event.getBlock();
-        Material east = checking.getRelative(BlockFace.EAST).getType();
         Material north = checking.getRelative(BlockFace.NORTH).getType();
+        Material east = checking.getRelative(BlockFace.EAST).getType();
         Material south = checking.getRelative(BlockFace.SOUTH).getType();
         Material west = checking.getRelative(BlockFace.WEST).getType();
         Material down = checking.getRelative(BlockFace.DOWN).getType();
         Material up = checking.getRelative(BlockFace.UP).getType();
 
-        if(validClassicBlocks.contains(checking.getType())) {
+        if (validClassicBlocks.contains(checking.getType())) {
             boolean lava = checking.getType().equals(Material.LAVA) || checking.getType().equals(Material.STATIONARY_LAVA);
-            if(checking.getRelative(BlockFace.NORTH).getType().equals(Material.AIR))
+            if (checking.getRelative(BlockFace.NORTH).getType().equals(Material.AIR))
                 updatePhys(checking.getRelative(BlockFace.NORTH), checking.getType(), lava);
-            if(checking.getRelative(BlockFace.EAST).getType().equals(Material.AIR))
+            if (checking.getRelative(BlockFace.EAST).getType().equals(Material.AIR))
                 updatePhys(checking.getRelative(BlockFace.EAST), checking.getType(), lava);
-            if(checking.getRelative(BlockFace.SOUTH).getType().equals(Material.AIR))
+            if (checking.getRelative(BlockFace.SOUTH).getType().equals(Material.AIR))
                 updatePhys(checking.getRelative(BlockFace.SOUTH), checking.getType(), lava);
-            if(checking.getRelative(BlockFace.WEST).getType().equals(Material.AIR))
+            if (checking.getRelative(BlockFace.WEST).getType().equals(Material.AIR))
                 updatePhys(checking.getRelative(BlockFace.WEST), checking.getType(), lava);
-            if(checking.getRelative(ClassicPhysics.TYPE.equals(PhysicsType.REVERSE) ? BlockFace.UP : BlockFace.DOWN).getType().equals(Material.AIR))
+            if (checking.getRelative(ClassicPhysics.TYPE.equals(PhysicsType.REVERSE) ? BlockFace.UP : BlockFace.DOWN).getType().equals(Material.AIR))
                 updatePhys(checking.getRelative(ClassicPhysics.TYPE.equals(PhysicsType.REVERSE) ? BlockFace.UP : BlockFace.DOWN), checking.getType(), lava);
         }
 
-        if (validClassicBlocks.contains(down)) {
+        if (validClassicBlocks.contains(down) || (ClassicPhysics.TYPE.equals(PhysicsType.REVERSE) && validClassicBlocks.contains(up))) {
             event.setCancelled(true);
             return;
         }
 
-        if (validClassicBlocks.contains(east))
-            handleEvent(event, east);
         if (validClassicBlocks.contains(north))
             handleEvent(event, north);
+        if (validClassicBlocks.contains(east))
+            handleEvent(event, east);
         if (validClassicBlocks.contains(south))
             handleEvent(event, south);
         if (validClassicBlocks.contains(west))

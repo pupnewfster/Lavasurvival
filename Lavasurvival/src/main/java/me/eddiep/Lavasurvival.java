@@ -208,6 +208,10 @@ public class Lavasurvival extends JavaPlugin {
         return userManager;
     }
 
+    public GGBot getGGBot() {
+        return ggbot;
+    }
+
     public GGBotWarn getGGBotWarn() {
         return ggbotWarn;
     }

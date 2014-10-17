@@ -1,7 +1,6 @@
 package me.eddiep.game;
 
 import me.eddiep.Lavasurvival;
-import me.eddiep.game.impl.Flood;
 import me.eddiep.game.impl.Rise;
 import me.eddiep.ranks.Rank;
 import me.eddiep.ranks.UserInfo;
@@ -62,9 +61,8 @@ public abstract class Gamemode {
     }
 
     public static void clearTeam(Team team) {
-        for (OfflinePlayer p : team.getPlayers()) {
+        for (OfflinePlayer p : team.getPlayers())
             team.removePlayer(p);
-        }
     }
 
     public static LavaMap getCurrentMap() {
@@ -297,8 +295,8 @@ public abstract class Gamemode {
                         next = nextMaps[i];
                     }
                 }
-
-                globalMessage(ChatColor.BOLD + next.getName() + ChatColor.RESET + " won the vote!");
+                if(next != null)
+                    globalMessage(ChatColor.BOLD + next.getName() + ChatColor.RESET + " won the vote!");
                 if (nextGame == null)
                     nextGame = pickRandomGame();
                 nextGame.map = next;
@@ -337,7 +335,7 @@ public abstract class Gamemode {
             Bukkit.getScheduler().scheduleSyncDelayedTask(Lavasurvival.INSTANCE, new Runnable() {
                 @Override
                 public void run() {
-                    nextGame.start(RANDOM.nextInt(100) < 75);//Makes whether it is a lava game or a water game change each round
+                    nextGame.start(RANDOM.nextInt(100) < 75);
                 }
             }, 40); //2 seconds
         }
@@ -357,11 +355,6 @@ public abstract class Gamemode {
         return base + (bonusAdd * Math.min(recursiveFill(loc.getWorld(), loc.getBlockX(), loc.getBlockY(), loc.getBlockZ(), 0), 100));
     }
 
-    private boolean isLiquid(Material material) {
-        return material == Material.WATER || material == Material.STATIONARY_WATER ||
-                material == Material.LAVA || material == Material.STATIONARY_LAVA;
-    }
-
     private int recursiveFill(World world, int x, int y, int z, int curBlockCount) {
         if (curBlockCount >= 100)
             return curBlockCount;
@@ -369,7 +362,7 @@ public abstract class Gamemode {
         for (int xadd = -1; xadd <= 1; xadd++)
             for (int yadd = -1; yadd <= 1; yadd++)
                 for (int zadd = -1; zadd <= 1; zadd++)
-                    if (!world.getBlockAt(x + xadd, y + yadd, z + zadd).getType().isSolid() && !isLiquid(world.getBlockAt(x + xadd, y + yadd, z + zadd).getType())) {
+                    if (!world.getBlockAt(x + xadd, y + yadd, z + zadd).getType().isSolid() && !world.getBlockAt(x + xadd, y + yadd, z + zadd).isLiquid()) {
                         curBlockCount = Math.min(curBlockCount + 1, 100);
                         curBlockCount = recursiveFill(world, x + xadd, y + yadd, z + zadd, curBlockCount);
 
@@ -393,7 +386,7 @@ public abstract class Gamemode {
         setAlive(player);
         player.teleport(new Location(getCurrentWorld(), getCurrentMap().getMapSpawn().getX(), getCurrentMap().getMapSpawn().getY(), getCurrentMap().getMapSpawn().getZ()));
         player.setGameMode(GameMode.SURVIVAL);
-        player.setHealth(20);
+        player.setHealth(player.getMaxHealth());
         globalMessageNoPrefix(ChatColor.GREEN + "+ " + player.getDisplayName() + ChatColor.RESET + " has joined the game!");
     }
 

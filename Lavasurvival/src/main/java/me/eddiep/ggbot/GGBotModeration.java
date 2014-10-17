@@ -276,7 +276,7 @@ public class GGBotModeration {//Based off of Janet
 
     public String internalAdds(String message) {
         String[] orig = message.split(" ");
-        String temp = "";
+        String temp;
         for(int i = 0; i < orig.length; i++) {
             if(orig[i].split(":").length == 0)
                 continue;

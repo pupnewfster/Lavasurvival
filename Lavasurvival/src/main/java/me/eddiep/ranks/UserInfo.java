@@ -2,6 +2,7 @@ package me.eddiep.ranks;
 
 import me.eddiep.Lavasurvival;
 import me.eddiep.game.Gamemode;
+import me.eddiep.system.BukkitUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -173,27 +174,37 @@ public class UserInfo {
         return this.ownedBlocks.contains(new MaterialData(type, data));
     }
 
-    public void buyBlock(Material mat, double price, byte data) {
+    public void buyBlock(Material mat, double price, byte data, Rank r) {
         if (getPlayer() == null)
             return;
-        if (ownsBlock(mat, data))
+        RankManager rm = Lavasurvival.INSTANCE.getRankManager();
+        if (!rm.hasRank(getRank(), r))
+            getPlayer().sendMessage(ChatColor.RED + "Sorry! You must be " + ChatColor.BOLD + ChatColor.ITALIC + r.getName() + ChatColor.RED + " to buy that block..");
+        else if (ownsBlock(mat, data))
             getPlayer().sendMessage(ChatColor.RED + "You already own that block..");
         else if (!Lavasurvival.INSTANCE.getEconomy().hasAccount(getPlayer()) || Lavasurvival.INSTANCE.getEconomy().getBalance(getPlayer()) < price) {
             getPlayer().sendMessage(ChatColor.RED + "You do not have enough money to buy the block type " + mat.toString().replaceAll("_", " ").toLowerCase() + " with datavalue " + data + "..");
-        } else {
+        } else if (BukkitUtils.isInventoryFull(getPlayer().getInventory()))
+            getPlayer().sendMessage(ChatColor.RED + "You do not have enough inventory space to buy any more blocks..");
+        else {
             addBlock(mat, data);
             getPlayer().sendMessage(ChatColor.GREEN + "You bought the block type " + mat.toString().replaceAll("_", " ").toLowerCase() + " with datavalue " + data + "!");
         }
     }
 
-    public void buyBlock(Material mat, double price) {
+    public void buyBlock(Material mat, double price, Rank r) {
         if (getPlayer() == null)
             return;
-        if (ownsBlock(mat))
+        RankManager rm = Lavasurvival.INSTANCE.getRankManager();
+        if (!rm.hasRank(getRank(), r))
+            getPlayer().sendMessage(ChatColor.RED + "Sorry! You must be " + ChatColor.BOLD + ChatColor.ITALIC + r.getName() + ChatColor.RED + " to buy that block..");
+        else if (ownsBlock(mat))
             getPlayer().sendMessage(ChatColor.RED + "You already own that block..");
         else if (!Lavasurvival.INSTANCE.getEconomy().hasAccount(getPlayer()) || Lavasurvival.INSTANCE.getEconomy().getBalance(getPlayer()) < price) {
             getPlayer().sendMessage(ChatColor.RED + "You do not have enough money to buy the block type " + mat.toString().replaceAll("_", " ").toLowerCase() + "..");
-        } else {
+        } else if (BukkitUtils.isInventoryFull(getPlayer().getInventory()))
+            getPlayer().sendMessage(ChatColor.RED + "You do not have enough inventory space to buy any more blocks..");
+        else {
             addBlock(mat);
             getPlayer().sendMessage(ChatColor.GREEN + "You bought the block type " + mat.toString().replaceAll("_", " ").toLowerCase() + "!");
         }

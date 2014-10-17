@@ -125,18 +125,12 @@ public class Rise extends Gamemode {
             return;
         }
 
-        //if(loc.getBlock().getType().equals(Material.AIR)) { //We don't need to check this
         loc.getBlock().setType(getMat());
 
         gameStart = System.currentTimeMillis(); //Set the last event to now
         getCurrentWorld().strikeLightningEffect(loc); //Actions are better than words :3
 
-        Bukkit.getScheduler().scheduleSyncDelayedTask(Lavasurvival.INSTANCE, new Runnable() {
-            @Override
-            public void run() {
-                Bukkit.getPluginManager().callEvent(new BlockPhysicsEvent(loc.getBlock(), 0)); //Force a physics check
-            }
-        }, LAVA ? 30 : 5);
+        Bukkit.getPluginManager().callEvent(new BlockPhysicsEvent(loc.getBlock(), 0)); //Force a physics check
 
         lvl++;
         if (loc.getBlockY() <= getCurrentMap().getLavaY()) liquidUp(time); //Only advance up if we are still less than the actual lava spawn or if we are at the lava spawn (the next check will end the game, see above)

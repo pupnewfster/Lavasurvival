@@ -10,4 +10,8 @@ public class BukkitUtils {
                 return false;
         return true;
     }
+
+    public static boolean isInventoryFull(Inventory inv) {
+        return inv.firstEmpty() == -1;
+    }
 }
