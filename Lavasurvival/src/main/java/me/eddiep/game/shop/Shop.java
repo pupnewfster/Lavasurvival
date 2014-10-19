@@ -6,6 +6,7 @@ import net.njay.MenuManager;
 import net.njay.player.MenuPlayer;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.HandlerList;
@@ -30,9 +31,13 @@ public class Shop implements Listener {
 
     public Shop(Class<? extends Menu> class_) {
         try {
-            menu = class_.getConstructor(MenuManager.class, Inventory.class);
+            menu = class_.getConstructor(MenuManager.class, Inventory.class, Player.class);
         } catch (NoSuchMethodException e) {
-            e.printStackTrace();
+            try {
+                menu = class_.getConstructor(MenuManager.class, Inventory.class);
+            } catch (NoSuchMethodException e1) {
+                e1.printStackTrace();
+            }
         }
     }
 
@@ -73,7 +78,12 @@ public class Shop implements Listener {
         if ((event.getAction() == Action.RIGHT_CLICK_BLOCK || event.getAction() == Action.RIGHT_CLICK_AIR) && event.getItem() != null && event.getItem().equals(opener)) {
             MenuPlayer player = MenuFramework.getPlayerManager().getPlayer(event.getPlayer());
             try {
-                Menu menuObj = menu.newInstance(player.getMenuManager(), null);
+                Menu menuObj;
+                if (menu.getParameterTypes().length == 3)
+                    menuObj = menu.newInstance(player.getMenuManager(), null, event.getPlayer());
+                else
+                    menuObj = menu.newInstance(player.getMenuManager(), null);
+
                 player.setActiveMenu(menuObj);
                 event.setCancelled(true);
             } catch (Exception e) {
