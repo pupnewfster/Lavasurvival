@@ -22,7 +22,7 @@ public class BasicBlockShop extends Menu {
             item = @ItemStackAnnotation(material = (Material.EMERALD), name = "Back to block shop", lore = {"§6§oBuy more blocks!"})
     )
     public void backToMenu(MenuPlayer player) {
-        player.setActiveMenu(new BlockShopCatagory(player.getMenuManager(), null, player.getBukkit()));
+        player.setActiveMenuAndReplace(new BlockShopCatagory(player.getMenuManager(), null, player.getBukkit()), true);
     }
 
     @MenuItem(
