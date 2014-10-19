@@ -155,6 +155,12 @@ public class PhysicsListener implements Listener {
         ticksToMelt.put(new MaterialData(Material.IRON_DOOR_BLOCK), -1);
         ticksToMelt.put(new MaterialData(Material.BEDROCK), -1);
         ticksToMelt.put(new MaterialData(Material.OBSIDIAN), -1);
+
+        //Rest of items
+        MaterialData temp;
+        for(Material mat : Material.values())
+            if(!ticksToMelt.containsKey(temp = new MaterialData(mat)) && !ticksToMelt.containsKey(new MaterialData(mat, (byte)0)))
+                ticksToMelt.put(temp, 5 * 20);
     }
 
     @EventHandler(priority = EventPriority.MONITOR)

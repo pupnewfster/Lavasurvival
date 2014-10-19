@@ -149,9 +149,8 @@ public class PlayerListener implements Listener {
                 if (survival) {
                     Inventory inventory = event.getPlayer().getInventory();
                     int index = inventory.first(block.getType());
-                    if (index == -1) {
+                    if (index == -1)
                         index = inventory.firstEmpty();
-                    }
                     if (index != -1) {
                         ItemStack stack = inventory.getItem(index);
                         if (stack == null) {

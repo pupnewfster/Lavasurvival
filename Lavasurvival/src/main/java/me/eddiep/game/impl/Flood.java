@@ -41,7 +41,6 @@ public class Flood extends Gamemode {
         if (doubleReward) {
             globalMessage("" + ChatColor.GREEN + ChatColor.BOLD + "All rewards this round are doubled!");
             globalMessage("but.." + ChatColor.RED + ChatColor.BOLD + "THE TIME HAS BEEN CUT IN HALF");
-
             duration *= 0.5;
         }
         /*if (Gamemode.getPlayerListener().survival)

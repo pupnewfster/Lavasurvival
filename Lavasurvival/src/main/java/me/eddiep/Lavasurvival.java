@@ -37,10 +37,7 @@ public class Lavasurvival extends JavaPlugin {
         public void run() {
             Collection<? extends Player> players = Bukkit.getOnlinePlayers();
             for (Player player : players) {
-                Inventory inv = player.getInventory();
-
-                ShopFactory.validateInventory(inv);
-
+                ShopFactory.validateInventory(player.getInventory());
                 updateMoneyView(player);
             }
         }
@@ -63,26 +60,19 @@ public class Lavasurvival extends JavaPlugin {
 
         if (index == -1) {
             ItemStack item = new ItemStack(Material.GOLD_INGOT);
-
             ItemMeta meta = item.getItemMeta();
             meta.setDisplayName(ChatColor.GOLD + "Balance");
-
             ArrayList<String> lore = new ArrayList<String>();
             lore.add(ChatColor.ITALIC + "Current Balance: " + ChatColor.RESET + econ.format(econ.getBalance(player)));
-
             meta.setLore(lore);
-
             item.setItemMeta(meta);
-
             inv.setItem(inv.firstEmpty(), item);
         }
 
         ItemStack item = inv.getItem(index);
-
         ItemMeta meta = item.getItemMeta();
         ArrayList<String> lore = new ArrayList<String>();
         lore.add(ChatColor.ITALIC + "Current Balance: " + ChatColor.RESET + econ.format(econ.getBalance(player)));
-
         meta.setLore(lore);
         item.setItemMeta(meta);
     }
@@ -244,9 +234,7 @@ public class Lavasurvival extends JavaPlugin {
         if(sender == null || cmd == null)
             return null;
         List<String> tab = getCmd(cmd.getName()).tabComplete(sender, args);
-        if(tab == null || tab.isEmpty())
-            return null;
-        return tab;
+        return (tab == null || tab.isEmpty()) ? null : tab;
     }
 
     private Cmd getCmd(String name) {
