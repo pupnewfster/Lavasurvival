@@ -26,8 +26,8 @@ public class Rise extends Gamemode {
     private int sched = 0;
 
     @Override
-    public void start(boolean lava) {
-        super.start(lava);
+    public void start() {
+        super.start();
         duration = Gamemode.RANDOM.nextInt(240000) + 180000;
         timeOut = Gamemode.RANDOM.nextInt(45000) + 30000;
         globalMessage("The current gamemode is " + ChatColor.RED + ChatColor.BOLD + "RISE");

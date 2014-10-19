@@ -138,11 +138,11 @@ public abstract class Gamemode {
     }
 
     private long lastMoneyCheck = System.currentTimeMillis();
-    public void start(boolean lava) {
+    public void start() {
         Lavasurvival.log("New game on " + getCurrentWorld().getName());
 
-        LAVA = lava;
-        WATER_DAMAGE = LAVA ? 0 : 1;
+        LAVA = RANDOM.nextInt(100) < 75;//Have water/lava check be in here instead of as arguement
+        WATER_DAMAGE = LAVA ? 0 : 2;
 
         clearTeam(alive);
         clearTeam(dead);
@@ -341,7 +341,7 @@ public abstract class Gamemode {
             Bukkit.getScheduler().scheduleSyncDelayedTask(Lavasurvival.INSTANCE, new Runnable() {
                 @Override
                 public void run() {
-                    nextGame.start(RANDOM.nextInt(100) < 75);
+                    nextGame.start();
                 }
             }, 40); //2 seconds
         }

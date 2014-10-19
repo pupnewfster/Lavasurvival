@@ -185,6 +185,7 @@ public class UserInfo {
             getPlayer().sendMessage(ChatColor.RED + "You do not have enough inventory space to buy any more blocks..");
         else {
             addBlock(mat, data);
+            Lavasurvival.INSTANCE.withdrawAndUpdate(getPlayer(), price);
             getPlayer().sendMessage(ChatColor.GREEN + "You bought the block type " + mat.toString().replaceAll("_", " ").toLowerCase() + " with datavalue " + data + "!");
         }
     }

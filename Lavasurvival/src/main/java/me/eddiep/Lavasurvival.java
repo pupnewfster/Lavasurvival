@@ -122,7 +122,7 @@ public class Lavasurvival extends JavaPlugin {
         Rise flood = new Rise();
         if (LavaMap.getPossibleMaps().length > 0) {
             flood.prepare();
-            flood.start(Gamemode.RANDOM.nextInt(100) < 75);
+            flood.start();
             running = true;
         } else //Only schedule a listener if no maps. If maps then it already is initialized through Gamemode.prepare()
             getServer().getPluginManager().registerEvents(new PlayerListener(), this);

@@ -20,8 +20,8 @@ public class Flood extends Gamemode {
     private boolean doubleReward;
 
     @Override
-    public void start(boolean lava) {
-        super.start(lava);
+    public void start() {
+        super.start();
         duration = Gamemode.RANDOM.nextInt(240000) + 180000;
         globalMessage("The " + (LAVA ? "lava" : "water") + " will pour in " + ChatColor.DARK_RED + TimeUtils.toFriendlyTime(duration));
         gameStart = System.currentTimeMillis();
