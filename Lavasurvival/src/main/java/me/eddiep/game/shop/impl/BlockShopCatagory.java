@@ -1,7 +1,6 @@
 package me.eddiep.game.shop.impl;
 
 import me.eddiep.Lavasurvival;
-import me.eddiep.ranks.RankManager;
 import me.eddiep.ranks.UserInfo;
 import net.njay.Menu;
 import net.njay.MenuManager;
@@ -10,7 +9,6 @@ import net.njay.annotation.MenuInventory;
 import net.njay.annotation.MenuItem;
 import net.njay.annotation.PreProcessor;
 import net.njay.player.MenuPlayer;
-import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
