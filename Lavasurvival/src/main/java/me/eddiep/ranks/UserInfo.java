@@ -174,13 +174,10 @@ public class UserInfo {
         return this.ownedBlocks.contains(new MaterialData(type, data));
     }
 
-    public void buyBlock(Material mat, double price, byte data, Rank r) {
+    public void buyBlock(Material mat, double price, byte data) {
         if (getPlayer() == null)
             return;
-        RankManager rm = Lavasurvival.INSTANCE.getRankManager();
-        if (!rm.hasRank(getRank(), r))
-            getPlayer().sendMessage(ChatColor.RED + "Sorry! You must be " + ChatColor.BOLD + ChatColor.ITALIC + r.getName() + ChatColor.RED + " to buy that block..");
-        else if (ownsBlock(mat, data))
+        if (ownsBlock(mat, data))
             getPlayer().sendMessage(ChatColor.RED + "You already own that block..");
         else if (!Lavasurvival.INSTANCE.getEconomy().hasAccount(getPlayer()) || Lavasurvival.INSTANCE.getEconomy().getBalance(getPlayer()) < price) {
             getPlayer().sendMessage(ChatColor.RED + "You do not have enough money to buy the block type " + mat.toString().replaceAll("_", " ").toLowerCase() + " with datavalue " + data + "..");
@@ -192,13 +189,10 @@ public class UserInfo {
         }
     }
 
-    public void buyBlock(Material mat, double price, Rank r) {
+    public void buyBlock(Material mat, double price) {
         if (getPlayer() == null)
             return;
-        RankManager rm = Lavasurvival.INSTANCE.getRankManager();
-        if (!rm.hasRank(getRank(), r))
-            getPlayer().sendMessage(ChatColor.RED + "Sorry! You must be " + ChatColor.BOLD + ChatColor.ITALIC + r.getName() + ChatColor.RED + " to buy that block..");
-        else if (ownsBlock(mat))
+        if (ownsBlock(mat))
             getPlayer().sendMessage(ChatColor.RED + "You already own that block..");
         else if (!Lavasurvival.INSTANCE.getEconomy().hasAccount(getPlayer()) || Lavasurvival.INSTANCE.getEconomy().getBalance(getPlayer()) < price) {
             getPlayer().sendMessage(ChatColor.RED + "You do not have enough money to buy the block type " + mat.toString().replaceAll("_", " ").toLowerCase() + "..");

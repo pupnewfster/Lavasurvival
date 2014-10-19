@@ -1,7 +1,6 @@
 package me.eddiep.game.shop.impl;
 
 import me.eddiep.Lavasurvival;
-import me.eddiep.ranks.Rank;
 import me.eddiep.ranks.UserInfo;
 import net.njay.Menu;
 import net.njay.MenuManager;
@@ -14,7 +13,6 @@ import org.bukkit.inventory.Inventory;
 
 @MenuInventory(slots = 9, name = "Survivor Block Shop")
 public class SurvivorBlockShop extends Menu {
-    Rank survivor = Lavasurvival.INSTANCE.getRankManager().getRank("Survivor");
     public SurvivorBlockShop(MenuManager manager, Inventory inv) {
         super(manager, inv);
     }
@@ -32,7 +30,7 @@ public class SurvivorBlockShop extends Menu {
             item = @ItemStackAnnotation(material = (Material.PACKED_ICE), name = "Packed ice", lore = {"20 ggs"})
     )
     public void buyPackedIce(MenuPlayer player) {
-        getUser(player).buyBlock(Material.PACKED_ICE, 20, survivor);
+        getUser(player).buyBlock(Material.PACKED_ICE, 20);
     }
 
     @MenuItem(
@@ -40,7 +38,7 @@ public class SurvivorBlockShop extends Menu {
             item = @ItemStackAnnotation(material = (Material.BRICK), name = "Brick", lore = {"220 ggs"})
     )
     public void buyBrick(MenuPlayer player) {
-        getUser(player).buyBlock(Material.BRICK, 220, survivor);
+        getUser(player).buyBlock(Material.BRICK, 220);
     }
 
     @MenuItem(
@@ -48,7 +46,7 @@ public class SurvivorBlockShop extends Menu {
             item = @ItemStackAnnotation(material = (Material.SMOOTH_BRICK), durability = 0, name = "Stone brick", lore = {"300 ggs"})
     )
     public void buyStoneBrick(MenuPlayer player) {
-        getUser(player).buyBlock(Material.SMOOTH_BRICK, 300, (byte) 0, survivor);
+        getUser(player).buyBlock(Material.SMOOTH_BRICK, 300, (byte) 0);
     }
 
     @MenuItem(
@@ -56,7 +54,7 @@ public class SurvivorBlockShop extends Menu {
             item = @ItemStackAnnotation(material = (Material.THIN_GLASS), name = "Glass pane", lore = {"380 ggs"})
     )
     public void buyGlassPane(MenuPlayer player) {
-        getUser(player).buyBlock(Material.THIN_GLASS, 380, survivor);
+        getUser(player).buyBlock(Material.THIN_GLASS, 380);
     }
 
     @MenuItem(
@@ -64,7 +62,7 @@ public class SurvivorBlockShop extends Menu {
             item = @ItemStackAnnotation(material = (Material.IRON_FENCE), name = "Iron bars", lore = {"450 ggs"})
     )
     public void buyIronBars(MenuPlayer player) {
-        getUser(player).buyBlock(Material.IRON_FENCE, 450, survivor);
+        getUser(player).buyBlock(Material.IRON_FENCE, 450);
     }
 
     @MenuItem(
@@ -72,7 +70,7 @@ public class SurvivorBlockShop extends Menu {
             item = @ItemStackAnnotation(material = (Material.IRON_BLOCK), name = "Block of iron", lore = {"480 ggs"})
     )
     public void buyIron(MenuPlayer player) {
-        getUser(player).buyBlock(Material.IRON_BLOCK, 480, survivor);
+        getUser(player).buyBlock(Material.IRON_BLOCK, 480);
     }
 
     private UserInfo getUser(MenuPlayer player) {

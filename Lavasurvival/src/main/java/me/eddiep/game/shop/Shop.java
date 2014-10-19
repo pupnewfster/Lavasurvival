@@ -84,7 +84,7 @@ public class Shop implements Listener {
                 else
                     menuObj = menu.newInstance(player.getMenuManager(), null);
 
-                player.setActiveMenu(menuObj);
+                player.setActiveMenuAndReplace(menuObj, true);
                 event.setCancelled(true);
             } catch (Exception e) {
                 e.printStackTrace();

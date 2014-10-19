@@ -1,7 +1,6 @@
 package me.eddiep.game.shop.impl;
 
 import me.eddiep.Lavasurvival;
-import me.eddiep.ranks.Rank;
 import me.eddiep.ranks.UserInfo;
 import net.njay.Menu;
 import net.njay.MenuManager;
@@ -14,7 +13,6 @@ import org.bukkit.inventory.Inventory;
 
 @MenuInventory(slots = 27, name = "Basic Block Shop")
 public class BasicBlockShop extends Menu {
-    Rank basic = Lavasurvival.INSTANCE.getRankManager().getRank("Basic");
     public BasicBlockShop(MenuManager manager, Inventory inv) {
         super(manager, inv);
     }
@@ -32,7 +30,7 @@ public class BasicBlockShop extends Menu {
             item = @ItemStackAnnotation(material = (Material.GRAVEL), name = "Gravel", lore = {"75 ggs"})
     )
     public void buyGravel(MenuPlayer player) {
-        getUser(player).buyBlock(Material.GRAVEL, 75, basic);
+        getUser(player).buyBlock(Material.GRAVEL, 75);
     }
 
     @MenuItem(
@@ -40,7 +38,7 @@ public class BasicBlockShop extends Menu {
             item = @ItemStackAnnotation(material = (Material.STONE), name = "Stone", lore = {"100 ggs"})
     )
     public void buyStone(MenuPlayer player) {
-        getUser(player).buyBlock(Material.STONE, 100, basic);
+        getUser(player).buyBlock(Material.STONE, 100);
     }
 
     @MenuItem(
@@ -48,7 +46,7 @@ public class BasicBlockShop extends Menu {
             item = @ItemStackAnnotation(material = (Material.LOG), durability = 0, name = "Oak log", lore = {"135 ggs"})
     )
     public void buyOakLog(MenuPlayer player) {
-        getUser(player).buyBlock(Material.LOG, 135, (byte) 0, basic);
+        getUser(player).buyBlock(Material.LOG, 135, (byte) 0);
     }
 
     @MenuItem(
@@ -56,7 +54,7 @@ public class BasicBlockShop extends Menu {
             item = @ItemStackAnnotation(material = (Material.LOG), durability = 1, name = "Spruce log", lore = {"135 ggs"})
     )
     public void buySpruceLog(MenuPlayer player) {
-        getUser(player).buyBlock(Material.LOG, 135, (byte) 1, basic);
+        getUser(player).buyBlock(Material.LOG, 135, (byte) 1);
     }
 
     @MenuItem(
@@ -64,7 +62,7 @@ public class BasicBlockShop extends Menu {
             item = @ItemStackAnnotation(material = (Material.LOG), durability = 2, name = "Birch log", lore = {"135 ggs"})
     )
     public void buyBirchLog(MenuPlayer player) {
-        getUser(player).buyBlock(Material.LOG, 135, (byte) 2, basic);
+        getUser(player).buyBlock(Material.LOG, 135, (byte) 2);
     }
 
     @MenuItem(
@@ -72,7 +70,7 @@ public class BasicBlockShop extends Menu {
             item = @ItemStackAnnotation(material = (Material.LOG), durability = 3, name = "Jungle log", lore = {"135 ggs"})
     )
     public void buyJungleLog(MenuPlayer player) {
-        getUser(player).buyBlock(Material.LOG, 135, (byte) 3, basic);
+        getUser(player).buyBlock(Material.LOG, 135, (byte) 3);
     }
 
     @MenuItem(
@@ -80,7 +78,7 @@ public class BasicBlockShop extends Menu {
             item = @ItemStackAnnotation(material = (Material.LOG_2), durability = 0, name = "Acacia log", lore = {"135 ggs"})
     )
     public void buyAcaciaLog(MenuPlayer player) {
-        getUser(player).buyBlock(Material.LOG_2, 135, (byte) 0, basic);
+        getUser(player).buyBlock(Material.LOG_2, 135, (byte) 0);
     }
 
     @MenuItem(
@@ -88,7 +86,7 @@ public class BasicBlockShop extends Menu {
             item = @ItemStackAnnotation(material = (Material.LOG_2), durability = 1, name = "Dark oak log", lore = {"135 ggs"})
     )
     public void buyDarkOakLog(MenuPlayer player) {
-        getUser(player).buyBlock(Material.LOG_2, 135, (byte) 1, basic);
+        getUser(player).buyBlock(Material.LOG_2, 135, (byte) 1);
     }
 
     @MenuItem(
@@ -96,7 +94,7 @@ public class BasicBlockShop extends Menu {
             item = @ItemStackAnnotation(material = (Material.SANDSTONE), name = "Sandstone", lore = {"180 ggs"})
     )
     public void buySandstone(MenuPlayer player) {
-        getUser(player).buyBlock(Material.SANDSTONE, 180, basic);
+        getUser(player).buyBlock(Material.SANDSTONE, 180);
     }
 
     @MenuItem(
@@ -104,7 +102,7 @@ public class BasicBlockShop extends Menu {
             item = @ItemStackAnnotation(material = (Material.HARD_CLAY), name = "Hardened clay", lore = {"185 ggs"})
     )
     public void buyHardClay(MenuPlayer player) {
-        getUser(player).buyBlock(Material.HARD_CLAY, 185, basic);
+        getUser(player).buyBlock(Material.HARD_CLAY, 185);
     }
 
     @MenuItem(
@@ -112,7 +110,7 @@ public class BasicBlockShop extends Menu {
             item = @ItemStackAnnotation(material = (Material.STAINED_CLAY), durability = 0, name = "White stained clay", lore = {"185 ggs"})
     )
     public void buyWhiteClay(MenuPlayer player) {
-        getUser(player).buyBlock(Material.STAINED_CLAY, 185, (byte) 0, basic);
+        getUser(player).buyBlock(Material.STAINED_CLAY, 185, (byte) 0);
     }
 
     @MenuItem(
@@ -120,7 +118,7 @@ public class BasicBlockShop extends Menu {
             item = @ItemStackAnnotation(material = (Material.STAINED_CLAY), durability = 1, name = "Orange stained clay", lore = {"185 ggs"})
     )
     public void buyOrangeClay(MenuPlayer player) {
-        getUser(player).buyBlock(Material.STAINED_CLAY, 185, (byte) 1, basic);
+        getUser(player).buyBlock(Material.STAINED_CLAY, 185, (byte) 1);
     }
 
     @MenuItem(
@@ -128,7 +126,7 @@ public class BasicBlockShop extends Menu {
             item = @ItemStackAnnotation(material = (Material.STAINED_CLAY), durability = 2, name = "Magenta stained clay", lore = {"185 ggs"})
     )
     public void buyMagentaClay(MenuPlayer player) {
-        getUser(player).buyBlock(Material.STAINED_CLAY, 185, (byte) 2, basic);
+        getUser(player).buyBlock(Material.STAINED_CLAY, 185, (byte) 2);
     }
 
     @MenuItem(
@@ -136,7 +134,7 @@ public class BasicBlockShop extends Menu {
             item = @ItemStackAnnotation(material = (Material.STAINED_CLAY), durability = 3, name = "Light blue stained clay", lore = {"185 ggs"})
     )
     public void buyLightBlueClay(MenuPlayer player) {
-        getUser(player).buyBlock(Material.STAINED_CLAY, 185, (byte) 3, basic);
+        getUser(player).buyBlock(Material.STAINED_CLAY, 185, (byte) 3);
     }
 
     @MenuItem(
@@ -144,7 +142,7 @@ public class BasicBlockShop extends Menu {
             item = @ItemStackAnnotation(material = (Material.STAINED_CLAY), durability = 4, name = "Yellow stained clay", lore = {"185 ggs"})
     )
     public void buyYellowClay(MenuPlayer player) {
-        getUser(player).buyBlock(Material.STAINED_CLAY, 185, (byte) 4, basic);
+        getUser(player).buyBlock(Material.STAINED_CLAY, 185, (byte) 4);
     }
 
     @MenuItem(
@@ -152,7 +150,7 @@ public class BasicBlockShop extends Menu {
             item = @ItemStackAnnotation(material = (Material.STAINED_CLAY), durability = 5, name = "Lime stained clay", lore = {"185 ggs"})
     )
     public void buyLimeClay(MenuPlayer player) {
-        getUser(player).buyBlock(Material.STAINED_CLAY, 185, (byte) 5, basic);
+        getUser(player).buyBlock(Material.STAINED_CLAY, 185, (byte) 5);
     }
 
     @MenuItem(
@@ -160,7 +158,7 @@ public class BasicBlockShop extends Menu {
             item = @ItemStackAnnotation(material = (Material.STAINED_CLAY), durability = 6, name = "Pink stained clay", lore = {"185 ggs"})
     )
     public void buyPinkClay(MenuPlayer player) {
-        getUser(player).buyBlock(Material.STAINED_CLAY, 185, (byte) 6, basic);
+        getUser(player).buyBlock(Material.STAINED_CLAY, 185, (byte) 6);
     }
 
     @MenuItem(
@@ -168,7 +166,7 @@ public class BasicBlockShop extends Menu {
             item = @ItemStackAnnotation(material = (Material.STAINED_CLAY), durability = 7, name = "Gray stained clay", lore = {"185 ggs"})
     )
     public void buyGrayClay(MenuPlayer player) {
-        getUser(player).buyBlock(Material.STAINED_CLAY, 185, (byte) 7, basic);
+        getUser(player).buyBlock(Material.STAINED_CLAY, 185, (byte) 7);
     }
 
     @MenuItem(
@@ -176,7 +174,7 @@ public class BasicBlockShop extends Menu {
             item = @ItemStackAnnotation(material = (Material.STAINED_CLAY), durability = 8, name = "Light gray stained clay", lore = {"185 ggs"})
     )
     public void buyLightGrayClay(MenuPlayer player) {
-        getUser(player).buyBlock(Material.STAINED_CLAY, 185, (byte) 8, basic);
+        getUser(player).buyBlock(Material.STAINED_CLAY, 185, (byte) 8);
     }
 
     @MenuItem(
@@ -184,7 +182,7 @@ public class BasicBlockShop extends Menu {
             item = @ItemStackAnnotation(material = (Material.STAINED_CLAY), durability = 9, name = "Cyan stained clay", lore = {"185 ggs"})
     )
     public void buyCyanClay(MenuPlayer player) {
-        getUser(player).buyBlock(Material.STAINED_CLAY, 185, (byte) 9, basic);
+        getUser(player).buyBlock(Material.STAINED_CLAY, 185, (byte) 9);
     }
 
     @MenuItem(
@@ -192,7 +190,7 @@ public class BasicBlockShop extends Menu {
             item = @ItemStackAnnotation(material = (Material.STAINED_CLAY), durability = 10, name = "Purple stained clay", lore = {"185 ggs"})
     )
     public void buyPurpleClay(MenuPlayer player) {
-        getUser(player).buyBlock(Material.STAINED_CLAY, 185, (byte) 10, basic);
+        getUser(player).buyBlock(Material.STAINED_CLAY, 185, (byte) 10);
     }
 
     @MenuItem(
@@ -200,7 +198,7 @@ public class BasicBlockShop extends Menu {
             item = @ItemStackAnnotation(material = (Material.STAINED_CLAY), durability = 11, name = "Blue stained clay", lore = {"185 ggs"})
     )
     public void buyBlueClay(MenuPlayer player) {
-        getUser(player).buyBlock(Material.STAINED_CLAY, 185, (byte) 11, basic);
+        getUser(player).buyBlock(Material.STAINED_CLAY, 185, (byte) 11);
     }
 
     @MenuItem(
@@ -208,7 +206,7 @@ public class BasicBlockShop extends Menu {
             item = @ItemStackAnnotation(material = (Material.STAINED_CLAY), durability = 12, name = "Brown staied clay", lore = {"185 ggs"})
     )
     public void buyBrownClay(MenuPlayer player) {
-        getUser(player).buyBlock(Material.STAINED_CLAY, 185, (byte) 12, basic);
+        getUser(player).buyBlock(Material.STAINED_CLAY, 185, (byte) 12);
     }
 
     @MenuItem(
@@ -216,7 +214,7 @@ public class BasicBlockShop extends Menu {
             item = @ItemStackAnnotation(material = (Material.STAINED_CLAY), durability = 13, name = "Green stained clay", lore = {"185 ggs"})
     )
     public void buyGreenClay(MenuPlayer player) {
-        getUser(player).buyBlock(Material.STAINED_CLAY, 185, (byte) 13, basic);
+        getUser(player).buyBlock(Material.STAINED_CLAY, 185, (byte) 13);
     }
 
     @MenuItem(
@@ -224,7 +222,7 @@ public class BasicBlockShop extends Menu {
             item = @ItemStackAnnotation(material = (Material.STAINED_CLAY), durability = 14, name = "Red stained clay", lore = {"185 ggs"})
     )
     public void buyRedClay(MenuPlayer player) {
-        getUser(player).buyBlock(Material.STAINED_CLAY, 185, (byte) 14, basic);
+        getUser(player).buyBlock(Material.STAINED_CLAY, 185, (byte) 14);
     }
 
     @MenuItem(
@@ -232,7 +230,7 @@ public class BasicBlockShop extends Menu {
             item = @ItemStackAnnotation(material = (Material.STAINED_CLAY), durability = 15, name = "Black stained clay", lore = {"185 ggs"})
     )
     public void buyBlackClay(MenuPlayer player) {
-        getUser(player).buyBlock(Material.STAINED_CLAY, 185, (byte) 15, basic);
+        getUser(player).buyBlock(Material.STAINED_CLAY, 185, (byte) 15);
     }
 
     private UserInfo getUser(MenuPlayer player) {
