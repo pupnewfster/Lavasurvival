@@ -137,6 +137,7 @@ public abstract class Gamemode {
         currentmap.prepare();
     }
 
+    private long lastMoneyCheck = System.currentTimeMillis();
     public void start(boolean lava) {
         Lavasurvival.log("New game on " + getCurrentWorld().getName());
 
@@ -175,9 +176,14 @@ public abstract class Gamemode {
             }
         }
 
+        Lavasurvival.INSTANCE.MONEY_VIEWER.run();
         tickTask = Bukkit.getScheduler().scheduleSyncRepeatingTask(Lavasurvival.INSTANCE, new Runnable() {
             @Override
             public void run() {
+                if (System.currentTimeMillis() - lastMoneyCheck >= 20000) {
+                    Lavasurvival.INSTANCE.MONEY_VIEWER.run();
+                    lastMoneyCheck = System.currentTimeMillis();
+                }
                 onTick();
             }
         }, 0, 1);

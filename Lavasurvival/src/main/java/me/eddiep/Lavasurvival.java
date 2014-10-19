@@ -32,7 +32,7 @@ import java.util.*;
 public class Lavasurvival extends JavaPlugin {
     public static final Gson GSON = new Gson();
     public static Lavasurvival INSTANCE;
-    private final Runnable MONEY_VIEWER = new Runnable() {
+    public final Runnable MONEY_VIEWER = new Runnable() {
         @Override
         public void run() {
             Collection<? extends Player> players = Bukkit.getOnlinePlayers();
@@ -41,39 +41,7 @@ public class Lavasurvival extends JavaPlugin {
 
                 ShopFactory.validateInventory(inv);
 
-                int index = inv.first(Material.GOLD_INGOT);
-
-                if (index == -1) {
-                    ItemStack item = new ItemStack(Material.GOLD_INGOT);
-
-                    ItemMeta meta = item.getItemMeta();
-                    meta.setDisplayName(ChatColor.GOLD + "Balance");
-
-                    ArrayList<String> lore = new ArrayList<String>();
-                    lore.add(ChatColor.ITALIC + "Current Balance: " + ChatColor.RESET + econ.format(econ.getBalance(player)));
-
-                    meta.setLore(lore);
-
-                    item.setItemMeta(meta);
-
-                    inv.setItem(inv.firstEmpty(), item);
-                    continue;
-                }
-
-                ItemStack item = inv.getItem(index);
-
-                ItemMeta meta = item.getItemMeta();
-                ArrayList<String> lore = new ArrayList<String>();
-                lore.add(ChatColor.ITALIC + "Current Balance: " + ChatColor.RESET + econ.format(econ.getBalance(player)));
-
-                meta.setLore(lore);
-                item.setItemMeta(meta);
-            }
-
-            try {
-                Thread.sleep(3000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
+                updateMoneyView(player);
             }
         }
     };
@@ -87,6 +55,42 @@ public class Lavasurvival extends JavaPlugin {
     private UserManager userManager;
     private boolean running = false;
     private int moneyViewer;
+
+    public void updateMoneyView(Player player) {
+        Inventory inv = player.getInventory();
+
+        int index = inv.first(Material.GOLD_INGOT);
+
+        if (index == -1) {
+            ItemStack item = new ItemStack(Material.GOLD_INGOT);
+
+            ItemMeta meta = item.getItemMeta();
+            meta.setDisplayName(ChatColor.GOLD + "Balance");
+
+            ArrayList<String> lore = new ArrayList<String>();
+            lore.add(ChatColor.ITALIC + "Current Balance: " + ChatColor.RESET + econ.format(econ.getBalance(player)));
+
+            meta.setLore(lore);
+
+            item.setItemMeta(meta);
+
+            inv.setItem(inv.firstEmpty(), item);
+        }
+
+        ItemStack item = inv.getItem(index);
+
+        ItemMeta meta = item.getItemMeta();
+        ArrayList<String> lore = new ArrayList<String>();
+        lore.add(ChatColor.ITALIC + "Current Balance: " + ChatColor.RESET + econ.format(econ.getBalance(player)));
+
+        meta.setLore(lore);
+        item.setItemMeta(meta);
+    }
+
+    public void withdrawAndUpdate(Player player, double price) {
+        econ.withdrawPlayer(player, price);
+        updateMoneyView(player);
+    }
 
     public static void log(String message) {
         INSTANCE.getLogger().info(message);

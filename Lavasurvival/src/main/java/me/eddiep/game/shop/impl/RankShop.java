@@ -74,7 +74,7 @@ public class RankShop extends Menu {
             player.getBukkit().sendMessage(ChatColor.RED + "You do not have enough money to buy the " + manager.getRank(RANK).getPrevious().getName() + " rank!");
         else {
             user.setRank(user.getRank().getNext());
-            Lavasurvival.INSTANCE.getEconomy().withdrawPlayer(player.getBukkit(), price);
+            Lavasurvival.INSTANCE.withdrawAndUpdate(player.getBukkit(), price);
             Lavasurvival.globalMessage(user.getPlayer().getDisplayName() + ChatColor.GREEN + " just bought the " + user.getRank().getName() + " rank!");
             player.getBukkit().getOpenInventory().close();
         }
