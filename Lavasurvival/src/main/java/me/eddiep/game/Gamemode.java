@@ -1,6 +1,7 @@
 package me.eddiep.game;
 
 import me.eddiep.Lavasurvival;
+import me.eddiep.game.impl.Flood;
 import me.eddiep.game.impl.Rise;
 import me.eddiep.ranks.Rank;
 import me.eddiep.ranks.UserInfo;
@@ -29,8 +30,8 @@ public abstract class Gamemode {
             Material.WOOD,
             Material.SAND
     };
-    public static final ItemStack SHOP_OPENER = new ItemStack(Material.EMERALD, 1);
     public static final Class[] GAMES = new Class[]{
+            Flood.class,
             Rise.class
     };
 
