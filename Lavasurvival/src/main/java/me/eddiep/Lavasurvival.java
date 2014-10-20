@@ -127,7 +127,7 @@ public class Lavasurvival extends JavaPlugin {
         um.unload();
         if (running) {
             log("Stopping game..");
-            Gamemode.getCurrentGame().end();
+            Gamemode.getCurrentGame().forceEnd();
             log("Cleaning up..");
             Gamemode.cleanup();
             ShopFactory.cleanup();
@@ -148,14 +148,15 @@ public class Lavasurvival extends JavaPlugin {
         BookMeta meta = (BookMeta) rules.getItemMeta();
         meta.setTitle("Rules");
         meta.setAuthor("GamezGalaxy");
-        String text = "rule 1";
-        text = addRule(text, "rule 2");
-        meta.addPage(text);
+        meta.addPage("1. No Griefing." + "\n" +
+                "2. Any form of hacked client is forbidden." + "\n" +
+                "3. No cursing or offensive language." + "\n" +
+                "4. No block spamming." + "\n" +
+                "5. No damming the lava" + "\n" +
+                "6. No leaving the map" + "\n" +
+                "7. No blocking spawn" + "\n" +
+                "8. Please ask before entering someone else's shelter" + "\n");
         rules.setItemMeta(meta);
-    }
-
-    private String addRule(String current, String rule) {
-        return current + "\n" + rule;
     }
 
     private void setupShops() {

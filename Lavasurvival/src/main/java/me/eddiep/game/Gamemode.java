@@ -318,7 +318,11 @@ public abstract class Gamemode {
         }).start();
     }
 
-    public void end() {
+    public void forceEnd() {
+        end();
+    }
+
+    private void end() {
         Bukkit.getScheduler().cancelTask(tickTask);
         physicsListener.cancelAllTasks();
         globalMessage(ChatColor.GREEN + "The round has ended!");
