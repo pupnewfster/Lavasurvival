@@ -19,7 +19,7 @@ public class CmdOpchat extends Cmd {
             UserInfo u = um.getUser(p.getUniqueId());
             if (args.length > 0)
                 sendOps(p.getUniqueId(), message);
-            else if (!u.opChat()) {
+            else if (!u.isInOpChat()) {
                 p.sendMessage(ChatColor.GOLD + "You are now sending messages only to ops.");
                 u.toggleOpChat();
             } else {

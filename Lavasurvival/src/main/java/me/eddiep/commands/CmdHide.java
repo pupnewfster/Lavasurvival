@@ -23,7 +23,7 @@ public class CmdHide extends Cmd {
                 p.sendMessage(ChatColor.GOLD + "You are now visible.");
                 Bukkit.broadcast(ChatColor.GOLD + "To Ops - " + ChatColor.RED + p.getDisplayName() + ChatColor.GOLD + " - is now " + ChatColor.DARK_GRAY +
                         "visible" + ChatColor.GOLD + ".", "lavasurvival.opchat");
-                if (u.opChat()) {
+                if (u.isInOpChat()) {
                     u.toggleOpChat();
                     p.sendMessage(ChatColor.GOLD + "You are no longer sending messages to ops.");
                 }
@@ -34,7 +34,7 @@ public class CmdHide extends Cmd {
                 p.sendMessage(ChatColor.GOLD + "You are now hidden.");
                 Bukkit.broadcast(ChatColor.GOLD + "To Ops - " + ChatColor.RED + p.getDisplayName() + ChatColor.GOLD + " - is now " + ChatColor.WHITE +
                         "invisible" + ChatColor.GOLD + ".", "lavasurvival.opchat");
-                if (!u.opChat()) {
+                if (!u.isInOpChat()) {
                     u.toggleOpChat();
                     p.sendMessage(ChatColor.GOLD + "You are now sending messages only to ops.");
                 }

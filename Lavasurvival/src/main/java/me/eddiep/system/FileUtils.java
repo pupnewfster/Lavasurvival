@@ -7,41 +7,6 @@ import java.util.List;
 
 public class FileUtils {
     /**
-     * The directory for the log files
-     */
-    public static final String LOG_DIR = "logs" + File.separator;
-    /**
-     * The directory for the properties file
-     */
-    public static final String PROPS_DIR = "properties" + File.separator;
-    /**
-     * The directory of the folder for misc text stuff
-     */
-    public static final String TEXT_DIR = "text" + File.separator;
-    /**
-     * The filename for the banned file
-     */
-    public static final String BANNED_FILE = "banned.txt";
-    /**
-     * The filename for the rules file
-     */
-    public static final String RULES_FILE = "rules.txt";
-    /**
-     * The filename for the IRC Controllers file.
-     */
-    public static final String IRCCONTROLLERS_FILE = "ranks" + File.separator + "IRCControllers";
-
-    /**
-     * Creates all the files and directories that MCForge needs.
-     */
-    public static void createFilesAndDirs() {
-        try {
-            createIfNotExist("ranks", "IRCControllers");
-        } catch (IOException ignored) {
-        }
-    }
-
-    /**
      * Creates the directory/file if it doesn't exist.
      *
      * @param path     - The directory to create.

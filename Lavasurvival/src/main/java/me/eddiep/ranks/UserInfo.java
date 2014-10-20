@@ -61,7 +61,7 @@ public class UserInfo {
         return getPlayer().getName();
     }
 
-    public boolean opChat() {
+    public boolean isInOpChat() {
         return this.opChat;
     }
 

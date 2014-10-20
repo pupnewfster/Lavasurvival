@@ -106,11 +106,14 @@ public class PlayerListener implements Listener {
             else
                 event.setCancelled(false);
 
-            if (!event.isCancelled() && u.opChat()) {
+            if (!event.isCancelled() && (u.isInOpChat() || (event.getMessage().startsWith("#") && player.hasPermission("lavasurvival.opchat")))) {
+                if (event.getMessage().startsWith("#"))
+                    event.setMessage(event.getMessage().substring(1)); //Remove #
+
                 event.setFormat(ChatColor.GOLD + "To Ops - " + ChatColor.WHITE + event.getFormat());
                 ArrayList<Player> toRem = new ArrayList<Player>();
                 for (Player recip : event.getRecipients())
-                    if (u.opChat() && !recip.hasPermission("lavasurvival.opchat"))
+                    if (u.isInOpChat() && !recip.hasPermission("lavasurvival.opchat"))
                         toRem.add(recip);
                 for (Player recip : toRem)
                     event.getRecipients().remove(recip);
