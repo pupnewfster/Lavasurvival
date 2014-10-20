@@ -84,7 +84,8 @@ public class BlockShopCatagory extends Menu {
         if (!rm.hasRank(u.getRank(), rm.getRank("Basic"))) {
             ItemStack i = inv.getItem(2);
             ItemMeta m = i.getItemMeta();
-            m.setLore(Arrays.asList(ChatColor.RED + "" + ChatColor.BOLD + "You are not skilled enough to enter!",
+            m.setLore(Arrays.asList(ChatColor.RED + "" + ChatColor.BOLD + "You are not skilled",
+                    ChatColor.RED + "" + ChatColor.BOLD + "enough to enter!",
                     ChatColor.RED + "" + ChatColor.ITALIC + "Requires: Basic"));
             i.setItemMeta(m);
             inv.setItem(2, i);
@@ -92,7 +93,8 @@ public class BlockShopCatagory extends Menu {
         if (!rm.hasRank(u.getRank(), rm.getRank("Advanced"))) {
             ItemStack i = inv.getItem(3);
             ItemMeta m = i.getItemMeta();
-            m.setLore(Arrays.asList(ChatColor.RED + "" + ChatColor.BOLD + "You are not skilled enough to enter!",
+            m.setLore(Arrays.asList(ChatColor.RED + "" + ChatColor.BOLD + "You are not skilled",
+                    ChatColor.RED + "" + ChatColor.BOLD + "enough to enter!",
                     ChatColor.RED + "" + ChatColor.ITALIC + "Requires: Advanced"));
             i.setItemMeta(m);
             inv.setItem(3, i);
@@ -100,7 +102,8 @@ public class BlockShopCatagory extends Menu {
         if (!rm.hasRank(u.getRank(), rm.getRank("Survivor"))) {
             ItemStack i = inv.getItem(4);
             ItemMeta m = i.getItemMeta();
-            m.setLore(Arrays.asList(ChatColor.RED + "" + ChatColor.BOLD + "You are not skilled enough to enter!",
+            m.setLore(Arrays.asList(ChatColor.RED + "" + ChatColor.BOLD + "You are not skilled",
+                    ChatColor.RED + "" + ChatColor.BOLD + "enough to enter!",
                     ChatColor.RED + "" + ChatColor.ITALIC + "Requires: Survivor"));
             i.setItemMeta(m);
             inv.setItem(4, i);
@@ -108,7 +111,8 @@ public class BlockShopCatagory extends Menu {
         if (!rm.hasRank(u.getRank(), rm.getRank("Trusted"))) {
             ItemStack i = inv.getItem(5);
             ItemMeta m = i.getItemMeta();
-            m.setLore(Arrays.asList(ChatColor.RED + "" + ChatColor.BOLD + "You are not skilled enough to enter!",
+            m.setLore(Arrays.asList(ChatColor.RED + "" + ChatColor.BOLD + "You are not skilled",
+                    ChatColor.RED + "" + ChatColor.BOLD + "enough to enter!",
                     ChatColor.RED + "" + ChatColor.ITALIC + "Requires: Trusted"));
             i.setItemMeta(m);
             inv.setItem(5, i);
@@ -116,7 +120,8 @@ public class BlockShopCatagory extends Menu {
         if (!rm.hasRank(u.getRank(), rm.getRank("Elder"))) {
             ItemStack i = inv.getItem(6);
             ItemMeta m = i.getItemMeta();
-            m.setLore(Arrays.asList(ChatColor.RED + "" + ChatColor.BOLD + "You are not skilled enough to enter!",
+            m.setLore(Arrays.asList(ChatColor.RED + "" + ChatColor.BOLD + "You are not skilled",
+                    ChatColor.RED + "" + ChatColor.BOLD + "enough to enter!",
                     ChatColor.RED + "" + ChatColor.ITALIC + "Requires: Elder"));
             i.setItemMeta(m);
             inv.setItem(6, i);

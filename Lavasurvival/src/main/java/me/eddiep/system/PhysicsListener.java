@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 public class PhysicsListener implements Listener {
+    private static final long DEFAULT_SPEED = 5 * 20;
     private static final HashMap<MaterialData, Integer> ticksToMelt = new HashMap<MaterialData, Integer>();
 
     private ArrayList<Integer> tasks = new ArrayList<Integer>();
@@ -155,12 +156,6 @@ public class PhysicsListener implements Listener {
         ticksToMelt.put(new MaterialData(Material.IRON_DOOR_BLOCK), -1);
         ticksToMelt.put(new MaterialData(Material.BEDROCK), -1);
         ticksToMelt.put(new MaterialData(Material.OBSIDIAN), -1);
-
-        //Rest of items
-        MaterialData temp;
-        for(Material mat : Material.values())
-            if(!ticksToMelt.containsKey(temp = new MaterialData(mat)) && !ticksToMelt.containsKey(new MaterialData(mat, (byte)0)))
-                ticksToMelt.put(temp, 5 * 20);
     }
 
     @EventHandler(priority = EventPriority.MONITOR)
@@ -182,6 +177,14 @@ public class PhysicsListener implements Listener {
                     blockChecking.setType(event.getNewBlock());
                 }
             }, tickCount);
+            tasks.add(task);
+        } else { //Melt at default speed
+            int task = Bukkit.getScheduler().scheduleSyncDelayedTask(Lavasurvival.INSTANCE, new Runnable() {
+                @Override
+                public void run() {
+                    blockChecking.setType(event.getNewBlock());
+                }
+            }, DEFAULT_SPEED);
             tasks.add(task);
         }
     }
