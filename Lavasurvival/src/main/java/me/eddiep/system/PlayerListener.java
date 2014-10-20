@@ -3,6 +3,7 @@ package me.eddiep.system;
 import me.eddiep.Lavasurvival;
 import me.eddiep.commands.CmdHide;
 import me.eddiep.game.Gamemode;
+import me.eddiep.game.LavaMap;
 import me.eddiep.game.shop.ShopFactory;
 import me.eddiep.ggbot.GGBotModeration;
 import me.eddiep.ranks.UUIDs;
@@ -32,6 +33,7 @@ import org.bukkit.inventory.ItemStack;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 public class PlayerListener implements Listener {
     public final ArrayList<Material> invalidBlocks = new ArrayList<Material>(Arrays.asList(new Material[]{
@@ -45,7 +47,6 @@ public class PlayerListener implements Listener {
             Material.BEDROCK
     }));
     public boolean survival = false;
-    public ArrayList<OfflinePlayer> voted = new ArrayList<OfflinePlayer>();
     UserManager um = Lavasurvival.INSTANCE.getUserManager();
     UUIDs get = Lavasurvival.INSTANCE.getUUIDs();
     GGBotModeration bot = Lavasurvival.INSTANCE.getGGBotModeration();
@@ -57,6 +58,9 @@ public class PlayerListener implements Listener {
         Player player = event.getPlayer();
         UserInfo u = um.getUser(player.getUniqueId());
         String message = event.getMessage();
+        Gamemode game = Gamemode.getCurrentGame();
+
+
         if(message.endsWith(">") && ! message.equals(">")) {
             String appended = u.getAppended() + " " + message.substring(0, message.length() - 1);
             u.setAppended(appended.trim());
@@ -70,9 +74,11 @@ public class PlayerListener implements Listener {
         if (u.getRank() != null)
             event.setFormat(ChatColor.translateAlternateColorCodes('&', u.getRank().getTitle()) + " " + player.getName() + ": " +
                     bot.logChat(player.getUniqueId(), event.getMessage()));
-        if (Gamemode.getCurrentGame() != null && Gamemode.voting) {
+
+
+        if (game != null && game.isVoting()) {
             event.setCancelled(true);
-            if (voted.contains(player)) {
+            if (game.hasVoted(player)) {
                 if (player.hasPermission("lavasurvival.voteSpeak"))
                     event.setCancelled(false);
                 else
@@ -81,22 +87,14 @@ public class PlayerListener implements Listener {
             }
             try {
                 int number = Integer.parseInt(event.getMessage());
-                number--;
-                if (number >= Gamemode.nextMaps.length) {
-                    player.sendMessage(ChatColor.DARK_RED + "Invalid number! Please choose a number between (1 - " + Gamemode.nextMaps.length + ").");
-                    return;
-                }
-                voted.add(player);
-                Gamemode.votes[number]++;
-                player.sendMessage(ChatColor.GREEN + "+ " + ChatColor.RESET + "" + ChatColor.BOLD + "You voted for " + Gamemode.nextMaps[number].getName() + "!");
+                game.voteFor(number - 1, player);
                 return;
             } catch (Throwable t) {
                 String map = event.getMessage();
-                for (int i = 0; i < Gamemode.nextMaps.length; i++)
-                    if (map.equalsIgnoreCase(Gamemode.nextMaps[i].getName())) {
-                        voted.add(player);
-                        Gamemode.votes[i]++;
-                        player.sendMessage(ChatColor.GREEN + "+ " + ChatColor.RESET + "" + ChatColor.BOLD + "You voted for " + Gamemode.nextMaps[i].getName() + "!");
+                List<LavaMap> maps = game.getMapsInVote();
+                for (int i = 0; i < maps.size(); i++)
+                    if (map.equalsIgnoreCase(maps.get(i).getName())) {
+                        game.voteFor(i, player);
                         return;
                     }
             }
@@ -105,19 +103,20 @@ public class PlayerListener implements Listener {
                 player.sendMessage(ChatColor.RED + "No talking during the vote!");
             else
                 event.setCancelled(false);
+        }
 
-            if (!event.isCancelled() && (u.isInOpChat() || (event.getMessage().startsWith("#") && player.hasPermission("lavasurvival.opchat")))) {
-                if (event.getMessage().startsWith("#"))
-                    event.setMessage(event.getMessage().substring(1)); //Remove #
 
-                event.setFormat(ChatColor.GOLD + "To Ops - " + ChatColor.WHITE + event.getFormat());
-                ArrayList<Player> toRem = new ArrayList<Player>();
-                for (Player recip : event.getRecipients())
-                    if (u.isInOpChat() && !recip.hasPermission("lavasurvival.opchat"))
-                        toRem.add(recip);
-                for (Player recip : toRem)
-                    event.getRecipients().remove(recip);
-            }
+        if (!event.isCancelled() && (u.isInOpChat() || (event.getMessage().startsWith("#") && player.hasPermission("lavasurvival.opchat")))) {
+            if (event.getMessage().startsWith("#"))
+                event.setMessage(event.getMessage().substring(1)); //Remove #
+
+            event.setFormat(ChatColor.GOLD + "To Ops - " + ChatColor.WHITE + event.getFormat());
+            ArrayList<Player> toRem = new ArrayList<Player>();
+            for (Player recip : event.getRecipients())
+                if (u.isInOpChat() && !recip.hasPermission("lavasurvival.opchat"))
+                    toRem.add(recip);
+            for (Player recip : toRem)
+                event.getRecipients().remove(recip);
         }
     }
 
