@@ -1,6 +1,7 @@
 package me.eddiep.system;
 
 import me.eddiep.Lavasurvival;
+import me.eddiep.commands.CmdHide;
 import me.eddiep.game.Gamemode;
 import me.eddiep.game.shop.ShopFactory;
 import me.eddiep.ggbot.GGBotModeration;
@@ -55,6 +56,17 @@ public class PlayerListener implements Listener {
             return;
         Player player = event.getPlayer();
         UserInfo u = um.getUser(player.getUniqueId());
+        String message = event.getMessage();
+        if(message.endsWith(">") && ! message.equals(">")) {
+            String appended = u.getAppended() + " " + message.substring(0, message.length() - 1);
+            u.setAppended(appended.trim());
+            player.sendMessage(ChatColor.GREEN + "Message appended.");
+            event.setCancelled(true);
+            return;
+        } else if (!u.getAppended().equals("")) {
+            event.setMessage(u.getAppended() + " " + message);
+            u.setAppended("");
+        }
         if (u.getRank() != null)
             event.setFormat(ChatColor.translateAlternateColorCodes('&', u.getRank().getTitle()) + " " + player.getName() + ": " +
                     bot.logChat(player.getUniqueId(), event.getMessage()));
@@ -93,6 +105,16 @@ public class PlayerListener implements Listener {
                 player.sendMessage(ChatColor.RED + "No talking during the vote!");
             else
                 event.setCancelled(false);
+
+            if (!event.isCancelled() && u.opChat()) {
+                event.setFormat(ChatColor.GOLD + "To Ops - " + ChatColor.WHITE + event.getFormat());
+                ArrayList<Player> toRem = new ArrayList<Player>();
+                for (Player recip : event.getRecipients())
+                    if (u.opChat() && !recip.hasPermission("lavasurvival.opchat"))
+                        toRem.add(recip);
+                for (Player recip : toRem)
+                    event.getRecipients().remove(recip);
+            }
         }
     }
 
@@ -218,6 +240,13 @@ public class PlayerListener implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void playerQuit(PlayerQuitEvent event) {
+        CmdHide hide = Lavasurvival.INSTANCE.getHide();
+        if (hide.isHidden(event.getPlayer())) {
+            Bukkit.broadcast(ChatColor.GOLD + "To Ops - " + event.getQuitMessage(), "lavasurvival.opchat");
+            event.setQuitMessage(null);
+        }
+        hide.removeP(event.getPlayer().getUniqueId());
+        hide.playerLeft(event.getPlayer());
         um.getUser(event.getPlayer().getUniqueId()).logOut();
         Lavasurvival.INSTANCE.getGGBotModeration().removePlayer(event.getPlayer().getUniqueId());
     }
@@ -226,8 +255,12 @@ public class PlayerListener implements Listener {
     public void playerJoin(PlayerJoinEvent event) {
         um.addUser(event.getPlayer());
         um.parseUser(event.getPlayer());
-        if (!get.hasJoined(event.getPlayer().getUniqueId()))
+        if (!get.hasJoined(event.getPlayer().getUniqueId())) {
             get.addUUID(event.getPlayer().getUniqueId());
+            event.getPlayer().getInventory().addItem(Lavasurvival.INSTANCE.getRules());
+        }
+
+        Lavasurvival.INSTANCE.getHide().playerJoined(event.getPlayer());
 
         if (!Lavasurvival.INSTANCE.getEconomy().hasAccount(event.getPlayer()))
             Lavasurvival.INSTANCE.getEconomy().createPlayerAccount(event.getPlayer());

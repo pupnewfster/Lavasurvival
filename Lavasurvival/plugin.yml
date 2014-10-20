@@ -43,6 +43,44 @@ commands:
     permission: lavasurvival.setrank
     permission-message: You don't have <permission>
     aliases: [rank]
+  warn:
+    description: Warns <player> for <reason>.
+    usage: /<command> <player> <reason>
+    permission: lavasurvival.warn
+    permission-message: You don't have <permission>
+  hide:
+    description: Go invisible.
+    usage: /<command> <player> <rank>
+    permission: lavasurvival.hide
+    permission-message: You don't have <permission>
+    aliases: [rank]
+  opchat:
+    description: Toggles opchat.
+    usage: /<command>
+    permission: lavasurvival.opchat
+    permission-message: You don't have <permission>
+    aliases: [oc]
+  kick:
+    description: Kicks <player> for optional <reason>.
+    usage: /<command> <player> <reason>
+    permission: lavasurvival.kick
+    permission-message: You don't have <permission>
+  ban:
+    description: Bans <player> for optional <reason>.
+    usage: /<command> <player> <reason>
+    permission: lavasurvival.ban
+    permission-message: You don't have <permission>
+  endgame:
+    description: Ends the current game.
+    usage: /<command>
+    permission: lavasurvival.endGame
+    permission-message: You don't have <permission>
+    aliases: [end]
+  rules:
+    description: Gives you a copy of the rules.
+    usage: /<command>
+    permission: lavasurvival.rules
+    permission-message: You don't have <permission>
 permissions:
     lavasurvival.*:
         description: lavasurvival's permission nodes
@@ -58,8 +96,18 @@ permissions:
             lavasurvival.language: true
             lavasurvival.advertise: true
             lavasurvival.caps: true
+            lavasurvival.warn: true
+            lavasurvival.hide: true
+            lavasurvival.opchat: true
+            lavasurvival.kick: true
+            lavasurvival.ban: true
+            lavasurvival.endGame: true
+            lavasurvival.rules: true
     lavasurvival.lvote:
         description: Allows you to vote for maps.
+        default: true
+    lavasurvival.rules:
+        description: Allows you to read the rules.
         default: true
     lavasurvival.join:
         description: Allows you to join a game of lava survival.
@@ -90,4 +138,22 @@ permissions:
         default: op
     lavasurvival.caps:
         description: Allows you to use caps.
+        default: op
+    lavasurvival.warn:
+        description: Allows you to warn other players.
+        default: op
+    lavasurvival.hide:
+        description: Allows you to hide.
+        default: op
+    lavasurvival.opchat:
+        description: Allows you to toggle opchat.
+        default: op
+    lavasurvival.kick:
+        description: Allows you to kick other players.
+        default: op
+    lavasurvival.ban:
+        description: Allows you to ban non ops.
+        default: op
+    lavasurvival.endGame:
+        description: Allows you to end the current game.
         default: op

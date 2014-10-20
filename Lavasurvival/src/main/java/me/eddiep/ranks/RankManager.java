@@ -12,9 +12,9 @@ import java.util.Arrays;
 import java.util.HashMap;
 
 public class RankManager {
+    private File configFileRanks = new File(Lavasurvival.INSTANCE.getDataFolder(), "ranks.yml");
     private static HashMap<String, Rank> ranks = new HashMap<String, Rank>();
     private static ArrayList<Rank> order = new ArrayList<Rank>();
-    private File configFileRanks = new File(Lavasurvival.INSTANCE.getDataFolder(), "ranks.yml");
 
     public void readRanks() {
         YamlConfiguration configRanks = YamlConfiguration.loadConfiguration(configFileRanks);
@@ -100,10 +100,11 @@ public class RankManager {
                 configRanks.set("Elder.rankTitle", "&f[&0Elder&f]");
                 configRanks.set("Elder.previousRank", "Trusted");
                 configRanks.set("Op.permissions", Arrays.asList("lavasurvival.setup", "lavasurvival.promote", "lavasurvival.demote", "lavasurvival.setrank",
-                        "lavasurvival.voteSpeak"));
+                        "lavasurvival.voteSpeak", "lavasurvival.warn", "lavasurvival.hide", "lavasurvival.opchat", "lavasurvival.kick", "bukkit.command.gamemode",
+                        "bukkit.command.teleport"));
                 configRanks.set("Op.rankTitle", "&f[&6Op&f]");
                 configRanks.set("Op.previousRank", "Elder");
-                configRanks.set("Admin.permissions", Arrays.asList("lavasurvival.spamchat", "lavasurvival.language", "lavasurvival.advertise", "lavasurvival.caps"));
+                configRanks.set("Admin.permissions", Arrays.asList("lavasurvival.ban", "lavasurvival.endGame"));
                 configRanks.set("Admin.rankTitle", "&f[&cAdmin&f]");
                 configRanks.set("Admin.previousRank", "Op");
                 configRanks.save(configFileRanks);

@@ -16,11 +16,8 @@ public class GGBotWarn {//Based off of Janet
         warnCount.remove(uuid);
     }
 
-    public void warn(UUID uuid, String reason) {
-        if(!warnCount.containsKey(uuid))
-            warnCount.put(uuid, 1);
-        else
-            warnCount.put(uuid, warnCount.get(uuid) + 1);
+    public void warn(UUID uuid, String reason, String warner) {
+        warnCount.put(uuid, !warnCount.containsKey(uuid) ? 1 : warnCount.get(uuid) + 1);
         if(warnCount.get(uuid) == warns) {
             if(reason.equals("Language"))
                 language(uuid);
@@ -28,6 +25,8 @@ public class GGBotWarn {//Based off of Janet
                 chatSpam(uuid);
             else if(reason.equals("Adds"))
                 advertising(uuid);
+            else
+                kickOther(uuid, reason, warner);
         } else {
             if(reason.equals("Language"))
                 langMsg(uuid);
@@ -35,6 +34,8 @@ public class GGBotWarn {//Based off of Janet
                 chatMsg(uuid);
             else if(reason.equals("Adds"))
                 addsMsg(uuid);
+            else
+                warnOther(uuid, reason, warner);
             timesLeft(uuid);
         }
     }
@@ -62,6 +63,11 @@ public class GGBotWarn {//Based off of Janet
         Bukkit.getPlayer(uuid).sendMessage(ggbotName + ChatColor.DARK_RED + "Warning, " + ChatColor.WHITE + "Do not advertise other servers please.");
     }
 
+    private void warnOther(UUID uuid, String reason, String warner) {
+        broadcast(ggbotName + getName(uuid) + " was warned for " + reason+ ".", uuid);
+        Bukkit.getPlayer(uuid).sendMessage(ggbotName + ChatColor.DARK_RED + "Warning, " + ChatColor.WHITE + "Do not " + reason+ ".");
+    }
+
     private void chatSpam(UUID uuid) {
         broadcast(ggbotName + getName(uuid) + " was kicked for spamming the chat.", uuid);
         Bukkit.getPlayer(uuid).kickPlayer(ChatColor.WHITE + "Don't spam the chat!");
@@ -75,6 +81,12 @@ public class GGBotWarn {//Based off of Janet
     private void advertising(UUID uuid) {
         broadcast(ggbotName + getName(uuid) + " was kicked for advertising.", uuid);
         Bukkit.getPlayer(uuid).kickPlayer(ChatColor.WHITE + "Do not advertise other servers!");
+    }
+
+    private void kickOther(UUID uuid, String reason, String warner) {
+
+        broadcast(ggbotName + getName(uuid) + " was kicked for " + reason + ".", uuid);
+        Bukkit.getPlayer(uuid).kickPlayer(ChatColor.WHITE + "Do not " + reason + "!");
     }
 
     private String getName(UUID uuid) {

@@ -20,7 +20,9 @@ public class UserInfo {
     private File configFileUsers = new File(Lavasurvival.INSTANCE.getDataFolder(), "userinfo.yml");
     private ArrayList<MaterialData> ownedBlocks = new ArrayList<MaterialData>();
     private PermissionAttachment attachment;
+    private String appended = "";
     private boolean inWater = false;
+    private boolean opChat = false;
     private int taskID = 0;
     private Player bukkitPlayer;
     private UUID userUUID;
@@ -44,6 +46,7 @@ public class UserInfo {
 
     public void logOut() {
         this.bukkitPlayer = null;
+        setAppended("");
     }
 
     public UUID getUUID() {
@@ -56,6 +59,14 @@ public class UserInfo {
         if (getPlayer() == null)
             return Bukkit.getOfflinePlayer(getUUID()).getName();
         return getPlayer().getName();
+    }
+
+    public boolean opChat() {
+        return this.opChat;
+    }
+
+    public void toggleOpChat() {
+        this.opChat = !this.opChat;
     }
 
     public Rank getRank() {
@@ -103,6 +114,14 @@ public class UserInfo {
     public void removePerms() {
         for (String p : this.attachment.getPermissions().keySet())
             this.attachment.unsetPermission(p);
+    }
+
+    public String getAppended() {
+        return this.appended;
+    }
+
+    public void setAppended(String toAppend) {
+        this.appended = toAppend;
     }
 
     public boolean isInWater() {

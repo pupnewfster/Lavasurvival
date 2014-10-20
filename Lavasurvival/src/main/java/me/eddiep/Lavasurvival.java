@@ -22,6 +22,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.BookMeta;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -50,8 +51,10 @@ public class Lavasurvival extends JavaPlugin {
     private GGBotWarn ggbotWarn;
     private UUIDs uuiDs;
     private UserManager userManager;
+    private CmdHide hide;
     private boolean running = false;
     private int moneyViewer;
+    private ItemStack rules;
 
     public void updateMoneyView(Player player) {
         Inventory inv = player.getInventory();
@@ -106,7 +109,7 @@ public class Lavasurvival extends JavaPlugin {
         }
         //Setup the shops after connecting to vault
         setupShops();
-
+        setRules();
         /*log("Making money viewer task..");
         moneyViewer = getServer().getScheduler().scheduleSyncRepeatingTask(this, MONEY_VIEWER, 0, 25);*/
         Rise flood = new Rise();
@@ -140,6 +143,21 @@ public class Lavasurvival extends JavaPlugin {
         running = false;
     }
 
+    private void setRules() {
+        rules = new ItemStack(Material.WRITTEN_BOOK);
+        BookMeta meta = (BookMeta) rules.getItemMeta();
+        meta.setTitle("Rules");
+        meta.setAuthor("GamezGalaxy");
+        String text = "rule 1";
+        text = addRule(text, "rule 2");
+        meta.addPage(text);
+        rules.setItemMeta(meta);
+    }
+
+    private String addRule(String current, String rule) {
+        return current + "\n" + rule;
+    }
+
     private void setupShops() {
         MenuFramework.enable(new MenuRegistry(this, RankShop.class, BlockShopCatagory.class, BasicBlockShop.class,
                 AdvancedBlockShop.class, SurvivorBlockShop.class, TrustedBlockShop.class, ElderBlockShop.class));
@@ -170,6 +188,7 @@ public class Lavasurvival extends JavaPlugin {
         ggbotWarn = new GGBotWarn();
         ggbotModeration = new GGBotModeration();
         ggbot = new GGBot();
+        hide = new CmdHide();
         rankManager.setRanks();
         rankManager.readRanks();
         uuiDs.initiate();
@@ -184,6 +203,14 @@ public class Lavasurvival extends JavaPlugin {
             return false;
         econ = rsp.getProvider();
         return econ != null;
+    }
+
+    public CmdHide getHide() {
+        return hide;
+    }
+
+    public ItemStack getRules() {
+        return rules;
     }
 
     public Economy getEconomy() {
@@ -251,6 +278,20 @@ public class Lavasurvival extends JavaPlugin {
             com = new CmdLVote();
         else if (name.equalsIgnoreCase("setupmap"))
             com = new CmdSetupMap();
+        else if (name.equalsIgnoreCase("warn"))
+            com = new CmdWarn();
+        else if (name.equalsIgnoreCase("hide"))
+            com = new CmdHide();
+        else if (name.equalsIgnoreCase("opchat"))
+            com = new CmdOpchat();
+        else if (name.equalsIgnoreCase("kick"))
+            com = new CmdKick();
+        else if (name.equalsIgnoreCase("ban"))
+            com = new CmdBan();
+        else if (name.equalsIgnoreCase("endgame"))
+            com = new CmdEndGame();
+        else if (name.equalsIgnoreCase("rules"))
+            com = new CmdRules();
         return com;
     }
 }
