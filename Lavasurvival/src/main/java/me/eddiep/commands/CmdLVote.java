@@ -22,7 +22,7 @@ public class CmdLVote extends Cmd {
             try {
                 int number = Integer.parseInt(args[0]);
                 number--;
-                game.voteFor(number);
+                game.voteFor(number, player);
             } catch (Throwable t) {
                 player.sendMessage(ChatColor.DARK_RED + "Invalid number! Please choose a number between (1 - " + Gamemode.getCurrentGame().getMapsInVote().size() + ").");
             }
