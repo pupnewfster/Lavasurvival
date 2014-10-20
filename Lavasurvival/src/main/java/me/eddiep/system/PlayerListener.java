@@ -47,9 +47,10 @@ public class PlayerListener implements Listener {
             Material.BEDROCK
     }));
     public boolean survival = false;
-    UserManager um = Lavasurvival.INSTANCE.getUserManager();
-    UUIDs get = Lavasurvival.INSTANCE.getUUIDs();
-    GGBotModeration bot = Lavasurvival.INSTANCE.getGGBotModeration();
+
+    private final UserManager um = Lavasurvival.INSTANCE.getUserManager();
+    private final UUIDs get = Lavasurvival.INSTANCE.getUUIDs();
+    private final GGBotModeration bot = Lavasurvival.INSTANCE.getGGBotModeration();
 
     @EventHandler(priority = EventPriority.MONITOR)
     public void onChat(AsyncPlayerChatEvent event) {
