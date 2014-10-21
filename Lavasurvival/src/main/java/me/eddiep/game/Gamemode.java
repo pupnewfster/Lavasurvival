@@ -58,7 +58,7 @@ public abstract class Gamemode {
     private static Scoreboard scoreboard;
     private static PlayerListener listener;
     private static PhysicsListener physicsListener;
-    private static Gamemode currentgame;
+    private static Gamemode currentgame = null;
     protected boolean poured;
     private int tickTask;
     private Gamemode nextGame;
