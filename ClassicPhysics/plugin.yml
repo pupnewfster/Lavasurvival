@@ -10,3 +10,13 @@ commands:
     usage: /<command> <speed/level> <value> [world]
     permission: classicphysics.settings
     permission-message: You don't have <permission>
+  pcl:
+    description: Place only classic lava blocks
+    usage: /<command>
+    permission: classicphysics.pcl
+    permission-message: You don't have <permission>
+  pcw:
+    description: Place only classic water blocks
+    usage: /<command>
+    permission: classicphysics.pcl
+    permission-message: You don't have <permission>

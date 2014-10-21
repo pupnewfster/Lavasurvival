@@ -34,7 +34,11 @@ public abstract class Gamemode {
             Rise.class
     };
 
-    public static final int VOTE_COUNT = 3;
+    public static final int VOTE_COUNT;
+    static {
+        VOTE_COUNT = LavaMap.getPossibleMaps().length <= 3 ? LavaMap.getPossibleMaps().length - 1 : 3;
+    }
+
     public static final Random RANDOM = new Random();
     public static double WATER_DAMAGE = 0;
     public static double DAMAGE_FREQUENCY = 3;
@@ -158,6 +162,7 @@ public abstract class Gamemode {
 
         currentmap.getJoinSign().setLine(0, ChatColor.BOLD + "Right click");
         currentmap.getJoinSign().setLine(1, ChatColor.BOLD + "to join!");
+        currentmap.getJoinSign().setLine(2, "");
         currentmap.getJoinSign().setLine(3, "..or use /join");
         currentmap.getJoinSign().update();
         currentgame = this;
@@ -194,6 +199,7 @@ public abstract class Gamemode {
         Lavasurvival.log("Restoring backup of " + world.getName());
         try {
             FileUtils.copyDirectory(new File(Lavasurvival.INSTANCE.getDataFolder(), world.getName()), world.getWorldFolder());
+            new File(Lavasurvival.INSTANCE.getDataFolder(), world.getName()).delete();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -279,70 +285,82 @@ public abstract class Gamemode {
             return;
 
         String[] files = LavaMap.getPossibleMaps();
-        FancyMessage message = new FancyMessage("");
-        for (int i = 0; i < nextMaps.length; i++) {
-            votes[i] = 0; //reset votes
-            boolean found;
-            String next;
+        if (files.length > 1) {
+            FancyMessage message = new FancyMessage("");
+            for (int i = 0; i < nextMaps.length; i++) {
+                votes[i] = 0; //reset votes
+                boolean found;
+                String next;
 
-            do {
-                found = false;
-                next = files[RANDOM.nextInt(files.length)];
-                if (currentmap.getFilePath().equals(next))
-                    continue;
+                do {
+                    found = false;
+                    next = files[RANDOM.nextInt(files.length)];
+                    if (currentmap.getFilePath().equals(next))
+                        continue;
 
-                for (int z = 0; z < i; z++)
-                    if (nextMaps[z] != null && nextMaps[z].getFilePath().equals(next)) {
-                        found = true;
-                        break;
-                    }
-            } while (found);
+                    for (int z = 0; z < i; z++)
+                        if (nextMaps[z] != null && nextMaps[z].getFilePath().equals(next)) {
+                            found = true;
+                            break;
+                        }
+                } while (found);
+
+                try {
+                    nextMaps[i] = LavaMap.load(next);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
+                message.then((i + 1) + ". " + nextMaps[i].getName())
+                        .style(ChatColor.UNDERLINE)
+                        .command("/lvote " + (i + 1))
+                        .tooltip("Vote for " + nextMaps[i].getName())
+                        .then(" ");
+
+            }
+
+            voted.clear();
+            globalMessage(ChatColor.GREEN + "It's time to vote for the next map!");
+            voting = true;
+            globalMessage(ChatColor.BOLD + "No talking will be allowed during the vote.");
+
+            globalMessageNoPrefix(ChatColor.BOLD + "" + ChatColor.UNDERLINE + "Click the map you want to vote for:");
+            globalMessageNoPrefix(" ");
+            globalRawMessage(message);
+            globalMessageNoPrefix(" ");
 
             try {
-                nextMaps[i] = LavaMap.load(next);
+                Thread.sleep(50000);
+            } catch (InterruptedException ignored) {
+            }
+
+            voting = false;
+            LavaMap next = null;
+            int highest = 0;
+
+            for (int i = 0; i < nextMaps.length; i++) {
+                if (next == null)
+                    next = nextMaps[i];
+                else if (votes[i] > highest) {
+                    highest = votes[i];
+                    next = nextMaps[i];
+                }
+            }
+
+            if(next != null)
+                globalMessage(ChatColor.BOLD + next.getName() + ChatColor.RESET + " won the vote!");
+            if (nextGame == null)
+                nextGame = pickRandomGame();
+            nextGame.map = next;
+        } else {
+            try {
+                if (nextGame == null)
+                    nextGame = pickRandomGame();
+                nextGame.map = LavaMap.load(files[0]);
             } catch (IOException e) {
                 e.printStackTrace();
             }
-
-            message.then((i + 1) + ". " + nextMaps[i].getName())
-                    .style(ChatColor.UNDERLINE)
-                    .command("/lvote " + (i + 1))
-                    .tooltip("Vote for " + nextMaps[i].getName())
-                    .then(" ");
-
         }
-
-        voted.clear();
-        globalMessage(ChatColor.GREEN + "It's time to vote for the next map!");
-        voting = true;
-        globalMessage(ChatColor.BOLD + "No talking will be allowed during the vote.");
-
-        globalMessageNoPrefix(ChatColor.BOLD + "" + ChatColor.UNDERLINE + "Click the map you want to vote for:");
-        globalMessageNoPrefix(" ");
-        globalRawMessage(message);
-        globalMessageNoPrefix(" ");
-
-        try {
-            Thread.sleep(50000);
-        } catch (InterruptedException ignored) { }
-
-        voting = false;
-        LavaMap next = null;
-        int highest = 0;
-
-        for (int i = 0; i < nextMaps.length; i++) {
-            if (next == null)
-                next = nextMaps[i];
-            else if (votes[i] > highest) {
-                highest = votes[i];
-                next = nextMaps[i];
-            }
-        }
-        if(next != null)
-            globalMessage(ChatColor.BOLD + next.getName() + ChatColor.RESET + " won the vote!");
-        if (nextGame == null)
-            nextGame = pickRandomGame();
-        nextGame.map = next;
 
         Bukkit.getScheduler().scheduleSyncDelayedTask(Lavasurvival.INSTANCE, new Runnable() {
             @Override

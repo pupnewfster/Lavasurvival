@@ -1,5 +1,6 @@
 package me.eddiep.system;
 
+import me.eddiep.ClassicPhysics;
 import me.eddiep.Lavasurvival;
 import me.eddiep.commands.CmdHide;
 import me.eddiep.game.Gamemode;
@@ -123,6 +124,8 @@ public class PlayerListener implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void blockBreak(BlockBreakEvent event) {
+        if (Lavasurvival.INSTANCE.getSetups().containsKey(event.getPlayer().getUniqueId()))
+            return;
         if(!event.getPlayer().getGameMode().equals(GameMode.CREATIVE))//Allows players in creative to edit maps
             event.setCancelled(true);
         Material material = event.getBlock().getType();
@@ -138,7 +141,8 @@ public class PlayerListener implements Listener {
     public void onPlayerDamage(EntityDamageEvent event) {
         if(event.getEntity() instanceof Player && !survival && Gamemode.getCurrentGame() != null &&
                 Gamemode.getCurrentGame().isAlive((Player) event.getEntity()) && (event.getCause().equals(EntityDamageEvent.DamageCause.FIRE_TICK) ||
-                event.getCause().equals(EntityDamageEvent.DamageCause.FIRE) || event.getCause().equals(EntityDamageEvent.DamageCause.ENTITY_ATTACK)))
+                event.getCause().equals(EntityDamageEvent.DamageCause.FIRE) || event.getCause().equals(EntityDamageEvent.DamageCause.FALL) ||
+                event.getCause().equals(EntityDamageEvent.DamageCause.ENTITY_ATTACK)))
             event.setCancelled(true);
         else if (event.getEntity() instanceof Player && !survival && Gamemode.getCurrentGame() != null &&
                 Gamemode.getCurrentGame().isAlive((Player) event.getEntity()) && event.getCause().equals(EntityDamageEvent.DamageCause.LAVA)) {
@@ -148,6 +152,9 @@ public class PlayerListener implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void blockInteract(PlayerInteractEvent event) {
+        if (Lavasurvival.INSTANCE.getSetups().containsKey(event.getPlayer().getUniqueId()))
+            return;
+
         if (Gamemode.getCurrentGame() != null && Gamemode.getCurrentGame().isSpectator(event.getPlayer())) {
             event.setCancelled(true);
             if (event.getAction() == Action.RIGHT_CLICK_BLOCK &&
@@ -209,6 +216,8 @@ public class PlayerListener implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void blockPlace(final BlockPlaceEvent event) {
+        if (Lavasurvival.INSTANCE.getSetups().containsKey(event.getPlayer().getUniqueId()))
+            return;
         if(!event.getPlayer().getGameMode().equals(GameMode.CREATIVE))//Allows players in creative to edit maps
             event.setCancelled(true);
         if (Gamemode.getCurrentGame() != null && Gamemode.getCurrentGame().isAlive(event.getPlayer()) &&
@@ -303,9 +312,12 @@ public class PlayerListener implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void playerMove(PlayerMoveEvent event) {
+        if (!ClassicPhysics.isClassicBlock(event.getTo().getBlock()))
+            return;
+
         boolean locationChanged = event.getFrom().getBlockX() != event.getTo().getBlockX() || event.getFrom().getBlockY() != event.getTo().getBlockY() ||
                 event.getFrom().getBlockZ() != event.getTo().getBlockZ();
-        if (Gamemode.getCurrentGame() != null && Gamemode.WATER_DAMAGE != 0 && Gamemode.getCurrentGame().isAlive(event.getPlayer()) && locationChanged) {
+        if (locationChanged && Gamemode.getCurrentGame() != null && Gamemode.WATER_DAMAGE != 0 && Gamemode.getCurrentGame().isAlive(event.getPlayer())) {
             UserInfo u = um.getUser(event.getPlayer().getUniqueId());
             if(event.getTo().getBlock().getType().equals(Material.WATER) || event.getTo().getBlock().getType().equals(Material.STATIONARY_WATER) ||
                     event.getTo().getBlock().getRelative(BlockFace.UP).getType().equals(Material.WATER) ||

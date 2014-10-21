@@ -1,5 +1,6 @@
 package me.eddiep.game.impl;
 
+import me.eddiep.ClassicPhysics;
 import me.eddiep.game.Gamemode;
 import me.eddiep.system.TimeUtils;
 import org.bukkit.ChatColor;
@@ -92,7 +93,7 @@ public class Flood extends Gamemode {
             globalMessage(ChatColor.DARK_RED + "Here comes the " + (LAVA ? "lava" : "water") + "!");
 
             gameStart = System.currentTimeMillis();
-            getCurrentMap().getLavaSpawnAsLocation().getBlock().setType(getMat());
+            ClassicPhysics.placeClassicBlockAt(getCurrentMap().getLavaSpawnAsLocation(), getMat());
             duration = Gamemode.RANDOM.nextInt(240000) + 180000;
             objective.setDisplayName("Time Till Round End");
         } else {

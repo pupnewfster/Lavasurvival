@@ -3,27 +3,35 @@ package me.eddiep.handles;
 import me.eddiep.ClassicPhysics;
 import me.eddiep.PhysicsType;
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockFromToEvent;
 import org.bukkit.event.block.BlockPhysicsEvent;
+import org.bukkit.event.block.BlockPlaceEvent;
+import org.bukkit.event.world.WorldLoadEvent;
 import org.bukkit.metadata.FixedMetadataValue;
+import org.bukkit.metadata.LazyMetadataValue;
 import org.bukkit.plugin.Plugin;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.concurrent.Callable;
 
 public final class ClassicPhysicsHandler implements Listener {
     private static final int MAX_QUEUE_SIZE = 7000;
     private ArrayList<QueuedBlock> physicBlocks = new ArrayList<QueuedBlock>();
     private ArrayList<Material> validClassicBlocks = new ArrayList<Material>();
+    private ArrayList<Player> lplacers = new ArrayList<Player>();
+    private ArrayList<Player> wplacers = new ArrayList<Player>();
     private Plugin owner;
     private int taskId;
     private boolean blocking = false;
@@ -50,8 +58,12 @@ public final class ClassicPhysicsHandler implements Listener {
                 }
             }
 
-            for (QueuedBlock block : toPlace)
-                block.getWorld().getBlockAt(block.getX(), block.getY(), block.getZ()).setType(block.getBlockType());
+            for (QueuedBlock block : toPlace) {
+                Location loc = block.getWorld().getBlockAt(block.getX(), block.getY(), block.getZ()).getLocation();
+                ClassicPhysics.placeClassicBlockAt(loc, block.getBlockType());
+               /* block.getWorld().getBlockAt(block.getX(), block.getY(), block.getZ()).setType(block.getBlockType());
+                block.getWorld().getBlockAt(block.getX(), block.getY(), block.getZ()).setMetadata("classicBlock", new FixedMetadataValue(ClassicPhysics.INSTANCE, true));*/
+            }
             toPlace.clear();
 
             if (blocking && physicBlocks.size() == 0)
@@ -76,6 +88,28 @@ public final class ClassicPhysicsHandler implements Listener {
         return taskId;
     }
 
+    public boolean isPlacingLava(Player player) {
+        return lplacers.contains(player);
+    }
+
+    public boolean isPlacingWater(Player player) {
+        return wplacers.contains(player);
+    }
+
+    public void togglePlaceWater(Player player) {
+        if (wplacers.contains(player))
+            wplacers.remove(player);
+        else
+            wplacers.add(player);
+    }
+
+    public void togglePlaceLava(Player player) {
+        if (lplacers.contains(player))
+            lplacers.remove(player);
+        else
+            lplacers.add(player);
+    }
+
     @EventHandler
     public void onClassicPhysics(ClassicPhysicsEvent event) {
         ClassicPhysicsHandler handler = ClassicPhysics.INSTANCE.getPhysicsHandler();
@@ -90,12 +124,26 @@ public final class ClassicPhysicsHandler implements Listener {
             event.setCancelled(true);
     }
 
+    @EventHandler (priority = EventPriority.MONITOR)
+    public void onBlockPlace(BlockPlaceEvent event) {
+        if (lplacers.contains(event.getPlayer())) {
+            ClassicPhysics.placeClassicBlockAt(event.getBlockPlaced().getLocation(), Material.LAVA);
+            event.setCancelled(true);
+        }
+        else if (wplacers.contains(event.getPlayer())) {
+            ClassicPhysics.placeClassicBlockAt(event.getBlockPlaced().getLocation(), Material.WATER);
+            event.setCancelled(true);
+        }
+    }
+
+
     @EventHandler(priority = EventPriority.LOWEST)
     public void onPhysicsUpdate(BlockPhysicsEvent event) {
         if (ClassicPhysics.TYPE.equals(PhysicsType.DEFAULT))
             return;
 
         Block checking = event.getBlock();
+
         Material north = checking.getRelative(BlockFace.NORTH).getType();
         Material east = checking.getRelative(BlockFace.EAST).getType();
         Material south = checking.getRelative(BlockFace.SOUTH).getType();
@@ -103,7 +151,7 @@ public final class ClassicPhysicsHandler implements Listener {
         Material down = checking.getRelative(BlockFace.DOWN).getType();
         Material up = checking.getRelative(BlockFace.UP).getType();
 
-        if (validClassicBlocks.contains(checking.getType())) {
+        if (validClassicBlocks.contains(checking.getType()) && checking.hasMetadata("classicBlock")) {
             if (checking.getRelative(BlockFace.NORTH).getType().equals(Material.AIR))
                 updatePhys(checking.getRelative(BlockFace.NORTH), checking.getType());
             if (checking.getRelative(BlockFace.EAST).getType().equals(Material.AIR))
@@ -122,15 +170,15 @@ public final class ClassicPhysicsHandler implements Listener {
         }
 
         if (validClassicBlocks.contains(north))
-            handleEvent(event, north);
+            handleEvent(event, north, BlockFace.NORTH);
         if (validClassicBlocks.contains(east))
-            handleEvent(event, east);
+            handleEvent(event, east, BlockFace.EAST);
         if (validClassicBlocks.contains(south))
-            handleEvent(event, south);
+            handleEvent(event, south, BlockFace.SOUTH);
         if (validClassicBlocks.contains(west))
-            handleEvent(event, west);
+            handleEvent(event, west, BlockFace.WEST);
         if (validClassicBlocks.contains(up))
-            handleEvent(event, up);
+            handleEvent(event, up, BlockFace.UP);
     }
 
     private void updatePhys(final Block toUpdate, final Material newType) {
@@ -139,7 +187,8 @@ public final class ClassicPhysicsHandler implements Listener {
             public void run() {
                 if(!toUpdate.getType().equals(Material.AIR)) //Check if block still needs to be replaced
                     return;
-                toUpdate.setType(newType);
+                ClassicPhysics.placeClassicBlockAt(toUpdate.getLocation(), newType);
+                //toUpdate.setType(newType);
                 Bukkit.getPluginManager().callEvent(new BlockPhysicsEvent(toUpdate, 0));
             }
         }, 17);
@@ -194,11 +243,11 @@ public final class ClassicPhysicsHandler implements Listener {
         return world.getMetadata("physicsLevel").size() > 0;
     }
 
-    public void handleEvent(BlockPhysicsEvent event, Material newBlock) {
+    public void handleEvent(BlockPhysicsEvent event, Material newBlock, BlockFace direction) {
         event.setCancelled(true);
         Block block = event.getBlock();
 
-        if (this.blocking || block.getType() == newBlock)
+        if (this.blocking || block.getType() == newBlock || !block.getRelative(direction).hasMetadata("classicBlock"))
             return;
 
         ClassicPhysicsEvent cevent = new ClassicPhysicsEvent(event, newBlock);
