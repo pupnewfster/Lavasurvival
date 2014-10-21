@@ -23,7 +23,7 @@ public class CmdBan extends Cmd {
         String name = "Console";
         if (sender instanceof Player) {
             Player p = (Player) sender;
-            if (rm.hasRank(um.getUser(p.getUniqueId()).getRank(), rm.getRank("Op"))) {
+            if (rm.hasRank(um.getUser(uuid).getRank(), rm.getRank("Op"))) {
                 p.sendMessage(ChatColor.DARK_RED + "Error: " + ChatColor.RED + "You may not ban ops or higher.");
                 return true;
             }
