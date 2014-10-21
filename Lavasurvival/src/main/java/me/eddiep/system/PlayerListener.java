@@ -268,7 +268,7 @@ public class PlayerListener implements Listener {
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
-    public void playerJoin(PlayerJoinEvent event) {
+    public void playerJoin(final PlayerJoinEvent event) {
         um.addUser(event.getPlayer());
         um.parseUser(event.getPlayer());
         if (!get.hasJoined(event.getPlayer().getUniqueId())) {
@@ -281,8 +281,14 @@ public class PlayerListener implements Listener {
         if (!Lavasurvival.INSTANCE.getEconomy().hasAccount(event.getPlayer()))
             Lavasurvival.INSTANCE.getEconomy().createPlayerAccount(event.getPlayer());
 
-        if (Gamemode.getCurrentGame() != null)
-            event.getPlayer().teleport(Gamemode.getCurrentWorld().getSpawnLocation());
+        if (Gamemode.getCurrentGame() != null) {
+            Bukkit.getScheduler().scheduleSyncDelayedTask(Lavasurvival.INSTANCE, new Runnable() {
+                @Override
+                public void run() {
+                    event.getPlayer().teleport(Gamemode.getCurrentWorld().getSpawnLocation());
+                }
+            }, 7);
+        }
 
         Inventory inv = event.getPlayer().getInventory();
         if (BukkitUtils.isInventoryEmpty(inv)) {
