@@ -274,10 +274,6 @@ public class PlayerListener implements Listener {
     public void playerJoin(final PlayerJoinEvent event) {
         um.addUser(event.getPlayer());
         um.parseUser(event.getPlayer());
-        if (!get.hasJoined(event.getPlayer().getUniqueId())) {
-            get.addUUID(event.getPlayer().getUniqueId());
-            event.getPlayer().getInventory().addItem(Lavasurvival.INSTANCE.getRules());
-        }
 
         Lavasurvival.INSTANCE.getHide().playerJoined(event.getPlayer());
 
@@ -301,6 +297,11 @@ public class PlayerListener implements Listener {
             inv.addItem(items);
             UserInfo u = um.getUser(event.getPlayer().getUniqueId());
             u.giveBoughtBlocks();
+        }
+
+        if (!get.hasJoined(event.getPlayer().getUniqueId())) {
+            get.addUUID(event.getPlayer().getUniqueId());
+            event.getPlayer().getInventory().addItem(Lavasurvival.INSTANCE.getRules());
         }
 
         ShopFactory.validateInventory(inv);
