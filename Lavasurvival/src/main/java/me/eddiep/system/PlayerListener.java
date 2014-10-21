@@ -199,7 +199,10 @@ public class PlayerListener implements Listener {
             }
         }
         if (event.getAction() == Action.RIGHT_CLICK_BLOCK && !event.getPlayer().isSneaking() &&
-                (event.getClickedBlock() instanceof InventoryHolder || event.getClickedBlock().getType().equals(Material.WORKBENCH)))
+                (event.getClickedBlock() instanceof InventoryHolder || event.getClickedBlock().getType().equals(Material.WORKBENCH) ||
+                event.getClickedBlock().getType().equals(Material.ANVIL) || event.getClickedBlock().getType().equals(Material.ENCHANTMENT_TABLE) ||
+                event.getClickedBlock().getType().equals(Material.ENDER_CHEST) || event.getClickedBlock().getType().equals(Material.BEACON) ||
+                event.getClickedBlock().getType().equals(Material.ITEM_FRAME)))
             event.setCancelled(true);//Disable opening block's with inventories
     }
 
