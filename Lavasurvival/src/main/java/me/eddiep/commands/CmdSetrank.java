@@ -79,7 +79,7 @@ public class CmdSetrank extends Cmd {
             if (sender instanceof Player) {
                 int playerRank = rm.getOrder().indexOf(um.getUser(((Player) sender).getUniqueId()).getRank());
                 for (Rank r : rm.getOrder())
-                    if (r.getName().startsWith(search) && playerRank - rm.getOrder().indexOf(r) > 0 && playerRank - theirRank <= 0)
+                    if (r.getName().startsWith(search) && playerRank - rm.getOrder().indexOf(r) > 0 && playerRank - theirRank > 0)
                         complete.add(r.getName());
             } else
                 for (Rank r : rm.getOrder())
