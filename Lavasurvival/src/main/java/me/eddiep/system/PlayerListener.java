@@ -221,14 +221,18 @@ public class PlayerListener implements Listener {
         if(!event.getPlayer().getGameMode().equals(GameMode.CREATIVE))//Allows players in creative to edit maps
             event.setCancelled(true);
         if (Gamemode.getCurrentGame() != null && Gamemode.getCurrentGame().isAlive(event.getPlayer()) &&
-                event.getPlayer().getInventory().contains(event.getBlockPlaced().getType())) {
-            if (event.getBlockPlaced().getLocation().getBlockY() >= Gamemode.getCurrentMap().getLavaY()) {
+                event.getPlayer().getInventory().contains(event.getBlock().getType())) {
+            if (event.getBlock().getLocation().getBlockY() >= Gamemode.getCurrentMap().getLavaY()) {
                 event.getPlayer().sendMessage(ChatColor.RED + "" + ChatColor.BOLD + "You are building to high!");
+                return;
+            }
+            if (Gamemode.getCurrentMap().isInSafeZone(event.getBlock().getLocation())) {
+                event.getPlayer().sendMessage(ChatColor.RED + "" + ChatColor.BOLD + "You are not allowed to build in spawn!");
                 return;
             }
             event.setCancelled(false);
             if (!survival) {
-                final int index = event.getPlayer().getInventory().first(event.getBlockPlaced().getType());
+                final int index = event.getPlayer().getInventory().first(event.getBlock().getType());
                 final ItemStack itm = event.getPlayer().getInventory().getItem(index);
                 final int amount = itm.getAmount();
                 final Material material = itm.getType();

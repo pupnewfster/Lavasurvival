@@ -59,7 +59,7 @@ public class Lavasurvival extends JavaPlugin {
     public void updateMoneyView(Player player) {
         Inventory inv = player.getInventory();
 
-        int index = inv.first(Material.GOLD_INGOT);
+        int index = inv.contains(Material.GOLD_INGOT) ? inv.first(Material.GOLD_INGOT) : -1;
 
         if (index == -1) {
             ItemStack item = new ItemStack(Material.GOLD_INGOT);
@@ -70,6 +70,7 @@ public class Lavasurvival extends JavaPlugin {
             meta.setLore(lore);
             item.setItemMeta(meta);
             inv.setItem(inv.firstEmpty(), item);
+            return;
         }
 
         ItemStack item = inv.getItem(index);
@@ -112,8 +113,8 @@ public class Lavasurvival extends JavaPlugin {
         setRules();
         /*log("Making money viewer task..");
         moneyViewer = getServer().getScheduler().scheduleSyncRepeatingTask(this, MONEY_VIEWER, 0, 25);*/
-        Rise flood = new Rise();
         if (LavaMap.getPossibleMaps().length > 0) {
+            Rise flood = new Rise();
             flood.prepare();
             flood.start();
             running = true;

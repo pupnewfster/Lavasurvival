@@ -36,7 +36,10 @@ public abstract class Gamemode {
 
     public static final int VOTE_COUNT;
     static {
-        VOTE_COUNT = LavaMap.getPossibleMaps().length <= 3 ? LavaMap.getPossibleMaps().length - 1 : 3;
+        if (LavaMap.getPossibleMaps().length == 0)
+            VOTE_COUNT = 0;
+        else
+            VOTE_COUNT = LavaMap.getPossibleMaps().length <= 3 ? LavaMap.getPossibleMaps().length - 1 : 3;
     }
 
     public static final Random RANDOM = new Random();
