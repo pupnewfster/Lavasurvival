@@ -7,6 +7,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 public class CmdHide extends Cmd {
@@ -76,5 +77,9 @@ public class CmdHide extends Cmd {
         for (Player x : Bukkit.getOnlinePlayers())
             if (!x.equals(p) && !x.canSee(p))
                 x.showPlayer(p);
+    }
+
+    public List<String> tabComplete(CommandSender sender, String[] args) {
+        return new ArrayList<String>();
     }
 }

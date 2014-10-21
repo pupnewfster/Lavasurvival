@@ -6,6 +6,8 @@ import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 public class CmdDemote extends Cmd {
@@ -24,7 +26,7 @@ public class CmdDemote extends Cmd {
             }
             target = Bukkit.getOfflinePlayer(uuid).getPlayer();
         } else
-            target = sender.getServer().getPlayer(uuid);
+            target = Bukkit.getPlayer(uuid);
         UserInfo u = um.getUser(uuid);
         if (u.getRank().getPrevious() == null) {
             sender.sendMessage(ChatColor.DARK_RED + "Error: " + target.getName() + " is already the lowest rank.");
@@ -33,7 +35,7 @@ public class CmdDemote extends Cmd {
         String name = "Console";
         if (sender instanceof Player) {
             Player player = (Player) sender;
-            if (rm.hasRank(um.getUser(player.getUniqueId()).getRank(), u.getRank())) {
+            if (rm.getOrder().indexOf(um.getUser(player.getUniqueId()).getRank()) - rm.getOrder().indexOf(um.getUser(uuid).getRank()) <= 0) {
                 player.sendMessage(ChatColor.DARK_RED + "Error: You may not demote people a higher or equal rank.");
                 return true;
             }
@@ -42,5 +44,22 @@ public class CmdDemote extends Cmd {
         um.updateUserRank(u, u.getRank().getPrevious());
         Bukkit.broadcastMessage(name + " demoted " + get.nameFromString(uuid.toString()) + " to " + u.getRank().getName() + ".");
         return true;
+    }
+
+    public List<String> tabComplete(CommandSender sender, String[] args) {
+        if (args.length != 1)
+            return new ArrayList<String>();
+        List<String> complete = new ArrayList<String>();
+        String search = args[args.length - 1];
+        if (sender instanceof Player) {
+            for (Player p : Bukkit.getOnlinePlayers())
+                if (p.getName().startsWith(search) && um.getUser(p.getUniqueId()).getRank().getPrevious() != null && ((Player) sender).canSee(p) &&
+                    rm.getOrder().indexOf(um.getUser(((Player) sender).getUniqueId()).getRank()) - rm.getOrder().indexOf(um.getUser(p.getUniqueId()).getRank()) > 0)
+                    complete.add(p.getName());
+        } else
+            for (Player p : Bukkit.getOnlinePlayers())
+                if (p.getName().startsWith(search) && um.getUser(p.getUniqueId()).getRank().getPrevious() != null)
+                    complete.add(p.getName());
+        return complete;
     }
 }

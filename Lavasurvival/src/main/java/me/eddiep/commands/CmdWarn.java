@@ -2,10 +2,13 @@ package me.eddiep.commands;
 
 import me.eddiep.Lavasurvival;
 import me.eddiep.ggbot.GGBotWarn;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 public class CmdWarn extends Cmd {
@@ -35,5 +38,21 @@ public class CmdWarn extends Cmd {
             reason += args[i] + " ";
         warns.warn(uuid, ChatColor.translateAlternateColorCodes('&', reason.trim()), name);
         return true;
+    }
+
+    public List<String> tabComplete(CommandSender sender, String[] args) {
+        if (args.length != 1)
+            return new ArrayList<String>();
+        List<String> complete = new ArrayList<String>();
+        String search = args[args.length - 1];
+        if (sender instanceof Player) {
+            for (Player p : Bukkit.getOnlinePlayers())
+                if (p.getName().startsWith(search) && ((Player) sender).canSee(p))
+                    complete.add(p.getName());
+        } else
+            for (Player p : Bukkit.getOnlinePlayers())
+                if (p.getName().startsWith(search))
+                    complete.add(p.getName());
+        return complete;
     }
 }

@@ -1,10 +1,11 @@
 package me.eddiep.commands;
 
 import me.eddiep.game.Gamemode;
-import me.eddiep.system.PlayerListener;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import java.util.ArrayList;
+import java.util.List;
 
 public class CmdLVote extends Cmd {
     public boolean commandUse(CommandSender sender, String[] args) {
@@ -29,5 +30,24 @@ public class CmdLVote extends Cmd {
         } else
             sender.sendMessage(ChatColor.DARK_RED + "This command can only be used in game..");
         return true;
+    }
+
+    public List<String> tabComplete(CommandSender sender, String[] args) {
+        List<String> complete = new ArrayList<String>();
+        if(sender instanceof Player && args.length == 1) {
+            if (Gamemode.getCurrentGame().getMapsInVote().size() == 0)
+                return complete;
+            if ("1".startsWith(args[0]))
+                complete.add("1");
+            if (Gamemode.getCurrentGame().getMapsInVote().size() == 1)
+                return complete;
+            if ("2".startsWith(args[0]))
+                complete.add("2");
+            if (Gamemode.getCurrentGame().getMapsInVote().size() == 2)
+                return complete;
+            if ("3".startsWith(args[0]))
+                complete.add("3");
+        }
+        return complete;
     }
 }

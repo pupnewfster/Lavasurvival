@@ -4,6 +4,8 @@ import me.eddiep.Lavasurvival;
 import me.eddiep.system.setup.SetupMap;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import java.util.ArrayList;
+import java.util.List;
 
 public class CmdSetupMap extends Cmd {
     public boolean commandUse(CommandSender sender, String[] args) {
@@ -22,5 +24,9 @@ public class CmdSetupMap extends Cmd {
         } else
             sender.sendMessage("This command can only be used in game..");
         return true;
+    }
+
+    public List<String> tabComplete(CommandSender sender, String[] args) {
+        return new ArrayList<String>();
     }
 }

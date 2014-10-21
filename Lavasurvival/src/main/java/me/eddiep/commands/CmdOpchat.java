@@ -5,6 +5,9 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 public class CmdOpchat extends Cmd {
@@ -36,10 +39,8 @@ public class CmdOpchat extends Cmd {
     }
 
     private void sendOps(UUID uuid, String message) {
-        Player player = Bukkit.getPlayer(uuid);
         String send = ChatColor.GOLD + "To Ops - " + ChatColor.WHITE + ChatColor.translateAlternateColorCodes('&', um.getUser(uuid).getRank().getTitle()) +
-                player.getDisplayName() + ": " + ChatColor.translateAlternateColorCodes('&', message);
-            message = ChatColor.translateAlternateColorCodes('&', message);
+                Bukkit.getPlayer(uuid).getDisplayName() + ": " + ChatColor.translateAlternateColorCodes('&', message);
         Bukkit.broadcast(send, "lavasurvival.opchat");
         Bukkit.getConsoleSender().sendMessage(send);
     }
@@ -48,5 +49,9 @@ public class CmdOpchat extends Cmd {
         String send = ChatColor.GOLD + "To Ops - Console" + ChatColor.WHITE + " " + ChatColor.translateAlternateColorCodes('&', message.trim());
         Bukkit.broadcast(send, "lavasurvival.opchat");
         Bukkit.getConsoleSender().sendMessage(send);
+    }
+
+    public List<String> tabComplete(CommandSender sender, String[] args) {
+        return new ArrayList<String>();
     }
 }

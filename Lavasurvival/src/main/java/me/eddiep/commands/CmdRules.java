@@ -1,11 +1,11 @@
 package me.eddiep.commands;
 
 import me.eddiep.Lavasurvival;
-import me.eddiep.game.Gamemode;
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import java.util.ArrayList;
+import java.util.List;
 
 public class CmdRules extends Cmd {
     public boolean commandUse(CommandSender sender, String[] args) {
@@ -19,5 +19,9 @@ public class CmdRules extends Cmd {
         } else
             sender.sendMessage(ChatColor.DARK_RED + "Error: " + ChatColor.RED + "You do not have an inventory.");
         return true;
+    }
+
+    public List<String> tabComplete(CommandSender sender, String[] args) {
+        return new ArrayList<String>();
     }
 }

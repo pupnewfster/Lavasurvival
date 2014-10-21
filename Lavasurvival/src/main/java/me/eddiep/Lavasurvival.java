@@ -255,15 +255,12 @@ public class Lavasurvival extends JavaPlugin {
         return setups;
     }
 
-    public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
+    public boolean onCommand(CommandSender sender, Command cmd, String alias, String[] args) {
         return getCmd(cmd.getName()).commandUse(sender, args);
     }
 
-    public List<String> onTabComplete(CommandSender sender, Command cmd, String label, String[] args) {
-        if(sender == null || cmd == null)
-            return null;
-        List<String> tab = getCmd(cmd.getName()).tabComplete(sender, args);
-        return (tab == null || tab.isEmpty()) ? null : tab;
+    public List<String> onTabComplete(CommandSender sender, Command cmd, String alias, String[] args) {
+        return (sender == null || cmd == null) ? null : getCmd(cmd.getName()).tabComplete(sender, args);
     }
 
     private Cmd getCmd(String name) {

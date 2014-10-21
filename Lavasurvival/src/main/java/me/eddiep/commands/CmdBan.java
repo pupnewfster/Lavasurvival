@@ -6,6 +6,8 @@ import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 public class CmdBan extends Cmd {
@@ -45,5 +47,21 @@ public class CmdBan extends Cmd {
         BanList bans = Bukkit.getBanList(BanList.Type.NAME);
         bans.addBan(theirName, reason, null, name);
         return true;
+    }
+
+    public List<String> tabComplete(CommandSender sender, String[] args) {
+        if (args.length != 1)
+            return new ArrayList<String>();
+        List<String> complete = new ArrayList<String>();
+        String search = args[args.length - 1];
+        if (sender instanceof Player) {
+            for (Player p : Bukkit.getOnlinePlayers())
+                if (p.getName().startsWith(search) && ((Player) sender).canSee(p) && !rm.hasRank(um.getUser(p.getUniqueId()).getRank(), rm.getRank("Op")))
+                    complete.add(p.getName());
+        } else
+            for (Player p : Bukkit.getOnlinePlayers())
+                if (p.getName().startsWith(search))
+                    complete.add(p.getName());
+        return complete;
     }
 }
