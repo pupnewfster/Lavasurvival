@@ -2,7 +2,9 @@ package me.eddiep.handles;
 
 import me.eddiep.ClassicPhysics;
 import me.eddiep.PhysicsType;
-import org.bukkit.Bukkit;
+import me.eddiep.handles.logic.LavaLogic;
+import me.eddiep.handles.logic.LogicContainer;
+import me.eddiep.handles.logic.WaterLogic;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
@@ -12,72 +14,43 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.block.BlockFromToEvent;
 import org.bukkit.event.block.BlockPhysicsEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
-import org.bukkit.event.world.WorldLoadEvent;
 import org.bukkit.metadata.FixedMetadataValue;
-import org.bukkit.metadata.LazyMetadataValue;
 import org.bukkit.plugin.Plugin;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
-import java.util.concurrent.Callable;
 
 public final class ClassicPhysicsHandler implements Listener {
-    private static final int MAX_QUEUE_SIZE = 7000;
-    private ArrayList<QueuedBlock> physicBlocks = new ArrayList<QueuedBlock>();
-    private ArrayList<Material> validClassicBlocks = new ArrayList<Material>();
+    private ArrayList<LogicContainerHolder> logicContainers = new ArrayList<>();
+
     private ArrayList<Player> lplacers = new ArrayList<Player>();
     private ArrayList<Player> wplacers = new ArrayList<Player>();
     private Plugin owner;
     private int taskId;
     private boolean blocking = false;
+
+    private long tickCount;
     private final Runnable PHYSICS_TICK = new Runnable() {
 
         @Override
         public void run() {
-            ArrayList<QueuedBlock> toPlace = new ArrayList<QueuedBlock>();
-            Iterator<QueuedBlock> blocks = physicBlocks.iterator();
-            while (blocks.hasNext()) {
-                QueuedBlock block = blocks.next();
-                World world = block.getWorld();
-                if (!hasPhysicsSpeed(world))
-                    setPhysicSpeed(world, 800);
-                if (!hasPhysicsLevel(world))
-                    setPhysicLevel(world, 1);
-                long speed = world.getMetadata("physicsSpeed").get(0).asLong(); //I should be safe with this...
-                long now = System.nanoTime();
+            tickCount++;
+            for (LogicContainerHolder holder : logicContainers) {
 
-                long timePassed = (now - block.getTickOccurred()) / 1000000;
-                if (timePassed >= speed) {
-                    toPlace.add(block);
-                    blocks.remove();
+                if (tickCount - holder.lastTick >= holder.container.updateRate()) {
+                    holder.container.tick();
+                    holder.lastTick = tickCount;
                 }
             }
-
-            for (QueuedBlock block : toPlace) {
-                Location loc = block.getWorld().getBlockAt(block.getX(), block.getY(), block.getZ()).getLocation();
-                ClassicPhysics.placeClassicBlockAt(loc, block.getBlockType());
-               /* block.getWorld().getBlockAt(block.getX(), block.getY(), block.getZ()).setType(block.getBlockType());
-                block.getWorld().getBlockAt(block.getX(), block.getY(), block.getZ()).setMetadata("classicBlock", new FixedMetadataValue(ClassicPhysics.INSTANCE, true));*/
-            }
-            toPlace.clear();
-
-            if (blocking && physicBlocks.size() == 0)
-                blocking = false;
         }
     };
 
     public ClassicPhysicsHandler(Plugin plugin) {
         this.owner = plugin;
 
-        validClassicBlocks.add(Material.LAVA);
-        validClassicBlocks.add(Material.STATIONARY_LAVA);
-        validClassicBlocks.add(Material.WATER);
-        validClassicBlocks.add(Material.STATIONARY_WATER);
+        addLogicContainer(new LavaLogic());
+        addLogicContainer(new WaterLogic());
     }
 
     public Plugin getOwner() {
@@ -110,46 +83,61 @@ public final class ClassicPhysicsHandler implements Listener {
             lplacers.add(player);
     }
 
-    @EventHandler
-    public void onClassicPhysics(ClassicPhysicsEvent event) {
-        ClassicPhysicsHandler handler = ClassicPhysics.INSTANCE.getPhysicsHandler();
-    }
-
-    @EventHandler
-    public void onBlockFromTo(BlockFromToEvent event) {
-        if (ClassicPhysics.TYPE.equals(PhysicsType.DEFAULT))
-            return;
-
-        if (ClassicPhysics.TYPE.equals(PhysicsType.REVERSE) && event.getFace().equals(BlockFace.DOWN) && validClassicBlocks.contains(event.getBlock().getType()))
-            event.setCancelled(true);
-    }
-
     @EventHandler (priority = EventPriority.MONITOR)
     public void onBlockPlace(BlockPlaceEvent event) {
+        if (ClassicPhysics.TYPE == PhysicsType.DEFAULT)
+            return;
+
         if (lplacers.contains(event.getPlayer())) {
-            ClassicPhysics.placeClassicBlockAt(event.getBlockPlaced().getLocation(), Material.LAVA);
+            placeClassicBlockAt(event.getBlockPlaced().getLocation(), Material.LAVA);
             event.setCancelled(true);
         }
         else if (wplacers.contains(event.getPlayer())) {
-            ClassicPhysics.placeClassicBlockAt(event.getBlockPlaced().getLocation(), Material.WATER);
+            placeClassicBlockAt(event.getBlockPlaced().getLocation(), Material.WATER);
             event.setCancelled(true);
         }
+    }
+
+    public void placeClassicBlockAt(Location location, Material type) {
+        Block blc = location.getWorld().getBlockAt(location);
+        Material material = blc.getType();
+
+        for (LogicContainerHolder holder : logicContainers) {
+            if (holder.container.doesHandle(material)) {
+                holder.container.queueBlock(blc);
+                break; //TODO Maybe don't break?
+            }
+        }
+    }
+
+    public void addLogicContainer(LogicContainer container) {
+        for (LogicContainerHolder holder : logicContainers) {
+            if (holder.container.equals(container))
+                return;
+        }
+
+        LogicContainerHolder holder = new LogicContainerHolder();
+        holder.lastTick = 0;
+        holder.container = container;
+        logicContainers.add(holder);
     }
 
 
     @EventHandler(priority = EventPriority.LOWEST)
     public void onPhysicsUpdate(BlockPhysicsEvent event) {
-        if (ClassicPhysics.TYPE.equals(PhysicsType.DEFAULT))
+        if (ClassicPhysics.TYPE != PhysicsType.DEFAULT) {
+            event.setCancelled(true);
             return;
+        }
 
-        Block checking = event.getBlock();
+        /*Block checking = event.getBlock();
 
-        Material north = checking.getRelative(BlockFace.NORTH).getType();
-        Material east = checking.getRelative(BlockFace.EAST).getType();
-        Material south = checking.getRelative(BlockFace.SOUTH).getType();
-        Material west = checking.getRelative(BlockFace.WEST).getType();
-        Material down = checking.getRelative(BlockFace.DOWN).getType();
-        Material up = checking.getRelative(BlockFace.UP).getType();
+        Block north = checking.getRelative(BlockFace.NORTH);
+        Block east = checking.getRelative(BlockFace.EAST);
+        Block south = checking.getRelative(BlockFace.SOUTH);
+        Block west = checking.getRelative(BlockFace.WEST);
+        Block down = checking.getRelative(BlockFace.DOWN);
+        Block up = checking.getRelative(BlockFace.UP);
 
         if (validClassicBlocks.contains(checking.getType()) && checking.hasMetadata("classicBlock")) {
             if (checking.getRelative(BlockFace.NORTH).getType().equals(Material.AIR))
@@ -164,46 +152,21 @@ public final class ClassicPhysicsHandler implements Listener {
                 updatePhys(checking.getRelative(ClassicPhysics.TYPE.equals(PhysicsType.REVERSE) ? BlockFace.UP : BlockFace.DOWN), checking.getType());
         }
 
-        if (validClassicBlocks.contains(down) || (ClassicPhysics.TYPE.equals(PhysicsType.REVERSE) && validClassicBlocks.contains(up))) {
+        if (validClassicBlocks.contains(down.getType()) || (ClassicPhysics.TYPE.equals(PhysicsType.REVERSE) && validClassicBlocks.contains(up.getType()))) {
             event.setCancelled(true);
             return;
         }
 
-        if (validClassicBlocks.contains(north))
-            handleEvent(event, north, BlockFace.NORTH);
-        if (validClassicBlocks.contains(east))
-            handleEvent(event, east, BlockFace.EAST);
-        if (validClassicBlocks.contains(south))
-            handleEvent(event, south, BlockFace.SOUTH);
-        if (validClassicBlocks.contains(west))
-            handleEvent(event, west, BlockFace.WEST);
-        if (validClassicBlocks.contains(up))
-            handleEvent(event, up, BlockFace.UP);
-    }
-
-    private void updatePhys(final Block toUpdate, final Material newType) {
-        Bukkit.getScheduler().scheduleSyncDelayedTask(ClassicPhysics.INSTANCE, new Runnable() {
-            @Override
-            public void run() {
-                if(!toUpdate.getType().equals(Material.AIR)) //Check if block still needs to be replaced
-                    return;
-                ClassicPhysics.placeClassicBlockAt(toUpdate.getLocation(), newType);
-                //toUpdate.setType(newType);
-                Bukkit.getPluginManager().callEvent(new BlockPhysicsEvent(toUpdate, 0));
-            }
-        }, 17);
-    }
-
-    public List<Material> getValidPhysicBlocks() {
-        return Collections.unmodifiableList(validClassicBlocks);
-    }
-
-    public void addPhysicsBlock(Material material) {
-        validClassicBlocks.add(material);
-    }
-
-    public void removePhysicsBlock(Material material) {
-        validClassicBlocks.remove(material);
+        if (validClassicBlocks.contains(north.getType()))
+            event.setCancelled(!handleEvent(event, north, BlockFace.NORTH));
+        if (validClassicBlocks.contains(east.getType()))
+            event.setCancelled(!handleEvent(event, east, BlockFace.EAST));
+        if (validClassicBlocks.contains(south.getType()))
+            event.setCancelled(!handleEvent(event, south, BlockFace.SOUTH));
+        if (validClassicBlocks.contains(west.getType()))
+            event.setCancelled(!handleEvent(event, west, BlockFace.WEST));
+        if (validClassicBlocks.contains(up.getType()))
+            event.setCancelled(!handleEvent(event, up, BlockFace.UP));*/
     }
 
     public void enable() {
@@ -213,6 +176,7 @@ public final class ClassicPhysicsHandler implements Listener {
 
     public void disable() {
         BlockPhysicsEvent.getHandlerList().unregister(this);
+        owner.getServer().getScheduler().cancelTask(taskId);
     }
 
     public void setPhysicSpeed(World world, long speed) {
@@ -243,72 +207,45 @@ public final class ClassicPhysicsHandler implements Listener {
         return world.getMetadata("physicsLevel").size() > 0;
     }
 
-    public void handleEvent(BlockPhysicsEvent event, Material newBlock, BlockFace direction) {
-        event.setCancelled(true);
-        Block block = event.getBlock();
+    @Deprecated
+    public boolean handleEvent(BlockPhysicsEvent event, Block newBlock, BlockFace direction) {
+        /*event.setCancelled(true);
+        final Block block = event.getBlock();
 
-        if (this.blocking || block.getType() == newBlock || !block.getRelative(direction).hasMetadata("classicBlock"))
-            return;
+        if (*//*this.blocking || *//*block.getType() == newBlock.getType())
+            return true;
 
-        ClassicPhysicsEvent cevent = new ClassicPhysicsEvent(event, newBlock);
+        ClassicPhysicsEvent cevent;
+        if (block.getType() == Material.AIR) {
+            cevent = new ClassicPhysicsEvent(event, newBlock.getType(), newBlock.hasMetadata("classicBlock"));
+            owner.getServer().getPluginManager().callEvent(cevent);
+            if (cevent.isCancelled() || (validClassicBlocks.contains(newBlock.getType()) && !cevent.isClassicEvent()))
+                return true;
+        } else {
+            cevent = new ClassicPhysicsEvent(event, newBlock.getType(), block.hasMetadata("classicBlock"));
+            cevent.setCancelled(true);
+            owner.getServer().getPluginManager().callEvent(cevent);
+            if (cevent.isCancelled())
+                return true;
+        }
 
-        cevent.setCancelled(block.getType().isSolid());
+        final Material type = cevent.getNewBlock();
 
-        owner.getServer().getPluginManager().callEvent(cevent);
-        if (cevent.isCancelled())
-            return;
-
-        newBlock = cevent.getNewBlock();
-
-        QueuedBlock qblock = new QueuedBlock(block.getX(), block.getY(), block.getZ(), newBlock, block.getWorld(), System.nanoTime());
+        QueuedBlock qblock = new QueuedBlock(block.getX(), block.getY(), block.getZ(), type, block.getWorld(), System.nanoTime());
         if (physicBlocks.size() >= MAX_QUEUE_SIZE) {
             if (!this.blocking)
                 ClassicPhysics.INSTANCE.log("To many queued blocks! Rejecting all future queued blocks until queueing empties");
             this.blocking = true;
-            return;
+            if (!block.hasMetadata("classicBlock"))
+                block.setMetadata("classicBlock", new FixedMetadataValue(ClassicPhysics.INSTANCE, true));
+            return true;
         }
-        physicBlocks.add(qblock);
+        physicBlocks.add(qblock);*/
+        return false;
     }
 
-    private class QueuedBlock {
-        private int x;
-        private int y;
-        private int z;
-        private Material blockType;
-        private long tickOccurred;
-        private World world;
-
-        public QueuedBlock(int x, int y, int z, Material blockType, World world, long tickOccurred) {
-            this.x = x;
-            this.y = y;
-            this.z = z;
-            this.blockType = blockType;
-            this.tickOccurred = tickOccurred;
-            this.world = world;
-        }
-
-        public World getWorld() {
-            return world;
-        }
-
-        public int getX() {
-            return x;
-        }
-
-        public int getY() {
-            return y;
-        }
-
-        public int getZ() {
-            return z;
-        }
-
-        public Material getBlockType() {
-            return blockType;
-        }
-
-        public long getTickOccurred() {
-            return tickOccurred;
-        }
+    private class LogicContainerHolder {
+        long lastTick;
+        LogicContainer container;
     }
 }

@@ -1,20 +1,22 @@
 package me.eddiep.handles;
 
+import me.eddiep.ClassicPhysics;
 import org.bukkit.Material;
+import org.bukkit.block.Block;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
-import org.bukkit.event.block.BlockPhysicsEvent;
 
 public class ClassicPhysicsEvent extends Event implements Cancellable {
     private static final HandlerList handlers = new HandlerList();
-    private BlockPhysicsEvent originalEvent;
     private Material newBlock;
+    private Block oldBlock;
     private boolean cancel;
+    private boolean isClassicEvent;
 
-    public ClassicPhysicsEvent(BlockPhysicsEvent event, Material newBlock) {
-        this.originalEvent = event;
+    public ClassicPhysicsEvent(Block oldBlock, Material newBlock, boolean isClassicEvent) {
         this.newBlock = newBlock;
+        this.isClassicEvent = isClassicEvent;
     }
 
     public static HandlerList getHandlerList() {
@@ -29,12 +31,20 @@ public class ClassicPhysicsEvent extends Event implements Cancellable {
         this.newBlock = block;
     }
 
-    public BlockPhysicsEvent getOriginalEvent() {
-        return originalEvent;
+    public Block getOldBlock() {
+        return oldBlock;
+    }
+
+    public ClassicPhysicsHandler getPhysicsHandler() {
+        return ClassicPhysics.INSTANCE.getPhysicsHandler();
     }
 
     public HandlerList getHandlers() {
         return handlers;
+    }
+
+    public boolean isClassicEvent() {
+        return isClassicEvent;
     }
 
     @Override

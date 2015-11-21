@@ -2,14 +2,11 @@ package me.eddiep;
 
 import me.eddiep.handles.ClassicPhysicsHandler;
 import org.bukkit.ChatColor;
-import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
-import org.bukkit.block.Block;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.List;
@@ -36,18 +33,6 @@ public class ClassicPhysics extends JavaPlugin {
         handler.enable();
     }
 
-    public static void placeClassicBlockAt(Location location, Material type) {
-        Block blc = location.getWorld().getBlockAt(location);
-        blc.setType(type);
-
-        if (!blc.hasMetadata("classicBlock"))
-            blc.setMetadata("classicBlock", new FixedMetadataValue(INSTANCE, true));
-    }
-
-    public static boolean isClassicBlock(Block block) {
-        return block.hasMetadata("classicBlock");
-    }
-
     @Override
     public void onDisable() {
         handler.disable();
@@ -62,7 +47,7 @@ public class ClassicPhysics extends JavaPlugin {
             }
             if (sender instanceof Player) {
                 Player p = (Player)sender;
-                placeClassicBlockAt(p.getLocation(), Material.LAVA);
+                handler.placeClassicBlockAt(p.getLocation(), Material.LAVA);
             } else {
                 sender.sendMessage("This command can only be used in-game!");
             }
@@ -74,7 +59,7 @@ public class ClassicPhysics extends JavaPlugin {
             }
             if (sender instanceof Player) {
                 Player p = (Player)sender;
-                placeClassicBlockAt(p.getLocation(), Material.WATER);
+                handler.placeClassicBlockAt(p.getLocation(), Material.WATER);
             } else {
                 sender.sendMessage("This command can only be used in-game!");
             }
