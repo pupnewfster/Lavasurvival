@@ -46,21 +46,7 @@ public class Lavasurvival extends JavaPlugin {
         }
     };
 
-    private final Cmd[] commands = new Cmd[] {
-            new CmdBan(),
-            new CmdDemote(),
-            new CmdEndGame(),
-            new CmdHide(),
-            new CmdJoin(),
-            new CmdKick(),
-            new CmdLVote(),
-            new CmdOpchat(),
-            new CmdPromote(),
-            new CmdRules(),
-            new CmdSetrank(),
-            new CmdSetupMap(),
-            new CmdWarn()
-    };
+    private Cmd[] commands;
     private HashMap<UUID, SetupMap> setups = new HashMap<UUID, SetupMap>();
     private Economy econ;
     private ClassicPhysics physics;
@@ -208,6 +194,22 @@ public class Lavasurvival extends JavaPlugin {
     }
 
     private void init() {
+        commands = new Cmd[] {
+                new CmdBan(),
+                new CmdDemote(),
+                new CmdEndGame(),
+                new CmdHide(),
+                new CmdJoin(),
+                new CmdKick(),
+                new CmdLVote(),
+                new CmdOpchat(),
+                new CmdPromote(),
+                new CmdRules(),
+                new CmdSetrank(),
+                new CmdSetupMap(),
+                new CmdWarn()
+        };
+
         getDataFolder().mkdir();
         new File(getDataFolder() + "/maps").mkdir();
         File configFileUsers = new File(getDataFolder(), "userinfo.yml");

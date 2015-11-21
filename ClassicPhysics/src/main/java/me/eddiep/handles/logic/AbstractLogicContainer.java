@@ -27,6 +27,7 @@ public abstract class AbstractLogicContainer implements LogicContainer {
 
     @Override
     public void tick() {
+        ticking = true;
         while (!queue.isEmpty()) {
             Block block = queue.poll();
             if (block == null)
@@ -35,9 +36,17 @@ public abstract class AbstractLogicContainer implements LogicContainer {
 
             tickForBlock(block, block.getLocation());
         }
+        ticking = false;
 
         queue.addAll(toAdd);
         toAdd.clear();
+    }
+
+    @Override
+    public void blockUpdate(Location location) {
+        Material material = location.getBlock().getType();
+        if (doesHandle(material))
+            queueBlock(location.getBlock());
     }
 
     protected abstract void tickForBlock(Block block, Location location);

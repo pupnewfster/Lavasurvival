@@ -13,26 +13,23 @@ public class LavaLogic extends AbstractLogicContainer {
         double y = location.getY();
         double z = location.getZ();
 
-        checkLocation(location.add(x + 1, y ,z));
-        checkLocation(location.add(x - 1, y , z));
-        checkLocation(location.add(x, y, z + 1));
-        checkLocation(location.add(x, y, z - 1));
-        checkLocation(location.add(x, y - 1, z));
+        checkLocation(location.clone().add(1, 0, 0));
+        checkLocation(location.clone().add(-1, 0, 0));
+        checkLocation(location.clone().add(0, 0, 1));
+        checkLocation(location.clone().add(0, 0, -1));
+        checkLocation(location.clone().add(0, -1, 0));
     }
 
     protected void checkLocation(Location location) {
         Block block = location.getBlock();
 
-        switch (block.getType()) {
-            //TODO Add more things here
-            case AIR:
-                placeClassicBlock(Material.LAVA, location);
-        }
+        if (!block.getType().isSolid() && !doesHandle(block.getType()))
+            placeClassicBlock(Material.STATIONARY_LAVA, location);
     }
 
     @Override
     public int updateRate() {
-        return 2; //Every other tick
+        return 20; //Every other tick
     }
 
     @Override

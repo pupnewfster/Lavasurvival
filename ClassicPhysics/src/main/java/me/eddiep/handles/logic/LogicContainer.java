@@ -1,6 +1,7 @@
 package me.eddiep.handles.logic;
 
 
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 
@@ -29,4 +30,6 @@ public interface LogicContainer {
      * @return True if this {@link Material} can be queued, otherwise false
      */
     boolean doesHandle(Material material);
+
+    void blockUpdate(Location location);
 }

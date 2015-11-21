@@ -14,6 +14,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPhysicsEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.metadata.FixedMetadataValue;
@@ -96,14 +97,35 @@ public final class ClassicPhysicsHandler implements Listener {
             placeClassicBlockAt(event.getBlockPlaced().getLocation(), Material.WATER);
             event.setCancelled(true);
         }
+
+        requestUpdateAround(event.getBlock().getLocation());
+    }
+
+    @EventHandler (priority = EventPriority.MONITOR)
+    public void onBlockBreak(BlockBreakEvent event) {
+        if (ClassicPhysics.TYPE == PhysicsType.DEFAULT)
+            return;
+
+        requestUpdateAround(event.getBlock().getLocation());
+    }
+
+    public void requestUpdateAround(Location location) {
+        for (int x = -1; x <= 1; x++) {
+            for (int y = -1; y <= 1; y++) {
+                for (int z = -1; z <= 1; z++) {
+                    for (LogicContainerHolder holder : logicContainers) {
+                        holder.container.blockUpdate(location.clone().add(x, y, z));
+                    }
+                }
+            }
+        }
     }
 
     public void placeClassicBlockAt(Location location, Material type) {
-        Block blc = location.getWorld().getBlockAt(location);
-        Material material = blc.getType();
-
         for (LogicContainerHolder holder : logicContainers) {
-            if (holder.container.doesHandle(material)) {
+            if (holder.container.doesHandle(type)) {
+                Block blc = location.getWorld().getBlockAt(location);
+                blc.setType(type);
                 holder.container.queueBlock(blc);
                 break; //TODO Maybe don't break?
             }
@@ -123,7 +145,7 @@ public final class ClassicPhysicsHandler implements Listener {
     }
 
 
-    @EventHandler(priority = EventPriority.LOWEST)
+    @EventHandler(priority = EventPriority.MONITOR)
     public void onPhysicsUpdate(BlockPhysicsEvent event) {
         if (ClassicPhysics.TYPE != PhysicsType.DEFAULT) {
             event.setCancelled(true);

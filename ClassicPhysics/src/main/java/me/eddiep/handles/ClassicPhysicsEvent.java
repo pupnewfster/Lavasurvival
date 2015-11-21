@@ -15,6 +15,7 @@ public class ClassicPhysicsEvent extends Event implements Cancellable {
     private boolean isClassicEvent;
 
     public ClassicPhysicsEvent(Block oldBlock, Material newBlock, boolean isClassicEvent) {
+        this.oldBlock = oldBlock;
         this.newBlock = newBlock;
         this.isClassicEvent = isClassicEvent;
     }
