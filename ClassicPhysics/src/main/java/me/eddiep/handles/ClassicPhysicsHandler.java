@@ -113,8 +113,12 @@ public final class ClassicPhysicsHandler implements Listener {
         for (int x = -1; x <= 1; x++) {
             for (int y = -1; y <= 1; y++) {
                 for (int z = -1; z <= 1; z++) {
+                    Location newLoc = location.clone().add(x, y, z);
+                    if (!newLoc.getBlock().hasMetadata("classic_block"))
+                        continue;
+
                     for (LogicContainerHolder holder : logicContainers) {
-                        holder.container.blockUpdate(location.clone().add(x, y, z));
+                        holder.container.blockUpdate(newLoc);
                     }
                 }
             }
@@ -125,6 +129,10 @@ public final class ClassicPhysicsHandler implements Listener {
         for (LogicContainerHolder holder : logicContainers) {
             if (holder.container.doesHandle(type)) {
                 Block blc = location.getWorld().getBlockAt(location);
+
+                if (!blc.hasMetadata("classic_block"))
+                    blc.setMetadata("classic_block", new FixedMetadataValue(ClassicPhysics.INSTANCE, true));
+
                 blc.setType(type);
                 holder.container.queueBlock(blc);
                 break; //TODO Maybe don't break?

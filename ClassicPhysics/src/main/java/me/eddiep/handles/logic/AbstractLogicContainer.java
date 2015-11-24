@@ -1,7 +1,6 @@
 package me.eddiep.handles.logic;
 
 import me.eddiep.ClassicPhysics;
-import me.eddiep.handles.ClassicPhysicsEvent;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -52,9 +51,6 @@ public abstract class AbstractLogicContainer implements LogicContainer {
     protected abstract void tickForBlock(Block block, Location location);
 
     protected void placeClassicBlock(Material material, Location location) {
-        ClassicPhysicsEvent event = new ClassicPhysicsEvent(location.getBlock(), material, true);
-        ClassicPhysics.INSTANCE.getServer().getPluginManager().callEvent(event);
-
         ClassicPhysics.INSTANCE.getPhysicsHandler().placeClassicBlockAt(location, material);
     }
 }

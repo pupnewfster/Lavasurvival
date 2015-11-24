@@ -1,7 +1,7 @@
 package me.eddiep.minecraft.ls.system;
 
-import me.eddiep.minecraft.ls.Lavasurvival;
 import me.eddiep.handles.ClassicPhysicsEvent;
+import me.eddiep.minecraft.ls.Lavasurvival;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -177,15 +177,18 @@ public class PhysicsListener implements Listener {
             int task = Bukkit.getScheduler().scheduleSyncDelayedTask(Lavasurvival.INSTANCE, new Runnable() {
                 @Override
                 public void run() {
-                    blockChecking.setType(event.getNewBlock());
+                    //blockChecking.setType(event.getNewBlock());
+                    Lavasurvival.INSTANCE.getPhysicsHandler().placeClassicBlockAt(event.getLocation(), event.getNewBlock());
                 }
             }, tickCount);
             tasks.add(task);
-        } else { //Melt at default speed
+        } else if (event.isChanging()) { //Melt at default speed
+            event.setCancelled(true);
             int task = Bukkit.getScheduler().scheduleSyncDelayedTask(Lavasurvival.INSTANCE, new Runnable() {
                 @Override
                 public void run() {
-                    blockChecking.setType(event.getNewBlock());
+                    //blockChecking.setType(event.getNewBlock());
+                    Lavasurvival.INSTANCE.getPhysicsHandler().placeClassicBlockAt(event.getLocation(), event.getNewBlock());
                 }
             }, DEFAULT_SPEED);
             tasks.add(task);

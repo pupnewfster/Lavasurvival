@@ -1,6 +1,8 @@
 package me.eddiep.handles.logic;
 
 
+import me.eddiep.ClassicPhysics;
+import me.eddiep.handles.ClassicPhysicsEvent;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -9,10 +11,6 @@ import org.bukkit.block.Block;
 public class LavaLogic extends AbstractLogicContainer {
     @Override
     protected void tickForBlock(Block block, Location location) {
-        double x = location.getX();
-        double y = location.getY();
-        double z = location.getZ();
-
         checkLocation(location.clone().add(1, 0, 0));
         checkLocation(location.clone().add(-1, 0, 0));
         checkLocation(location.clone().add(0, 0, 1));
@@ -22,9 +20,23 @@ public class LavaLogic extends AbstractLogicContainer {
 
     protected void checkLocation(Location location) {
         Block block = location.getBlock();
+        Material newBlock = block.getType();
 
-        if (!block.getType().isSolid() && !doesHandle(block.getType()))
-            placeClassicBlock(Material.STATIONARY_LAVA, location);
+        if (!block.getType().isSolid() && !doesHandle(block.getType())) {
+            newBlock = Material.STATIONARY_LAVA;
+        }
+
+
+
+        ClassicPhysicsEvent event = new ClassicPhysicsEvent(location.getBlock(), newBlock, true, location);
+        ClassicPhysics.INSTANCE.getServer().getPluginManager().callEvent(event);
+
+        if (event.isCancelled())
+            return;
+
+        if (newBlock != block.getType()) {
+            placeClassicBlock(newBlock, location);
+        }
     }
 
     @Override
