@@ -4,9 +4,9 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.google.gson.stream.JsonWriter;
 import org.bukkit.configuration.serialization.ConfigurationSerializable;
 import org.bukkit.configuration.serialization.ConfigurationSerialization;
-import org.bukkit.craftbukkit.libs.com.google.gson.stream.JsonWriter;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableMap;
@@ -15,6 +15,7 @@ import com.google.common.collect.ImmutableMap;
  * Represents a textual component of a message part.
  * This can be used to not only represent string literals in a JSON message,
  * but also to represent localized strings and other text values.
+ * <p>Different instances of this class can be created with static constructor methods.</p>
  */
 public abstract class TextualComponent implements Cloneable {
 
@@ -23,11 +24,21 @@ public abstract class TextualComponent implements Cloneable {
 		ConfigurationSerialization.registerClass(TextualComponent.ComplexTextTypeComponent.class);
 	}
 	
+	@Override
+	public String toString() {
+		return getReadableString();
+	}
+	
 	/**
-	 * Get the JSON key used to represent text components of this type.
+         * @return The JSON key used to represent text components of this type.
 	 */
 	public abstract String getKey();
 	
+        /**
+         * @return A readable String
+	 */
+	public abstract String getReadableString();
+        
 	/**
 	 * Clones a textual component instance.
 	 * The returned object should not reference this textual component instance, but should maintain the same key and value.
@@ -57,6 +68,10 @@ public abstract class TextualComponent implements Cloneable {
 	
 	static boolean isTextKey(String key){
 		return key.equals("translate") || key.equals("text") || key.equals("score") || key.equals("selector");
+	}
+	
+	static boolean isTranslatableText(TextualComponent component){
+		return component instanceof ComplexTextTypeComponent && ((ComplexTextTypeComponent)component).getKey().equals("translate");
 	}
 	
 	/**
@@ -113,6 +128,11 @@ public abstract class TextualComponent implements Cloneable {
 		
 		public static ArbitraryTextTypeComponent deserialize(Map<String, Object> map){
 			return new ArbitraryTextTypeComponent(map.get("key").toString(), map.get("value").toString());
+		}
+
+		@Override
+        public String getReadableString() {
+			return getValue();
 		}
 	}
 	
@@ -181,11 +201,16 @@ public abstract class TextualComponent implements Cloneable {
 			for(Map.Entry<String, Object> valEntry : map.entrySet()){
 				if(valEntry.getKey().equals("key")){
 					key = (String) valEntry.getValue();
-				}else if(valEntry.getKey().toString().startsWith("value.")){
+				}else if(valEntry.getKey().startsWith("value.")){
 					value.put(((String) valEntry.getKey()).substring(6) /* Strips out the value prefix */, valEntry.getValue().toString());
 				}
 			}
 			return new ComplexTextTypeComponent(key, value);
+		}
+		
+		@Override
+		public String getReadableString() {
+			return getKey();
 		}
 	}
 	
@@ -213,7 +238,7 @@ public abstract class TextualComponent implements Cloneable {
 		return new ArbitraryTextTypeComponent("translate", translateKey);
 	}
 	
-	private static final void throwUnsupportedSnapshot(){
+	private static void throwUnsupportedSnapshot(){
 		throw new UnsupportedOperationException("This feature is only supported in snapshot releases.");
 	}
 	
