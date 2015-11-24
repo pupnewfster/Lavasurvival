@@ -23,6 +23,7 @@ public class UserInfo {
     private String appended = "";
     private boolean inWater = false;
     private boolean opChat = false;
+    private long lastBreak = System.currentTimeMillis();
     private int taskID = 0;
     private Player bukkitPlayer;
     private UUID userUUID;
@@ -47,6 +48,14 @@ public class UserInfo {
     public void logOut() {
         this.bukkitPlayer = null;
         setAppended("");
+    }
+
+    public long getLastBreak() {
+        return this.lastBreak;
+    }
+
+    public void setLastBreak(long lastBreak) {
+        this.lastBreak = lastBreak;
     }
 
     public UUID getUUID() {
