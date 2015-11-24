@@ -157,7 +157,8 @@ public class PlayerListener implements Listener {
     public void blockInteract(PlayerInteractEvent event) {
         if (Lavasurvival.INSTANCE.getSetups().containsKey(event.getPlayer().getUniqueId()))
             return;
-
+        if ((event.getAction() == Action.RIGHT_CLICK_BLOCK || event.getAction() == Action.RIGHT_CLICK_AIR) && event.getItem() != null && event.getItem().getType().equals(Material.WRITTEN_BOOK))
+            return;//Allow players to read the rule book
         if (Gamemode.getCurrentGame() != null && Gamemode.getCurrentGame().isSpectator(event.getPlayer())) {
             event.setCancelled(true);
             if (event.getAction() == Action.RIGHT_CLICK_BLOCK &&
