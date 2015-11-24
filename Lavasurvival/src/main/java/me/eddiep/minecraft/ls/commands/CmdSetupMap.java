@@ -32,6 +32,6 @@ public class CmdSetupMap extends Cmd {
 
     @Override
     public String getName() {
-        return "setup";
+        return "setupmap";
     }
 }

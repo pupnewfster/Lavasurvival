@@ -124,7 +124,9 @@ public class Rise extends Gamemode {
         final Location loc = getCurrentMap().getLavaSpawnAsLocation(0, -(getCurrentMap().getHeight()) + lvl, 0);
 
         if (loc.getBlockY() > getCurrentMap().getLavaY()) { //If we have passed the original lava spawn, that means the previous pour was the last one
-            super.endRound(); //Thus, we should end the game
+            if (!isRoundEnding()) {
+                super.endRoundIn((Gamemode.RANDOM.nextInt(3) + 1) * 60);
+            }
             return;
         }
 
@@ -145,5 +147,9 @@ public class Rise extends Gamemode {
         if (doubleReward)
             multiplier = 2.0;
         return (super.getDefaultReward(player) + bonus) * multiplier;
+    }
+
+    public boolean isRoundEnding() {
+        return isEnding;
     }
 }

@@ -209,6 +209,20 @@ public abstract class Gamemode {
 
     protected abstract double calculateReward(OfflinePlayer player);
 
+    protected boolean isEnding;
+    public void endRoundIn(long seconds) {
+        if (isEnding)
+            return;
+
+        isEnding = true;
+        Bukkit.getScheduler().scheduleSyncDelayedTask(Lavasurvival.INSTANCE, new Runnable() {
+            @Override
+            public void run() {
+                endRound();
+            }
+        }, seconds * 20L);
+    }
+
     public void endRound() {
         end();
         UserManager um = Lavasurvival.INSTANCE.getUserManager();
@@ -379,6 +393,7 @@ public abstract class Gamemode {
         Bukkit.getScheduler().cancelTask(tickTask);
         physicsListener.cancelAllTasks();
         globalMessage(ChatColor.GREEN + "The round has ended!");
+        isEnding = false;
     }
 
     protected Gamemode pickRandomGame() {
