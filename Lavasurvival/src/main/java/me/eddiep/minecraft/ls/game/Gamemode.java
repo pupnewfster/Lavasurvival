@@ -3,6 +3,7 @@ package me.eddiep.minecraft.ls.game;
 import me.eddiep.minecraft.ls.Lavasurvival;
 import me.eddiep.minecraft.ls.game.impl.Rise;
 import me.eddiep.minecraft.ls.ranks.Rank;
+import me.eddiep.minecraft.ls.ranks.UUIDs;
 import me.eddiep.minecraft.ls.ranks.UserInfo;
 import me.eddiep.minecraft.ls.ranks.UserManager;
 import me.eddiep.minecraft.ls.system.FileUtils;
@@ -66,8 +67,8 @@ public abstract class Gamemode {
     }
 
     public static void clearTeam(Team team) {
-        for (OfflinePlayer p : team.getPlayers())
-            team.removePlayer(p);
+        for (String p : team.getEntries())
+            team.removeEntry(p);
     }
 
     public static LavaMap getCurrentMap() {
@@ -157,7 +158,7 @@ public abstract class Gamemode {
         for (Player p : players) {
             p.teleport(getCurrentWorld().getSpawnLocation());
 
-            spec.addPlayer(p);
+            spec.addEntry(p.getName());
         }
 
         currentmap.getJoinSign().setLine(0, ChatColor.BOLD + "Right click");
@@ -226,6 +227,7 @@ public abstract class Gamemode {
     public void endRound() {
         end();
         UserManager um = Lavasurvival.INSTANCE.getUserManager();
+        UUIDs get = Lavasurvival.INSTANCE.getUUIDs();
         for (UserInfo u : um.getUsers().values())
             u.clearBlocks();
 
@@ -234,16 +236,19 @@ public abstract class Gamemode {
             globalMessage("No one survived..");
         } else if (amount <= 45) {
             globalMessage("Congratulations to the survivors!");
-
             String survivors = "";
-            for (OfflinePlayer player : alive.getPlayers()) {
-                if (!player.isOnline())
+            for (String name : alive.getEntries()) {
+                if (name == null)
                     continue;
-
+                UUID id = get.getID(name);
+                if (id == null)
+                    id = get.getOfflineID(name);
+                if (id == null || Bukkit.getPlayer(id) == null)
+                    continue;
                 if (survivors.equals(""))
-                    survivors += player.getName();
+                    survivors += name;
                 else
-                    survivors += ", " + player.getName();
+                    survivors += ", " + name;
             }
 
             globalMessage(survivors);
@@ -251,13 +256,19 @@ public abstract class Gamemode {
             globalMessage("Congratulations to all " + amount + " survivors!");
         }
 
-        for (OfflinePlayer player : alive.getPlayers())
-            if (player.isOnline()) {
-                double reward = calculateReward(player);
-                Lavasurvival.INSTANCE.getEconomy().depositPlayer(player, reward);
-
-                player.getPlayer().sendMessage(ChatColor.GREEN + "+ " + ChatColor.GOLD + "You won " + ChatColor.BOLD + reward + ChatColor.RESET + "" + ChatColor.GOLD + " GGs!");
-            }
+        for (String name : alive.getEntries()) {
+            if (name == null)
+                continue;
+            UUID id = get.getID(name);
+            if (id == null)
+                id = get.getOfflineID(name);
+            Player player = Bukkit.getPlayer(id);
+            if (id == null || player == null)
+                continue;
+            double reward = calculateReward(player);
+            Lavasurvival.INSTANCE.getEconomy().depositPlayer(player, reward);
+            player.getPlayer().sendMessage(ChatColor.GREEN + "+ " + ChatColor.GOLD + "You won " + ChatColor.BOLD + reward + ChatColor.RESET + "" + ChatColor.GOLD + " GGs!");
+        }
 
         new Thread(new Runnable() {
             @Override
@@ -469,46 +480,55 @@ public abstract class Gamemode {
     }
 
     public void setAlive(Player player) {
-        if (dead.hasPlayer(player))
-            dead.removePlayer(player);
-        if (spec.hasPlayer(player))
-            spec.removePlayer(player);
+        if (player == null)
+            return;
+        String name = player.getName();
+        if (dead.hasEntry(name))
+            dead.removeEntry(name);
+        if (spec.hasEntry(name))
+            spec.removeEntry(name);
 
-        alive.addPlayer(player);
-        Lavasurvival.log(player.getName() + " has joined the alive team.");
+        alive.addEntry(name);
+        Lavasurvival.log(name + " has joined the alive team.");
     }
 
     public void setDead(Player player) {
-        if (alive.hasPlayer(player))
-            alive.removePlayer(player);
-        if (spec.hasPlayer(player))
-            spec.removePlayer(player);
+        if (player == null)
+            return;
+        String name = player.getName();
+        if (alive.hasEntry(name))
+            alive.removeEntry(name);
+        if (spec.hasEntry(name))
+            spec.removeEntry(name);
 
-        dead.addPlayer(player);
-        Lavasurvival.log(player.getName() + " has joined the dead team.");
+        dead.addEntry(name);
+        Lavasurvival.log(name + " has joined the dead team.");
     }
 
     public void setSpectator(Player player) {
-        if (dead.hasPlayer(player))
-            dead.removePlayer(player);
-        if (alive.hasPlayer(player))
-            alive.removePlayer(player);
+        if (player == null)
+            return;
+        String name = player.getName();
+        if (dead.hasEntry(name))
+            dead.removeEntry(name);
+        if (alive.hasEntry(name))
+            alive.removeEntry(name);
 
-        spec.addPlayer(player);
-        Lavasurvival.log(player.getName() + " has joined the spec team.");
+        spec.addEntry(name);
+        Lavasurvival.log(name + " has joined the spec team.");
 
     }
 
     public boolean isAlive(Player player) {
-        return alive.hasPlayer(player);
+        return player != null && alive.hasEntry(player.getName());
     }
 
     public boolean isDead(Player player) {
-        return dead.hasPlayer(player);
+        return player != null && dead.hasEntry(player.getName());
     }
 
     public boolean isSpectator(Player player) {
-        return spec.hasPlayer(player);
+        return player != null && spec.hasEntry(player.getName());
     }
 
     public void globalMessage(String message) {

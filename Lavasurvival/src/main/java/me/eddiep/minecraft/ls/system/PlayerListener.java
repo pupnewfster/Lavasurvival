@@ -157,7 +157,8 @@ public class PlayerListener implements Listener {
     public void blockInteract(PlayerInteractEvent event) {
         if (Lavasurvival.INSTANCE.getSetups().containsKey(event.getPlayer().getUniqueId()))
             return;
-
+        if ((event.getAction() == Action.RIGHT_CLICK_BLOCK || event.getAction() == Action.RIGHT_CLICK_AIR) && event.getItem() != null && event.getItem().getType().equals(Material.WRITTEN_BOOK))
+            return;//Allow players to read the rule book
         if (Gamemode.getCurrentGame() != null && Gamemode.getCurrentGame().isSpectator(event.getPlayer())) {
             event.setCancelled(true);
             if (event.getAction() == Action.RIGHT_CLICK_BLOCK &&
@@ -181,6 +182,10 @@ public class PlayerListener implements Listener {
                     event.getPlayer().sendMessage(ChatColor.RED + "" + ChatColor.BOLD + "You are building to high!");
                     return;
                 }
+                UserInfo u = um.getUser(event.getPlayer().getUniqueId());
+                if (System.currentTimeMillis() - u.getLastBreak() <= 500)//So that two blocks don't break instantly, may need to be adjusted
+                    return;
+                u.setLastBreak(System.currentTimeMillis());
                 if (survival) {
                     Inventory inventory = event.getPlayer().getInventory();
                     int index = inventory.first(block.getType());

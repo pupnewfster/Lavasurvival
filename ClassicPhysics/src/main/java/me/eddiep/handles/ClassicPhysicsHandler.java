@@ -25,8 +25,8 @@ import java.util.ArrayList;
 public final class ClassicPhysicsHandler implements Listener {
     private ArrayList<LogicContainerHolder> logicContainers = new ArrayList<>();
 
-    private ArrayList<Player> lplacers = new ArrayList<Player>();
-    private ArrayList<Player> wplacers = new ArrayList<Player>();
+    private ArrayList<Player> lplacers = new ArrayList<>();
+    private ArrayList<Player> wplacers = new ArrayList<>();
     private Plugin owner;
     private int taskId;
     private boolean blocking = false;

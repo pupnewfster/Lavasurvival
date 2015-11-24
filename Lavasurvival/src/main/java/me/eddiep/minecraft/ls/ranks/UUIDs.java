@@ -24,7 +24,7 @@ public class UUIDs {
                 partial = p.getUniqueId();
                 startsWith = true;
             }
-            if (partial == null && p.getName().toLowerCase().contains(name.toLowerCase()))
+            if (partial == null && (p.getName().toLowerCase().contains(name.toLowerCase()) || ChatColor.stripColor(p.getDisplayName()).toLowerCase().contains(name.toLowerCase())))
                 partial = p.getUniqueId();
         }
         return partial;
