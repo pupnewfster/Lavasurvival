@@ -267,7 +267,7 @@ public class PlayerListener implements Listener {
             event.setCancelled(true);
         if (Gamemode.getCurrentGame() != null && Gamemode.getCurrentGame().isAlive(event.getPlayer()) &&
                 (event.getPlayer().getInventory().contains(event.getBlock().getType()) ||
-                        event.getPlayer().getInventory().contains(Material.getMaterial(event.getBlock().getType().toString().replace("_ITEM", ""))))) {
+                        event.getPlayer().getInventory().contains(Material.getMaterial(event.getBlock().getType().toString() + "_ITEM")))) {
             if (event.getBlock().getLocation().getBlockY() >= Gamemode.getCurrentMap().getLavaY()) {
                 event.getPlayer().sendMessage(ChatColor.RED + "" + ChatColor.BOLD + "You are building to high!");
                 return;
