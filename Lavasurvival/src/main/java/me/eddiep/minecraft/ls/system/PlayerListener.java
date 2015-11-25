@@ -201,6 +201,7 @@ public class PlayerListener implements Listener {
                     }
                 }
                 block.setType(Material.AIR);
+                Bukkit.getPluginManager().callEvent(new BlockBreakEvent(block, event.getPlayer()));
             }
         }
         if (event.getAction() == Action.RIGHT_CLICK_BLOCK && !event.getPlayer().isSneaking() &&
@@ -243,6 +244,7 @@ public class PlayerListener implements Listener {
                 }
             }
             block.setType(Material.AIR);
+            Bukkit.getPluginManager().callEvent(new BlockBreakEvent(block, event.getPlayer()));
         }
     }
 
@@ -264,7 +266,8 @@ public class PlayerListener implements Listener {
         if(!event.getPlayer().getGameMode().equals(GameMode.CREATIVE))//Allows players in creative to edit maps
             event.setCancelled(true);
         if (Gamemode.getCurrentGame() != null && Gamemode.getCurrentGame().isAlive(event.getPlayer()) &&
-                event.getPlayer().getInventory().contains(event.getBlock().getType())) {
+                (event.getPlayer().getInventory().contains(event.getBlock().getType()) ||
+                        event.getPlayer().getInventory().contains(Material.getMaterial(event.getBlock().getType().toString().replace("_ITEM", ""))))) {
             if (event.getBlock().getLocation().getBlockY() >= Gamemode.getCurrentMap().getLavaY()) {
                 event.getPlayer().sendMessage(ChatColor.RED + "" + ChatColor.BOLD + "You are building to high!");
                 return;
