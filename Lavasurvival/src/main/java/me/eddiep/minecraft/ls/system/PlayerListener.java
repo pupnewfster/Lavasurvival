@@ -156,8 +156,6 @@ public class PlayerListener implements Listener {
             return;
         if ((event.getAction() == Action.RIGHT_CLICK_BLOCK || event.getAction() == Action.RIGHT_CLICK_AIR) && event.getItem() != null && event.getItem().getType().equals(Material.WRITTEN_BOOK))
             return;//Allow players to read the rule book
-        if (event.getAction() == Action.PHYSICAL)
-            return;//Allow pressure plates to work
         if (Gamemode.getCurrentGame() != null && Gamemode.getCurrentGame().isSpectator(event.getPlayer())) {
             event.setCancelled(true);
             if (event.getAction() == Action.RIGHT_CLICK_BLOCK &&
@@ -182,7 +180,7 @@ public class PlayerListener implements Listener {
                     return;
                 }
                 UserInfo u = um.getUser(event.getPlayer().getUniqueId());
-                if (System.currentTimeMillis() - u.getLastBreak() <= 200)//So that two blocks don't break instantly, may need to be adjusted
+                if (System.currentTimeMillis() - u.getLastBreak() <= 100)//So that two blocks don't break instantly, may need to be adjusted
                     return;
                 u.setLastBreak(System.currentTimeMillis());
                 u.incrimentBlockCount();
@@ -213,42 +211,6 @@ public class PlayerListener implements Listener {
                 event.getClickedBlock().getType().equals(Material.ENDER_CHEST) || event.getClickedBlock().getType().equals(Material.BEACON) ||
                 event.getClickedBlock().getType().equals(Material.ITEM_FRAME)))
             event.setCancelled(true);//Disable opening block's with inventories
-    }
-
-    @EventHandler(priority = EventPriority.HIGHEST)
-    public void onBlockDamage(BlockDamageEvent event) {
-        if (Gamemode.getCurrentGame() != null && Gamemode.getCurrentGame().isAlive(event.getPlayer())) {
-            Block block = event.getBlock();
-            if (invalidBlocks.contains(block.getType()))
-                return;
-            if (block.getLocation().getBlockY() >= Gamemode.getCurrentMap().getLavaY()) {
-                event.getPlayer().sendMessage(ChatColor.RED + "" + ChatColor.BOLD + "You are building to high!");
-                return;
-            }
-            UserInfo u = um.getUser(event.getPlayer().getUniqueId());
-            if (System.currentTimeMillis() - u.getLastBreak() <= 200)//So that two blocks don't break instantly, may need to be adjusted
-                return;
-            u.setLastBreak(System.currentTimeMillis());
-            if (survival) {
-                Inventory inventory = event.getPlayer().getInventory();
-                int index = inventory.first(block.getType());
-                if (index == -1)
-                    index = inventory.firstEmpty();
-                if (index != -1) {
-                    ItemStack stack = inventory.getItem(index);
-                    if (stack == null) {
-                        stack = new ItemStack(block.getType(), 1);
-                        inventory.setItem(index, stack);
-                        block.setType(Material.AIR);
-                        return;
-                    }
-                    stack.setType(block.getType());
-                    stack.setAmount(stack.getAmount() + 1);
-                }
-            }
-            block.setType(Material.AIR);
-            Bukkit.getPluginManager().callEvent(new BlockBreakEvent(block, event.getPlayer()));
-        }
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
