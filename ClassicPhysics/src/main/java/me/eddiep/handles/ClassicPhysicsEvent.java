@@ -1,6 +1,7 @@
 package me.eddiep.handles;
 
 import me.eddiep.ClassicPhysics;
+import me.eddiep.handles.logic.LogicContainer;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -15,12 +16,18 @@ public class ClassicPhysicsEvent extends Event implements Cancellable {
     private boolean cancel;
     private boolean isClassicEvent;
     private Location location;
+    private LogicContainer container;
 
-    public ClassicPhysicsEvent(Block oldBlock, Material newBlock, boolean isClassicEvent, Location location) {
+    public ClassicPhysicsEvent(Block oldBlock, Material newBlock, boolean isClassicEvent, Location location, LogicContainer logicContainer) {
         this.oldBlock = oldBlock;
         this.newBlock = newBlock;
         this.isClassicEvent = isClassicEvent;
         this.location = location;
+        this.container = logicContainer;
+    }
+
+    public LogicContainer getLogicContainer() {
+        return container;
     }
 
     public Location getLocation() {

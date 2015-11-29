@@ -28,7 +28,7 @@ public class LavaLogic extends AbstractLogicContainer {
 
 
 
-        ClassicPhysicsEvent event = new ClassicPhysicsEvent(location.getBlock(), newBlock, true, location);
+        ClassicPhysicsEvent event = new ClassicPhysicsEvent(location.getBlock(), newBlock, true, location, this);
         ClassicPhysics.INSTANCE.getServer().getPluginManager().callEvent(event);
 
         if (event.isCancelled())
@@ -47,5 +47,10 @@ public class LavaLogic extends AbstractLogicContainer {
     @Override
     public boolean doesHandle(Material material) {
         return material == Material.LAVA || material == Material.STATIONARY_LAVA;
+    }
+
+    @Override
+    public Material logicFor() {
+        return Material.STATIONARY_LAVA;
     }
 }

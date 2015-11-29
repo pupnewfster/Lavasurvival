@@ -31,5 +31,15 @@ public interface LogicContainer {
      */
     boolean doesHandle(Material material);
 
+    /**
+     * Request a block change update at the specified location
+     * @param location The location to request an update
+     */
     void blockUpdate(Location location);
+
+    /**
+     * Returns what this LogicContainer does physics for
+     * @return The Material this LogicContainer does physics for
+     */
+    Material logicFor();
 }

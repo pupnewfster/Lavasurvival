@@ -169,7 +169,7 @@ public class PhysicsListener implements Listener {
         MaterialData dat = new MaterialData(blockChecking.getType(), blockChecking.getData());
         if (!ticksToMelt.containsKey(dat))
             dat = new MaterialData(blockChecking.getType());
-        
+
         if (ticksToMelt.containsKey(dat)) {
             event.setCancelled(true);
             long tickCount = ticksToMelt.get(dat);
@@ -179,8 +179,7 @@ public class PhysicsListener implements Listener {
             int task = Bukkit.getScheduler().scheduleSyncDelayedTask(Lavasurvival.INSTANCE, new Runnable() {
                 @Override
                 public void run() {
-                    //blockChecking.setType(event.getNewBlock());
-                    Lavasurvival.INSTANCE.getPhysicsHandler().placeClassicBlockAt(event.getLocation(), event.getNewBlock());
+                    Lavasurvival.INSTANCE.getPhysicsHandler().placeClassicBlockAt(event.getLocation(), event.getLogicContainer().logicFor());
                 }
             }, tickCount);
             tasks.add(task);

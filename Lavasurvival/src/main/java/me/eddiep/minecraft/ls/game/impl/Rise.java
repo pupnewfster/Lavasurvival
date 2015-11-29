@@ -24,6 +24,7 @@ public class Rise extends Gamemode {
     private int bonus;
     private Objective objective;
     private Score bonusScore;
+    private Score layersLeft;
     private boolean doubleReward;
     private int lvl = 1;
     private int sched = 0;
@@ -43,8 +44,10 @@ public class Rise extends Gamemode {
         objective.setDisplaySlot(DisplaySlot.SIDEBAR);
         objective.setDisplayName("Prepare Time");
         bonusScore = objective.getScore(ChatColor.GOLD + "" + ChatColor.BOLD + "Reward Bonus");
+        layersLeft = objective.getScore(ChatColor.RED + "" + ChatColor.BOLD + "Layers Left");
         bonus = Gamemode.RANDOM.nextInt(80) + 50;
         bonusScore.setScore(bonus);
+        layersLeft.setScore(-(getCurrentMap().getHeight()) + lvl);
 
         Gamemode.getPlayerListener().survival = false;
         doubleReward = Math.random() < 0.25;
@@ -90,6 +93,12 @@ public class Rise extends Gamemode {
         int seconds = (int) (((duration - since) / 1000) % 60);
 
         String time = (minutes < 10 ? "0" + minutes : minutes) + ":" + (seconds < 10 ? "0" + seconds : seconds);
+
+        if (isRoundEnding()) {
+            objective.setDisplayName("Round Ends In: " + ChatColor.BOLD + time);
+            return;
+        }
+
         objective.setDisplayName((!super.poured ? "Prepare Time: " : "Next Pour: ") + ChatColor.BOLD + time);
 
         if (!super.poured && since < duration) {
@@ -125,7 +134,9 @@ public class Rise extends Gamemode {
 
         if (loc.getBlockY() > getCurrentMap().getLavaY()) { //If we have passed the original lava spawn, that means the previous pour was the last one
             if (!isRoundEnding()) {
-                super.endRoundIn((Gamemode.RANDOM.nextInt(3) + 1) * 60);
+                duration = ((Gamemode.RANDOM.nextInt(3) + 1) * 60);
+                super.endRoundIn(duration);
+                duration *= 1000;
             }
             return;
         }
@@ -138,6 +149,7 @@ public class Rise extends Gamemode {
         Bukkit.getPluginManager().callEvent(new BlockPhysicsEvent(loc.getBlock(), 0)); //Force a physics check
 
         lvl++;
+        layersLeft.setScore(-(getCurrentMap().getHeight()) + lvl);
         if (loc.getBlockY() <= getCurrentMap().getLavaY()) liquidUp(time); //Only advance up if we are still less than the actual lava spawn or if we are at the lava spawn (the next check will end the game, see above)
     }
 

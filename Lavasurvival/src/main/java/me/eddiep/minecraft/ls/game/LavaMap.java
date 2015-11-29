@@ -56,6 +56,29 @@ public class LavaMap {
         return maps.toArray(new String[maps.size()]);
     }
 
+    public void restoreBackup() {
+        File directoy = new File(worldName);
+        File backup = new File(Lavasurvival.INSTANCE.getDataFolder(), worldName);
+        if (!backup.exists())
+            return;
+
+        if (directoy.exists()) {
+            boolean val = directoy.delete();
+            if (!val) {
+                System.err.println("Could not delete world!");
+                return;
+            }
+        } else {
+            return;
+        }
+
+        try {
+            FileUtils.copyDirectory(backup, directoy);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     public void save() throws IOException {
         String json = Lavasurvival.GSON.toJson(this);
 
@@ -71,12 +94,14 @@ public class LavaMap {
     }
 
     public void prepare() {
+        restoreBackup();
         world = loadOrGetWorld(worldName);
         world.setAutoSave(false);
         world.setPVP(false);
         world.setAnimalSpawnLimit(0);
         world.setMonsterSpawnLimit(0);
         world.setAnimalSpawnLimit(0);
+        world.setSpawnLocation(mapSpawn.getBlockX(), mapSpawn.getBlockY(), mapSpawn.getBlockZ());
 
         for (Entity e : world.getEntities()) {
             e.remove();
