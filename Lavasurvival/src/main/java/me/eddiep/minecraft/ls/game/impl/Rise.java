@@ -31,8 +31,8 @@ public class Rise extends Gamemode {
     @Override
     public void start() {
         super.start();
-        duration = Gamemode.RANDOM.nextInt(240000) + 180000;
-        timeOut = Gamemode.RANDOM.nextInt(45000) + 30000;
+        duration = Gamemode.RANDOM.nextInt(360000) + 240000;
+        timeOut = Gamemode.RANDOM.nextInt(15000) + 15000;
         globalMessage("The current gamemode is " + ChatColor.RED + ChatColor.BOLD + "RISE");
         globalMessage("The " + (LAVA ? "lava" : "water") + " will rise every " + ChatColor.DARK_RED + TimeUtils.toFriendlyTime(timeOut));
         globalMessage("You have " + ChatColor.DARK_RED + TimeUtils.toFriendlyTime(duration) + ChatColor.RESET + " to prepare!");

@@ -2,6 +2,7 @@ package me.eddiep.minecraft.ls.system;
 
 import me.eddiep.handles.ClassicPhysicsEvent;
 import me.eddiep.minecraft.ls.Lavasurvival;
+import me.eddiep.minecraft.ls.game.Gamemode;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -161,14 +162,14 @@ public class PhysicsListener implements Listener {
 
     @EventHandler(priority = EventPriority.MONITOR)
     public void onClassicPhysics(final ClassicPhysicsEvent event) {
-        if (!event.isClassicEvent())
+        if (!event.isClassicEvent() || Gamemode.getCurrentGame().hasEnded())
             return;
 
         final Block blockChecking = event.getOldBlock();
         MaterialData dat = new MaterialData(blockChecking.getType(), blockChecking.getData());
         if (!ticksToMelt.containsKey(dat))
             dat = new MaterialData(blockChecking.getType());
-
+        
         if (ticksToMelt.containsKey(dat)) {
             event.setCancelled(true);
             long tickCount = ticksToMelt.get(dat);
@@ -183,22 +184,10 @@ public class PhysicsListener implements Listener {
                 }
             }, tickCount);
             tasks.add(task);
-        } else if (event.isChanging()) { //Melt at default speed
-            event.setCancelled(true);
-            int task = Bukkit.getScheduler().scheduleSyncDelayedTask(Lavasurvival.INSTANCE, new Runnable() {
-                @Override
-                public void run() {
-                    //blockChecking.setType(event.getNewBlock());
-                    Lavasurvival.INSTANCE.getPhysicsHandler().placeClassicBlockAt(event.getLocation(), event.getNewBlock());
-                }
-            }, DEFAULT_SPEED);
-            tasks.add(task);
         }
     }
 
     public void cancelAllTasks() {
-        for (Integer task : tasks)
-            Bukkit.getScheduler().cancelTask(task);
         tasks.clear();
     }
 

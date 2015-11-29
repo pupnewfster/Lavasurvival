@@ -28,6 +28,7 @@ public class UserInfo {
     private Player bukkitPlayer;
     private UUID userUUID;
     private Rank rank;
+    private long blockChangeCount;
 
     public UserInfo(Player p) {
         YamlConfiguration configUsers = YamlConfiguration.loadConfiguration(configFileUsers);
@@ -43,11 +44,30 @@ public class UserInfo {
         YamlConfiguration configUsers = YamlConfiguration.loadConfiguration(configFileUsers);
         if (configUsers.contains(getUUID().toString() + ".rank"))
             this.rank = Lavasurvival.INSTANCE.getRankManager().getRank(configUsers.getString(getUUID().toString() + ".rank"));
+
+        load();
+    }
+
+    public long getBlockChangeCount() {
+        return blockChangeCount;
+    }
+
+    public void resetBlockChangeCount() {
+        blockChangeCount = 0;
+    }
+
+    public void load() {
+        //TODO Load all persistent data
+    }
+
+    public void save() {
+        //TODO Save all persistent data
     }
 
     public void logOut() {
         this.bukkitPlayer = null;
         setAppended("");
+        save();
     }
 
     public long getLastBreak() {
@@ -232,5 +252,9 @@ public class UserInfo {
             Lavasurvival.INSTANCE.withdrawAndUpdate(getPlayer(), price);
             getPlayer().sendMessage(ChatColor.GREEN + "You bought the block type " + mat.toString().replaceAll("_", " ").toLowerCase() + "!");
         }
+    }
+
+    public void incrimentBlockCount() {
+        blockChangeCount++;
     }
 }

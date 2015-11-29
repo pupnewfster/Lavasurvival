@@ -186,6 +186,7 @@ public class PlayerListener implements Listener {
                 if (System.currentTimeMillis() - u.getLastBreak() <= 500)//So that two blocks don't break instantly, may need to be adjusted
                     return;
                 u.setLastBreak(System.currentTimeMillis());
+                u.incrimentBlockCount();
                 if (survival) {
                     Inventory inventory = event.getPlayer().getInventory();
                     int index = inventory.first(block.getType());
@@ -263,6 +264,9 @@ public class PlayerListener implements Listener {
                 }, 2);
             }
         }
+        UserInfo u = um.getUser(event.getPlayer().getUniqueId());
+        u.incrimentBlockCount();
+
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)

@@ -1,6 +1,7 @@
 package me.eddiep.minecraft.ls.game;
 
 import me.eddiep.minecraft.ls.Lavasurvival;
+import me.eddiep.minecraft.ls.game.impl.Flood;
 import me.eddiep.minecraft.ls.game.impl.Rise;
 import me.eddiep.minecraft.ls.ranks.Rank;
 import me.eddiep.minecraft.ls.ranks.UUIDs;
@@ -29,7 +30,8 @@ public abstract class Gamemode {
             Material.SAND
     };
     public static final Class[] GAMES = new Class[] {
-            Rise.class
+            Rise.class,
+            Flood.class
     };
 
     public static final int VOTE_COUNT;
@@ -146,6 +148,8 @@ public abstract class Gamemode {
     private long lastMoneyCheck = System.currentTimeMillis();
     public void start() {
         Lavasurvival.log("New game on " + getCurrentWorld().getName());
+        isEnding = false;
+        hasEnded = false;
 
         LAVA = RANDOM.nextInt(100) < 75;//Have water/lava check be in here instead of as arguement
         WATER_DAMAGE = LAVA ? 0 : 2;
@@ -211,6 +215,7 @@ public abstract class Gamemode {
     protected abstract double calculateReward(OfflinePlayer player);
 
     protected boolean isEnding;
+    protected boolean hasEnded;
     public void endRoundIn(long seconds) {
         if (isEnding)
             return;
@@ -224,7 +229,14 @@ public abstract class Gamemode {
         }, seconds * 20L);
     }
 
+    public boolean hasEnded() {
+        return hasEnded;
+    }
+
     public void endRound() {
+        if (hasEnded)
+            return;
+
         end();
         UserManager um = Lavasurvival.INSTANCE.getUserManager();
         UUIDs get = Lavasurvival.INSTANCE.getUUIDs();
@@ -401,10 +413,10 @@ public abstract class Gamemode {
     }
 
     private void end() {
-        Bukkit.getScheduler().cancelTask(tickTask);
-        physicsListener.cancelAllTasks();
+        Bukkit.getScheduler().cancelTasks(Lavasurvival.INSTANCE);
         globalMessage(ChatColor.GREEN + "The round has ended!");
         isEnding = false;
+        hasEnded = true;
     }
 
     protected Gamemode pickRandomGame() {
