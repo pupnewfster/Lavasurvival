@@ -21,10 +21,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
-import org.bukkit.event.block.Action;
-import org.bukkit.event.block.BlockBreakEvent;
-import org.bukkit.event.block.BlockIgniteEvent;
-import org.bukkit.event.block.BlockPlaceEvent;
+import org.bukkit.event.block.*;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityRegainHealthEvent;
 import org.bukkit.event.entity.FoodLevelChangeEvent;
@@ -159,6 +156,8 @@ public class PlayerListener implements Listener {
             return;
         if ((event.getAction() == Action.RIGHT_CLICK_BLOCK || event.getAction() == Action.RIGHT_CLICK_AIR) && event.getItem() != null && event.getItem().getType().equals(Material.WRITTEN_BOOK))
             return;//Allow players to read the rule book
+        if (event.getAction() == Action.PHYSICAL)
+            return;//Allow pressure plates to work
         if (Gamemode.getCurrentGame() != null && Gamemode.getCurrentGame().isSpectator(event.getPlayer())) {
             event.setCancelled(true);
             if (event.getAction() == Action.RIGHT_CLICK_BLOCK &&
@@ -183,7 +182,7 @@ public class PlayerListener implements Listener {
                     return;
                 }
                 UserInfo u = um.getUser(event.getPlayer().getUniqueId());
-                if (System.currentTimeMillis() - u.getLastBreak() <= 500)//So that two blocks don't break instantly, may need to be adjusted
+                if (System.currentTimeMillis() - u.getLastBreak() <= 200)//So that two blocks don't break instantly, may need to be adjusted
                     return;
                 u.setLastBreak(System.currentTimeMillis());
                 u.incrimentBlockCount();
@@ -205,6 +204,7 @@ public class PlayerListener implements Listener {
                     }
                 }
                 block.setType(Material.AIR);
+                Bukkit.getPluginManager().callEvent(new BlockBreakEvent(block, event.getPlayer()));
             }
         }
         if (event.getAction() == Action.RIGHT_CLICK_BLOCK && !event.getPlayer().isSneaking() &&
@@ -213,6 +213,42 @@ public class PlayerListener implements Listener {
                 event.getClickedBlock().getType().equals(Material.ENDER_CHEST) || event.getClickedBlock().getType().equals(Material.BEACON) ||
                 event.getClickedBlock().getType().equals(Material.ITEM_FRAME)))
             event.setCancelled(true);//Disable opening block's with inventories
+    }
+
+    @EventHandler(priority = EventPriority.HIGHEST)
+    public void onBlockDamage(BlockDamageEvent event) {
+        if (Gamemode.getCurrentGame() != null && Gamemode.getCurrentGame().isAlive(event.getPlayer())) {
+            Block block = event.getBlock();
+            if (invalidBlocks.contains(block.getType()))
+                return;
+            if (block.getLocation().getBlockY() >= Gamemode.getCurrentMap().getLavaY()) {
+                event.getPlayer().sendMessage(ChatColor.RED + "" + ChatColor.BOLD + "You are building to high!");
+                return;
+            }
+            UserInfo u = um.getUser(event.getPlayer().getUniqueId());
+            if (System.currentTimeMillis() - u.getLastBreak() <= 200)//So that two blocks don't break instantly, may need to be adjusted
+                return;
+            u.setLastBreak(System.currentTimeMillis());
+            if (survival) {
+                Inventory inventory = event.getPlayer().getInventory();
+                int index = inventory.first(block.getType());
+                if (index == -1)
+                    index = inventory.firstEmpty();
+                if (index != -1) {
+                    ItemStack stack = inventory.getItem(index);
+                    if (stack == null) {
+                        stack = new ItemStack(block.getType(), 1);
+                        inventory.setItem(index, stack);
+                        block.setType(Material.AIR);
+                        return;
+                    }
+                    stack.setType(block.getType());
+                    stack.setAmount(stack.getAmount() + 1);
+                }
+            }
+            block.setType(Material.AIR);
+            Bukkit.getPluginManager().callEvent(new BlockBreakEvent(block, event.getPlayer()));
+        }
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
@@ -233,7 +269,9 @@ public class PlayerListener implements Listener {
         if(!event.getPlayer().getGameMode().equals(GameMode.CREATIVE))//Allows players in creative to edit maps
             event.setCancelled(true);
         if (Gamemode.getCurrentGame() != null && Gamemode.getCurrentGame().isAlive(event.getPlayer()) &&
-                event.getPlayer().getInventory().contains(event.getBlock().getType())) {
+                (event.getPlayer().getInventory().contains(event.getBlock().getType()) ||
+                        event.getPlayer().getInventory().contains(Material.getMaterial(event.getBlock().getType().toString() + "_ITEM")) ||
+                        event.getPlayer().getInventory().contains(Material.getMaterial(event.getBlock().getType().toString().replaceAll("DOOR_BLOCK", "DOOR"))))) {
             if (event.getBlock().getLocation().getBlockY() >= Gamemode.getCurrentMap().getLavaY()) {
                 event.getPlayer().sendMessage(ChatColor.RED + "" + ChatColor.BOLD + "You are building to high!");
                 return;
