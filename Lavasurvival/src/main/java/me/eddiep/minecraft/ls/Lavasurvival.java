@@ -1,16 +1,17 @@
 package me.eddiep.minecraft.ls;
 
+import com.crossge.necessities.GetUUID;
+import com.crossge.necessities.RankManager.RankManager;
 import com.google.gson.Gson;
 import me.eddiep.ClassicPhysics;
+import me.eddiep.handles.ClassicPhysicsHandler;
 import me.eddiep.minecraft.ls.commands.*;
 import me.eddiep.minecraft.ls.game.Gamemode;
 import me.eddiep.minecraft.ls.game.LavaMap;
-import me.eddiep.minecraft.ls.game.impl.*;
+import me.eddiep.minecraft.ls.game.impl.Rise;
 import me.eddiep.minecraft.ls.game.shop.ShopFactory;
 import me.eddiep.minecraft.ls.game.shop.impl.*;
-import me.eddiep.minecraft.ls.ggbot.*;
-import me.eddiep.handles.ClassicPhysicsHandler;
-import me.eddiep.minecraft.ls.ranks.*;
+import me.eddiep.minecraft.ls.ranks.UserManager;
 import me.eddiep.minecraft.ls.system.PlayerListener;
 import me.eddiep.minecraft.ls.system.setup.SetupMap;
 import net.milkbowl.vault.economy.Economy;
@@ -47,16 +48,13 @@ public class Lavasurvival extends JavaPlugin {
     };
 
     private Cmd[] commands;
-    private HashMap<UUID, SetupMap> setups = new HashMap<UUID, SetupMap>();
+    private HashMap<UUID, SetupMap> setups = new HashMap<>();
     private Economy econ;
     private ClassicPhysics physics;
-    private RankManager rankManager;
-    private GGBot ggbot;
-    private GGBotModeration ggbotModeration;
-    private GGBotWarn ggbotWarn;
-    private UUIDs uuiDs;
+    private GetUUID uuiDs;
     private UserManager userManager;
-    private CmdHide hide;
+    private com.crossge.necessities.RankManager.UserManager um;
+    private RankManager rm;
     private boolean running = false;
     private int moneyViewer;
     private ItemStack rules;
@@ -70,7 +68,7 @@ public class Lavasurvival extends JavaPlugin {
             ItemStack item = new ItemStack(Material.GOLD_INGOT);
             ItemMeta meta = item.getItemMeta();
             meta.setDisplayName(ChatColor.GOLD + "Balance");
-            ArrayList<String> lore = new ArrayList<String>();
+            ArrayList<String> lore = new ArrayList<>();
             lore.add(ChatColor.ITALIC + "Current Balance: " + ChatColor.RESET + econ.format(econ.getBalance(player)));
             meta.setLore(lore);
             item.setItemMeta(meta);
@@ -80,7 +78,7 @@ public class Lavasurvival extends JavaPlugin {
 
         ItemStack item = inv.getItem(index);
         ItemMeta meta = item.getItemMeta();
-        ArrayList<String> lore = new ArrayList<String>();
+        ArrayList<String> lore = new ArrayList<>();
         lore.add(ChatColor.ITALIC + "Current Balance: " + ChatColor.RESET + econ.format(econ.getBalance(player)));
         meta.setLore(lore);
         item.setItemMeta(meta);
@@ -143,8 +141,6 @@ public class Lavasurvival extends JavaPlugin {
 
     @Override
     public void onDisable() {
-        UserManager um = new UserManager();
-        um.unload();
         if (running) {
             log("Stopping game..");
             Gamemode.getCurrentGame().forceEnd();
@@ -195,19 +191,11 @@ public class Lavasurvival extends JavaPlugin {
 
     private void init() {
         commands = new Cmd[] {
-                new CmdBan(),
-                new CmdDemote(),
                 new CmdEndGame(),
-                new CmdHide(),
                 new CmdJoin(),
-                new CmdKick(),
                 new CmdLVote(),
-                new CmdOpchat(),
-                new CmdPromote(),
                 new CmdRules(),
-                new CmdSetrank(),
-                new CmdSetupMap(),
-                new CmdWarn()
+                new CmdSetupMap()
         };
 
         getDataFolder().mkdir();
@@ -220,16 +208,9 @@ public class Lavasurvival extends JavaPlugin {
                 e.printStackTrace();
             }
         userManager = new UserManager();
-        rankManager = new RankManager();
-        uuiDs = new UUIDs();
-        ggbotWarn = new GGBotWarn();
-        ggbotModeration = new GGBotModeration();
-        ggbot = new GGBot();
-        hide = new CmdHide();
-        rankManager.setRanks();
-        rankManager.readRanks();
-        uuiDs.initiate();
-        ggbotModeration.initiate();
+        um = new com.crossge.necessities.RankManager.UserManager();
+        rm = new RankManager();
+        uuiDs = new GetUUID();
     }
 
     private boolean setupEcon() {
@@ -242,10 +223,6 @@ public class Lavasurvival extends JavaPlugin {
         return econ != null;
     }
 
-    public CmdHide getHide() {
-        return hide;
-    }
-
     public ItemStack getRules() {
         return rules;
     }
@@ -254,11 +231,7 @@ public class Lavasurvival extends JavaPlugin {
         return econ;
     }
 
-    public RankManager getRankManager() {
-        return rankManager;
-    }
-
-    public UUIDs getUUIDs() {
+    public GetUUID getUUIDs() {
         return uuiDs;
     }
 
@@ -266,16 +239,12 @@ public class Lavasurvival extends JavaPlugin {
         return userManager;
     }
 
-    public GGBot getGGBot() {
-        return ggbot;
+    public com.crossge.necessities.RankManager.UserManager getNecessitiesUserManager() {
+        return um;
     }
 
-    public GGBotWarn getGGBotWarn() {
-        return ggbotWarn;
-    }
-
-    public GGBotModeration getGGBotModeration() {
-        return ggbotModeration;
+    public RankManager getRankManager() {
+        return rm;
     }
 
     public void removeFromSetup(UUID uuid) {
@@ -299,7 +268,6 @@ public class Lavasurvival extends JavaPlugin {
     public List<String> onTabComplete(CommandSender sender, Command cmd, String alias, String[] args) {
         if (cmd == null)
             return null;
-
         Cmd command = getCmd(cmd.getName());
         return (sender == null || command == null) ? null : command.tabComplete(sender, args);
     }

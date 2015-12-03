@@ -39,8 +39,10 @@ public class Rise extends Gamemode {
         globalMessage("You have " + ChatColor.DARK_RED + TimeUtils.toFriendlyTime(duration) + ChatColor.RESET + " to prepare!");
         gameStart = System.currentTimeMillis();
         lastMinute = 0;
-
-        objective = getScoreboard().registerNewObjective("game", "dummy");
+        if (getScoreboard().getObjective("game") == null)
+            objective = getScoreboard().registerNewObjective("game", "dummy");
+        else
+            objective = getScoreboard().getObjective("game");
         objective.setDisplaySlot(DisplaySlot.SIDEBAR);
         objective.setDisplayName("Prepare Time");
         bonusScore = objective.getScore(ChatColor.GOLD + "" + ChatColor.BOLD + "Reward Bonus");

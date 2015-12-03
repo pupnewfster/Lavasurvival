@@ -27,8 +27,10 @@ public class Flood extends Gamemode {
         globalMessage("The " + (LAVA ? "lava" : "water") + " will pour in " + ChatColor.DARK_RED + TimeUtils.toFriendlyTime(duration));
         gameStart = System.currentTimeMillis();
         lastMinute = 0;
-
-        objective = getScoreboard().registerNewObjective("game", "dummy");
+        if (getScoreboard().getObjective("game") == null)
+            objective = getScoreboard().registerNewObjective("game", "dummy");
+        else
+            objective = getScoreboard().getObjective("game");
         objective.setDisplaySlot(DisplaySlot.SIDEBAR);
         objective.setDisplayName((LAVA ? "Lava" : "Water") + "Pour");
         bonusScore = objective.getScore(ChatColor.GOLD + "" + ChatColor.BOLD + "Reward Bonus");

@@ -1,10 +1,10 @@
 package me.eddiep.minecraft.ls.game;
 
+import com.crossge.necessities.GetUUID;
+import com.crossge.necessities.RankManager.Rank;
 import me.eddiep.minecraft.ls.Lavasurvival;
 import me.eddiep.minecraft.ls.game.impl.Flood;
 import me.eddiep.minecraft.ls.game.impl.Rise;
-import me.eddiep.minecraft.ls.ranks.Rank;
-import me.eddiep.minecraft.ls.ranks.UUIDs;
 import me.eddiep.minecraft.ls.ranks.UserInfo;
 import me.eddiep.minecraft.ls.ranks.UserManager;
 import me.eddiep.minecraft.ls.system.FileUtils;
@@ -100,20 +100,29 @@ public abstract class Gamemode {
 
     public void prepare() {
         if (scoreboard == null) {
-            scoreboard = Bukkit.getScoreboardManager().getNewScoreboard();
+            scoreboard = Bukkit.getScoreboardManager().getMainScoreboard();//.getNewScoreboard();
         }
         if (alive == null) {
-            alive = scoreboard.registerNewTeam("Alive");
+            if (scoreboard.getTeam("Alive") == null)
+                alive = scoreboard.registerNewTeam("Alive");
+            else
+                alive = scoreboard.getTeam("Alive");
             alive.setDisplayName("Alive");
             alive.setPrefix(ChatColor.GREEN + "[Alive] ");
         }
         if (dead == null) {
-            dead = scoreboard.registerNewTeam("Dead");
+            if (scoreboard.getTeam("Dead") == null)
+                dead = scoreboard.registerNewTeam("Dead");
+            else
+                dead = scoreboard.getTeam("Dead");
             dead.setDisplayName("Dead");
             dead.setPrefix(ChatColor.RED + "[Dead] ");
         }
         if (spec == null) {
-            spec = scoreboard.registerNewTeam("Spectator");
+            if (scoreboard.getTeam("Spectator") == null)
+                spec = scoreboard.registerNewTeam("Spectator");
+            else
+                spec = scoreboard.getTeam("Spectator");
             spec.setDisplayName("Spectator");
             spec.setPrefix(ChatColor.GRAY + "[Spec] ");
         }
@@ -239,7 +248,7 @@ public abstract class Gamemode {
 
         end();
         UserManager um = Lavasurvival.INSTANCE.getUserManager();
-        UUIDs get = Lavasurvival.INSTANCE.getUUIDs();
+        GetUUID get = Lavasurvival.INSTANCE.getUUIDs();
         for (UserInfo u : um.getUsers().values())
             u.clearBlocks();
 
@@ -448,7 +457,7 @@ public abstract class Gamemode {
             return 0.0;
 
         double base = 100.0;
-        Rank rank = Lavasurvival.INSTANCE.getUserManager().getUser(player.getUniqueId()).getRank();
+        Rank rank = Lavasurvival.INSTANCE.getNecessitiesUserManager().getUser(player.getUniqueId()).getRank();
         double bonusAdd = 8.0 * (1 + Lavasurvival.INSTANCE.getRankManager().getOrder().indexOf(rank));
 
         Location loc = onlinePlayer.getLocation();
