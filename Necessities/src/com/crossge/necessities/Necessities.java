@@ -40,7 +40,6 @@ public class Necessities extends JavaPlugin {
     private File configFile = new File("plugins/Necessities", "config.yml");
     UserManager um = new UserManager();
     RankManager rm = new RankManager();
-    ScoreBoards sb = new ScoreBoards();
     DonationReader dr = new DonationReader();
 
     public static Necessities getInstance() {
@@ -114,7 +113,7 @@ public class Necessities extends JavaPlugin {
                 List<PlayerInfoData> playerInfo = infoData.read(0);
                 User u = um.getUser(p.getUniqueId());
                 playerInfo.add(new PlayerInfoData(WrappedGameProfile.fromPlayer(p), 0, EnumWrappers.NativeGameMode.fromBukkit(p.getGameMode()),
-                        WrappedChatComponent.fromText(sb.getPrefix(u) + (u.getRank() == null ? "" : ChatColor.translateAlternateColorCodes('&', u.getRank().getTitle() + " ")) + p.getDisplayName())));
+                        WrappedChatComponent.fromText((u.getRank() == null ? "" : ChatColor.translateAlternateColorCodes('&', u.getRank().getTitle() + " ")) + p.getDisplayName())));
 
                 infoData.write(0, playerInfo);
                 infoAction.write(0, EnumWrappers.PlayerInfoAction.ADD_PLAYER);
@@ -135,7 +134,7 @@ public class Necessities extends JavaPlugin {
                 List<PlayerInfoData> playerInfo = infoData.read(0);
                 User u = um.getUser(p.getUniqueId());
                 playerInfo.add(new PlayerInfoData(WrappedGameProfile.fromPlayer(p), 0, EnumWrappers.NativeGameMode.fromBukkit(p.getGameMode()),
-                        WrappedChatComponent.fromText(sb.getPrefix(u) + (u.getRank() == null ? "" : ChatColor.translateAlternateColorCodes('&', u.getRank().getTitle() + " ")) + p.getDisplayName())));
+                        WrappedChatComponent.fromText((u.getRank() == null ? "" : ChatColor.translateAlternateColorCodes('&', u.getRank().getTitle() + " ")) + p.getDisplayName())));
                 infoData.write(0, playerInfo);
                 infoAction.write(0, EnumWrappers.PlayerInfoAction.UPDATE_DISPLAY_NAME);
                 for (Player x : Bukkit.getOnlinePlayers())
@@ -155,7 +154,7 @@ public class Necessities extends JavaPlugin {
                 for (Player p : Bukkit.getOnlinePlayers()) {
                     User u = um.getUser(p.getUniqueId());
                     playerInfo.add(new PlayerInfoData(WrappedGameProfile.fromPlayer(p), 0, EnumWrappers.NativeGameMode.fromBukkit(p.getGameMode()),
-                            WrappedChatComponent.fromText(sb.getPrefix(u) + (u.getRank() == null ? "" : ChatColor.translateAlternateColorCodes('&', u.getRank().getTitle() + " ")) + p.getDisplayName())));
+                            WrappedChatComponent.fromText((u.getRank() == null ? "" : ChatColor.translateAlternateColorCodes('&', u.getRank().getTitle() + " ")) + p.getDisplayName())));
                 }
                 infoData.write(0, playerInfo);
                 infoAction.write(0, EnumWrappers.PlayerInfoAction.UPDATE_DISPLAY_NAME);
