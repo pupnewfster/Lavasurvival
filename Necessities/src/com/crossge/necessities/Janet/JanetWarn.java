@@ -20,13 +20,10 @@ public class JanetWarn {
 
     public void initiate() {
         RankManager rm = new RankManager();
-        String temp = Bukkit.getServerName();
         String rank = "";
-        if (temp.contains(" "))
-            temp = "world";
         if (!rm.getOrder().isEmpty())
             rank = ChatColor.translateAlternateColorCodes('&', rm.getRank(rm.getOrder().size() - 1).getTitle() + " ");
-        JanetName = ChatColor.WHITE + temp + " " + rank + "Janet" + ChatColor.DARK_RED + ": " + ChatColor.WHITE;
+        JanetName = rank + "Janet" + ChatColor.DARK_RED + ": " + ChatColor.WHITE;
     }
 
     public void removePlayer(UUID uuid) {
