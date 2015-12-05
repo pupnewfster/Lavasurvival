@@ -1,8 +1,8 @@
 package me.eddiep.minecraft.ls.game.shop.impl;
 
+import com.crossge.necessities.RankManager.RankManager;
+import com.crossge.necessities.RankManager.User;
 import me.eddiep.minecraft.ls.Lavasurvival;
-import me.eddiep.minecraft.ls.ranks.RankManager;
-import me.eddiep.minecraft.ls.ranks.UserInfo;
 import net.njay.Menu;
 import net.njay.MenuManager;
 import net.njay.annotation.ItemStackAnnotation;
@@ -30,57 +30,57 @@ public class BlockShopCatagory extends Menu {
 
     @MenuItem(
             slot = 2,
-            item = @ItemStackAnnotation(material = (Material.WOOD), name = "Basic Shop!")
+            item = @ItemStackAnnotation(material = Material.WOOD, name = "Basic Shop!")
     )
     public void BasicRank(MenuPlayer player) {
-        UserInfo u = Lavasurvival.INSTANCE.getUserManager().getUser(player.getBukkit().getUniqueId());
+        User u = Lavasurvival.INSTANCE.getNecessitiesUserManager().getUser(player.getBukkit().getUniqueId());
         if(rm.hasRank(u.getRank(), rm.getRank("Basic")))
             player.setActiveMenu(new BasicBlockShop(player.getMenuManager(), null));
     }
 
     @MenuItem(
             slot = 3,
-            item = @ItemStackAnnotation(material = (Material.IRON_BLOCK), name = "Advanced Shop")
+            item = @ItemStackAnnotation(material = Material.IRON_BLOCK, name = "Advanced Shop")
     )
     public void AdvanceRank(MenuPlayer player) {
-        UserInfo u = Lavasurvival.INSTANCE.getUserManager().getUser(player.getBukkit().getUniqueId());
+        User u = Lavasurvival.INSTANCE.getNecessitiesUserManager().getUser(player.getBukkit().getUniqueId());
         if(rm.hasRank(u.getRank(), rm.getRank("Advanced")))
             player.setActiveMenu(new AdvancedBlockShop(player.getMenuManager(), null));
     }
 
     @MenuItem(
             slot = 4,
-            item = @ItemStackAnnotation(material = (Material.FENCE_GATE), name = "Survivor Shop")
+            item = @ItemStackAnnotation(material = Material.FENCE_GATE, name = "Survivor Shop")
     )
     public void SurvivorRank(MenuPlayer player) {
-        UserInfo u = Lavasurvival.INSTANCE.getUserManager().getUser(player.getBukkit().getUniqueId());
+        User u = Lavasurvival.INSTANCE.getNecessitiesUserManager().getUser(player.getBukkit().getUniqueId());
         if(rm.hasRank(u.getRank(), rm.getRank("Survivor")))
             player.setActiveMenu(new SurvivorBlockShop(player.getMenuManager(), null));
     }
 
     @MenuItem(
             slot = 5,
-            item = @ItemStackAnnotation(material = (Material.IRON_FENCE), name = "Trusted Shop")
+            item = @ItemStackAnnotation(material = Material.IRON_FENCE, name = "Trusted Shop")
     )
     public void TrustedRank(MenuPlayer player) {
-        UserInfo u = Lavasurvival.INSTANCE.getUserManager().getUser(player.getBukkit().getUniqueId());
+        User u = Lavasurvival.INSTANCE.getNecessitiesUserManager().getUser(player.getBukkit().getUniqueId());
         if(rm.hasRank(u.getRank(), rm.getRank("Trusted")))
             player.setActiveMenu(new TrustedBlockShop(player.getMenuManager(), null));
     }
 
     @MenuItem(
             slot = 6,
-            item = @ItemStackAnnotation(material = (Material.NETHER_BRICK), name = "Elder Shop")
+            item = @ItemStackAnnotation(material = Material.NETHER_BRICK, name = "Elder Shop")
     )
     public void ElderRank(MenuPlayer player) {
-        UserInfo u = Lavasurvival.INSTANCE.getUserManager().getUser(player.getBukkit().getUniqueId());
+        User u = Lavasurvival.INSTANCE.getNecessitiesUserManager().getUser(player.getBukkit().getUniqueId());
         if(rm.hasRank(u.getRank(), rm.getRank("Elder")))
             player.setActiveMenu(new ElderBlockShop(player.getMenuManager(), null));
     }
 
     @PreProcessor
     public void process(Inventory inv){
-        UserInfo u = Lavasurvival.INSTANCE.getUserManager().getUser(this.player.getUniqueId());
+        User u = Lavasurvival.INSTANCE.getNecessitiesUserManager().getUser(this.player.getUniqueId());
         if (!rm.hasRank(u.getRank(), rm.getRank("Basic"))) {
             ItemStack i = inv.getItem(2);
             ItemMeta m = i.getItemMeta();

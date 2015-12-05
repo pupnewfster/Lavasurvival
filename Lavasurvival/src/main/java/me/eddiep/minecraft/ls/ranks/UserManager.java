@@ -10,7 +10,7 @@ import java.util.HashMap;
 import java.util.UUID;
 
 public class UserManager {
-    private static HashMap<UUID, UserInfo> players = new HashMap<UUID, UserInfo>();
+    private static HashMap<UUID, UserInfo> players = new HashMap<>();
     private File configFileUsers = new File(Lavasurvival.INSTANCE.getDataFolder(), "userinfo.yml");
 
     public void readUsers() {
@@ -26,7 +26,6 @@ public class UserManager {
                     players.get(p.getUniqueId()).setPlayer(p);
                 else
                     players.put(p.getUniqueId(), new UserInfo(p));
-                players.get(p.getUniqueId()).givePerms();
             }
         });
     }
@@ -41,33 +40,13 @@ public class UserManager {
         return players.get(uuid);
     }
 
-    public void unload() {
-        for (UUID uuid : players.keySet())
-            players.get(uuid).removePerms();
-    }
-
     public void addUser(Player player) {
         YamlConfiguration configUsers = YamlConfiguration.loadConfiguration(configFileUsers);
-        if (configUsers.contains(player.getUniqueId().toString()))
-            return;
-        configUsers.set(player.getUniqueId().toString() + ".rank", "New");
+        configUsers.set(player.getUniqueId().toString() + ".lastName", player.getName());
         try {
             configUsers.save(configFileUsers);
         } catch (Exception e) {
             e.printStackTrace();
         }
-    }
-
-    public void updateUserRank(UserInfo u, Rank r) {
-        if (r == null)
-            return;
-        YamlConfiguration configUsers = YamlConfiguration.loadConfiguration(configFileUsers);
-        configUsers.set(u.getUUID().toString() + ".rank", r.getName());
-        try {
-            configUsers.save(configFileUsers);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        u.updateRank(r);
     }
 }

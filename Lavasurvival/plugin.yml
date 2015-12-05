@@ -1,10 +1,10 @@
 name: Lavasurvival
 main: me.eddiep.minecraft.ls.Lavasurvival
-version: 0.1
+version: 0.2
 load: POSTWORLD
 authors: [hypereddie, pupnewfster]
 website: eddiep.me
-softdepend: [ClassicPhysics]
+softdepend: [ClassicPhysics, Necessities]
 depend: [Vault]
 commands:
   setupmap:
@@ -25,51 +25,6 @@ commands:
     permission: lavasurvival.lvote
     permission-message: You don't have <permission>
     aliases: [vote, v]
-  promote:
-    description: Promote a player!
-    usage: /<command> <player>
-    permission: lavasurvival.promote
-    permission-message: You don't have <permission>
-    aliases: [pr]
-  demote:
-    description: Demotes a player!
-    usage: /<command> <player>
-    permission: lavasurvival.demote
-    permission-message: You don't have <permission>
-    aliases: [de]
-  setrank:
-    description: Set a player's rank!
-    usage: /<command> <player> <rank>
-    permission: lavasurvival.setrank
-    permission-message: You don't have <permission>
-    aliases: [rank]
-  warn:
-    description: Warns <player> for <reason>.
-    usage: /<command> <player> <reason>
-    permission: lavasurvival.warn
-    permission-message: You don't have <permission>
-  hide:
-    description: Go invisible.
-    usage: /<command> <player> <rank>
-    permission: lavasurvival.hide
-    permission-message: You don't have <permission>
-    aliases: [rank]
-  opchat:
-    description: Toggles opchat.
-    usage: /<command>
-    permission: lavasurvival.opchat
-    permission-message: You don't have <permission>
-    aliases: [oc]
-  kick:
-    description: Kicks <player> for optional <reason>.
-    usage: /<command> <player> <reason>
-    permission: lavasurvival.kick
-    permission-message: You don't have <permission>
-  ban:
-    description: Bans <player> for optional <reason>.
-    usage: /<command> <player> <reason>
-    permission: lavasurvival.ban
-    permission-message: You don't have <permission>
   endgame:
     description: Ends the current game.
     usage: /<command>
@@ -83,24 +38,12 @@ commands:
     permission-message: You don't have <permission>
 permissions:
     lavasurvival.*:
-        description: lavasurvival's permission nodes
+        description: Lavasurvival's permission nodes
         children:
             lavasurvival.setup: true
             lavasurvival.join: true
             lavasurvival.lvote: true
-            lavasurvival.promote: true
-            lavasurvival.demote: true
-            lavasurvival.setrank: true
             lavasurvival.voteSpeak: true
-            lavasurvival.spamchat: true
-            lavasurvival.language: true
-            lavasurvival.advertise: true
-            lavasurvival.caps: true
-            lavasurvival.warn: true
-            lavasurvival.hide: true
-            lavasurvival.opchat: true
-            lavasurvival.kick: true
-            lavasurvival.ban: true
             lavasurvival.endGame: true
             lavasurvival.rules: true
     lavasurvival.lvote:
@@ -115,44 +58,8 @@ permissions:
     lavasurvival.setup:
         description: Allows you to setup and add a new lava survival map.
         default: op
-    lavasurvival.promote:
-        description: Allows you to promote a player.
-        default: op
-    lavasurvival.demote:
-        description: Allows you to demote a player.
-        default: op
-    lavasurvival.setrank:
-        description: Allows you to set a player's rank.
-        default: op
     lavasurvival.voteSpeak:
         description: Allows you to speak during votes.
-        default: op
-    lavasurvival.language:
-        description: Allows you to use bad language.
-        default: op
-    lavasurvival.spamchat:
-        description: Allows you to spam the chat.
-        default: op
-    lavasurvival.advertise:
-        description: Allows you to advertise.
-        default: op
-    lavasurvival.caps:
-        description: Allows you to use caps.
-        default: op
-    lavasurvival.warn:
-        description: Allows you to warn other players.
-        default: op
-    lavasurvival.hide:
-        description: Allows you to hide.
-        default: op
-    lavasurvival.opchat:
-        description: Allows you to toggle opchat.
-        default: op
-    lavasurvival.kick:
-        description: Allows you to kick other players.
-        default: op
-    lavasurvival.ban:
-        description: Allows you to ban non ops.
         default: op
     lavasurvival.endGame:
         description: Allows you to end the current game.

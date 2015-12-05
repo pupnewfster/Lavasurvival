@@ -157,6 +157,8 @@ public final class ClassicPhysicsHandler implements Listener {
     public void onPhysicsUpdate(BlockPhysicsEvent event) {
         if (ClassicPhysics.TYPE != PhysicsType.DEFAULT) {
             event.setCancelled(true);
+            if (event.getBlock().getType().toString().contains("DOOR"))
+                event.setCancelled(false);
             return;
         }
 
