@@ -38,9 +38,11 @@ public class Listeners implements Listener {
     private static String JanetName = "";
     CmdCommandSpy spy = new CmdCommandSpy();
     PortalManager pm = new PortalManager();
+    ScoreBoards sb = new ScoreBoards();
     UserManager um = new UserManager();
     Console console = new Console();
     Variables var = new Variables();
+    Teleports tps = new Teleports();
     CmdHide hide = new CmdHide();
     GetUUID get = new GetUUID();
     JanetAI ai = new JanetAI();
@@ -162,6 +164,7 @@ public class Listeners implements Listener {
         bot.logOut(uuid);
         um.removeUser(uuid);
         hide.playerLeft(e.getPlayer());
+        tps.removeRequests(uuid);
     }
 
     @EventHandler
@@ -256,8 +259,9 @@ public class Listeners implements Listener {
         if (u.isMuted())
             player.sendMessage(var.getEr() + "Error: " + var.getErMsg() + "You are muted.");
         else {
+            String status = sb.getPrefix(u);
             if (!e.getRecipients().isEmpty()) {
-                ArrayList<Player> toRem = new ArrayList<Player>();
+                ArrayList<Player> toRem = new ArrayList<>();
                 for (Player recip : e.getRecipients())
                     if (um.getUser(recip.getUniqueId()).isIgnoring(player.getUniqueId()) || (isop && !recip.hasPermission("Necessities.opBroadcast")))
                         toRem.add(recip);
@@ -266,8 +270,8 @@ public class Listeners implements Listener {
             }
             if (!e.getRecipients().isEmpty())
                 for (Player recip : e.getRecipients())
-                    recip.sendMessage(e.getFormat().replaceAll("\\{MESSAGE\\}", "") + e.getMessage());
-            Bukkit.getConsoleSender().sendMessage(e.getFormat().replaceAll("\\{MESSAGE\\}", "") + e.getMessage());
+                    recip.sendMessage(status + e.getFormat().replaceAll("\\{MESSAGE\\}", "") + e.getMessage());
+            Bukkit.getConsoleSender().sendMessage(status + e.getFormat().replaceAll("\\{MESSAGE\\}", "") + e.getMessage());
         }
         e.setCancelled(true);
         if (config.contains("Necessities.AI") && config.getBoolean("Necessities.AI") && !isop)

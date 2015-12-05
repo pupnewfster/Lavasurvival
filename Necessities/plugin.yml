@@ -6,6 +6,26 @@ authors: [Cross Gaming Development Team]
 softdepend: [ProtocolLib, GoogleAnalyticsPlugin]
 
 commands:
+   tpa:
+      description: Requests <player> to let you teleport to them.
+      usage: /<command> <player>
+      permission: Necessities.tpa
+      aliases: [ntpa]
+   tpaccept:
+      description: Accepts the teleport request from <player>.
+      usage: /<command> <player>
+      permission: Necessities.tpaccept
+      aliases: [ntpaccept, tpyes, ntpyes]
+   tpdeny:
+      description: Denies the teleport request from <player>.
+      usage: /<command> <player>
+      permission: Necessities.tpdeny
+      aliases: [ntpdeny, tpno, ntpno]
+   tpahere:
+      description: Requests <player> to teleport to you.
+      usage: /<command> <player>
+      permission: Necessities.tpahere
+      aliases: [ntpahere]
    ragequit:
       description: Ragequits the server!
       usage: /<command>
@@ -403,6 +423,8 @@ permissions:
             Necessities.language: true
             Necessities.spamchat: true
             Necessities.antikick: true
+            Necessities.tpaccept: true
+            Necessities.tpahere: true
             Necessities.antiBan: true
             Necessities.unbanip: true
             Necessities.kickany: true
@@ -433,6 +455,8 @@ permissions:
             Necessities.spy: true
             Necessities.fly: true
             Necessities.who: true
+            Necessities.tpa: true
+            Necessities.tpdeny: true
             Necessities.say: true
             Necessities.faq: true
             Necessities.ban: true
@@ -482,6 +506,18 @@ permissions:
                 Necessities.worldmanager.warp: true
     Necessities.faq:
         description: Allows you to view server faq.
+        default: true
+    Necessities.tpa:
+        description: Allows you to send teleport requests to players.
+        default: true
+    Necessities.tpahere:
+        description: Allows you to send teleport requests to players.
+        default: true
+    Necessities.tpaccept:
+        description: Allows you to accept teleport requests.
+        default: true
+    Necessities.tpdeny:
+        description: Allows you to deny teleport requests.
         default: true
     Necessities.ragequit:
         description: Allows you to ragequit the server.
