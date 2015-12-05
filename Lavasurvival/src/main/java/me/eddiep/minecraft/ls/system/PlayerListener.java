@@ -335,6 +335,7 @@ public class PlayerListener implements Listener {
         if (!Lavasurvival.INSTANCE.getEconomy().hasAccount(event.getPlayer()))
             Lavasurvival.INSTANCE.getEconomy().createPlayerAccount(event.getPlayer());
 
+
         if (Gamemode.getCurrentGame() != null) {
             Bukkit.getScheduler().scheduleSyncDelayedTask(Lavasurvival.INSTANCE, new Runnable() {
                 @Override
@@ -342,13 +343,15 @@ public class PlayerListener implements Listener {
                     event.getPlayer().teleport(Gamemode.getCurrentWorld().getSpawnLocation());
 
                     Inventory inv = event.getPlayer().getInventory();
-                    if (BukkitUtils.isInventoryEmpty(inv)) {
-                        ItemStack[] items = new ItemStack[Gamemode.DEFAULT_BLOCKS.length];
-                        for (int i = 0; i < Gamemode.DEFAULT_BLOCKS.length; i++)
-                            items[i] = new ItemStack(Gamemode.DEFAULT_BLOCKS[i], 1);
-                        inv.addItem(items);
-                        UserInfo u = um.getUser(event.getPlayer().getUniqueId());
-                        u.giveBoughtBlocks();
+                    UserInfo u = um.getUser(event.getPlayer().getUniqueId());
+                    u.giveBoughtBlocks(); //Always do this
+                    Player p = event.getPlayer();
+
+                    for (int i = 0; i < Gamemode.DEFAULT_BLOCKS.length; i++) {
+                        ItemStack toGive = new ItemStack(Gamemode.DEFAULT_BLOCKS[i], 1);
+                        if (BukkitUtils.hasItem(p.getInventory(), toGive))
+                            continue;
+                        inv.addItem(toGive);
                     }
 
                     if (!get.hasJoined(event.getPlayer().getUniqueId())) {

@@ -193,9 +193,15 @@ public class UserInfo {
     }
 
     public void giveBoughtBlocks() {
-        if(getPlayer() != null)
-            for(MaterialData dat : this.ownedBlocks)
-                getPlayer().getInventory().addItem(dat.toItemStack(1));
+        Player p = getPlayer();
+        if(p != null) {
+            for (MaterialData dat : this.ownedBlocks) {
+                if (BukkitUtils.hasItem(p.getInventory(), dat))
+                    continue;
+
+                p.getInventory().addItem(dat.toItemStack(1));
+            }
+        }
     }
 
     private void addBlock(Material type, byte data) {

@@ -212,7 +212,7 @@ public abstract class Gamemode {
 
     protected abstract void onTick();
 
-    protected abstract double calculateReward(OfflinePlayer player);
+    protected abstract double calculateReward(Player player);
 
     protected boolean isEnding;
     protected boolean hasEnded;

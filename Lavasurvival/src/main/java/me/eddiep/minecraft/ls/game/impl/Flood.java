@@ -5,7 +5,6 @@ import me.eddiep.minecraft.ls.game.Gamemode;
 import me.eddiep.minecraft.ls.system.TimeUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
-import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.scoreboard.DisplaySlot;
 import org.bukkit.scoreboard.Objective;
@@ -23,7 +22,7 @@ public class Flood extends Gamemode {
     @Override
     public void start() {
         super.start();
-        duration = Gamemode.RANDOM.nextInt(240000) + 180000;
+        duration = Gamemode.RANDOM.nextInt(300000) + 600000;
         globalMessage("The " + (LAVA ? "lava" : "water") + " will pour in " + ChatColor.DARK_RED + TimeUtils.toFriendlyTime(duration));
         gameStart = System.currentTimeMillis();
         lastMinute = 0;
@@ -112,7 +111,7 @@ public class Flood extends Gamemode {
     }
 
     @Override
-    public double calculateReward(OfflinePlayer player) {
+    public double calculateReward(Player player) {
         double multiplier = 1.0;//In case we want a triple reward
         if (doubleReward)
             multiplier = 2.0;

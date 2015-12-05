@@ -6,7 +6,6 @@ import me.eddiep.minecraft.ls.system.TimeUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
-import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.block.BlockPhysicsEvent;
 import org.bukkit.scoreboard.DisplaySlot;
@@ -47,7 +46,7 @@ public class Rise extends Gamemode {
         layersLeft = objective.getScore(ChatColor.RED + "" + ChatColor.BOLD + "Layers Left");
         bonus = Gamemode.RANDOM.nextInt(80) + 50;
         bonusScore.setScore(bonus);
-        layersLeft.setScore(-(getCurrentMap().getHeight()) + lvl);
+        layersLeft.setScore((getCurrentMap().getHeight()) + lvl);
 
         Gamemode.getPlayerListener().survival = false;
         doubleReward = Math.random() < 0.25;
@@ -149,12 +148,12 @@ public class Rise extends Gamemode {
         Bukkit.getPluginManager().callEvent(new BlockPhysicsEvent(loc.getBlock(), 0)); //Force a physics check
 
         lvl++;
-        layersLeft.setScore(-(getCurrentMap().getHeight()) + lvl);
+        layersLeft.setScore((getCurrentMap().getHeight()) + lvl);
         if (loc.getBlockY() <= getCurrentMap().getLavaY()) liquidUp(time); //Only advance up if we are still less than the actual lava spawn or if we are at the lava spawn (the next check will end the game, see above)
     }
 
     @Override
-    public double calculateReward(OfflinePlayer player) {
+    public double calculateReward(Player player) {
         double multiplier = 1.0;//In case we want a triple reward
         if (doubleReward)
             multiplier = 2.0;
