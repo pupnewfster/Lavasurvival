@@ -523,7 +523,7 @@ public abstract class Gamemode {
     }
 
     public boolean isInGame(Player player) {
-         return player != null && alive.hasEntry(player.getName()) && dead.hasEntry(player.getName());
+         return player != null && (alive.hasEntry(player.getName()) || dead.hasEntry(player.getName()));
     }
 
     public void globalMessage(String message) {

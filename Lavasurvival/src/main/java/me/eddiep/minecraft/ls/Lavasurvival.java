@@ -192,7 +192,6 @@ public class Lavasurvival extends JavaPlugin {
     private void init() {
         commands = new Cmd[] {
                 new CmdEndGame(),
-                new CmdJoin(),
                 new CmdLVote(),
                 new CmdRules(),
                 new CmdSetupMap()

@@ -13,12 +13,6 @@ commands:
     permission: lavasurvival.setup
     permission-message: You don't have <permission>
     aliases: [setup]
-  join:
-    description: Join the lavasurvival game!
-    usage: /<command>
-    permission: lavasurvival.join
-    permission-message: You don't have <permission>
-    aliases: [j]
   lvote:
     description: Vote for a map!
     usage: /<command> <number>

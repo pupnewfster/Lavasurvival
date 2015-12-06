@@ -12,7 +12,7 @@ import org.bukkit.scoreboard.Objective;
 import org.bukkit.scoreboard.Score;
 
 public class Rise extends Gamemode {
-    private long gameStart;
+    private long lastEvent;
     private long duration;
 
 
@@ -35,7 +35,7 @@ public class Rise extends Gamemode {
         globalMessage("The current gamemode is " + ChatColor.RED + ChatColor.BOLD + "RISE");
         globalMessage("The " + (LAVA ? "lava" : "water") + " will rise every " + ChatColor.DARK_RED + TimeUtils.toFriendlyTime(timeOut));
         globalMessage("You have " + ChatColor.DARK_RED + TimeUtils.toFriendlyTime(duration) + ChatColor.RESET + " to prepare!");
-        gameStart = System.currentTimeMillis();
+        lastEvent = System.currentTimeMillis();
         lastMinute = 0;
         if (getScoreboard().getObjective("game") == null)
             objective = getScoreboard().registerNewObjective("game", "dummy");
@@ -87,7 +87,7 @@ public class Rise extends Gamemode {
         if (objective == null)
             return;
 
-        long since = System.currentTimeMillis() - gameStart;
+        long since = System.currentTimeMillis() - lastEvent;
 
         int minutes = (int) (((duration - since) / 1000) / 60);
         int seconds = (int) (((duration - since) / 1000) % 60);
@@ -131,10 +131,12 @@ public class Rise extends Gamemode {
 
     private void pourAndAdvance(long time) {
         final Location loc = getCurrentMap().getLavaSpawnAsLocation(0, -(getCurrentMap().getHeight()) + lvl, 0);
+        final int trueY = getCurrentMap().getLavaSpawnAsLocation().getBlockY();
 
         if (loc.getBlockY() > getCurrentMap().getLavaY()) { //If we have passed the original lava spawn, that means the previous pour was the last one
             if (!isRoundEnding()) {
-                duration = ((Gamemode.RANDOM.nextInt(3) + 1) * 60);
+                lastEvent = System.currentTimeMillis(); //Set the last event to now
+                duration = ((Gamemode.RANDOM.nextInt(5) + 3) * 60);
                 super.endRoundIn(duration);
                 duration *= 1000;
             }
@@ -143,11 +145,11 @@ public class Rise extends Gamemode {
 
         Lavasurvival.INSTANCE.getPhysicsHandler().placeClassicBlockAt(loc, getMat());
 
-        gameStart = System.currentTimeMillis(); //Set the last event to now
+        lastEvent = System.currentTimeMillis(); //Set the last event to now
         getCurrentWorld().strikeLightningEffect(loc); //Actions are better than words :3
 
         lvl++;
-        layersLeft.setScore((getCurrentMap().getHeight()) + lvl);
+        layersLeft.setScore(trueY - lvl);
         if (loc.getBlockY() <= getCurrentMap().getLavaY()) liquidUp(time); //Only advance up if we are still less than the actual lava spawn or if we are at the lava spawn (the next check will end the game, see above)
     }
 
