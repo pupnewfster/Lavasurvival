@@ -123,14 +123,7 @@ public class PlayerListener implements Listener {
             return;
         if ((event.getAction() == Action.RIGHT_CLICK_BLOCK || event.getAction() == Action.RIGHT_CLICK_AIR) && event.getItem() != null && event.getItem().getType().equals(Material.WRITTEN_BOOK))
             return;//Allow players to read the rule book
-        if (Gamemode.getCurrentGame() != null && Gamemode.getCurrentGame().isSpectator(event.getPlayer())) {
-            event.setCancelled(true);
-            if (event.getAction() == Action.RIGHT_CLICK_BLOCK &&
-                    event.getClickedBlock().getState() instanceof Sign &&
-                    ((Sign) event.getClickedBlock().getState()).getLine(0).contains("Right click")) {
-                Gamemode.getCurrentGame().playerJoin(event.getPlayer());
-            }
-        } else if (Gamemode.getCurrentGame() != null && Gamemode.getCurrentGame().isDead(event.getPlayer())) {
+        if (Gamemode.getCurrentGame() != null && Gamemode.getCurrentGame().isDead(event.getPlayer())) {
             event.setCancelled(true);
             if (event.getAction() == Action.RIGHT_CLICK_BLOCK &&
                     event.getClickedBlock().getState() instanceof Sign &&
@@ -273,14 +266,13 @@ public class PlayerListener implements Listener {
                         event.getPlayer().getInventory().addItem(Lavasurvival.INSTANCE.getRules());
 
                     ShopFactory.validateInventory(inv);
-                    if (Gamemode.getCurrentGame().isSpectator(event.getPlayer()))
-                        Gamemode.getCurrentGame().playerJoin(event.getPlayer());
+
+                    if (!Gamemode.getCurrentGame().isInGame(p))
+                        Gamemode.getCurrentGame().playerJoin(p);
                 }
             }, 7);
         }
 
-        if (Gamemode.getCurrentGame() != null && !Gamemode.getCurrentGame().isDead(event.getPlayer()))
-            Gamemode.getCurrentGame().setSpectator(event.getPlayer());
         if (Gamemode.getCurrentGame() != null)
             event.getPlayer().setScoreboard(Gamemode.getScoreboard());
     }

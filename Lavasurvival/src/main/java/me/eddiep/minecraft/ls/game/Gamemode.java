@@ -54,7 +54,6 @@ public abstract class Gamemode {
     private static LavaMap currentmap;
     private static Team alive;
     private static Team dead;
-    private static Team spec;
     private static Scoreboard scoreboard;
     private static PlayerListener listener;
     private static PhysicsListener physicsListener;
@@ -92,7 +91,6 @@ public abstract class Gamemode {
     public static void cleanup() {
         clearTeam(alive);
         clearTeam(dead);
-        clearTeam(spec);
 
         listener.cleanup();
         physicsListener.cleanup();
@@ -117,14 +115,6 @@ public abstract class Gamemode {
                 dead = scoreboard.getTeam("Dead");
             dead.setDisplayName("Dead");
             dead.setPrefix(ChatColor.RED + "[Dead] ");
-        }
-        if (spec == null) {
-            if (scoreboard.getTeam("Spectator") == null)
-                spec = scoreboard.registerNewTeam("Spectator");
-            else
-                spec = scoreboard.getTeam("Spectator");
-            spec.setDisplayName("Spectator");
-            spec.setPrefix(ChatColor.GRAY + "[Spec] ");
         }
         if (listener == null) {
             listener = new PlayerListener();
@@ -165,14 +155,10 @@ public abstract class Gamemode {
 
         clearTeam(alive);
         clearTeam(dead);
-        clearTeam(spec);
 
         Collection<? extends Player> players = Bukkit.getOnlinePlayers();
         for (Player p : players) {
             playerJoin(p);
-            //p.teleport(getCurrentWorld().getSpawnLocation());
-
-            //spec.addEntry(p.getName());
         }
 
         currentmap.getJoinSign().setLine(0, ChatColor.BOLD + "Right click");
@@ -510,8 +496,6 @@ public abstract class Gamemode {
         String name = player.getName();
         if (dead.hasEntry(name))
             dead.removeEntry(name);
-        if (spec.hasEntry(name))
-            spec.removeEntry(name);
 
         alive.addEntry(name);
         Lavasurvival.log(name + " has joined the alive team.");
@@ -523,25 +507,9 @@ public abstract class Gamemode {
         String name = player.getName();
         if (alive.hasEntry(name))
             alive.removeEntry(name);
-        if (spec.hasEntry(name))
-            spec.removeEntry(name);
 
         dead.addEntry(name);
         Lavasurvival.log(name + " has joined the dead team.");
-    }
-
-    public void setSpectator(Player player) {
-        if (player == null)
-            return;
-        String name = player.getName();
-        if (dead.hasEntry(name))
-            dead.removeEntry(name);
-        if (alive.hasEntry(name))
-            alive.removeEntry(name);
-
-        spec.addEntry(name);
-        Lavasurvival.log(name + " has joined the spec team.");
-
     }
 
     public boolean isAlive(Player player) {
@@ -552,8 +520,8 @@ public abstract class Gamemode {
         return player != null && dead.hasEntry(player.getName());
     }
 
-    public boolean isSpectator(Player player) {
-        return player != null && spec.hasEntry(player.getName());
+    public boolean isInGame(Player player) {
+         return player != null && alive.hasEntry(player.getName()) && dead.hasEntry(player.getName());
     }
 
     public void globalMessage(String message) {
