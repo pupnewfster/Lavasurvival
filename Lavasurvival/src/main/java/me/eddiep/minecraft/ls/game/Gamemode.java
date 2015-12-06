@@ -193,7 +193,7 @@ public abstract class Gamemode {
                 }
                 onTick();
             }
-        }, 0, 1);
+        }, 0, 20);
     }
 
     private void restoreBackup(World world) {

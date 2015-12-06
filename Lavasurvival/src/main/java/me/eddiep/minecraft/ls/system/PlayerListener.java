@@ -207,21 +207,11 @@ public class PlayerListener implements Listener {
             event.setCancelled(false);
             if (!survival) {
                 final int index = event.getPlayer().getInventory().first(event.getBlock().getType());
-                final ItemStack itm = event.getPlayer().getInventory().getItem(index);
-                final int amount = itm.getAmount();
-                final Material material = itm.getType();
-                final short data = itm.getDurability();
+                final ItemStack cloned = event.getPlayer().getInventory().getItem(index).clone();
                 Bukkit.getScheduler().scheduleSyncDelayedTask(Lavasurvival.INSTANCE, new Runnable() {
                     @Override
                     public void run() {
-                        ItemStack itm = event.getPlayer().getInventory().getItem(index);
-                        if (itm == null) {
-                            itm = new ItemStack(material, amount, data);
-                            event.getPlayer().getInventory().setItem(index, itm);
-                            return;
-                        }
-                        itm.setType(material);
-                        itm.setAmount(amount);
+                        event.getPlayer().getInventory().setItem(index, cloned);
                     }
                 }, 2);
             }
@@ -262,9 +252,8 @@ public class PlayerListener implements Listener {
                         ItemStack toGive = new ItemStack(Gamemode.DEFAULT_BLOCKS[i], 1);
                         if (BukkitUtils.hasItem(p.getInventory(), toGive))
                             continue;
-                        inv.addItem(toGive);
                         ItemMeta im = toGive.getItemMeta();
-                        im.setLore(Arrays.asList("Melt time: " + PhysicsListener.getMeltTime(new MaterialData(toGive.getType()))));
+                        im.setLore(Arrays.asList("Melt time: " + PhysicsListener.getMeltTime(new MaterialData(toGive.getType())) + " seconds"));
                         toGive.setItemMeta(im);
                         event.getPlayer().getInventory().addItem(toGive);
                     }

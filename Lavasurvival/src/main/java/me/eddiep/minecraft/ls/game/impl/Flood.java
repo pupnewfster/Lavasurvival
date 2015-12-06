@@ -21,11 +21,6 @@ public class Flood extends Gamemode {
 
     @Override
     public void start() {
-        super.start();
-        duration = Gamemode.RANDOM.nextInt(300000) + 600000;
-        globalMessage("The " + (LAVA ? "lava" : "water") + " will pour in " + ChatColor.DARK_RED + TimeUtils.toFriendlyTime(duration));
-        gameStart = System.currentTimeMillis();
-        lastMinute = 0;
         if (getScoreboard().getObjective("game") == null)
             objective = getScoreboard().registerNewObjective("game", "dummy");
         else
@@ -33,6 +28,14 @@ public class Flood extends Gamemode {
         objective.setDisplaySlot(DisplaySlot.SIDEBAR);
         objective.setDisplayName((LAVA ? "Lava" : "Water") + "Pour");
         bonusScore = objective.getScore(ChatColor.GOLD + "" + ChatColor.BOLD + "Reward Bonus");
+
+        super.start();
+
+        duration = Gamemode.RANDOM.nextInt(300000) + 600000;
+        globalMessage("The " + (LAVA ? "lava" : "water") + " will pour in " + ChatColor.DARK_RED + TimeUtils.toFriendlyTime(duration));
+        gameStart = System.currentTimeMillis();
+        lastMinute = 0;
+
         bonus = Gamemode.RANDOM.nextInt(80) + 50;
         bonusScore.setScore(bonus);
 

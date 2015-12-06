@@ -128,7 +128,12 @@ public class UserInfo {
                 if (BukkitUtils.hasItem(p.getInventory(), dat))
                     continue;
 
-                p.getInventory().addItem(dat.toItemStack(1));
+                ItemStack itemStack = dat.toItemStack(1);
+                ItemMeta im = itemStack.getItemMeta();
+                im.setLore(Arrays.asList("Melt time: " + PhysicsListener.getMeltTime(dat) + " seconds"));
+                itemStack.setItemMeta(im);
+
+                p.getInventory().addItem(itemStack);
             }
         }
     }

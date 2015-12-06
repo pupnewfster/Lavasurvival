@@ -29,14 +29,6 @@ public class Rise extends Gamemode {
 
     @Override
     public void start() {
-        super.start();
-        duration = Gamemode.RANDOM.nextInt(360000) + 240000;
-        timeOut = Gamemode.RANDOM.nextInt(15000) + 15000;
-        globalMessage("The current gamemode is " + ChatColor.RED + ChatColor.BOLD + "RISE");
-        globalMessage("The " + (LAVA ? "lava" : "water") + " will rise every " + ChatColor.DARK_RED + TimeUtils.toFriendlyTime(timeOut));
-        globalMessage("You have " + ChatColor.DARK_RED + TimeUtils.toFriendlyTime(duration) + ChatColor.RESET + " to prepare!");
-        lastEvent = System.currentTimeMillis();
-        lastMinute = 0;
         if (getScoreboard().getObjective("game") == null)
             objective = getScoreboard().registerNewObjective("game", "dummy");
         else
@@ -45,6 +37,16 @@ public class Rise extends Gamemode {
         objective.setDisplayName("Prepare Time");
         bonusScore = objective.getScore(ChatColor.GOLD + "" + ChatColor.BOLD + "Reward Bonus");
         layersLeft = objective.getScore(ChatColor.RED + "" + ChatColor.BOLD + "Layers Left");
+
+        super.start();
+
+        duration = Gamemode.RANDOM.nextInt(360000) + 240000;
+        timeOut = Gamemode.RANDOM.nextInt(15000) + 15000;
+        globalMessage("The current gamemode is " + ChatColor.RED + ChatColor.BOLD + "RISE");
+        globalMessage("The " + (LAVA ? "lava" : "water") + " will rise every " + ChatColor.DARK_RED + TimeUtils.toFriendlyTime(timeOut));
+        globalMessage("You have " + ChatColor.DARK_RED + TimeUtils.toFriendlyTime(duration) + ChatColor.RESET + " to prepare!");
+        lastEvent = System.currentTimeMillis();
+        lastMinute = 0;
         bonus = Gamemode.RANDOM.nextInt(80) + 50;
         bonusScore.setScore(bonus);
         layersLeft.setScore((getCurrentMap().getHeight()) + lvl);
