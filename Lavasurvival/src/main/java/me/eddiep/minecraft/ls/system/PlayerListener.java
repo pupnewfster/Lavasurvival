@@ -261,8 +261,6 @@ public class PlayerListener implements Listener {
                     event.getPlayer().teleport(Gamemode.getCurrentWorld().getSpawnLocation());
 
                     Inventory inv = event.getPlayer().getInventory();
-                    UserInfo u = um.getUser(event.getPlayer().getUniqueId());
-                    u.giveBoughtBlocks(); //Always do this
                     Player p = event.getPlayer();
 
                     for (int i = 0; i < Gamemode.DEFAULT_BLOCKS.length; i++) {

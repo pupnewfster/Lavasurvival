@@ -160,7 +160,7 @@ public abstract class Gamemode {
         isEnding = false;
         hasEnded = false;
 
-        LAVA = RANDOM.nextInt(100) < 75;//Have water/lava check be in here instead of as arguement
+        LAVA = RANDOM.nextInt(100) < 75; //Have water/lava check be in here instead of as arguement
         WATER_DAMAGE = LAVA ? 0 : 2;
 
         clearTeam(alive);
@@ -498,6 +498,9 @@ public abstract class Gamemode {
         player.setGameMode(GameMode.SURVIVAL);
         player.setHealth(player.getMaxHealth());
         globalMessageNoPrefix(ChatColor.GREEN + "+ " + player.getDisplayName() + ChatColor.RESET + " has joined the game!");
+
+        UserInfo u = Lavasurvival.INSTANCE.getUserManager().getUser(player.getUniqueId());
+        u.giveBoughtBlocks(); //Always do this
     }
 
     public void setAlive(Player player) {
