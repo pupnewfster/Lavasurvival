@@ -169,9 +169,10 @@ public abstract class Gamemode {
 
         Collection<? extends Player> players = Bukkit.getOnlinePlayers();
         for (Player p : players) {
-            p.teleport(getCurrentWorld().getSpawnLocation());
+            playerJoin(p);
+            //p.teleport(getCurrentWorld().getSpawnLocation());
 
-            spec.addEntry(p.getName());
+            //spec.addEntry(p.getName());
         }
 
         currentmap.getJoinSign().setLine(0, ChatColor.BOLD + "Right click");
