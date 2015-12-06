@@ -15,6 +15,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.event.block.BlockFromToEvent;
 import org.bukkit.event.block.BlockPhysicsEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.metadata.FixedMetadataValue;
@@ -107,6 +108,13 @@ public final class ClassicPhysicsHandler implements Listener {
             return;
 
         requestUpdateAround(event.getBlock().getLocation());
+    }
+
+    @EventHandler
+    public void onIceMelt(BlockFromToEvent event) {
+        if (ClassicPhysics.TYPE == PhysicsType.DEFAULT)
+            return;
+        event.setCancelled(true);
     }
 
     public void requestUpdateAround(Location location) {
