@@ -498,6 +498,7 @@ public abstract class Gamemode {
             dead.removeEntry(name);
 
         alive.addEntry(name);
+        player.setGameMode(GameMode.SURVIVAL);
         Lavasurvival.log(name + " has joined the alive team.");
     }
 
@@ -509,6 +510,7 @@ public abstract class Gamemode {
             alive.removeEntry(name);
 
         dead.addEntry(name);
+        player.setGameMode(GameMode.SPECTATOR);
         Lavasurvival.log(name + " has joined the dead team.");
     }
 
