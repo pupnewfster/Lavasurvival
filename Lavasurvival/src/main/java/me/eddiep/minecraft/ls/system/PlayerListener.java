@@ -31,6 +31,8 @@ import org.bukkit.event.player.*;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.material.MaterialData;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -261,6 +263,10 @@ public class PlayerListener implements Listener {
                         if (BukkitUtils.hasItem(p.getInventory(), toGive))
                             continue;
                         inv.addItem(toGive);
+                        ItemMeta im = toGive.getItemMeta();
+                        im.setLore(Arrays.asList("Melt time: " + PhysicsListener.getMeltTime(new MaterialData(toGive.getType()))));
+                        toGive.setItemMeta(im);
+                        event.getPlayer().getInventory().addItem(toGive);
                     }
                     if (!event.getPlayer().getInventory().containsAtLeast(Lavasurvival.INSTANCE.getRules(), 1))
                         event.getPlayer().getInventory().addItem(Lavasurvival.INSTANCE.getRules());

@@ -3,14 +3,18 @@ package me.eddiep.minecraft.ls.ranks;
 import me.eddiep.minecraft.ls.Lavasurvival;
 import me.eddiep.minecraft.ls.game.Gamemode;
 import me.eddiep.minecraft.ls.system.BukkitUtils;
+import me.eddiep.minecraft.ls.system.PhysicsListener;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.material.MaterialData;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.UUID;
 
 public class UserInfo {
@@ -107,8 +111,13 @@ public class UserInfo {
         MaterialData dat = new MaterialData(type);
         if (!this.ownedBlocks.contains(dat)) {
             this.ownedBlocks.add(dat);
-            if(getPlayer() != null)
-                getPlayer().getInventory().addItem(dat.toItemStack(1));
+            if(getPlayer() != null) {
+                ItemStack i = dat.toItemStack(1);
+                ItemMeta im = i.getItemMeta();
+                im.setLore(Arrays.asList("Melt time: " + PhysicsListener.getMeltTime(dat)));
+                i.setItemMeta(im);
+                getPlayer().getInventory().addItem(i);
+            }
         }
     }
 
@@ -128,8 +137,13 @@ public class UserInfo {
         MaterialData dat = new MaterialData(type, data);
         if (!this.ownedBlocks.contains(dat)) {
             this.ownedBlocks.add(dat);
-            if(getPlayer() != null)
-                getPlayer().getInventory().addItem(dat.toItemStack(1));
+            if(getPlayer() != null) {
+                ItemStack i = dat.toItemStack(1);
+                ItemMeta im = i.getItemMeta();
+                im.setLore(Arrays.asList("Melt time: " + PhysicsListener.getMeltTime(dat)));
+                i.setItemMeta(im);
+                getPlayer().getInventory().addItem(i);
+            }
         }
     }
 
