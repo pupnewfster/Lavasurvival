@@ -52,7 +52,7 @@ public class PlayerListener implements Listener {
 
     private final UserManager um = Lavasurvival.INSTANCE.getUserManager();
 
-    @EventHandler(priority = EventPriority.MONITOR)
+    @EventHandler(priority = EventPriority.HIGHEST)
     public void onChat(AsyncPlayerChatEvent event) {
         if (event.isCancelled())
             return;
