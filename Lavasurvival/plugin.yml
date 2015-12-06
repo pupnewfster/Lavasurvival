@@ -35,7 +35,6 @@ permissions:
         description: Lavasurvival's permission nodes
         children:
             lavasurvival.setup: true
-            lavasurvival.join: true
             lavasurvival.lvote: true
             lavasurvival.voteSpeak: true
             lavasurvival.endGame: true
@@ -45,9 +44,6 @@ permissions:
         default: true
     lavasurvival.rules:
         description: Allows you to read the rules.
-        default: true
-    lavasurvival.join:
-        description: Allows you to join a game of lava survival.
         default: true
     lavasurvival.setup:
         description: Allows you to setup and add a new lava survival map.

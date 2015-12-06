@@ -289,6 +289,14 @@ public class Necessities extends JavaPlugin {
             com = new CmdGamemode();
         else if (isEqual(name, "fly"))
             com = new CmdFly();
+        else if (isEqual(name, "tpa"))
+            com = new CmdTpa();
+        else if (isEqual(name, "tpdeny"))
+            com = new CmdTpdeny();
+        else if (isEqual(name, "tpaccept"))
+            com = new CmdTpaccept();
+        else if (isEqual(name, "tpahere"))
+            com = new CmdTpahere();
         else if (isEqual(name, "who"))
             com = new CmdWho();
         else if (isEqual(name, "me"))

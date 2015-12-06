@@ -12,7 +12,6 @@ import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
-import org.bukkit.block.Sign;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -127,11 +126,6 @@ public class PlayerListener implements Listener {
             return;//Allow players to read the rule book
         if (Gamemode.getCurrentGame() != null && Gamemode.getCurrentGame().isDead(event.getPlayer())) {
             event.setCancelled(true);
-            if (event.getAction() == Action.RIGHT_CLICK_BLOCK &&
-                    event.getClickedBlock().getState() instanceof Sign &&
-                    ((Sign) event.getClickedBlock().getState()).getLine(0).contains("Right click")) {
-                event.getPlayer().sendMessage("Sorry you can't join, you're dead :/");
-            }
         } else if (Gamemode.getCurrentGame() != null && Gamemode.getCurrentGame().isAlive(event.getPlayer())) {
             if (event.getAction() == Action.LEFT_CLICK_BLOCK) {
                 Block block = event.getClickedBlock();

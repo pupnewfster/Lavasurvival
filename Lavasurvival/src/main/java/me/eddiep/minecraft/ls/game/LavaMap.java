@@ -2,10 +2,10 @@ package me.eddiep.minecraft.ls.game;
 
 import me.eddiep.minecraft.ls.Lavasurvival;
 import me.eddiep.minecraft.ls.system.FileUtils;
-import org.bukkit.*;
-import org.bukkit.block.Block;
-import org.bukkit.block.BlockFace;
-import org.bukkit.block.Sign;
+import org.bukkit.Bukkit;
+import org.bukkit.Location;
+import org.bukkit.World;
+import org.bukkit.WorldCreator;
 import org.bukkit.entity.Entity;
 import org.bukkit.util.Vector;
 
@@ -22,13 +22,9 @@ public class LavaMap {
     private Vector minSafeZone;
     private Vector maxSafeZone;
     private Vector mapSpawn;
-    private int signx;
-    private int signy;
-    private int signz;
     private String worldName;
     private String filePath;
 
-    private volatile Sign joinSign;
     private volatile World world;
     private volatile boolean poured;
 
@@ -116,13 +112,6 @@ public class LavaMap {
 
         for (Entity entity : world.getEntities())
             entity.remove();
-
-        Block block = world.getBlockAt(signx, signy - 1, signz).getRelative(BlockFace.UP);
-        if (!(block.getState() instanceof Sign)) {
-            block.setType(Material.SIGN_POST);
-        }
-
-        joinSign = (Sign) block.getState();
     }
 
     private World loadOrGetWorld(String worldName) {
@@ -130,10 +119,6 @@ public class LavaMap {
         if (world == null)
             world = Bukkit.getServer().createWorld(new WorldCreator(worldName));
         return world;
-    }
-
-    public Sign getJoinSign() {
-        return joinSign;
     }
 
     public World getWorld() {
@@ -198,12 +183,6 @@ public class LavaMap {
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    public void setSignLocation(Location signLocation) {
-        signx = signLocation.getBlockX();
-        signy = signLocation.getBlockY();
-        signz = signLocation.getBlockZ();
     }
 
     public String getFilePath() {
