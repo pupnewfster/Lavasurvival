@@ -17,6 +17,6 @@ public class WaterLogic extends LavaLogic {
 
     @Override
     public Material logicFor() {
-        return Material.STATIONARY_LAVA;
+        return Material.STATIONARY_WATER;
     }
 }

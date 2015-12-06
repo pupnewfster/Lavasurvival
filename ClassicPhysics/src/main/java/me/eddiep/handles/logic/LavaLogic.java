@@ -23,7 +23,7 @@ public class LavaLogic extends AbstractLogicContainer {
         Material newBlock = block.getType();
 
         if (!block.getType().isSolid() && !doesHandle(block.getType())) {
-            newBlock = Material.STATIONARY_LAVA;
+            newBlock = logicFor();
         }
 
 

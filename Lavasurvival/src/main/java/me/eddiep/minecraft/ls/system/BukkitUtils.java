@@ -18,6 +18,9 @@ public class BukkitUtils {
 
     public static boolean hasItem(Inventory inventory, MaterialData dat) {
         for (ItemStack stack : inventory) {
+            if (stack == null)
+                continue;
+
             if (stack.getData().equals(dat))
                 return true;
         }
