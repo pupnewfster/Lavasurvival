@@ -7,7 +7,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
-import org.bukkit.event.block.BlockPhysicsEvent;
 import org.bukkit.scoreboard.DisplaySlot;
 import org.bukkit.scoreboard.Objective;
 import org.bukkit.scoreboard.Score;
@@ -146,8 +145,6 @@ public class Rise extends Gamemode {
 
         gameStart = System.currentTimeMillis(); //Set the last event to now
         getCurrentWorld().strikeLightningEffect(loc); //Actions are better than words :3
-
-        Bukkit.getPluginManager().callEvent(new BlockPhysicsEvent(loc.getBlock(), 0)); //Force a physics check
 
         lvl++;
         layersLeft.setScore((getCurrentMap().getHeight()) + lvl);

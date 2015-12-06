@@ -273,6 +273,8 @@ public class PlayerListener implements Listener {
                         event.getPlayer().getInventory().addItem(Lavasurvival.INSTANCE.getRules());
 
                     ShopFactory.validateInventory(inv);
+                    if (Gamemode.getCurrentGame().isSpectator(event.getPlayer()))
+                        Gamemode.getCurrentGame().playerJoin(event.getPlayer());
                 }
             }, 7);
         }
