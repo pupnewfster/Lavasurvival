@@ -5,7 +5,6 @@ import me.eddiep.minecraft.ls.game.LavaMap;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.World;
-import org.bukkit.block.Sign;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -51,13 +50,8 @@ public class SetupMap implements Listener {
 
     private void step4() {
         sendMessage("Got it!");
-        instruction("What's the name of this map? Say it in the chat.");
+        instruction("Lastly, what's the name of this map? Say it in the chat.");
         step = 3;
-    }
-
-    private void step5() {
-        instruction("Lastly, break the sign players will be using to join!");
-        step = 4;
     }
 
     private void finish() {
@@ -157,20 +151,7 @@ public class SetupMap implements Listener {
             event.setCancelled(true);
             map.setName(event.getMessage());
             sendMessage(map.getName() + "? Got it.");
-
-            step5();
-        }
-    }
-
-    @EventHandler
-    public void onBreak(BlockBreakEvent event) {
-        if (event.getPlayer().equals(setupPlayer) && step == 4) {
-            event.setCancelled(true);
-            if (event.getBlock().getState() instanceof Sign) {
-                map.setSignLocation(event.getBlock().getLocation());
-                finish();
-            } else
-                sendMessage("That's not a sign..");
+            finish();
         }
     }
 

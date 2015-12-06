@@ -161,11 +161,6 @@ public abstract class Gamemode {
             playerJoin(p);
         }
 
-        currentmap.getJoinSign().setLine(0, ChatColor.BOLD + "Right click");
-        currentmap.getJoinSign().setLine(1, ChatColor.BOLD + "to join!");
-        currentmap.getJoinSign().setLine(2, "");
-        currentmap.getJoinSign().setLine(3, "..or use /join");
-        currentmap.getJoinSign().update();
         currentgame = this;
 
         if (lastMap != null) {
