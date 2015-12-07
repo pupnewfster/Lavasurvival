@@ -323,14 +323,18 @@ public abstract class Gamemode {
                 do {
                     found = false;
                     next = files[RANDOM.nextInt(files.length)];
-                    if (currentmap.getFilePath().equals(next))
+
+                    File possibleNext = new File(next);
+
+                    if (currentmap.getFile().equals(possibleNext))
                         continue;
 
-                    for (int z = 0; z < i; z++)
-                        if (nextMaps[z] != null && nextMaps[z].getFilePath().equals(next)) {
+                    for (LavaMap nextMap : nextMaps) {
+                        if (nextMap != null && nextMap.getFile().equals(possibleNext)) {
                             found = true;
                             break;
                         }
+                    }
                 } while (found);
 
                 try {

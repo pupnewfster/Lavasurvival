@@ -188,4 +188,12 @@ public class LavaMap {
     public String getFilePath() {
         return filePath;
     }
+
+    public String getFileName() {
+        return new File(filePath).getName();
+    }
+
+    public File getFile() {
+        return new File(filePath);
+    }
 }
