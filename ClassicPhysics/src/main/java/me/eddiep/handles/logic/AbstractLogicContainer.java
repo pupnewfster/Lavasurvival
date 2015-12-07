@@ -82,7 +82,7 @@ public abstract class AbstractLogicContainer implements LogicContainer {
         for (World world : worldQueues.keySet()) {
             Queue<Block> queue = worldQueues.get(world);
             List<Block> toAdd = worldToAdd.get(world);
-            if (queue == null)
+            if (queue == null || toAdd == null)
                 continue;
 
             queue.addAll(toAdd);
