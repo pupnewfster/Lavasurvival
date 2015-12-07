@@ -24,6 +24,6 @@ public class CmdEndGame extends Cmd {
 
     @Override
     public String getName() {
-        return "end";
+        return "endgame";
     }
 }
