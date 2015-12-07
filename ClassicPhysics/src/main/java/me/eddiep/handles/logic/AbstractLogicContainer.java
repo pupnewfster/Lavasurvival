@@ -68,7 +68,7 @@ public abstract class AbstractLogicContainer implements LogicContainer {
             if (queue == null)
                 continue;
 
-            while (!worldQueues.isEmpty()) {
+            while (!queue.isEmpty()) {
                 Block block = queue.poll();
                 if (block == null)
                     continue;
