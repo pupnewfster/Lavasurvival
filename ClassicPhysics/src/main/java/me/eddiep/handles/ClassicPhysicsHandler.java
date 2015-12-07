@@ -18,6 +18,7 @@ import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockFromToEvent;
 import org.bukkit.event.block.BlockPhysicsEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
+import org.bukkit.event.world.WorldUnloadEvent;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.plugin.Plugin;
 
@@ -83,6 +84,16 @@ public final class ClassicPhysicsHandler implements Listener {
             lplacers.remove(player);
         else
             lplacers.add(player);
+    }
+
+    @EventHandler(priority = EventPriority.MONITOR)
+    public void onWorldUnload(WorldUnloadEvent event) {
+        if (event.isCancelled())
+            return;
+
+        for (LogicContainerHolder holder : logicContainers) {
+            holder.container.unloadFor(event.getWorld());
+        }
     }
 
     @EventHandler (priority = EventPriority.MONITOR)

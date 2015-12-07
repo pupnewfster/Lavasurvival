@@ -3,6 +3,7 @@ package me.eddiep.handles.logic;
 
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.World;
 import org.bukkit.block.Block;
 
 public interface LogicContainer {
@@ -42,4 +43,10 @@ public interface LogicContainer {
      * @return The Material this LogicContainer does physics for
      */
     Material logicFor();
+
+    /**
+     * Unload all block updates for a world
+     * @param world The world to unload for
+     */
+    void unloadFor(World world);
 }
