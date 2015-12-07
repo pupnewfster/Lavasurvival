@@ -110,7 +110,7 @@ public class PlayerListener implements Listener {
         if(event.getEntity() instanceof Player && !survival && Gamemode.getCurrentGame() != null &&
                 Gamemode.getCurrentGame().isAlive((Player) event.getEntity()) && (event.getCause().equals(EntityDamageEvent.DamageCause.FIRE_TICK) ||
                 event.getCause().equals(EntityDamageEvent.DamageCause.FIRE) || event.getCause().equals(EntityDamageEvent.DamageCause.FALL) ||
-                event.getCause().equals(EntityDamageEvent.DamageCause.ENTITY_ATTACK)))
+                event.getCause().equals(EntityDamageEvent.DamageCause.ENTITY_ATTACK) || event.getCause().equals(EntityDamageEvent.DamageCause.FALLING_BLOCK)))
             event.setCancelled(true);
         else if (event.getEntity() instanceof Player && !survival && Gamemode.getCurrentGame() != null &&
                 Gamemode.getCurrentGame().isAlive((Player) event.getEntity()) && event.getCause().equals(EntityDamageEvent.DamageCause.LAVA)) {
