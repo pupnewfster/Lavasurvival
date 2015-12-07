@@ -37,7 +37,7 @@ public class CmdGamemode extends Cmd {
         if (message.equalsIgnoreCase("creative") || message.equalsIgnoreCase("1") || message.equalsIgnoreCase("c"))
             return GameMode.CREATIVE;
         if (message.equalsIgnoreCase("spectator") || message.equalsIgnoreCase("3"))
-            return GameMode.CREATIVE;
+            return GameMode.SPECTATOR;
         return GameMode.SURVIVAL;
     }
 }
