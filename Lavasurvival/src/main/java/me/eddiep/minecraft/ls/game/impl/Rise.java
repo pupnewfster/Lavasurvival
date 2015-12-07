@@ -145,7 +145,7 @@ public class Rise extends Gamemode {
             return;
         }
 
-        Lavasurvival.INSTANCE.getPhysicsHandler().placeClassicBlockAt(loc, getMat());
+        Lavasurvival.INSTANCE.getPhysicsHandler().forcePlaceClassicBlockAt(loc, getMat());
 
         lastEvent = System.currentTimeMillis(); //Set the last event to now
         getCurrentWorld().strikeLightningEffect(loc); //Actions are better than words :3

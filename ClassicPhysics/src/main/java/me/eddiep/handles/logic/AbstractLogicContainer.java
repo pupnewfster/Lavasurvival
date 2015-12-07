@@ -16,12 +16,12 @@ import java.util.concurrent.ConcurrentLinkedDeque;
 public abstract class AbstractLogicContainer implements LogicContainer {
     private boolean ticking;
     //new ConcurrentLinkedQueue<>
-    private HashMap<World, Queue<Block>> worldQueues = new HashMap<>();
-    private HashMap<World, List<Block>> worldToAdd = new HashMap<>();
-    private List<World> unloadQueue = new LinkedList<>();
+    private final HashMap<World, Queue<Block>> worldQueues = new HashMap<>();
+    private final HashMap<World, List<Block>> worldToAdd = new HashMap<>();
+    private final List<World> unloadQueue = new LinkedList<>();
 
     @Override
-    public void queueBlock(Block block) {
+    public synchronized void queueBlock(Block block) {
         World containingWorld = block.getWorld();
         if (Bukkit.getWorld(containingWorld.getName()) == null) {
             worldQueues.remove(containingWorld);
@@ -53,7 +53,7 @@ public abstract class AbstractLogicContainer implements LogicContainer {
     }
 
     @Override
-    public void tick() {
+    public synchronized void tick() {
         //Check unload queue for worlds that need to be unloaded
         for (World world : unloadQueue) {
             worldQueues.remove(world);
@@ -73,28 +73,23 @@ public abstract class AbstractLogicContainer implements LogicContainer {
                 if (block == null)
                     continue;
 
-
                 tickForBlock(block, block.getLocation());
             }
         }
         ticking = false;
-
         for (World world : worldQueues.keySet()) {
             Queue<Block> queue = worldQueues.get(world);
             List<Block> toAdd = worldToAdd.get(world);
             if (queue == null || toAdd == null)
                 continue;
-
             queue.addAll(toAdd);
         }
-
         worldToAdd.clear();
     }
 
     @Override
     public void blockUpdate(Location location) {
-        Material material = location.getBlock().getType();
-        if (doesHandle(material))
+        if (doesHandle(location.getBlock().getType()))
             queueBlock(location.getBlock());
     }
 

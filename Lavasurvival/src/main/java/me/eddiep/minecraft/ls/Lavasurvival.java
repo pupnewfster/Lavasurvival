@@ -124,10 +124,10 @@ public class Lavasurvival extends JavaPlugin {
         setRules();
         /*log("Making money viewer task..");
         moneyViewer = getServer().getScheduler().scheduleSyncRepeatingTask(this, MONEY_VIEWER, 0, 25);*/
-        if (LavaMap.getPossibleMaps().length > 0) {
-            Rise flood = new Rise();
-            flood.prepare();
-            flood.start();
+        if (LavaMap.getPossibleMaps().length > 0) {//Should we make it random here which gamemode we start with
+            Rise rise = new Rise();
+            rise.prepare();
+            rise.start();
             running = true;
         } else //Only schedule a listener if no maps. If maps then it already is initialized through Gamemode.prepare()
             getServer().getPluginManager().registerEvents(new PlayerListener(), this);
