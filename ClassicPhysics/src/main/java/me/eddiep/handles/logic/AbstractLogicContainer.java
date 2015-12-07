@@ -33,6 +33,7 @@ public abstract class AbstractLogicContainer implements LogicContainer {
             queue = this.worldQueues.get(containingWorld);
         } else {
             queue = new ConcurrentLinkedDeque<>();
+            this.worldQueues.put(containingWorld, queue);
         }
 
         if (ticking) {
@@ -41,6 +42,7 @@ public abstract class AbstractLogicContainer implements LogicContainer {
                 toAdd = worldToAdd.get(containingWorld);
             } else {
                 toAdd = new LinkedList<>();
+                worldToAdd.put(containingWorld, toAdd);
             }
 
             toAdd.add(block);
