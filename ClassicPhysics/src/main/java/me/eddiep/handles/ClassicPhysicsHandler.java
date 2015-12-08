@@ -5,7 +5,6 @@ import me.eddiep.PhysicsType;
 import me.eddiep.handles.logic.LavaLogic;
 import me.eddiep.handles.logic.LogicContainer;
 import me.eddiep.handles.logic.WaterLogic;
-import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
@@ -14,22 +13,17 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.block.BlockBreakEvent;
-import org.bukkit.event.block.BlockFromToEvent;
-import org.bukkit.event.block.BlockPhysicsEvent;
-import org.bukkit.event.block.BlockPlaceEvent;
+import org.bukkit.event.block.*;
 import org.bukkit.event.world.WorldUnloadEvent;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitRunnable;
-import org.bukkit.scheduler.BukkitScheduler;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 
 public final class ClassicPhysicsHandler implements Listener {
     private ArrayList<LogicContainerHolder> logicContainers = new ArrayList<>();
-    private final BukkitScheduler sched = Bukkit.getScheduler();
     private final HashMap<Location, Material> locations = new HashMap<>();
     private ArrayList<Player> lplacers = new ArrayList<>();
     private ArrayList<Player> wplacers = new ArrayList<>();
@@ -138,7 +132,14 @@ public final class ClassicPhysicsHandler implements Listener {
     }
 
     @EventHandler
-    public void onIceMelt(BlockFromToEvent event) {
+    public void onIceMelt(BlockFadeEvent event) {
+        if (ClassicPhysics.TYPE == PhysicsType.DEFAULT)
+            return;
+        event.setCancelled(true);
+    }
+
+    @EventHandler
+    public void onLiquidFlow(BlockFromToEvent event) {
         if (ClassicPhysics.TYPE == PhysicsType.DEFAULT)
             return;
         event.setCancelled(true);
@@ -156,7 +157,7 @@ public final class ClassicPhysicsHandler implements Listener {
                 }
     }
 
-    public void forcePlaceClassicBlockAt(Location location, final Material type) {
+    public void forcePlaceClassicBlockAt(Location location, final Material type) {//Force place block
         if (location.getWorld() == null)//World isn't loaded
             return;
         for (LogicContainerHolder holder : logicContainers)
@@ -164,18 +165,8 @@ public final class ClassicPhysicsHandler implements Listener {
                 final Block blc = location.getBlock();
                 if (!blc.hasMetadata("classic_block"))
                     blc.setMetadata("classic_block", new FixedMetadataValue(ClassicPhysics.INSTANCE, true));
-                final LogicContainer c = holder.container;
-                synchronized (sched) {
-                    sched.scheduleSyncDelayedTask(owner, new Runnable() {
-                        @Override
-                        public void run() {
-                            if (blc.getLocation().getWorld() == null)//World isn't loaded
-                                return;
-                            blc.setType(type);
-                            c.queueBlock(blc);
-                        }
-                    });
-                }
+                blc.setType(type);
+                holder.container.queueBlock(blc);
                 break; //TODO Maybe don't break?
             }
     }
@@ -183,12 +174,11 @@ public final class ClassicPhysicsHandler implements Listener {
     public void placeClassicBlockAt(Location location, final Material type) {
         if (location.getWorld() == null)//World isn't loaded
             return;
-        for (LogicContainerHolder holder : logicContainers) {
+        for (LogicContainerHolder holder : logicContainers)
             if (holder.container.doesHandle(type)) {
                 locations.put(location, type);
                 break;
             }
-        }
     }
 
     public void addLogicContainer(LogicContainer container) {
