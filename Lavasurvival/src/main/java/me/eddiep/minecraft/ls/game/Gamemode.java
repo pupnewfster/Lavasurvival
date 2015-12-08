@@ -325,8 +325,10 @@ public abstract class Gamemode {
 
                     File possibleNext = new File(next);
 
-                    if (currentmap.getFile().equals(possibleNext))
+                    if (currentmap.getFile().equals(possibleNext)) {
+                        found = true;
                         continue;
+                    }
 
                     for (LavaMap nextMap : nextMaps) {
                         if (nextMap != null && nextMap.getFile().equals(possibleNext)) {
