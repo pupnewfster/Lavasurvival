@@ -172,7 +172,7 @@ public final class ClassicPhysicsHandler implements Listener {
     }
 
     public void placeClassicBlockAt(Location location, final Material type) {
-        if (location.getWorld() == null)//World isn't loaded
+        if (location.getWorld() == null || locations.containsKey(location))//World isn't loaded
             return;
         for (LogicContainerHolder holder : logicContainers)
             if (holder.container.doesHandle(type)) {
