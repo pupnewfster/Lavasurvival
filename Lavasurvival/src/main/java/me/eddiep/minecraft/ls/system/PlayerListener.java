@@ -46,9 +46,8 @@ public class PlayerListener implements Listener {
             Material.BEDROCK,
             Material.BARRIER
     }));
-    public boolean survival = false;
-
     private final UserManager um = Lavasurvival.INSTANCE.getUserManager();
+    public boolean survival = false;
 
     @EventHandler(priority = EventPriority.LOWEST)
     public void onChat(AsyncPlayerChatEvent event) {
@@ -109,8 +108,8 @@ public class PlayerListener implements Listener {
                 event.getCause().equals(EntityDamageEvent.DamageCause.FIRE) || event.getCause().equals(EntityDamageEvent.DamageCause.FALL) ||
                 event.getCause().equals(EntityDamageEvent.DamageCause.ENTITY_ATTACK) || event.getCause().equals(EntityDamageEvent.DamageCause.FALLING_BLOCK)))
             event.setCancelled(true);
-        else if (event.getEntity() instanceof Player && !survival && Gamemode.getCurrentGame() != null &&
-                Gamemode.getCurrentGame().isAlive((Player) event.getEntity()) && event.getCause().equals(EntityDamageEvent.DamageCause.LAVA)) {
+        else if (event.getEntity() instanceof Player && !survival && Gamemode.getCurrentGame() != null && Gamemode.getCurrentGame().isAlive((Player) event.getEntity()) &&
+                event.getCause().equals(EntityDamageEvent.DamageCause.LAVA)) {
             event.setDamage(EntityDamageEvent.DamageModifier.BASE, 1.5);
         }
     }
@@ -121,9 +120,9 @@ public class PlayerListener implements Listener {
             return;
         if ((event.getAction() == Action.RIGHT_CLICK_BLOCK || event.getAction() == Action.RIGHT_CLICK_AIR) && event.getItem() != null && event.getItem().getType().equals(Material.WRITTEN_BOOK))
             return;//Allow players to read the rule book
-        if (Gamemode.getCurrentGame() != null && Gamemode.getCurrentGame().isDead(event.getPlayer())) {
+        if (Gamemode.getCurrentGame() != null && Gamemode.getCurrentGame().isDead(event.getPlayer()))
             event.setCancelled(true);
-        } else if (Gamemode.getCurrentGame() != null && Gamemode.getCurrentGame().isAlive(event.getPlayer())) {
+        else if (Gamemode.getCurrentGame() != null && Gamemode.getCurrentGame().isAlive(event.getPlayer())) {
             if (event.getAction() == Action.LEFT_CLICK_BLOCK) {
                 Block block = event.getClickedBlock();
                 if (invalidBlocks.contains(block.getType()))
@@ -161,8 +160,7 @@ public class PlayerListener implements Listener {
         if (event.getAction() == Action.RIGHT_CLICK_BLOCK && !event.getPlayer().isSneaking() &&
                 (event.getClickedBlock() instanceof InventoryHolder || event.getClickedBlock().getType().equals(Material.WORKBENCH) ||
                 event.getClickedBlock().getType().equals(Material.ANVIL) || event.getClickedBlock().getType().equals(Material.ENCHANTMENT_TABLE) ||
-                event.getClickedBlock().getType().equals(Material.ENDER_CHEST) || event.getClickedBlock().getType().equals(Material.BEACON) ||
-                event.getClickedBlock().getType().equals(Material.ITEM_FRAME)))
+                event.getClickedBlock().getType().equals(Material.ENDER_CHEST) || event.getClickedBlock().getType().equals(Material.BEACON)))
             event.setCancelled(true);//Disable opening block's with inventories
     }
 
@@ -216,7 +214,7 @@ public class PlayerListener implements Listener {
         um.getUser(event.getPlayer().getUniqueId()).logOut();
     }
 
-    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true) //Ignore if event has already been canceled
+    @EventHandler(priority = EventPriority.MONITOR)
     public void fireSpread(BlockIgniteEvent event) {
         event.setCancelled(true);
     }
@@ -228,7 +226,6 @@ public class PlayerListener implements Listener {
 
         if (!Lavasurvival.INSTANCE.getEconomy().hasAccount(event.getPlayer()))
             Lavasurvival.INSTANCE.getEconomy().createPlayerAccount(event.getPlayer());
-
 
         if (Gamemode.getCurrentGame() != null) {
             Bukkit.getScheduler().scheduleSyncDelayedTask(Lavasurvival.INSTANCE, new Runnable() {
@@ -265,7 +262,7 @@ public class PlayerListener implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void foodLevelChange(FoodLevelChangeEvent event) {
-        if(!survival)
+        if (!survival)
             event.setCancelled(true);
     }
 
@@ -298,6 +295,7 @@ public class PlayerListener implements Listener {
         if (Gamemode.getCurrentGame() != null)
             Gamemode.getCurrentGame().setDead(event.getEntity());
         event.getEntity().getInventory().clear();
+        event.setDroppedExp(0);
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)

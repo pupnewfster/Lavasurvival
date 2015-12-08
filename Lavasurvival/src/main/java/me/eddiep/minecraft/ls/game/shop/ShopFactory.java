@@ -10,7 +10,7 @@ import java.util.Collections;
 import java.util.List;
 
 public class ShopFactory {
-    private static ArrayList<Shop> shops = new ArrayList<Shop>();
+    private static ArrayList<Shop> shops = new ArrayList<>();
 
     public static Shop createShop(Plugin plugin, String ShopName, Class<? extends Menu> shopMenu, Material material, List<String> description) {
         Shop shop = new Shop(shopMenu);

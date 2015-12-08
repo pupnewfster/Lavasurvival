@@ -3,7 +3,8 @@ package me.eddiep.minecraft.ls.game;
 import com.crossge.necessities.GetUUID;
 import com.crossge.necessities.RankManager.Rank;
 import me.eddiep.minecraft.ls.Lavasurvival;
-import me.eddiep.minecraft.ls.game.impl.*;
+import me.eddiep.minecraft.ls.game.impl.Flood;
+import me.eddiep.minecraft.ls.game.impl.Rise;
 import me.eddiep.minecraft.ls.ranks.UserInfo;
 import me.eddiep.minecraft.ls.ranks.UserManager;
 import me.eddiep.minecraft.ls.system.FileUtils;
@@ -12,6 +13,7 @@ import me.eddiep.minecraft.ls.system.PlayerListener;
 import mkremins.fanciful.FancyMessage;
 import org.bukkit.*;
 import org.bukkit.entity.Player;
+import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.scoreboard.Team;
 
@@ -20,7 +22,7 @@ import java.io.IOException;
 import java.util.*;
 
 public abstract class Gamemode {
-    public static final Material[] DEFAULT_BLOCKS = new Material[]{
+    public static final Material[] DEFAULT_BLOCKS = new Material[] {
             Material.TORCH,
             Material.COBBLESTONE,
             Material.DIRT,
@@ -42,23 +44,18 @@ public abstract class Gamemode {
     }
 
     public static final Random RANDOM = new Random();
-    public static double WATER_DAMAGE = 0;
-    public static double DAMAGE_FREQUENCY = 3;
-    public static boolean LAVA = true;
-
-    private static boolean voting = false;
+    public static double WATER_DAMAGE = 0, DAMAGE_FREQUENCY = 3;
+    public static boolean LAVA = true, voting = false;
     private static LavaMap[] nextMaps = new LavaMap[VOTE_COUNT];
     private static int[] votes = new int[VOTE_COUNT];
-    private static LavaMap lastMap;
-    private static LavaMap currentmap;
-    private static Team alive;
-    private static Team dead;
+    private static LavaMap lastMap, currentMap;
+    private static Team alive, dead;
     private static Scoreboard scoreboard;
     private static PlayerListener listener;
     private static PhysicsListener physicsListener;
-    private static Gamemode currentgame = null;
+    private static Gamemode currentGame = null;
     protected boolean poured;
-    private int tickTask;
+    private BukkitRunnable tickTask;
     private Gamemode nextGame;
     private LavaMap map;
 
@@ -72,15 +69,15 @@ public abstract class Gamemode {
     }
 
     public static LavaMap getCurrentMap() {
-        return currentmap;
+        return currentMap;
     }
 
     public static World getCurrentWorld() {
-        return currentmap.getWorld();
+        return currentMap.getWorld();
     }
 
     public static Gamemode getCurrentGame() {
-        return currentgame;
+        return currentGame;
     }
 
     public static Scoreboard getScoreboard() {
@@ -96,9 +93,8 @@ public abstract class Gamemode {
     }
 
     public void prepare() {
-        if (scoreboard == null) {
-            scoreboard = Bukkit.getScoreboardManager().getMainScoreboard();//.getNewScoreboard();
-        }
+        if (scoreboard == null)
+            scoreboard = Bukkit.getScoreboardManager().getMainScoreboard();
         if (alive == null) {
             if (scoreboard.getTeam("Alive") == null)
                 alive = scoreboard.registerNewTeam("Alive");
@@ -126,21 +122,20 @@ public abstract class Gamemode {
 
         if (map == null) {
             String[] files = LavaMap.getPossibleMaps();
-            lastMap = currentmap;
-
+            lastMap = currentMap;
             do {
                 String next = files[RANDOM.nextInt(files.length)];
                 try {
-                    currentmap = LavaMap.load(next);
+                    currentMap = LavaMap.load(next);
                     break;
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
             } while (true);
         } else
-            currentmap = map;
+            currentMap = map;
 
-        currentmap.prepare();
+        currentMap.prepare();
     }
 
     private long lastMoneyCheck = System.currentTimeMillis();
@@ -155,12 +150,10 @@ public abstract class Gamemode {
         clearTeam(alive);
         clearTeam(dead);
 
-        Collection<? extends Player> players = Bukkit.getOnlinePlayers();
-        for (Player p : players) {
+        for (Player p : Bukkit.getOnlinePlayers())
             playerJoin(p);
-        }
 
-        currentgame = this;
+        currentGame = this;
 
         if (lastMap != null) {
             Lavasurvival.log("Unloading " + lastMap.getWorld().getName() + "..");
@@ -178,7 +171,7 @@ public abstract class Gamemode {
         }
 
         Lavasurvival.INSTANCE.MONEY_VIEWER.run();
-        tickTask = Bukkit.getScheduler().scheduleSyncRepeatingTask(Lavasurvival.INSTANCE, new Runnable() {
+        tickTask = new BukkitRunnable() {
             @Override
             public void run() {
                 if (System.currentTimeMillis() - lastMoneyCheck >= 20000) {
@@ -187,7 +180,8 @@ public abstract class Gamemode {
                 }
                 onTick();
             }
-        }, 0, 20);
+        };
+        tickTask.runTaskTimer(Lavasurvival.INSTANCE, 0, 20);//Possibly should make async
     }
 
     private void restoreBackup(World world) {
@@ -204,8 +198,7 @@ public abstract class Gamemode {
 
     protected abstract double calculateReward(Player player);
 
-    protected boolean isEnding;
-    protected boolean hasEnded;
+    protected boolean isEnding, hasEnded;
     public void endRoundIn(long seconds) {
         if (isEnding)
             return;
@@ -292,7 +285,7 @@ public abstract class Gamemode {
         votes[index]++;
     }
 
-    private ArrayList<OfflinePlayer> voted = new ArrayList<OfflinePlayer>();
+    private ArrayList<OfflinePlayer> voted = new ArrayList<>();
     public void voteFor(int number, Player player) {
         if (number >= Gamemode.nextMaps.length) {
             player.sendMessage(ChatColor.DARK_RED + "Invalid number! Please choose a number between (1 - " + Gamemode.nextMaps.length + ").");
@@ -325,7 +318,7 @@ public abstract class Gamemode {
 
                     File possibleNext = new File(next);
 
-                    if (currentmap.getFile().equals(possibleNext)) {
+                    if (currentMap.getFile().equals(possibleNext)) {
                         found = true;
                         continue;
                     }
@@ -349,7 +342,6 @@ public abstract class Gamemode {
                         .command("/lvote " + (i + 1))
                         .tooltip("Vote for " + nextMaps[i].getName())
                         .then(" ");
-
             }
 
             voted.clear();
@@ -409,10 +401,15 @@ public abstract class Gamemode {
     }
 
     private void end() {
+        tickTask.cancel();
         Bukkit.getScheduler().cancelTasks(Lavasurvival.INSTANCE);
         globalMessage(ChatColor.GREEN + "The round has ended!");
         isEnding = false;
         hasEnded = true;
+        if (System.currentTimeMillis() - lastMoneyCheck >= 20000) {
+            Lavasurvival.INSTANCE.MONEY_VIEWER.run();
+            lastMoneyCheck = System.currentTimeMillis();
+        }
     }
 
     protected Gamemode pickRandomGame() {

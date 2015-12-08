@@ -7,6 +7,7 @@ import me.eddiep.minecraft.ls.system.PhysicsListener;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
+import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -19,12 +20,11 @@ import java.util.UUID;
 
 public class UserInfo {
     private ArrayList<MaterialData> ownedBlocks = new ArrayList<>();
+    private long lastBreak = System.currentTimeMillis(), blockChangeCount;
     private boolean inWater = false;
-    private long lastBreak = System.currentTimeMillis();
-    private int taskID = 0;
     private Player bukkitPlayer;
+    private int taskID = 0;
     private UUID userUUID;
-    private long blockChangeCount;
 
     public UserInfo(Player p) {
         this.bukkitPlayer = p;
@@ -66,15 +66,11 @@ public class UserInfo {
     }
 
     public UUID getUUID() {
-        if (getPlayer() == null)
-            return this.userUUID;
-        return getPlayer().getUniqueId();
+        return getPlayer() == null ? this.userUUID: getPlayer().getUniqueId();
     }
 
     public String getName() {
-        if (getPlayer() == null)
-            return Bukkit.getOfflinePlayer(getUUID()).getName();
-        return getPlayer().getName();
+        return getPlayer() == null ? Bukkit.getOfflinePlayer(getUUID()).getName() : getPlayer().getName();
     }
 
     public boolean isInWater() {
@@ -91,9 +87,10 @@ public class UserInfo {
                 public void run() {
                     if (isInWater() && getPlayer() != null) {
                         getPlayer().damage(Gamemode.WATER_DAMAGE);
-                        setInWater(getPlayer().getLocation().getBlock().getType().equals(Material.WATER) || getPlayer().getLocation().getBlock().getType().equals(Material.STATIONARY_WATER) ||
-                                getPlayer().getLocation().getBlock().getRelative(BlockFace.UP).getType().equals(Material.WATER) ||
-                                getPlayer().getLocation().getBlock().getRelative(BlockFace.UP).getType().equals(Material.STATIONARY_WATER));
+                        Block b = getPlayer().getLocation().getBlock();
+                        setInWater(((b.getType().equals(Material.WATER) || b.getType().equals(Material.STATIONARY_WATER)) && b.hasMetadata("classic_block")) ||
+                                ((b.getRelative(BlockFace.UP).getType().equals(Material.WATER) || b.getType().equals(Material.STATIONARY_WATER)) &&
+                                        b.getRelative(BlockFace.UP).hasMetadata("classic_block")));
                     }
                 }
             }, (int) (20 * Gamemode.DAMAGE_FREQUENCY));
@@ -107,95 +104,65 @@ public class UserInfo {
         this.bukkitPlayer = p;
     }
 
-    private void addBlock(Material type) {
-        MaterialData dat = new MaterialData(type);
-        if (!this.ownedBlocks.contains(dat)) {
-            this.ownedBlocks.add(dat);
-            if(getPlayer() != null) {
-                ItemStack i = dat.toItemStack(1);
-                ItemMeta im = i.getItemMeta();
-                im.setLore(Arrays.asList("Melt time: " + PhysicsListener.getMeltTime(dat) + " seconds"));
-                i.setItemMeta(im);
-                getPlayer().getInventory().addItem(i);
-            }
-        }
-    }
-
     public void giveBoughtBlocks() {
         Player p = getPlayer();
-        if(p != null) {
+        if(p != null)
             for (MaterialData dat : this.ownedBlocks) {
                 if (BukkitUtils.hasItem(p.getInventory(), dat))
                     continue;
-
-                ItemStack itemStack = dat.toItemStack(1);
-                ItemMeta im = itemStack.getItemMeta();
-                im.setLore(Arrays.asList("Melt time: " + PhysicsListener.getMeltTime(dat) + " seconds"));
-                itemStack.setItemMeta(im);
-
-                p.getInventory().addItem(itemStack);
+                p.getInventory().addItem(getItem(dat));
             }
+    }
+
+    private void addBlock(MaterialData dat) {
+        if (!this.ownedBlocks.contains(dat)) {
+            this.ownedBlocks.add(dat);
+            if(getPlayer() != null)
+                getPlayer().getInventory().addItem(getItem(dat));
         }
     }
 
-    private void addBlock(Material type, byte data) {
-        MaterialData dat = new MaterialData(type, data);
-        if (!this.ownedBlocks.contains(dat)) {
-            this.ownedBlocks.add(dat);
-            if(getPlayer() != null) {
-                ItemStack i = dat.toItemStack(1);
-                ItemMeta im = i.getItemMeta();
-                im.setLore(Arrays.asList("Melt time: " + PhysicsListener.getMeltTime(dat) + " seconds"));
-                i.setItemMeta(im);
-                getPlayer().getInventory().addItem(i);
-            }
-        }
+    private ItemStack getItem(MaterialData dat) {
+        ItemStack i = dat.toItemStack(1);
+        ItemMeta im = i.getItemMeta();
+        im.setLore(Arrays.asList("Melt time: " + PhysicsListener.getMeltTime(dat) + " seconds"));
+        i.setItemMeta(im);
+        return i;
     }
 
     public void clearBlocks() {
-        if(getPlayer() != null)
-            for(MaterialData dat : this.ownedBlocks)
+        if (getPlayer() != null)
+            for (MaterialData dat : this.ownedBlocks)
                 getPlayer().getInventory().remove(dat.toItemStack());
         this.ownedBlocks.clear();
     }
 
-    public boolean ownsBlock(Material type) {
-        return this.ownedBlocks.contains(new MaterialData(type));
-    }
-
-    public boolean ownsBlock(Material type, byte data) {
-        return this.ownedBlocks.contains(new MaterialData(type, data));
+    public boolean ownsBlock(MaterialData dat) {
+        return this.ownedBlocks.contains(dat);
     }
 
     public void buyBlock(Material mat, double price, byte data) {
-        if (getPlayer() == null)
-            return;
-        if (ownsBlock(mat, data))
-            getPlayer().sendMessage(ChatColor.RED + "You already own that block..");
-        else if (!Lavasurvival.INSTANCE.getEconomy().hasAccount(getPlayer()) || Lavasurvival.INSTANCE.getEconomy().getBalance(getPlayer()) < price) {
-            getPlayer().sendMessage(ChatColor.RED + "You do not have enough money to buy the block type " + mat.toString().replaceAll("_", " ").toLowerCase() + " with datavalue " + data + "..");
-        } else if (BukkitUtils.isInventoryFull(getPlayer().getInventory()))
-            getPlayer().sendMessage(ChatColor.RED + "You do not have enough inventory space to buy any more blocks..");
-        else {
-            addBlock(mat, data);
-            Lavasurvival.INSTANCE.withdrawAndUpdate(getPlayer(), price);
-            getPlayer().sendMessage(ChatColor.GREEN + "You bought the block type " + mat.toString().replaceAll("_", " ").toLowerCase() + " with datavalue " + data + "!");
-        }
+        buyBlock(new MaterialData(mat, data), price, true);
     }
 
     public void buyBlock(Material mat, double price) {
+        buyBlock(new MaterialData(mat), price, false);
+    }
+
+    private void buyBlock(MaterialData dat, double price, boolean hasData) {
         if (getPlayer() == null)
             return;
-        if (ownsBlock(mat))
+        if (ownsBlock(dat))
             getPlayer().sendMessage(ChatColor.RED + "You already own that block..");
-        else if (!Lavasurvival.INSTANCE.getEconomy().hasAccount(getPlayer()) || Lavasurvival.INSTANCE.getEconomy().getBalance(getPlayer()) < price) {
-            getPlayer().sendMessage(ChatColor.RED + "You do not have enough money to buy the block type " + mat.toString().replaceAll("_", " ").toLowerCase() + "..");
-        } else if (BukkitUtils.isInventoryFull(getPlayer().getInventory()))
+        else if (!Lavasurvival.INSTANCE.getEconomy().hasAccount(getPlayer()) || Lavasurvival.INSTANCE.getEconomy().getBalance(getPlayer()) < price)
+            getPlayer().sendMessage(ChatColor.RED + "You do not have enough money to buy the block type " + dat.getItemType().toString().replaceAll("_", " ").toLowerCase() +
+                    (hasData ? " with datavalue " + dat.getData() : "") + "..");
+        else if (BukkitUtils.isInventoryFull(getPlayer().getInventory()))//TODO: Make an item with an extended inventory so they can buy more blocks
             getPlayer().sendMessage(ChatColor.RED + "You do not have enough inventory space to buy any more blocks..");
         else {
-            addBlock(mat);
+            addBlock(dat);
             Lavasurvival.INSTANCE.withdrawAndUpdate(getPlayer(), price);
-            getPlayer().sendMessage(ChatColor.GREEN + "You bought the block type " + mat.toString().replaceAll("_", " ").toLowerCase() + "!");
+            getPlayer().sendMessage(ChatColor.GREEN + "You bought the block type " + dat.getItemType().toString().replaceAll("_", " ").toLowerCase() + (hasData ? " with datavalue " + dat.getData() : "") + "!");
         }
     }
 

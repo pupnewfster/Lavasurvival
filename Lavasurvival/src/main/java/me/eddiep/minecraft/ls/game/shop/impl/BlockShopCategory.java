@@ -10,8 +10,8 @@ import org.bukkit.Material;
 import org.bukkit.inventory.Inventory;
 
 @MenuInventory(slots = 9, name = "Block Shop")
-public class BlockShopCatagory extends Menu {
-    public BlockShopCatagory(MenuManager manager, Inventory inv) {
+public class BlockShopCategory extends Menu {
+    public BlockShopCategory(MenuManager manager, Inventory inv) {
         super(manager, inv);
     }
 

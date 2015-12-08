@@ -23,7 +23,7 @@ public class CmdRules extends Cmd {
     }
 
     public List<String> tabComplete(CommandSender sender, String[] args) {
-        return new ArrayList<String>();
+        return new ArrayList<>();
     }
 
     @Override

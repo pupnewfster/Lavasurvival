@@ -14,35 +14,24 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 public class LavaMap {
-    private String name;
-    private int lavax;
-    private int lavay;
-    private int lavaz;
-    private int mapHeight;
-    private Vector minSafeZone;
-    private Vector maxSafeZone;
-    private Vector mapSpawn;
-    private String worldName;
-    private String filePath;
+    private String name, worldName, filePath;
+    private int lavax, lavay, lavaz, mapHeight;
+    private Vector minSafeZone, maxSafeZone, mapSpawn;
 
     private volatile World world;
     private volatile boolean poured;
 
     public static LavaMap load(String file) throws IOException {
         String contents = FileUtils.readAllText(file);
-
         LavaMap map = Lavasurvival.GSON.fromJson(contents, LavaMap.class);
-
         map.poured = false;
         map.filePath = file;
-
         return map;
     }
 
     public static String[] getPossibleMaps() {
         File configDir = new File(Lavasurvival.INSTANCE.getDataFolder(), "maps");
-
-        ArrayList<String> maps = new ArrayList<String>();
+        ArrayList<String> maps = new ArrayList<>();
         File[] files = configDir.listFiles();
         if (files != null)
             for (File f : files)
@@ -64,10 +53,8 @@ public class LavaMap {
                 System.err.println("Could not delete world!");
                 return;
             }
-        } else {
+        } else
             return;
-        }
-
         try {
             FileUtils.copyDirectory(backup, directoy);
         } catch (IOException e) {
@@ -77,7 +64,6 @@ public class LavaMap {
 
     public void save() throws IOException {
         String json = Lavasurvival.GSON.toJson(this);
-
         me.eddiep.minecraft.ls.system.FileUtils.writeText(new File(Lavasurvival.INSTANCE.getDataFolder(), "maps/" + name + ".map").getAbsolutePath(), json);
     }
 
@@ -99,9 +85,8 @@ public class LavaMap {
         world.setAnimalSpawnLimit(0);
         world.setSpawnLocation(mapSpawn.getBlockX(), mapSpawn.getBlockY(), mapSpawn.getBlockZ());
 
-        for (Entity e : world.getEntities()) {
+        for (Entity e : world.getEntities())
             e.remove();
-        }
 
         try {
             Lavasurvival.log("Backing up " + world.getName() + "...");

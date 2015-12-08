@@ -17,15 +17,11 @@ public class FileUtils {
     public static void createIfNotExist(String path, String fileName, String contents) throws IOException {
         File filePath = new File(path);
         File fileFile = new File(path, fileName);
-
         filePath.mkdirs();
-
         if (!fileFile.exists()) {
             fileFile.createNewFile();
-
             PrintWriter writer = new PrintWriter(fileFile);
             writer.write(contents);
-
             try {
                 writer.close();
                 writer.flush();
@@ -70,9 +66,8 @@ public class FileUtils {
      */
     public static void createIfNotExist(String fileName) throws IOException {
         File file = new File(fileName);
-        if (!file.exists()) {
+        if (!file.exists())
             file.createNewFile();
-        }
     }
 
     /**
@@ -82,9 +77,8 @@ public class FileUtils {
      */
     public static void deleteIfExist(String filePath) {
         File file = new File(filePath);
-        if (file.exists()) {
+        if (file.exists())
             file.delete();
-        }
     }
 
     /**
@@ -111,9 +105,8 @@ public class FileUtils {
     public static void writeLines(String filePath, String... lines) throws IOException {
         createIfNotExist(filePath);
         Formatter formatter = new Formatter(new FileWriter(new File(filePath), true));
-        for (String line : lines) {
+        for (String line : lines)
             formatter.out().append(line).append("\r\n");
-        }
         formatter.close();
     }
 
@@ -138,7 +131,7 @@ public class FileUtils {
      */
     public static List<String> readToList(String filePath) throws IOException {
         LineNumberReader reader = new LineNumberReader(new FileReader(filePath));
-        List<String> lines = new ArrayList<String>();
+        List<String> lines = new ArrayList<>();
         String line;
         while ((line = reader.readLine()) != null)
             lines.add(line);
@@ -156,9 +149,7 @@ public class FileUtils {
     public static boolean copyFile(String sourcePath, String newPath) {
         InputStream inStream = null;
         OutputStream outStream = null;
-
         try {
-
             File afile = new File(sourcePath);
             File bfile = new File(newPath);
 
@@ -166,17 +157,13 @@ public class FileUtils {
             outStream = new FileOutputStream(bfile);
 
             byte[] buffer = new byte[1024];
-
             int length;
-            while ((length = inStream.read(buffer)) > 0) {
+            while ((length = inStream.read(buffer)) > 0)
                 outStream.write(buffer, 0, length);
-            }
 
             inStream.close();
             outStream.close();
-
             return true;
-
         } catch (IOException e) {
             e.printStackTrace();
             return false;
@@ -186,10 +173,8 @@ public class FileUtils {
     public static void copyDirectory(File src, File dest) throws IOException {
         if (src.isDirectory()) {
             //if directory not exists, create it
-            if (!dest.exists()) {
+            if (!dest.exists())
                 dest.mkdir();
-            }
-
             //list all the directory contents
             String files[] = src.list();
 
@@ -200,7 +185,6 @@ public class FileUtils {
                 //recursive copy
                 copyDirectory(srcFile, destFile);
             }
-
         } else {
             //if file, then copy it
             //Use bytes stream to support all file types
@@ -208,12 +192,10 @@ public class FileUtils {
             OutputStream out = new FileOutputStream(dest);
 
             byte[] buffer = new byte[1024];
-
             int length;
             //copy the file content in bytes
-            while ((length = in.read(buffer)) > 0) {
+            while ((length = in.read(buffer)) > 0)
                 out.write(buffer, 0, length);
-            }
 
             in.close();
             out.close();
@@ -241,13 +223,10 @@ public class FileUtils {
     }
 
     public static String readAllText(String file) throws IOException {
-
         String[] lines = readAllLines(file);
         StringBuilder builder = new StringBuilder();
-        for (String s : lines) {
+        for (String s : lines)
             builder.append(s).append("\n");
-        }
-
         return builder.toString();
     }
 }

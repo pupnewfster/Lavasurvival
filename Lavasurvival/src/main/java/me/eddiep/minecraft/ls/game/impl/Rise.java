@@ -12,20 +12,11 @@ import org.bukkit.scoreboard.Objective;
 import org.bukkit.scoreboard.Score;
 
 public class Rise extends Gamemode {
-    private long lastEvent;
-    private long duration;
-
-
-    private long timeOut;
-
-    private int lastMinute;
-    private int bonus;
-    private Objective objective;
-    private Score bonusScore;
-    private Score layersLeft;
+    private int lastMinute, bonus, lvl = 1, sched = 0;
+    private long lastEvent, duration, timeOut;
+    private Score bonusScore, layersLeft;
     private boolean doubleReward;
-    private int lvl = 1;
-    private int sched = 0;
+    private Objective objective;
 
     @Override
     public void start() {

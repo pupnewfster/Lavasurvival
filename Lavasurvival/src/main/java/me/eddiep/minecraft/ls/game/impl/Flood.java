@@ -11,13 +11,11 @@ import org.bukkit.scoreboard.Objective;
 import org.bukkit.scoreboard.Score;
 
 public class Flood extends Gamemode {
-    private long gameStart;
-    private long duration;
-    private int lastMinute;
-    private int bonus;
+    private long gameStart, duration;
+    private int lastMinute, bonus;
+    private boolean doubleReward;
     private Objective objective;
     private Score bonusScore;
-    private boolean doubleReward;
 
     @Override
     public void start() {

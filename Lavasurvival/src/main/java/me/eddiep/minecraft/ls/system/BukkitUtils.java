@@ -20,11 +20,9 @@ public class BukkitUtils {
         for (ItemStack stack : inventory) {
             if (stack == null)
                 continue;
-
             if (stack.getData().equals(dat))
                 return true;
         }
-
         return false;
     }
 

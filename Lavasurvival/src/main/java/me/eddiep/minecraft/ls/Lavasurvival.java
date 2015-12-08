@@ -56,7 +56,6 @@ public class Lavasurvival extends JavaPlugin {
     private com.crossge.necessities.RankManager.UserManager um;
     private RankManager rm;
     private boolean running = false;
-    private int moneyViewer;
     private ItemStack rules;
 
     public void updateMoneyView(Player player) {
@@ -122,8 +121,6 @@ public class Lavasurvival extends JavaPlugin {
         //Setup the shops after connecting to vault
         setupShops();
         setRules();
-        /*log("Making money viewer task..");
-        moneyViewer = getServer().getScheduler().scheduleSyncRepeatingTask(this, MONEY_VIEWER, 0, 25);*/
         if (LavaMap.getPossibleMaps().length > 0) {//Should we make it random here which gamemode we start with
             Rise rise = new Rise();
             rise.prepare();
@@ -152,8 +149,6 @@ public class Lavasurvival extends JavaPlugin {
                 setups.get(uuid).end();
             setups.clear();
 
-            getServer().getScheduler().cancelTask(moneyViewer);
-
             log("Disabled");
         }
         running = false;
@@ -163,29 +158,29 @@ public class Lavasurvival extends JavaPlugin {
         rules = new ItemStack(Material.WRITTEN_BOOK);
         BookMeta meta = (BookMeta) rules.getItemMeta();
         meta.setTitle("Rules");
-        meta.setAuthor("GamezGalaxy");
-        meta.addPage("1. No Griefing." + "\n" +
+        meta.setAuthor(ChatColor.GREEN + "GamezGalaxy");
+        meta.addPage("1. No griefing." + "\n" +
                 "2. Any form of hacked client is forbidden." + "\n" +
                 "3. No cursing or offensive language." + "\n" +
                 "4. No block spamming." + "\n" +
-                "5. No damming the lava" + "\n" +
-                "6. No leaving the map" + "\n" +
-                "7. No blocking spawn" + "\n" +
-                "8. Please ask before entering someone else's shelter" + "\n");
+                "5. No damming the lava." + "\n" +
+                "6. No leaving the map." + "\n" +
+                "7. No blocking spawn." + "\n" +
+                "8. Please ask before entering someone else's shelter." + "\n");
         rules.setItemMeta(meta);
     }
 
     private void setupShops() {
-        MenuFramework.enable(new MenuRegistry(this, RankShop.class, BlockShopCatagory.class, BasicBlockShop.class,
+        MenuFramework.enable(new MenuRegistry(this, RankShop.class, BlockShopCategory.class, BasicBlockShop.class,
                 AdvancedBlockShop.class, SurvivorBlockShop.class, TrustedBlockShop.class, ElderBlockShop.class));
 
-        ArrayList<String> lore = new ArrayList<String>();
+        ArrayList<String> lore = new ArrayList<>();
         lore.add(ChatColor.GOLD + "" + ChatColor.ITALIC + "Buy more blocks!");
 
-        ArrayList<String> lore2 = new ArrayList<String>();
+        ArrayList<String> lore2 = new ArrayList<>();
         lore2.add(ChatColor.GREEN + "" + ChatColor.ITALIC + "Level up!");
 
-        ShopFactory.createShop(this, "Block Shop", BlockShopCatagory.class, Material.EMERALD, lore);
+        ShopFactory.createShop(this, "Block Shop", BlockShopCategory.class, Material.EMERALD, lore);
         ShopFactory.createShop(this, "Rank Shop", RankShop.class, Material.EXP_BOTTLE, lore2);
     }
 
@@ -261,7 +256,6 @@ public class Lavasurvival extends JavaPlugin {
     public boolean onCommand(CommandSender sender, Command cmd, String alias, String[] args) {
         Cmd command = getCmd(cmd.getName());
         return command != null && command.commandUse(sender, args);
-
     }
 
     public List<String> onTabComplete(CommandSender sender, Command cmd, String alias, String[] args) {
@@ -273,7 +267,7 @@ public class Lavasurvival extends JavaPlugin {
 
     private Cmd getCmd(String name) {
         for (Cmd possible : commands) {
-            if (possible.getName().equals(name))
+            if (possible.getName().equalsIgnoreCase(name))
                 return possible;
         }
         return null;

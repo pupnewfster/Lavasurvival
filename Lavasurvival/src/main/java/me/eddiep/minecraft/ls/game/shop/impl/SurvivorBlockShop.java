@@ -30,7 +30,7 @@ public class SurvivorBlockShop extends Menu {
             item = @ItemStackAnnotation(material = Material.EMERALD, name = "Back to block shop", lore = {"§6§oBuy more blocks!"})
     )
     public void backToMenu(MenuPlayer player) {
-        player.setActiveMenu(new BlockShopCatagory(player.getMenuManager(), null));
+        player.setActiveMenu(new BlockShopCategory(player.getMenuManager(), null));
     }
 
     @MenuItem(

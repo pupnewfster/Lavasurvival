@@ -17,8 +17,8 @@ import java.io.IOException;
 
 public class SetupMap implements Listener {
     private Player setupPlayer;
-    private int step;
     private LavaMap map;
+    private int step;
 
     public SetupMap(Player setupPlayer, Plugin plugin) {
         this.setupPlayer = setupPlayer;
@@ -128,7 +128,6 @@ public class SetupMap implements Listener {
                         temp.setZ(temp.getZ() - 1);
                     temp.setY(temp.getY() - 1);
                     temp.setX(temp.getX() - 1);
-
 
                     Location temp2 = new Location(world, maxx, maxy, maxz);
                     while (!world.isChunkLoaded(temp2.getChunk()) && world.getBlockAt(temp2).getType().isSolid())
