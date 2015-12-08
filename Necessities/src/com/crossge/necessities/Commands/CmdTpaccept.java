@@ -1,6 +1,7 @@
 package com.crossge.necessities.Commands;
 
 import com.crossge.necessities.RankManager.User;
+import com.crossge.necessities.ScoreBoards;
 import com.crossge.necessities.Teleports;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -8,6 +9,7 @@ import org.bukkit.entity.Player;
 import java.util.UUID;
 
 public class CmdTpaccept extends Cmd {
+    ScoreBoards sb = new ScoreBoards();
     Teleports tps = new Teleports();
     CmdHide hide = new CmdHide();
 
@@ -29,8 +31,12 @@ public class CmdTpaccept extends Cmd {
                 return true;
             }
             Player target = sender.getServer().getPlayer(uuid);
+            String tPrefix = sb.getPrefix(um.getUser(uuid)), pPrefix = sb.getPrefix(um.getUser(p.getUniqueId()));
             if (!p.hasPermission("Necessities.seehidden") && hide.isHidden(target)) {
                 sender.sendMessage(var.getEr() + "Error: " + var.getErMsg() + "Invalid player.");
+                return true;
+            } else if (!tPrefix.equals(pPrefix)) {
+                sender.sendMessage(var.getEr() + "Error: " + var.getErMsg() + "You must both be alive or dead to tpa.");
                 return true;
             }
             if (!tps.hasRequestFrom(p.getUniqueId(), uuid)) {

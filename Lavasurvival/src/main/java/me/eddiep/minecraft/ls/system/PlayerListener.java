@@ -6,10 +6,7 @@ import me.eddiep.minecraft.ls.game.LavaMap;
 import me.eddiep.minecraft.ls.game.shop.ShopFactory;
 import me.eddiep.minecraft.ls.ranks.UserInfo;
 import me.eddiep.minecraft.ls.ranks.UserManager;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.GameMode;
-import org.bukkit.Material;
+import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Player;
@@ -280,15 +277,13 @@ public class PlayerListener implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void playerMove(PlayerMoveEvent event) {
-        if (!event.getTo().getBlock().hasMetadata("classic_block"))
-            return;
-        boolean locationChanged = event.getFrom().getBlockX() != event.getTo().getBlockX() || event.getFrom().getBlockY() != event.getTo().getBlockY() ||
-                event.getFrom().getBlockZ() != event.getTo().getBlockZ();
+        Location from = event.getFrom(), to = event.getTo();
+        boolean locationChanged = Math.abs(from.getX() - to.getX()) > 0.1 || Math.abs(from.getY() - to.getY()) > 0.1 || Math.abs(from.getZ() - to.getZ()) > 0.1;
         if (locationChanged && Gamemode.getCurrentGame() != null && Gamemode.WATER_DAMAGE != 0 && Gamemode.getCurrentGame().isAlive(event.getPlayer())) {
             UserInfo u = um.getUser(event.getPlayer().getUniqueId());
-            if(event.getTo().getBlock().getType().equals(Material.WATER) || event.getTo().getBlock().getType().equals(Material.STATIONARY_WATER) ||
-                    event.getTo().getBlock().getRelative(BlockFace.UP).getType().equals(Material.WATER) ||
-                    event.getTo().getBlock().getRelative(BlockFace.UP).getType().equals(Material.STATIONARY_WATER)) {
+            if(((to.getBlock().getType().equals(Material.WATER) || to.getBlock().getType().equals(Material.STATIONARY_WATER)) && to.getBlock().hasMetadata("classic_block")) ||
+                ((to.getBlock().getRelative(BlockFace.UP).getType().equals(Material.WATER) || to.getBlock().getRelative(BlockFace.UP).getType().equals(Material.STATIONARY_WATER)) &&
+                to.getBlock().getRelative(BlockFace.UP).hasMetadata("classic_block"))) {
                 if(!u.isInWater()) {
                     event.getPlayer().damage(Gamemode.WATER_DAMAGE);
                     u.setInWater(true);

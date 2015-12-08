@@ -97,7 +97,7 @@ public class Flood extends Gamemode {
             globalMessage(ChatColor.DARK_RED + "Here comes the " + (LAVA ? "lava" : "water") + "!");
 
             gameStart = System.currentTimeMillis();
-            Lavasurvival.INSTANCE.getPhysicsHandler().placeClassicBlockAt(getCurrentMap().getLavaSpawnAsLocation(), getMat());
+            Lavasurvival.INSTANCE.getPhysicsHandler().forcePlaceClassicBlockAt(getCurrentMap().getLavaSpawnAsLocation(), getMat());
             duration = Gamemode.RANDOM.nextInt(240000) + 180000;
             objective.setDisplayName("Time Till Round End");
         } else {

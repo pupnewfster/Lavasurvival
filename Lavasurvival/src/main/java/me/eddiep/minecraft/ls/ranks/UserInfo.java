@@ -114,7 +114,7 @@ public class UserInfo {
             if(getPlayer() != null) {
                 ItemStack i = dat.toItemStack(1);
                 ItemMeta im = i.getItemMeta();
-                im.setLore(Arrays.asList("Melt time: " + PhysicsListener.getMeltTime(dat)));
+                im.setLore(Arrays.asList("Melt time: " + PhysicsListener.getMeltTime(dat) + " seconds"));
                 i.setItemMeta(im);
                 getPlayer().getInventory().addItem(i);
             }
@@ -145,7 +145,7 @@ public class UserInfo {
             if(getPlayer() != null) {
                 ItemStack i = dat.toItemStack(1);
                 ItemMeta im = i.getItemMeta();
-                im.setLore(Arrays.asList("Melt time: " + PhysicsListener.getMeltTime(dat)));
+                im.setLore(Arrays.asList("Melt time: " + PhysicsListener.getMeltTime(dat) + " seconds"));
                 i.setItemMeta(im);
                 getPlayer().getInventory().addItem(i);
             }

@@ -26,16 +26,15 @@ public class LavaLogic extends AbstractLogicContainer {
             newBlock = logicFor();
         }
 
-
-
         ClassicPhysicsEvent event = new ClassicPhysicsEvent(location.getBlock(), newBlock, true, location, this);
-        ClassicPhysics.INSTANCE.getServer().getPluginManager().callEvent(event);
+        synchronized (ClassicPhysics.INSTANCE.getServer()) {
+            ClassicPhysics.INSTANCE.getServer().getPluginManager().callEvent(event);
+            if (event.isCancelled())
+                return;
 
-        if (event.isCancelled())
-            return;
-
-        if (newBlock != block.getType()) {
-            placeClassicBlock(newBlock, location);
+            if (newBlock != block.getType()) {
+                placeClassicBlock(newBlock, location);
+            }
         }
     }
 
