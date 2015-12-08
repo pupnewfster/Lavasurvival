@@ -76,7 +76,6 @@ public final class ClassicPhysicsHandler implements Listener {
 
     public ClassicPhysicsHandler(Plugin plugin) {
         this.owner = plugin;
-
         addLogicContainer(new LavaLogic());
         addLogicContainer(new WaterLogic());
     }
@@ -112,9 +111,8 @@ public final class ClassicPhysicsHandler implements Listener {
         if (event.isCancelled())
             return;
 
-        for (LogicContainerHolder holder : logicContainers) {
+        for (LogicContainerHolder holder : logicContainers)
             holder.container.unloadFor(event.getWorld());
-        }
     }
 
     @EventHandler (priority = EventPriority.MONITOR)
@@ -123,14 +121,12 @@ public final class ClassicPhysicsHandler implements Listener {
             return;
 
         if (lplacers.contains(event.getPlayer())) {
-            placeClassicBlockAt(event.getBlockPlaced().getLocation(), Material.LAVA);
+            forcePlaceClassicBlockAt(event.getBlockPlaced().getLocation(), Material.LAVA);
+            event.setCancelled(true);
+        } else if (wplacers.contains(event.getPlayer())) {
+            forcePlaceClassicBlockAt(event.getBlockPlaced().getLocation(), Material.WATER);
             event.setCancelled(true);
         }
-        else if (wplacers.contains(event.getPlayer())) {
-            placeClassicBlockAt(event.getBlockPlaced().getLocation(), Material.WATER);
-            event.setCancelled(true);
-        }
-
         requestUpdateAround(event.getBlock().getLocation());
     }
 
@@ -138,7 +134,6 @@ public final class ClassicPhysicsHandler implements Listener {
     public void onBlockBreak(BlockBreakEvent event) {
         if (ClassicPhysics.TYPE == PhysicsType.DEFAULT)
             return;
-
         requestUpdateAround(event.getBlock().getLocation());
     }
 
@@ -150,24 +145,21 @@ public final class ClassicPhysicsHandler implements Listener {
     }
 
     public void requestUpdateAround(Location location) {
-        for (int x = -1; x <= 1; x++) {
-            for (int y = -1; y <= 1; y++) {
+        for (int x = -1; x <= 1; x++)
+            for (int y = -1; y <= 1; y++)
                 for (int z = -1; z <= 1; z++) {
                     Location newLoc = location.clone().add(x, y, z);
                     if (!newLoc.getBlock().hasMetadata("classic_block"))
                         continue;
-                    for (LogicContainerHolder holder : logicContainers) {
+                    for (LogicContainerHolder holder : logicContainers)
                         holder.container.blockUpdate(newLoc);
-                    }
                 }
-            }
-        }
     }
 
     public void forcePlaceClassicBlockAt(Location location, final Material type) {
         if (location.getWorld() == null)//World isn't loaded
             return;
-        for (LogicContainerHolder holder : logicContainers) {
+        for (LogicContainerHolder holder : logicContainers)
             if (holder.container.doesHandle(type)) {
                 final Block blc = location.getBlock();
                 if (!blc.hasMetadata("classic_block"))
@@ -186,7 +178,6 @@ public final class ClassicPhysicsHandler implements Listener {
                 }
                 break; //TODO Maybe don't break?
             }
-        }
     }
 
     public void placeClassicBlockAt(Location location, final Material type) {
@@ -201,10 +192,9 @@ public final class ClassicPhysicsHandler implements Listener {
     }
 
     public void addLogicContainer(LogicContainer container) {
-        for (LogicContainerHolder holder : logicContainers) {
+        for (LogicContainerHolder holder : logicContainers)
             if (holder.container.equals(container))
                 return;
-        }
         LogicContainerHolder holder = new LogicContainerHolder();
         holder.lastTick = 0;
         holder.container = container;
@@ -234,13 +224,11 @@ public final class ClassicPhysicsHandler implements Listener {
 
     public void setPhysicSpeed(World world, long speed) {
         world.setMetadata("physicsSpeed", new FixedMetadataValue(owner, speed));
-
         owner.getLogger().info("Physic speed in world " + world.getName() + " set to " + speed + "ms!");
     }
 
     public void setPhysicLevel(World world, int level) {
         world.setMetadata("physicsLevel", new FixedMetadataValue(owner, level));
-
         owner.getLogger().info("Physic level in world " + world.getName() + " set to " + level + "!");
     }
 

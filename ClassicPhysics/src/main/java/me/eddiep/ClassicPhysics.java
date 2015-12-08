@@ -19,7 +19,6 @@ public class ClassicPhysics extends JavaPlugin {
     @Override
     public void onEnable() {
         INSTANCE = this;
-
         handler = new ClassicPhysicsHandler(this);
 
         List<World> worlds = getServer().getWorlds();
@@ -45,24 +44,20 @@ public class ClassicPhysics extends JavaPlugin {
                 sender.sendMessage(ChatColor.RED + "You don't have permission to do that!");
                 return true;
             }
-            if (sender instanceof Player) {
-                Player p = (Player)sender;
-                handler.placeClassicBlockAt(p.getLocation(), Material.LAVA);
-            } else {
+            if (sender instanceof Player)
+                handler.forcePlaceClassicBlockAt(((Player) sender).getLocation(), Material.LAVA);
+            else
                 sender.sendMessage("This command can only be used in-game!");
-            }
             return true;
         } else if (cmd.getName().equalsIgnoreCase("pcw")) {
             if (!sender.hasPermission("classicphysics.pcw")) {
                 sender.sendMessage(ChatColor.RED + "You don't have permission to do that!");
                 return true;
             }
-            if (sender instanceof Player) {
-                Player p = (Player)sender;
-                handler.placeClassicBlockAt(p.getLocation(), Material.WATER);
-            } else {
+            if (sender instanceof Player)
+                handler.forcePlaceClassicBlockAt(((Player) sender).getLocation(), Material.WATER);
+            else
                 sender.sendMessage("This command can only be used in-game!");
-            }
             return true;
         } else if (cmd.getName().equalsIgnoreCase("setphysics")) {
             if (!sender.hasPermission("classicphysics.settings")) {
@@ -91,7 +86,6 @@ public class ClassicPhysics extends JavaPlugin {
                 }
 
                 handler.setPhysicSpeed(world, Long.parseLong(args[1]));
-
                 sender.sendMessage(ChatColor.GREEN + "Speed set to " + ChatColor.YELLOW + args[1] + ChatColor.GREEN + "ms!");
             } else if (args[0].equalsIgnoreCase("level")) {
                 if (args.length <= 1)
@@ -113,9 +107,7 @@ public class ClassicPhysics extends JavaPlugin {
                     sender.sendMessage(ChatColor.RED + "Please specify a world!");
                     return true;
                 }
-
                 handler.setPhysicLevel(world, Integer.parseInt(args[1]));
-
                 sender.sendMessage(ChatColor.GREEN + "Level set to " + ChatColor.YELLOW + args[1] + ChatColor.GREEN + "!");
             }
         }

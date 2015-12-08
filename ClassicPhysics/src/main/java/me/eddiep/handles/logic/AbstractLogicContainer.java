@@ -14,11 +14,10 @@ import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedDeque;
 
 public abstract class AbstractLogicContainer implements LogicContainer {
-    private boolean ticking;
-    //new ConcurrentLinkedQueue<>
     private final HashMap<World, Queue<Block>> worldQueues = new HashMap<>();
     private final HashMap<World, List<Block>> worldToAdd = new HashMap<>();
     private final List<World> unloadQueue = new LinkedList<>();
+    private boolean ticking;
 
     @Override
     public synchronized void queueBlock(Block block) {
@@ -38,18 +37,15 @@ public abstract class AbstractLogicContainer implements LogicContainer {
 
         if (ticking) {
             List<Block> toAdd;
-            if (worldToAdd.containsKey(containingWorld)) {
+            if (worldToAdd.containsKey(containingWorld))
                 toAdd = worldToAdd.get(containingWorld);
-            } else {
+            else {
                 toAdd = new LinkedList<>();
                 worldToAdd.put(containingWorld, toAdd);
             }
-
             toAdd.add(block);
-
-        } else {
+        } else
             queue.offer(block);
-        }
     }
 
     @Override
@@ -80,9 +76,8 @@ public abstract class AbstractLogicContainer implements LogicContainer {
         for (World world : worldQueues.keySet()) {
             Queue<Block> queue = worldQueues.get(world);
             List<Block> toAdd = worldToAdd.get(world);
-            if (queue == null || toAdd == null) {
+            if (queue == null || toAdd == null)
                 continue;
-            }
             queue.addAll(toAdd);
         }
         worldToAdd.clear();

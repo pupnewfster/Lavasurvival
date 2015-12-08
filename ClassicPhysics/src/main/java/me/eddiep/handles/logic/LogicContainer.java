@@ -7,7 +7,6 @@ import org.bukkit.World;
 import org.bukkit.block.Block;
 
 public interface LogicContainer {
-
     /**
      * Request a block to be queued for the next logic check
      * @param block The block to queue

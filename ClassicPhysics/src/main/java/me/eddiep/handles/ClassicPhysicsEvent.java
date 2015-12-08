@@ -11,12 +11,11 @@ import org.bukkit.event.HandlerList;
 
 public class ClassicPhysicsEvent extends Event implements Cancellable {
     private static final HandlerList handlers = new HandlerList();
-    private Material newBlock;
-    private Block oldBlock;
-    private boolean cancel;
-    private boolean isClassicEvent;
-    private Location location;
+    private boolean cancel, isClassicEvent;
     private LogicContainer container;
+    private Material newBlock;
+    private Location location;
+    private Block oldBlock;
 
     public ClassicPhysicsEvent(Block oldBlock, Material newBlock, boolean isClassicEvent, Location location, LogicContainer logicContainer) {
         this.oldBlock = oldBlock;
@@ -27,15 +26,15 @@ public class ClassicPhysicsEvent extends Event implements Cancellable {
     }
 
     public LogicContainer getLogicContainer() {
-        return container;
+        return this.container;
     }
 
     public Location getLocation() {
-        return location;
+        return this.location;
     }
 
     public boolean isChanging() {
-        return newBlock != oldBlock.getType();
+        return this.newBlock != this.oldBlock.getType();
     }
 
     public static HandlerList getHandlerList() {
@@ -43,7 +42,7 @@ public class ClassicPhysicsEvent extends Event implements Cancellable {
     }
 
     public Material getNewBlock() {
-        return newBlock;
+        return this.newBlock;
     }
 
     public void setNewBlock(Material block) {
@@ -51,7 +50,7 @@ public class ClassicPhysicsEvent extends Event implements Cancellable {
     }
 
     public Block getOldBlock() {
-        return oldBlock;
+        return this.oldBlock;
     }
 
     public ClassicPhysicsHandler getPhysicsHandler() {
@@ -63,12 +62,12 @@ public class ClassicPhysicsEvent extends Event implements Cancellable {
     }
 
     public boolean isClassicEvent() {
-        return isClassicEvent;
+        return this.isClassicEvent;
     }
 
     @Override
     public boolean isCancelled() {
-        return cancel;
+        return this.cancel;
     }
 
     @Override
