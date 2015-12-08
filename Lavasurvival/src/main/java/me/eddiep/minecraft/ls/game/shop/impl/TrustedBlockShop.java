@@ -1,5 +1,6 @@
 package me.eddiep.minecraft.ls.game.shop.impl;
 
+import com.crossge.necessities.RankManager.RankManager;
 import me.eddiep.minecraft.ls.Lavasurvival;
 import me.eddiep.minecraft.ls.ranks.UserInfo;
 import me.eddiep.minecraft.ls.system.PhysicsListener;
@@ -10,6 +11,7 @@ import net.njay.annotation.MenuInventory;
 import net.njay.annotation.MenuItem;
 import net.njay.annotation.PreProcessor;
 import net.njay.player.MenuPlayer;
+import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
@@ -28,7 +30,7 @@ public class TrustedBlockShop extends Menu {
             item = @ItemStackAnnotation(material = Material.EMERALD, name = "Back to block shop", lore = {"§6§oBuy more blocks!"})
     )
     public void backToMenu(MenuPlayer player) {
-        player.setActiveMenuAndReplace(new BlockShopCatagory(player.getMenuManager(), null, player.getBukkit()), true);
+        player.setActiveMenu(new BlockShopCatagory(player.getMenuManager(), null));
     }
 
     @MenuItem(
@@ -36,7 +38,8 @@ public class TrustedBlockShop extends Menu {
             item = @ItemStackAnnotation(material = Material.FLOWER_POT_ITEM, name = "Flowerpot")
     )
     public void buyFlowerpot(MenuPlayer player) {
-        getUser(player).buyBlock(Material.FLOWER_POT_ITEM, price(Material.FLOWER_POT_ITEM));
+        if (canBuy(player))
+            getUser(player).buyBlock(Material.FLOWER_POT_ITEM, price(Material.FLOWER_POT_ITEM));
     }
 
     @MenuItem(
@@ -44,7 +47,8 @@ public class TrustedBlockShop extends Menu {
             item = @ItemStackAnnotation(material = Material.YELLOW_FLOWER, name = "Dandelion")
     )
     public void buyDandelion(MenuPlayer player) {
-        getUser(player).buyBlock(Material.YELLOW_FLOWER, price(Material.YELLOW_FLOWER));
+        if (canBuy(player))
+            getUser(player).buyBlock(Material.YELLOW_FLOWER, price(Material.YELLOW_FLOWER));
     }
 
     @MenuItem(
@@ -52,7 +56,8 @@ public class TrustedBlockShop extends Menu {
             item = @ItemStackAnnotation(material = Material.RED_ROSE, name = "Poppy")
     )
     public void buyPoppy(MenuPlayer player) {
-        getUser(player).buyBlock(Material.RED_ROSE, price(Material.RED_ROSE));
+        if (canBuy(player))
+            getUser(player).buyBlock(Material.RED_ROSE, price(Material.RED_ROSE));
     }
 
     @MenuItem(
@@ -60,7 +65,8 @@ public class TrustedBlockShop extends Menu {
             item = @ItemStackAnnotation(material = Material.WOOD_DOOR, name = "Wooden door")
     )
     public void buyWoodDoor(MenuPlayer player) {
-        getUser(player).buyBlock(Material.WOOD_DOOR, price(Material.WOOD_DOOR));
+        if (canBuy(player))
+            getUser(player).buyBlock(Material.WOOD_DOOR, price(Material.WOOD_DOOR));
     }
 
     @MenuItem(
@@ -68,7 +74,8 @@ public class TrustedBlockShop extends Menu {
             item = @ItemStackAnnotation(material = Material.BOOKSHELF, name = "Bookshelf")
     )
     public void buyBookshelf(MenuPlayer player) {
-        getUser(player).buyBlock(Material.BOOKSHELF, price(Material.BOOKSHELF));
+        if (canBuy(player))
+            getUser(player).buyBlock(Material.BOOKSHELF, price(Material.BOOKSHELF));
     }
 
     @MenuItem(
@@ -76,7 +83,8 @@ public class TrustedBlockShop extends Menu {
             item = @ItemStackAnnotation(material = Material.FENCE, name = "Fence")
     )
     public void buyFence(MenuPlayer player) {
-        getUser(player).buyBlock(Material.FENCE, price(Material.FENCE));
+        if (canBuy(player))
+            getUser(player).buyBlock(Material.FENCE, price(Material.FENCE));
     }
 
     @MenuItem(
@@ -84,7 +92,8 @@ public class TrustedBlockShop extends Menu {
             item = @ItemStackAnnotation(material = Material.WOOD_STAIRS, name = "Oak stairs")
     )
     public void buyOakStairs(MenuPlayer player) {
-        getUser(player).buyBlock(Material.WOOD_STAIRS, price(Material.WOOD_STAIRS));
+        if (canBuy(player))
+            getUser(player).buyBlock(Material.WOOD_STAIRS, price(Material.WOOD_STAIRS));
     }
 
     @MenuItem(
@@ -92,7 +101,8 @@ public class TrustedBlockShop extends Menu {
             item = @ItemStackAnnotation(material = Material.COBBLESTONE_STAIRS, name = "Cobblestone stairs")
     )
     public void buyCobbleStairs(MenuPlayer player) {
-        getUser(player).buyBlock(Material.COBBLESTONE_STAIRS, price(Material.COBBLESTONE_STAIRS));
+        if (canBuy(player))
+            getUser(player).buyBlock(Material.COBBLESTONE_STAIRS, price(Material.COBBLESTONE_STAIRS));
     }
 
     @MenuItem(
@@ -100,7 +110,8 @@ public class TrustedBlockShop extends Menu {
             item = @ItemStackAnnotation(material = Material.BRICK_STAIRS, name = "Brick stairs")
     )
     public void buyBrickStairs(MenuPlayer player) {
-        getUser(player).buyBlock(Material.BRICK_STAIRS, price(Material.BRICK_STAIRS));
+        if (canBuy(player))
+            getUser(player).buyBlock(Material.BRICK_STAIRS, price(Material.BRICK_STAIRS));
     }
 
     @MenuItem(
@@ -108,7 +119,8 @@ public class TrustedBlockShop extends Menu {
             item = @ItemStackAnnotation(material = Material.SMOOTH_STAIRS, name = "Stone brick stairs")
     )
     public void buyStoneBrickStairs(MenuPlayer player) {
-        getUser(player).buyBlock(Material.SMOOTH_STAIRS, price(Material.SMOOTH_STAIRS));
+        if (canBuy(player))
+            getUser(player).buyBlock(Material.SMOOTH_STAIRS, price(Material.SMOOTH_STAIRS));
     }
 
     @MenuItem(
@@ -116,7 +128,8 @@ public class TrustedBlockShop extends Menu {
             item = @ItemStackAnnotation(material = Material.SANDSTONE_STAIRS, name = "Sandstone stairs")
     )
     public void buySandstoneStairs(MenuPlayer player) {
-        getUser(player).buyBlock(Material.SANDSTONE_STAIRS, price(Material.SANDSTONE_STAIRS));
+        if (canBuy(player))
+            getUser(player).buyBlock(Material.SANDSTONE_STAIRS, price(Material.SANDSTONE_STAIRS));
     }
 
     @MenuItem(
@@ -124,7 +137,8 @@ public class TrustedBlockShop extends Menu {
             item = @ItemStackAnnotation(material = Material.SPRUCE_WOOD_STAIRS, name = "Spruce stairs")
     )
     public void buySpruceStairs(MenuPlayer player) {
-        getUser(player).buyBlock(Material.SPRUCE_WOOD_STAIRS, price(Material.SPRUCE_WOOD_STAIRS));
+        if (canBuy(player))
+            getUser(player).buyBlock(Material.SPRUCE_WOOD_STAIRS, price(Material.SPRUCE_WOOD_STAIRS));
     }
 
     @MenuItem(
@@ -132,7 +146,8 @@ public class TrustedBlockShop extends Menu {
             item = @ItemStackAnnotation(material = Material.BIRCH_WOOD_STAIRS, name = "Birch stairs")
     )
     public void buyBirchStairs(MenuPlayer player) {
-        getUser(player).buyBlock(Material.BIRCH_WOOD_STAIRS, price(Material.BIRCH_WOOD_STAIRS));
+        if (canBuy(player))
+            getUser(player).buyBlock(Material.BIRCH_WOOD_STAIRS, price(Material.BIRCH_WOOD_STAIRS));
     }
 
     @MenuItem(
@@ -140,7 +155,8 @@ public class TrustedBlockShop extends Menu {
             item = @ItemStackAnnotation(material = Material.JUNGLE_WOOD_STAIRS, name = "Jungle stairs")
     )
     public void buyJungleStairs(MenuPlayer player) {
-        getUser(player).buyBlock(Material.JUNGLE_WOOD_STAIRS, price(Material.JUNGLE_WOOD_STAIRS));
+        if (canBuy(player))
+            getUser(player).buyBlock(Material.JUNGLE_WOOD_STAIRS, price(Material.JUNGLE_WOOD_STAIRS));
     }
 
     @MenuItem(
@@ -148,7 +164,8 @@ public class TrustedBlockShop extends Menu {
             item = @ItemStackAnnotation(material = Material.QUARTZ_STAIRS, name = "Quartz stairs")
     )
     public void buyQuartzStairs(MenuPlayer player) {
-        getUser(player).buyBlock(Material.QUARTZ_STAIRS, price(Material.QUARTZ_STAIRS));
+        if (canBuy(player))
+            getUser(player).buyBlock(Material.QUARTZ_STAIRS, price(Material.QUARTZ_STAIRS));
     }
 
     @MenuItem(
@@ -156,7 +173,8 @@ public class TrustedBlockShop extends Menu {
             item = @ItemStackAnnotation(material = Material.ACACIA_STAIRS, name = "Acacia stairs")
     )
     public void buyAcaciaStairs(MenuPlayer player) {
-        getUser(player).buyBlock(Material.ACACIA_STAIRS, price(Material.ACACIA_STAIRS));
+        if (canBuy(player))
+            getUser(player).buyBlock(Material.ACACIA_STAIRS, price(Material.ACACIA_STAIRS));
     }
 
     @MenuItem(
@@ -164,7 +182,8 @@ public class TrustedBlockShop extends Menu {
             item = @ItemStackAnnotation(material = Material.DARK_OAK_STAIRS, name = "Dark oak stairs")
     )
     public void buyDarkOakStairs(MenuPlayer player) {
-        getUser(player).buyBlock(Material.DARK_OAK_STAIRS, price(Material.DARK_OAK_STAIRS));
+        if (canBuy(player))
+            getUser(player).buyBlock(Material.DARK_OAK_STAIRS, price(Material.DARK_OAK_STAIRS));
     }
 
     @MenuItem(
@@ -172,7 +191,8 @@ public class TrustedBlockShop extends Menu {
             item = @ItemStackAnnotation(material = Material.COBBLE_WALL, durability = 0, name = "Cobblestone wall")
     )
     public void buyCobbleWall(MenuPlayer player) {
-        getUser(player).buyBlock(Material.COBBLE_WALL, price(Material.COBBLE_WALL), (byte) 0);
+        if (canBuy(player))
+            getUser(player).buyBlock(Material.COBBLE_WALL, price(Material.COBBLE_WALL), (byte) 0);
     }
 
     @MenuItem(
@@ -180,7 +200,8 @@ public class TrustedBlockShop extends Menu {
             item = @ItemStackAnnotation(material = Material.COBBLE_WALL, durability = 1, name = "Mossy cobblestone wall")
     )
     public void buyMossyCobbleWall(MenuPlayer player) {
-        getUser(player).buyBlock(Material.COBBLE_WALL, price(Material.COBBLE_WALL), (byte) 1);
+        if (canBuy(player))
+            getUser(player).buyBlock(Material.COBBLE_WALL, price(Material.COBBLE_WALL), (byte) 1);
     }
 
     @MenuItem(
@@ -188,7 +209,8 @@ public class TrustedBlockShop extends Menu {
             item = @ItemStackAnnotation(material = Material.STAINED_GLASS, durability = 0, name = "White stained glass")
     )
     public void buyWhiteGlass(MenuPlayer player) {
-        getUser(player).buyBlock(Material.STAINED_GLASS, price(Material.STAINED_GLASS), (byte) 0);
+        if (canBuy(player))
+            getUser(player).buyBlock(Material.STAINED_GLASS, price(Material.STAINED_GLASS), (byte) 0);
     }
 
     @MenuItem(
@@ -196,7 +218,8 @@ public class TrustedBlockShop extends Menu {
             item = @ItemStackAnnotation(material = Material.STAINED_GLASS, durability = 1, name = "Orange stained glass")
     )
     public void buyOrangeGlass(MenuPlayer player) {
-        getUser(player).buyBlock(Material.STAINED_GLASS, price(Material.STAINED_GLASS), (byte) 1);
+        if (canBuy(player))
+            getUser(player).buyBlock(Material.STAINED_GLASS, price(Material.STAINED_GLASS), (byte) 1);
     }
 
     @MenuItem(
@@ -204,7 +227,8 @@ public class TrustedBlockShop extends Menu {
             item = @ItemStackAnnotation(material = Material.STAINED_GLASS, durability = 2, name = "Magenta stained glass")
     )
     public void buyMagentaGlass(MenuPlayer player) {
-        getUser(player).buyBlock(Material.STAINED_GLASS, price(Material.STAINED_GLASS), (byte) 2);
+        if (canBuy(player))
+            getUser(player).buyBlock(Material.STAINED_GLASS, price(Material.STAINED_GLASS), (byte) 2);
     }
 
     @MenuItem(
@@ -212,7 +236,8 @@ public class TrustedBlockShop extends Menu {
             item = @ItemStackAnnotation(material = Material.STAINED_GLASS, durability = 3, name = "Light blue stained glass")
     )
     public void buyLightBlueGlass(MenuPlayer player) {
-        getUser(player).buyBlock(Material.STAINED_GLASS, price(Material.STAINED_GLASS), (byte) 3);
+        if (canBuy(player))
+            getUser(player).buyBlock(Material.STAINED_GLASS, price(Material.STAINED_GLASS), (byte) 3);
     }
 
     @MenuItem(
@@ -220,7 +245,8 @@ public class TrustedBlockShop extends Menu {
             item = @ItemStackAnnotation(material = Material.STAINED_GLASS, durability = 4, name = "Yellow stained glass")
     )
     public void buyYellowGlass(MenuPlayer player) {
-        getUser(player).buyBlock(Material.STAINED_GLASS, price(Material.STAINED_GLASS), (byte) 4);
+        if (canBuy(player))
+            getUser(player).buyBlock(Material.STAINED_GLASS, price(Material.STAINED_GLASS), (byte) 4);
     }
 
     @MenuItem(
@@ -228,7 +254,8 @@ public class TrustedBlockShop extends Menu {
             item = @ItemStackAnnotation(material = Material.STAINED_GLASS, durability = 5, name = "Lime stained glass")
     )
     public void buyLimeGlass(MenuPlayer player) {
-        getUser(player).buyBlock(Material.STAINED_GLASS, price(Material.STAINED_GLASS), (byte) 5);
+        if (canBuy(player))
+            getUser(player).buyBlock(Material.STAINED_GLASS, price(Material.STAINED_GLASS), (byte) 5);
     }
 
     @MenuItem(
@@ -236,7 +263,8 @@ public class TrustedBlockShop extends Menu {
             item = @ItemStackAnnotation(material = Material.STAINED_GLASS, durability = 6, name = "Pink stained glass")
     )
     public void buyPinkGlass(MenuPlayer player) {
-        getUser(player).buyBlock(Material.STAINED_GLASS, price(Material.STAINED_GLASS), (byte) 6);
+        if (canBuy(player))
+            getUser(player).buyBlock(Material.STAINED_GLASS, price(Material.STAINED_GLASS), (byte) 6);
     }
 
     @MenuItem(
@@ -244,7 +272,8 @@ public class TrustedBlockShop extends Menu {
             item = @ItemStackAnnotation(material = Material.STAINED_GLASS, durability = 7, name = "Gray stained glass")
     )
     public void buyGrayGlass(MenuPlayer player) {
-        getUser(player).buyBlock(Material.STAINED_GLASS, price(Material.STAINED_GLASS), (byte) 7);
+        if (canBuy(player))
+            getUser(player).buyBlock(Material.STAINED_GLASS, price(Material.STAINED_GLASS), (byte) 7);
     }
 
     @MenuItem(
@@ -252,7 +281,8 @@ public class TrustedBlockShop extends Menu {
             item = @ItemStackAnnotation(material = Material.STAINED_GLASS, durability = 8, name = "Light gray stained glass")
     )
     public void buyLightGrayGlass(MenuPlayer player) {
-        getUser(player).buyBlock(Material.STAINED_GLASS, price(Material.STAINED_GLASS), (byte) 8);
+        if (canBuy(player))
+            getUser(player).buyBlock(Material.STAINED_GLASS, price(Material.STAINED_GLASS), (byte) 8);
     }
 
     @MenuItem(
@@ -260,7 +290,8 @@ public class TrustedBlockShop extends Menu {
             item = @ItemStackAnnotation(material = Material.STAINED_GLASS, durability = 9, name = "Cyan stained glass")
     )
     public void buyCyanGlass(MenuPlayer player) {
-        getUser(player).buyBlock(Material.STAINED_GLASS, price(Material.STAINED_GLASS), (byte) 9);
+        if (canBuy(player))
+            getUser(player).buyBlock(Material.STAINED_GLASS, price(Material.STAINED_GLASS), (byte) 9);
     }
 
     @MenuItem(
@@ -268,7 +299,8 @@ public class TrustedBlockShop extends Menu {
             item = @ItemStackAnnotation(material = Material.STAINED_GLASS, durability = 10, name = "Purple stained glass")
     )
     public void buyPurpleGlass(MenuPlayer player) {
-        getUser(player).buyBlock(Material.STAINED_GLASS, price(Material.STAINED_GLASS), (byte) 10);
+        if (canBuy(player))
+            getUser(player).buyBlock(Material.STAINED_GLASS, price(Material.STAINED_GLASS), (byte) 10);
     }
 
     @MenuItem(
@@ -276,7 +308,8 @@ public class TrustedBlockShop extends Menu {
             item = @ItemStackAnnotation(material = Material.STAINED_GLASS, durability = 11, name = "Blue stained glass")
     )
     public void buyBlueGlass(MenuPlayer player) {
-        getUser(player).buyBlock(Material.STAINED_GLASS, price(Material.STAINED_GLASS), (byte) 11);
+        if (canBuy(player))
+            getUser(player).buyBlock(Material.STAINED_GLASS, price(Material.STAINED_GLASS), (byte) 11);
     }
 
     @MenuItem(
@@ -284,7 +317,8 @@ public class TrustedBlockShop extends Menu {
             item = @ItemStackAnnotation(material = Material.STAINED_GLASS, durability = 12, name = "Brown staied glass")
     )
     public void buyBrownGlass(MenuPlayer player) {
-        getUser(player).buyBlock(Material.STAINED_GLASS, price(Material.STAINED_GLASS), (byte) 12);
+        if (canBuy(player))
+            getUser(player).buyBlock(Material.STAINED_GLASS, price(Material.STAINED_GLASS), (byte) 12);
     }
 
     @MenuItem(
@@ -292,7 +326,8 @@ public class TrustedBlockShop extends Menu {
             item = @ItemStackAnnotation(material = Material.STAINED_GLASS, durability = 13, name = "Green stained glass")
     )
     public void buyGreenGlass(MenuPlayer player) {
-        getUser(player).buyBlock(Material.STAINED_GLASS, price(Material.STAINED_GLASS), (byte) 13);
+        if (canBuy(player))
+            getUser(player).buyBlock(Material.STAINED_GLASS, price(Material.STAINED_GLASS), (byte) 13);
     }
 
     @MenuItem(
@@ -300,7 +335,8 @@ public class TrustedBlockShop extends Menu {
             item = @ItemStackAnnotation(material = Material.STAINED_GLASS, durability = 14, name = "Red stained glass")
     )
     public void buyRedGlass(MenuPlayer player) {
-        getUser(player).buyBlock(Material.STAINED_GLASS, price(Material.STAINED_GLASS), (byte) 14);
+        if (canBuy(player))
+            getUser(player).buyBlock(Material.STAINED_GLASS, price(Material.STAINED_GLASS), (byte) 14);
     }
 
     @MenuItem(
@@ -308,7 +344,8 @@ public class TrustedBlockShop extends Menu {
             item = @ItemStackAnnotation(material = Material.STAINED_GLASS, durability = 15, name = "Black stained glass")
     )
     public void buyBlackGlass(MenuPlayer player) {
-        getUser(player).buyBlock(Material.STAINED_GLASS, price(Material.STAINED_GLASS), (byte) 15);
+        if (canBuy(player))
+            getUser(player).buyBlock(Material.STAINED_GLASS, price(Material.STAINED_GLASS), (byte) 15);
     }
 
     @MenuItem(
@@ -316,7 +353,8 @@ public class TrustedBlockShop extends Menu {
             item = @ItemStackAnnotation(material = Material.STAINED_GLASS_PANE, durability = 0, name = "White stained glass pane")
     )
     public void buyWhiteGlassPane(MenuPlayer player) {
-        getUser(player).buyBlock(Material.STAINED_GLASS_PANE, price(Material.STAINED_GLASS_PANE), (byte) 0);
+        if (canBuy(player))
+            getUser(player).buyBlock(Material.STAINED_GLASS_PANE, price(Material.STAINED_GLASS_PANE), (byte) 0);
     }
 
     @MenuItem(
@@ -324,7 +362,8 @@ public class TrustedBlockShop extends Menu {
             item = @ItemStackAnnotation(material = Material.STAINED_GLASS_PANE, durability = 1, name = "Orange stained glass pane")
     )
     public void buyOrangeGlassPane(MenuPlayer player) {
-        getUser(player).buyBlock(Material.STAINED_GLASS_PANE, price(Material.STAINED_GLASS_PANE), (byte) 1);
+        if (canBuy(player))
+            getUser(player).buyBlock(Material.STAINED_GLASS_PANE, price(Material.STAINED_GLASS_PANE), (byte) 1);
     }
 
     @MenuItem(
@@ -332,7 +371,8 @@ public class TrustedBlockShop extends Menu {
             item = @ItemStackAnnotation(material = Material.STAINED_GLASS_PANE, durability = 2, name = "Magenta stained glass pane")
     )
     public void buyMagentaGlassPane(MenuPlayer player) {
-        getUser(player).buyBlock(Material.STAINED_GLASS_PANE, price(Material.STAINED_GLASS_PANE), (byte) 2);
+        if (canBuy(player))
+            getUser(player).buyBlock(Material.STAINED_GLASS_PANE, price(Material.STAINED_GLASS_PANE), (byte) 2);
     }
 
     @MenuItem(
@@ -340,7 +380,8 @@ public class TrustedBlockShop extends Menu {
             item = @ItemStackAnnotation(material = Material.STAINED_GLASS_PANE, durability = 3, name = "Light blue stained glass pane")
     )
     public void buyLightBlueGlassPane(MenuPlayer player) {
-        getUser(player).buyBlock(Material.STAINED_GLASS_PANE, price(Material.STAINED_GLASS_PANE), (byte) 3);
+        if (canBuy(player))
+            getUser(player).buyBlock(Material.STAINED_GLASS_PANE, price(Material.STAINED_GLASS_PANE), (byte) 3);
     }
 
     @MenuItem(
@@ -348,7 +389,8 @@ public class TrustedBlockShop extends Menu {
             item = @ItemStackAnnotation(material = Material.STAINED_GLASS_PANE, durability = 4, name = "Yellow stained glass pane")
     )
     public void buyYellowGlassPane(MenuPlayer player) {
-        getUser(player).buyBlock(Material.STAINED_GLASS_PANE, price(Material.STAINED_GLASS_PANE), (byte) 4);
+        if (canBuy(player))
+            getUser(player).buyBlock(Material.STAINED_GLASS_PANE, price(Material.STAINED_GLASS_PANE), (byte) 4);
     }
 
     @MenuItem(
@@ -356,7 +398,8 @@ public class TrustedBlockShop extends Menu {
             item = @ItemStackAnnotation(material = Material.STAINED_GLASS_PANE, durability = 5, name = "Lime stained glass pane")
     )
     public void buyLimeGlassPane(MenuPlayer player) {
-        getUser(player).buyBlock(Material.STAINED_GLASS_PANE, price(Material.STAINED_GLASS_PANE), (byte) 5);
+        if (canBuy(player))
+            getUser(player).buyBlock(Material.STAINED_GLASS_PANE, price(Material.STAINED_GLASS_PANE), (byte) 5);
     }
 
     @MenuItem(
@@ -364,7 +407,8 @@ public class TrustedBlockShop extends Menu {
             item = @ItemStackAnnotation(material = Material.STAINED_GLASS_PANE, durability = 6, name = "Pink stained glass pane")
     )
     public void buyPinkGlassPane(MenuPlayer player) {
-        getUser(player).buyBlock(Material.STAINED_GLASS_PANE, price(Material.STAINED_GLASS_PANE), (byte) 6);
+        if (canBuy(player))
+            getUser(player).buyBlock(Material.STAINED_GLASS_PANE, price(Material.STAINED_GLASS_PANE), (byte) 6);
     }
 
     @MenuItem(
@@ -372,7 +416,8 @@ public class TrustedBlockShop extends Menu {
             item = @ItemStackAnnotation(material = Material.STAINED_GLASS_PANE, durability = 7, name = "Gray stained glass pane")
     )
     public void buyGrayGlassPane(MenuPlayer player) {
-        getUser(player).buyBlock(Material.STAINED_GLASS_PANE, price(Material.STAINED_GLASS_PANE), (byte) 7);
+        if (canBuy(player))
+            getUser(player).buyBlock(Material.STAINED_GLASS_PANE, price(Material.STAINED_GLASS_PANE), (byte) 7);
     }
 
     @MenuItem(
@@ -380,7 +425,8 @@ public class TrustedBlockShop extends Menu {
             item = @ItemStackAnnotation(material = Material.STAINED_GLASS_PANE, durability = 8, name = "Light gray stained glass pane")
     )
     public void buyLightGrayGlassPane(MenuPlayer player) {
-        getUser(player).buyBlock(Material.STAINED_GLASS_PANE, price(Material.STAINED_GLASS_PANE), (byte) 8);
+        if (canBuy(player))
+            getUser(player).buyBlock(Material.STAINED_GLASS_PANE, price(Material.STAINED_GLASS_PANE), (byte) 8);
     }
 
     @MenuItem(
@@ -388,7 +434,8 @@ public class TrustedBlockShop extends Menu {
             item = @ItemStackAnnotation(material = Material.STAINED_GLASS_PANE, durability = 9, name = "Cyan stained glass pane")
     )
     public void buyCyanGlassPane(MenuPlayer player) {
-        getUser(player).buyBlock(Material.STAINED_GLASS_PANE, price(Material.STAINED_GLASS_PANE), (byte) 9);
+        if (canBuy(player))
+            getUser(player).buyBlock(Material.STAINED_GLASS_PANE, price(Material.STAINED_GLASS_PANE), (byte) 9);
     }
 
     @MenuItem(
@@ -396,7 +443,8 @@ public class TrustedBlockShop extends Menu {
             item = @ItemStackAnnotation(material = Material.STAINED_GLASS_PANE, durability = 10, name = "Purple stained glass pane")
     )
     public void buyPurpleGlassPane(MenuPlayer player) {
-        getUser(player).buyBlock(Material.STAINED_GLASS_PANE, price(Material.STAINED_GLASS_PANE), (byte) 10);
+        if (canBuy(player))
+            getUser(player).buyBlock(Material.STAINED_GLASS_PANE, price(Material.STAINED_GLASS_PANE), (byte) 10);
     }
 
     @MenuItem(
@@ -404,7 +452,8 @@ public class TrustedBlockShop extends Menu {
             item = @ItemStackAnnotation(material = Material.STAINED_GLASS_PANE, durability = 11, name = "Blue stained glass pane")
     )
     public void buyBlueGlassPane(MenuPlayer player) {
-        getUser(player).buyBlock(Material.STAINED_GLASS_PANE, price(Material.STAINED_GLASS_PANE), (byte) 11);
+        if (canBuy(player))
+            getUser(player).buyBlock(Material.STAINED_GLASS_PANE, price(Material.STAINED_GLASS_PANE), (byte) 11);
     }
 
     @MenuItem(
@@ -412,7 +461,8 @@ public class TrustedBlockShop extends Menu {
             item = @ItemStackAnnotation(material = Material.STAINED_GLASS_PANE, durability = 12, name = "Brown staied glass pane")
     )
     public void buyBrownGlassPane(MenuPlayer player) {
-        getUser(player).buyBlock(Material.STAINED_GLASS_PANE, price(Material.STAINED_GLASS_PANE), (byte) 12);
+        if (canBuy(player))
+            getUser(player).buyBlock(Material.STAINED_GLASS_PANE, price(Material.STAINED_GLASS_PANE), (byte) 12);
     }
 
     @MenuItem(
@@ -420,7 +470,8 @@ public class TrustedBlockShop extends Menu {
             item = @ItemStackAnnotation(material = Material.STAINED_GLASS_PANE, durability = 13, name = "Green stained glass pane")
     )
     public void buyGreenGlassPane(MenuPlayer player) {
-        getUser(player).buyBlock(Material.STAINED_GLASS_PANE, price(Material.STAINED_GLASS_PANE), (byte) 13);
+        if (canBuy(player))
+            getUser(player).buyBlock(Material.STAINED_GLASS_PANE, price(Material.STAINED_GLASS_PANE), (byte) 13);
     }
 
     @MenuItem(
@@ -428,7 +479,8 @@ public class TrustedBlockShop extends Menu {
             item = @ItemStackAnnotation(material = Material.STAINED_GLASS_PANE, durability = 14, name = "Red stained glass pane")
     )
     public void buyRedGlassPane(MenuPlayer player) {
-        getUser(player).buyBlock(Material.STAINED_GLASS_PANE, price(Material.STAINED_GLASS_PANE), (byte) 14);
+        if (canBuy(player))
+            getUser(player).buyBlock(Material.STAINED_GLASS_PANE, price(Material.STAINED_GLASS_PANE), (byte) 14);
     }
 
     @MenuItem(
@@ -436,11 +488,24 @@ public class TrustedBlockShop extends Menu {
             item = @ItemStackAnnotation(material = Material.STAINED_GLASS_PANE, durability = 15, name = "Black stained glass pane")
     )
     public void buyBlackGlassPane(MenuPlayer player) {
-        getUser(player).buyBlock(Material.STAINED_GLASS_PANE, price(Material.STAINED_GLASS_PANE), (byte) 15);
+        if (canBuy(player))
+            getUser(player).buyBlock(Material.STAINED_GLASS_PANE, price(Material.STAINED_GLASS_PANE), (byte) 15);
     }
 
     private UserInfo getUser(MenuPlayer player) {
         return Lavasurvival.INSTANCE.getUserManager().getUser(player.getBukkit().getUniqueId());
+    }
+
+    private boolean canBuy(MenuPlayer player) {
+        if (player == null || player.getBukkit() == null)
+            return false;
+        RankManager rm = Lavasurvival.INSTANCE.getRankManager();
+        if (rm.hasRank(Lavasurvival.INSTANCE.getNecessitiesUserManager().getUser(player.getBukkit().getUniqueId()).getRank(), rm.getRank("Trusted")))
+            return true;
+        else {
+            player.getBukkit().sendMessage(ChatColor.RED + "You must be Trusted or higher to purchase from this shop.");
+            return false;
+        }
     }
 
     @PreProcessor

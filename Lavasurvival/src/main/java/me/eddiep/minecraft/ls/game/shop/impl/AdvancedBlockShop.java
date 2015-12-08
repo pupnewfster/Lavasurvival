@@ -1,5 +1,6 @@
 package me.eddiep.minecraft.ls.game.shop.impl;
 
+import com.crossge.necessities.RankManager.RankManager;
 import me.eddiep.minecraft.ls.Lavasurvival;
 import me.eddiep.minecraft.ls.ranks.UserInfo;
 import me.eddiep.minecraft.ls.system.PhysicsListener;
@@ -10,6 +11,7 @@ import net.njay.annotation.MenuInventory;
 import net.njay.annotation.MenuItem;
 import net.njay.annotation.PreProcessor;
 import net.njay.player.MenuPlayer;
+import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
@@ -28,7 +30,7 @@ public class AdvancedBlockShop extends Menu {
             item = @ItemStackAnnotation(material = Material.EMERALD, name = "Back to block shop", lore = {"§6§oBuy more blocks!"})
     )
     public void backToMenu(MenuPlayer player) {
-        player.setActiveMenuAndReplace(new BlockShopCatagory(player.getMenuManager(), null, player.getBukkit()), true);
+        player.setActiveMenu(new BlockShopCatagory(player.getMenuManager(), null));
     }
 
     @MenuItem(
@@ -36,7 +38,8 @@ public class AdvancedBlockShop extends Menu {
             item = @ItemStackAnnotation(material = Material.STEP, durability = 0, name = "Stone slab")
     )
     public void buyStoneSlab(MenuPlayer player) {
-        getUser(player).buyBlock(Material.STEP, price(Material.STEP), (byte) 0);
+        if (canBuy(player))
+            getUser(player).buyBlock(Material.STEP, price(Material.STEP), (byte) 0);
     }
 
     @MenuItem(
@@ -44,7 +47,8 @@ public class AdvancedBlockShop extends Menu {
             item = @ItemStackAnnotation(material = Material.STEP, durability = 1, name = "Sandstone slab")
     )
     public void buySandstoneSlab(MenuPlayer player) {
-        getUser(player).buyBlock(Material.STEP, price(Material.STEP), (byte) 1);
+        if (canBuy(player))
+            getUser(player).buyBlock(Material.STEP, price(Material.STEP), (byte) 1);
     }
 
     @MenuItem(
@@ -52,7 +56,8 @@ public class AdvancedBlockShop extends Menu {
             item = @ItemStackAnnotation(material = Material.STEP, durability = 3, name = "Cobblestone slab")
     )
     public void buyCobbleSlab(MenuPlayer player) {
-        getUser(player).buyBlock(Material.STEP, price(Material.STEP), (byte) 3);
+        if (canBuy(player))
+            getUser(player).buyBlock(Material.STEP, price(Material.STEP), (byte) 3);
     }
 
     @MenuItem(
@@ -60,7 +65,8 @@ public class AdvancedBlockShop extends Menu {
             item = @ItemStackAnnotation(material = Material.STEP, durability = 4, name = "Brick slab")
     )
     public void buyBrickSlab(MenuPlayer player) {
-        getUser(player).buyBlock(Material.STEP, price(Material.STEP), (byte) 4);
+        if (canBuy(player))
+            getUser(player).buyBlock(Material.STEP, price(Material.STEP), (byte) 4);
     }
 
     @MenuItem(
@@ -68,7 +74,8 @@ public class AdvancedBlockShop extends Menu {
             item = @ItemStackAnnotation(material = Material.STEP, durability = 5, name = "Stone brick slab")
     )
     public void buyStonebrickSlab(MenuPlayer player) {
-        getUser(player).buyBlock(Material.STEP, price(Material.STEP), (byte) 5);
+        if (canBuy(player))
+            getUser(player).buyBlock(Material.STEP, price(Material.STEP), (byte) 5);
     }
 
     @MenuItem(
@@ -76,7 +83,8 @@ public class AdvancedBlockShop extends Menu {
             item = @ItemStackAnnotation(material = Material.STEP, durability = 7, name = "Quartz slab")
     )
     public void buyQuartzSlab(MenuPlayer player) {
-        getUser(player).buyBlock(Material.STEP, price(Material.STEP), (byte) 7);
+        if (canBuy(player))
+            getUser(player).buyBlock(Material.STEP, price(Material.STEP), (byte) 7);
     }
 
     @MenuItem(
@@ -84,7 +92,8 @@ public class AdvancedBlockShop extends Menu {
             item = @ItemStackAnnotation(material = Material.WOOD_STEP, durability = 0, name = "Oak slab")
     )
     public void buyOakSlab(MenuPlayer player) {
-        getUser(player).buyBlock(Material.WOOD_STEP, price(Material.WOOD_STEP), (byte) 0);
+        if (canBuy(player))
+            getUser(player).buyBlock(Material.WOOD_STEP, price(Material.WOOD_STEP), (byte) 0);
     }
 
     @MenuItem(
@@ -92,7 +101,8 @@ public class AdvancedBlockShop extends Menu {
             item = @ItemStackAnnotation(material = Material.WOOD_STEP, durability = 1, name = "Spruce slab")
     )
     public void buySpruceSlab(MenuPlayer player) {
-        getUser(player).buyBlock(Material.WOOD_STEP, price(Material.WOOD_STEP), (byte) 1);
+        if (canBuy(player))
+            getUser(player).buyBlock(Material.WOOD_STEP, price(Material.WOOD_STEP), (byte) 1);
     }
 
     @MenuItem(
@@ -100,7 +110,8 @@ public class AdvancedBlockShop extends Menu {
             item = @ItemStackAnnotation(material = Material.WOOD_STEP, durability = 2, name = "Birch slab")
     )
     public void buyBirchSlab(MenuPlayer player) {
-        getUser(player).buyBlock(Material.WOOD_STEP, price(Material.WOOD_STEP), (byte) 2);
+        if (canBuy(player))
+            getUser(player).buyBlock(Material.WOOD_STEP, price(Material.WOOD_STEP), (byte) 2);
     }
 
     @MenuItem(
@@ -108,7 +119,8 @@ public class AdvancedBlockShop extends Menu {
             item = @ItemStackAnnotation(material = Material.WOOD_STEP, durability = 3, name = "Jungle slab")
     )
     public void buyJungleSlab(MenuPlayer player) {
-        getUser(player).buyBlock(Material.WOOD_STEP, price(Material.WOOD_STEP), (byte) 3);
+        if (canBuy(player))
+            getUser(player).buyBlock(Material.WOOD_STEP, price(Material.WOOD_STEP), (byte) 3);
     }
 
     @MenuItem(
@@ -116,7 +128,8 @@ public class AdvancedBlockShop extends Menu {
             item = @ItemStackAnnotation(material = Material.WOOD_STEP, durability = 4, name = "Acacia slab")
     )
     public void buyAcaciaSlab(MenuPlayer player) {
-        getUser(player).buyBlock(Material.WOOD_STEP, price(Material.WOOD_STEP), (byte) 4);
+        if (canBuy(player))
+            getUser(player).buyBlock(Material.WOOD_STEP, price(Material.WOOD_STEP), (byte) 4);
     }
 
     @MenuItem(
@@ -124,7 +137,8 @@ public class AdvancedBlockShop extends Menu {
             item = @ItemStackAnnotation(material = Material.WOOD_STEP, durability = 5, name = "Dark oak slab")
     )
     public void buyDarkOakSlab(MenuPlayer player) {
-        getUser(player).buyBlock(Material.WOOD_STEP, price(Material.WOOD_STEP), (byte) 5);
+        if (canBuy(player))
+            getUser(player).buyBlock(Material.WOOD_STEP, price(Material.WOOD_STEP), (byte) 5);
     }
 
     @MenuItem(
@@ -132,7 +146,8 @@ public class AdvancedBlockShop extends Menu {
             item = @ItemStackAnnotation(material = Material.MOSSY_COBBLESTONE, name = "Mossy cobblestone")
     )
     public void buyMossyCobble(MenuPlayer player) {
-        getUser(player).buyBlock(Material.MOSSY_COBBLESTONE, price(Material.MOSSY_COBBLESTONE));
+        if (canBuy(player))
+            getUser(player).buyBlock(Material.MOSSY_COBBLESTONE, price(Material.MOSSY_COBBLESTONE));
     }
 
     @MenuItem(
@@ -140,7 +155,8 @@ public class AdvancedBlockShop extends Menu {
             item = @ItemStackAnnotation(material = Material.SMOOTH_BRICK, durability = 2, name = "Cracked stone brick")
     )
     public void buyStoneBrick(MenuPlayer player) {
-        getUser(player).buyBlock(Material.SMOOTH_BRICK, price(Material.SMOOTH_BRICK), (byte) 2);
+        if (canBuy(player))
+            getUser(player).buyBlock(Material.SMOOTH_BRICK, price(Material.SMOOTH_BRICK), (byte) 2);
     }
 
     @MenuItem(
@@ -148,11 +164,24 @@ public class AdvancedBlockShop extends Menu {
             item = @ItemStackAnnotation(material = Material.GLASS, name = "Glass")
     )
     public void buyGlass(MenuPlayer player) {
-        getUser(player).buyBlock(Material.GLASS, price(Material.GLASS));
+        if (canBuy(player))
+            getUser(player).buyBlock(Material.GLASS, price(Material.GLASS));
     }
 
     private UserInfo getUser(MenuPlayer player) {
         return Lavasurvival.INSTANCE.getUserManager().getUser(player.getBukkit().getUniqueId());
+    }
+
+    private boolean canBuy(MenuPlayer player) {
+        if (player == null || player.getBukkit() == null)
+            return false;
+        RankManager rm = Lavasurvival.INSTANCE.getRankManager();
+        if (rm.hasRank(Lavasurvival.INSTANCE.getNecessitiesUserManager().getUser(player.getBukkit().getUniqueId()).getRank(), rm.getRank("Advanced")))
+            return true;
+        else {
+            player.getBukkit().sendMessage(ChatColor.RED + "You must be Advanced or higher to purchase from this shop.");
+            return false;
+        }
     }
 
     @PreProcessor

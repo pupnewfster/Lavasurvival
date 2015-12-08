@@ -1,5 +1,6 @@
 package me.eddiep.minecraft.ls.game.shop.impl;
 
+import com.crossge.necessities.RankManager.RankManager;
 import me.eddiep.minecraft.ls.Lavasurvival;
 import me.eddiep.minecraft.ls.ranks.UserInfo;
 import me.eddiep.minecraft.ls.system.PhysicsListener;
@@ -10,6 +11,7 @@ import net.njay.annotation.MenuInventory;
 import net.njay.annotation.MenuItem;
 import net.njay.annotation.PreProcessor;
 import net.njay.player.MenuPlayer;
+import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
@@ -28,7 +30,7 @@ public class ElderBlockShop extends Menu {
             item = @ItemStackAnnotation(material = Material.EMERALD, name = "Back to block shop", lore = {"§6§oBuy more blocks!"})
     )
     public void backToMenu(MenuPlayer player) {
-        player.setActiveMenuAndReplace(new BlockShopCatagory(player.getMenuManager(), null, player.getBukkit()), true);
+        player.setActiveMenu(new BlockShopCatagory(player.getMenuManager(), null));
     }
 
     @MenuItem(
@@ -36,7 +38,8 @@ public class ElderBlockShop extends Menu {
             item = @ItemStackAnnotation(material = Material.GLOWSTONE, name = "Glowstone")
     )
     public void buyGlowstone(MenuPlayer player) {
-        getUser(player).buyBlock(Material.GLOWSTONE, price(Material.GLOWSTONE));
+        if (canBuy(player))
+            getUser(player).buyBlock(Material.GLOWSTONE, price(Material.GLOWSTONE));
     }
 
     @MenuItem(
@@ -44,7 +47,8 @@ public class ElderBlockShop extends Menu {
             item = @ItemStackAnnotation(material = Material.NETHER_FENCE, name = "Nether brick fence")
     )
     public void buyNetherFence(MenuPlayer player) {
-        getUser(player).buyBlock(Material.NETHER_FENCE, price(Material.NETHER_FENCE));
+        if (canBuy(player))
+            getUser(player).buyBlock(Material.NETHER_FENCE, price(Material.NETHER_FENCE));
     }
 
     @MenuItem(
@@ -52,7 +56,8 @@ public class ElderBlockShop extends Menu {
             item = @ItemStackAnnotation(material = Material.NETHERRACK, name = "Netherrack")
     )
     public void buyNetherrack(MenuPlayer player) {
-        getUser(player).buyBlock(Material.NETHERRACK, price(Material.NETHERRACK));
+        if (canBuy(player))
+            getUser(player).buyBlock(Material.NETHERRACK, price(Material.NETHERRACK));
     }
 
     @MenuItem(
@@ -60,7 +65,8 @@ public class ElderBlockShop extends Menu {
             item = @ItemStackAnnotation(material = Material.NETHER_BRICK_STAIRS, name = "Nether brick stairs")
     )
     public void buyNetherStairs(MenuPlayer player) {
-        getUser(player).buyBlock(Material.NETHER_BRICK_STAIRS, price(Material.NETHER_BRICK_STAIRS));
+        if (canBuy(player))
+            getUser(player).buyBlock(Material.NETHER_BRICK_STAIRS, price(Material.NETHER_BRICK_STAIRS));
     }
 
     @MenuItem(
@@ -68,7 +74,8 @@ public class ElderBlockShop extends Menu {
             item = @ItemStackAnnotation(material = Material.NETHER_BRICK, name = "Nether brick")
     )
     public void buyNetherBrick(MenuPlayer player) {
-        getUser(player).buyBlock(Material.NETHER_BRICK, price(Material.NETHER_BRICK));
+        if (canBuy(player))
+            getUser(player).buyBlock(Material.NETHER_BRICK, price(Material.NETHER_BRICK));
     }
 
     @MenuItem(
@@ -76,7 +83,8 @@ public class ElderBlockShop extends Menu {
             item = @ItemStackAnnotation(material = Material.STEP, durability = 6, name = "Nether brick slab")
     )
     public void buyNetherBrickSlab(MenuPlayer player) {
-        getUser(player).buyBlock(Material.STEP, price(Material.STEP), (byte) 6);
+        if (canBuy(player))
+            getUser(player).buyBlock(Material.STEP, price(Material.STEP), (byte) 6);
     }
 
     @MenuItem(
@@ -84,11 +92,24 @@ public class ElderBlockShop extends Menu {
             item = @ItemStackAnnotation(material = Material.ENDER_STONE, name = "Endstone")
     )
     public void buyEndstone(MenuPlayer player) {
-        getUser(player).buyBlock(Material.ENDER_STONE, price(Material.ENDER_STONE));
+        if (canBuy(player))
+            getUser(player).buyBlock(Material.ENDER_STONE, price(Material.ENDER_STONE));
     }
 
     private UserInfo getUser(MenuPlayer player) {
         return Lavasurvival.INSTANCE.getUserManager().getUser(player.getBukkit().getUniqueId());
+    }
+
+    private boolean canBuy(MenuPlayer player) {
+        if (player == null || player.getBukkit() == null)
+            return false;
+        RankManager rm = Lavasurvival.INSTANCE.getRankManager();
+        if (rm.hasRank(Lavasurvival.INSTANCE.getNecessitiesUserManager().getUser(player.getBukkit().getUniqueId()).getRank(), rm.getRank("Elder")))
+            return true;
+        else {
+            player.getBukkit().sendMessage(ChatColor.RED + "You must be Elder or higher to purchase from this shop.");
+            return false;
+        }
     }
 
     @PreProcessor
