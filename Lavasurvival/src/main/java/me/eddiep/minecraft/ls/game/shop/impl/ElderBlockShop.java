@@ -2,14 +2,20 @@ package me.eddiep.minecraft.ls.game.shop.impl;
 
 import me.eddiep.minecraft.ls.Lavasurvival;
 import me.eddiep.minecraft.ls.ranks.UserInfo;
+import me.eddiep.minecraft.ls.system.PhysicsListener;
 import net.njay.Menu;
 import net.njay.MenuManager;
 import net.njay.annotation.ItemStackAnnotation;
 import net.njay.annotation.MenuInventory;
 import net.njay.annotation.MenuItem;
+import net.njay.annotation.PreProcessor;
 import net.njay.player.MenuPlayer;
 import org.bukkit.Material;
 import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
+
+import java.util.Arrays;
 
 @MenuInventory(slots = 9, name = "Elder Block Shop")
 public class ElderBlockShop extends Menu {
@@ -27,61 +33,95 @@ public class ElderBlockShop extends Menu {
 
     @MenuItem(
             slot = 1,
-            item = @ItemStackAnnotation(material = Material.GLOWSTONE, name = "Glowstone", lore = {"580 ggs"})
+            item = @ItemStackAnnotation(material = Material.GLOWSTONE, name = "Glowstone")
     )
     public void buyGlowstone(MenuPlayer player) {
-        getUser(player).buyBlock(Material.GLOWSTONE, 580);
+        getUser(player).buyBlock(Material.GLOWSTONE, price(Material.GLOWSTONE));
     }
 
     @MenuItem(
             slot = 2,
-            item = @ItemStackAnnotation(material = Material.NETHER_FENCE, name = "Nether brick fence", lore = {"720 ggs"})
+            item = @ItemStackAnnotation(material = Material.NETHER_FENCE, name = "Nether brick fence")
     )
     public void buyNetherFence(MenuPlayer player) {
-        getUser(player).buyBlock(Material.NETHER_FENCE, 720);
+        getUser(player).buyBlock(Material.NETHER_FENCE, price(Material.NETHER_FENCE));
     }
 
     @MenuItem(
             slot = 3,
-            item = @ItemStackAnnotation(material = Material.NETHERRACK, name = "Netherrack", lore = {"720 ggs"})
+            item = @ItemStackAnnotation(material = Material.NETHERRACK, name = "Netherrack")
     )
     public void buyNetherrack(MenuPlayer player) {
-        getUser(player).buyBlock(Material.NETHERRACK, 720);
+        getUser(player).buyBlock(Material.NETHERRACK, price(Material.NETHERRACK));
     }
 
     @MenuItem(
             slot = 4,
-            item = @ItemStackAnnotation(material = Material.NETHER_BRICK_STAIRS, name = "Nether brick stairs", lore = {"730 ggs"})
+            item = @ItemStackAnnotation(material = Material.NETHER_BRICK_STAIRS, name = "Nether brick stairs")
     )
     public void buyNetherStairs(MenuPlayer player) {
-        getUser(player).buyBlock(Material.NETHER_BRICK_STAIRS, 730);
+        getUser(player).buyBlock(Material.NETHER_BRICK_STAIRS, price(Material.NETHER_BRICK_STAIRS));
     }
 
     @MenuItem(
             slot = 5,
-            item = @ItemStackAnnotation(material = Material.NETHER_BRICK, name = "Nether brick", lore = {"900 ggs"})
+            item = @ItemStackAnnotation(material = Material.NETHER_BRICK, name = "Nether brick")
     )
     public void buyNetherBrick(MenuPlayer player) {
-        getUser(player).buyBlock(Material.NETHER_BRICK, 900);
+        getUser(player).buyBlock(Material.NETHER_BRICK, price(Material.NETHER_BRICK));
     }
 
     @MenuItem(
             slot = 6,
-            item = @ItemStackAnnotation(material = Material.STEP, durability = 6, name = "Nether brick slab", lore = {"900 ggs"})
+            item = @ItemStackAnnotation(material = Material.STEP, durability = 6, name = "Nether brick slab")
     )
     public void buyNetherBrickSlab(MenuPlayer player) {
-        getUser(player).buyBlock(Material.STEP, 900, (byte) 6);
+        getUser(player).buyBlock(Material.STEP, price(Material.STEP), (byte) 6);
     }
 
     @MenuItem(
             slot = 7,
-            item = @ItemStackAnnotation(material = Material.ENDER_STONE, name = "Endstone", lore = {"1100 ggs"})
+            item = @ItemStackAnnotation(material = Material.ENDER_STONE, name = "Endstone")
     )
     public void buyEndstone(MenuPlayer player) {
-        getUser(player).buyBlock(Material.ENDER_STONE, 1100);
+        getUser(player).buyBlock(Material.ENDER_STONE, price(Material.ENDER_STONE));
     }
 
     private UserInfo getUser(MenuPlayer player) {
         return Lavasurvival.INSTANCE.getUserManager().getUser(player.getBukkit().getUniqueId());
+    }
+
+    @PreProcessor
+    public void process(Inventory inv){
+        for (int i = 1; i < inv.getSize(); i++) {
+            ItemStack is = inv.getItem(i);
+            if (is == null)
+                continue;
+            ItemMeta m = is.getItemMeta();
+            m.setLore(Arrays.asList(price(is.getType()) + " ggs", "Melt time: " + PhysicsListener.getMeltTime(is.getData()) + " seconds"));
+            is.setItemMeta(m);
+            inv.setItem(i, is);
+        }
+    }
+
+    protected int price(Material type) {
+        switch (type) {
+            case GLOWSTONE:
+                return 580;
+            case NETHER_FENCE:
+                return 720;
+            case NETHERRACK:
+                return 720;
+            case NETHER_BRICK_STAIRS:
+                return 730;
+            case NETHER_BRICK:
+                return 900;
+            case STEP:
+                return 900;
+            case ENDER_STONE:
+                return 1100;
+            default:
+                return 0;
+        }
     }
 }
