@@ -47,30 +47,28 @@ public final class ClassicPhysicsHandler implements Listener {
     private final BukkitRunnable BLOCK_UPDATE_TICK = new BukkitRunnable() {
         @Override
         public void run() {
-            synchronized (locations) {
-                if (running)
-                    return;
-                running = true;
-                for (Location l : locations.keySet()) {
-                    if (l.getWorld() == null) {//World isn't loaded
-                        locations.remove(l);
-                        continue;
-                    }
-                    Block blc = l.getBlock();
-                    Material type = locations.get(l);
-                    if (!blc.hasMetadata("classic_block"))
-                        blc.setMetadata("classic_block", new FixedMetadataValue(ClassicPhysics.INSTANCE, true));
-                    blc.setType(type);
-                    for (LogicContainerHolder holder : logicContainers) {
-                        if (holder.container.doesHandle(type)) {
-                            holder.container.queueBlock(blc);
-                            break; //TODO Maybe don't break?
-                        }
-                    }
+            if (running)
+                return;
+            running = true;
+            for (Location l : locations.keySet()) {
+                if (l.getWorld() == null) {//World isn't loaded
                     locations.remove(l);
+                    continue;
                 }
-                running = false;
+                Block blc = l.getBlock();
+                Material type = locations.get(l);
+                if (!blc.hasMetadata("classic_block"))
+                    blc.setMetadata("classic_block", new FixedMetadataValue(ClassicPhysics.INSTANCE, true));
+                blc.setType(type);
+                for (LogicContainerHolder holder : logicContainers) {
+                    if (holder.container.doesHandle(type)) {
+                        holder.container.queueBlock(blc);
+                        break; //TODO Maybe don't break?
+                    }
+                }
+                locations.remove(l);
             }
+            running = false;
         }
     };
 
