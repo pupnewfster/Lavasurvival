@@ -19,14 +19,15 @@ import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 public final class ClassicPhysicsHandler implements Listener {
     private ArrayList<LogicContainerHolder> logicContainers = new ArrayList<>();
-    private final HashMap<Location, Material> locations = new HashMap<>();
+    private final ConcurrentHashMap<Location, Material> locations = new ConcurrentHashMap<>();
     private ArrayList<Player> lplacers = new ArrayList<>();
     private ArrayList<Player> wplacers = new ArrayList<>();
+    private boolean running = false;
     private Plugin owner;
 
     private long tickCount;
@@ -47,12 +48,16 @@ public final class ClassicPhysicsHandler implements Listener {
         @Override
         public void run() {
             synchronized (locations) {
-                HashMap<Location, Material> temp = (HashMap<Location, Material>) locations.clone();
-                for (Location l : temp.keySet()) {
-                    if (l.getWorld() == null)//World isn't loaded
+                if (running)
+                    return;
+                running = true;
+                for (Location l : locations.keySet()) {
+                    if (l.getWorld() == null) {//World isn't loaded
+                        locations.remove(l);
                         continue;
+                    }
                     Block blc = l.getBlock();
-                    Material type = temp.get(l);
+                    Material type = locations.get(l);
                     if (!blc.hasMetadata("classic_block"))
                         blc.setMetadata("classic_block", new FixedMetadataValue(ClassicPhysics.INSTANCE, true));
                     blc.setType(type);
@@ -64,6 +69,7 @@ public final class ClassicPhysicsHandler implements Listener {
                     }
                     locations.remove(l);
                 }
+                running = false;
             }
         }
     };
