@@ -143,6 +143,13 @@ public final class ClassicPhysicsHandler implements Listener {
     }
 
     @EventHandler
+    public void onLeafDecay(LeavesDecayEvent event) {
+        if (ClassicPhysics.TYPE == PhysicsType.DEFAULT)
+            return;
+        event.setCancelled(true);
+    }
+
+    @EventHandler
     public void onLiquidFlow(BlockFromToEvent event) {
         if (ClassicPhysics.TYPE == PhysicsType.DEFAULT)
             return;
