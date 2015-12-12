@@ -143,6 +143,41 @@ public final class ClassicPhysicsHandler implements Listener {
     }
 
     @EventHandler
+    public void onCactusGrow(BlockGrowEvent event) {
+        if (ClassicPhysics.TYPE == PhysicsType.DEFAULT)
+            return;
+        event.setCancelled(true);
+    }
+
+    @EventHandler
+    public void onBlockForm(BlockFormEvent event) {
+        if (ClassicPhysics.TYPE == PhysicsType.DEFAULT)
+            return;
+        event.setCancelled(true);
+    }
+
+    @EventHandler
+    public void onBlockSpread(BlockSpreadEvent event) {
+        if (ClassicPhysics.TYPE == PhysicsType.DEFAULT)
+            return;
+        event.setCancelled(true);
+    }
+
+    @EventHandler
+    public void onBlockBurn(BlockBurnEvent event) {
+        if (ClassicPhysics.TYPE == PhysicsType.DEFAULT)
+            return;
+        event.setCancelled(true);
+    }
+
+    @EventHandler
+    public void fireSpread(BlockIgniteEvent event) {
+        if (ClassicPhysics.TYPE == PhysicsType.DEFAULT)
+            return;
+        event.setCancelled(true);
+    }
+
+    @EventHandler
     public void onLeafDecay(LeavesDecayEvent event) {
         if (ClassicPhysics.TYPE == PhysicsType.DEFAULT)
             return;

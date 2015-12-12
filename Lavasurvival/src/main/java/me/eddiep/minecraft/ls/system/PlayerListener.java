@@ -16,7 +16,6 @@ import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
-import org.bukkit.event.block.BlockIgniteEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityRegainHealthEvent;
@@ -212,11 +211,6 @@ public class PlayerListener implements Listener {
     @EventHandler(priority = EventPriority.HIGHEST)
     public void playerQuit(PlayerQuitEvent event) {
         um.getUser(event.getPlayer().getUniqueId()).logOut();
-    }
-
-    @EventHandler(priority = EventPriority.MONITOR)
-    public void fireSpread(BlockIgniteEvent event) {
-        event.setCancelled(true);
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
