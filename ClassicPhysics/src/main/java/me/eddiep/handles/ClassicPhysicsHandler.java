@@ -51,7 +51,7 @@ public final class ClassicPhysicsHandler implements Listener {
                 return;
             running = true;
             for (Location l : locations.keySet()) {
-                if (l.getWorld() == null) {//World isn't loaded
+                if (l.getWorld() == null || !l.getChunk().isLoaded()) {//World isn't loaded
                     locations.remove(l);
                     continue;
                 }
