@@ -25,9 +25,9 @@ public class DonationReader {
             Class.forName("com.mysql.jdbc.Driver");
             Connection conn = DriverManager.getConnection("jdbc:mysql://egservers.net:3306/donation", "donation", this.pass);
             Statement stmt = conn.createStatement();
-            ResultSet rs = stmt.executeQuery("SELECT * FROM mctest");
+            ResultSet rs = stmt.executeQuery("SELECT * FROM actions");
             while (rs.next()) {
-                if (rs.getInt("server") == 7 && rs.getInt("delivered") == 0) {
+                if (Integer.parseInt(rs.getString("server").replaceAll("[^0-9]", "")) == 7 && rs.getInt("delivered") == 0) {
                     UUID uuid = UUID.fromString(rs.getString("uuid").replaceAll("(\\w{8})(\\w{4})(\\w{4})(\\w{4})(\\w{12})", "$1-$2-$3-$4-$5"));
                     if (get.hasJoined(uuid)) {
                         User u = um.getUser(uuid);
@@ -36,7 +36,7 @@ public class DonationReader {
                             continue;
                         um.updateUserSubrank(uuid, rm.getSub(subrank), false);
                         Bukkit.broadcastMessage(u.getDispName() + var.getMessages() + " just donated.");
-                        PreparedStatement stmt2 = conn.prepareStatement("UPDATE mctest SET delivered =" + 1);//actions
+                        PreparedStatement stmt2 = conn.prepareStatement("UPDATE actions SET delivered =" + 1);
                         stmt2.executeUpdate();
                     }
                 }
