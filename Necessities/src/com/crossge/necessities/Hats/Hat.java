@@ -24,6 +24,16 @@ public abstract class Hat {
             h = new StrawHat(loc);
         else if (type.equals(HatType.Fedora))
             h = new Fedora(loc);
+        else if (type.equals(HatType.Pot))
+            h = new Pot(loc);
+        else if (type.equals(HatType.RimmedHat))
+            h = new RimmedHat(loc);
+        else if (type.equals(HatType.Trippy))
+            h = new Trippy(loc);
+        else if (type.equals(HatType.SunHat))
+            h = new SunHat(loc);
+        else if (type.equals(HatType.Design))
+            h = new Design(loc);
         if (h != null)
             h.setType(type);
         return h;
@@ -38,6 +48,17 @@ public abstract class Hat {
         World w = loc.getWorld();
         for (int i = 0; i < num; i ++) {
             ArmorStand a = (ArmorStand) w.spawnEntity(new Location(w, loc.getX(), loc.getY(), loc.getZ()), EntityType.ARMOR_STAND);
+            a.setVisible(false);
+            a.setGravity(false);
+            a.setMarker(true);
+            this.armorStands.add(a);
+        }
+    }
+
+    protected void spawnYaw(int num, Location loc) {
+        World w = loc.getWorld();
+        for (int i = 0; i < num; i ++) {
+            ArmorStand a = (ArmorStand) w.spawnEntity(new Location(w, loc.getX(), loc.getY(), loc.getZ(), loc.getYaw(), 0), EntityType.ARMOR_STAND);
             a.setVisible(false);
             a.setGravity(false);
             a.setMarker(true);

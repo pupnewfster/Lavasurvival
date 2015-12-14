@@ -4,10 +4,15 @@ import java.util.Collection;
 import java.util.HashMap;
 
 public enum HatType {
+    Design("DESIGN"),
     BoxTopHat("BOX_TOP_HAT"),
-    TopHat("TOP_HAT"),
+    RimmedHat("RIMMED_HAT"),
     StrawHat("STRAW_HAT"),
-    Fedora("FEDORA");
+    TopHat("TOP_HAT"),
+    SunHat("SUN_HAT"),
+    Fedora("FEDORA"),
+    Trippy("TRIPPY"),
+    Pot("POT");
 
     private static HashMap<String,HatType> nameMap = new HashMap<>();
     private String name;
