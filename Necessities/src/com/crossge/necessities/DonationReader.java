@@ -44,10 +44,7 @@ public class DonationReader {
             rs.close();
             stmt.close();
             conn.close();
-        } catch (Exception e) {
-            System.out.print(e.getCause());
-            e.printStackTrace();
-        }
+        } catch (Exception e) { }
     }
 
     public void init() {

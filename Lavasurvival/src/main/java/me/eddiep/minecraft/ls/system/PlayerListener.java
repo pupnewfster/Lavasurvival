@@ -156,11 +156,15 @@ public class PlayerListener implements Listener {
                 Bukkit.getPluginManager().callEvent(new BlockBreakEvent(block, event.getPlayer()));
             }
         }
-        if (event.getAction() == Action.RIGHT_CLICK_BLOCK && !event.getPlayer().isSneaking() &&
-                (event.getClickedBlock() instanceof InventoryHolder || event.getClickedBlock().getType().equals(Material.WORKBENCH) ||
-                event.getClickedBlock().getType().equals(Material.ANVIL) || event.getClickedBlock().getType().equals(Material.ENCHANTMENT_TABLE) ||
-                event.getClickedBlock().getType().equals(Material.ENDER_CHEST) || event.getClickedBlock().getType().equals(Material.BEACON)))
+        Material type = event.getClickedBlock().getType();
+        if (event.getAction() == Action.RIGHT_CLICK_BLOCK && !event.getPlayer().isSneaking() && (event.getClickedBlock() instanceof InventoryHolder || type.equals(Material.WORKBENCH) ||
+                type.equals(Material.ANVIL) || type.equals(Material.ENCHANTMENT_TABLE) || type.equals(Material.ENDER_CHEST) || type.equals(Material.BEACON)) || type.equals(Material.BED_BLOCK))
             event.setCancelled(true);//Disable opening block's with inventories
+    }
+
+    @EventHandler(priority = EventPriority.HIGHEST)
+    public void onBedEnter(PlayerBedEnterEvent event) {
+        event.setCancelled(true);
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
