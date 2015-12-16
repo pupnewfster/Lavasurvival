@@ -4,6 +4,7 @@ import me.eddiep.handles.ClassicPhysicsEvent;
 import me.eddiep.minecraft.ls.Lavasurvival;
 import me.eddiep.minecraft.ls.game.Gamemode;
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.event.EventHandler;
@@ -12,13 +13,14 @@ import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.material.MaterialData;
 
-import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class PhysicsListener implements Listener {
     private static final long DEFAULT_SPEED = 5 * 20;
     private static final HashMap<MaterialData, Integer> ticksToMelt = new HashMap<>();
-    private ArrayList<Integer> tasks = new ArrayList<>();
+    private static final ConcurrentHashMap<Location, ConcurrentLinkedQueue<Integer>> toTasks = new ConcurrentHashMap<>();
 
     public PhysicsListener() {
         setup();
@@ -188,35 +190,59 @@ public class PhysicsListener implements Listener {
                 return;
             if (!blockChecking.hasMetadata("player_placed"))
                 tickCount /= 2;
-            int task = Bukkit.getScheduler().scheduleSyncDelayedTask(Lavasurvival.INSTANCE, new Runnable() {
+            final int task = Bukkit.getScheduler().scheduleSyncDelayedTask(Lavasurvival.INSTANCE, new Runnable() {
                 @Override
                 public void run() {
+                    if (!toTasks.containsKey(event.getLocation()))
+                        return;
                     if (blockChecking.hasMetadata("player_placed"))
                         blockChecking.removeMetadata("player_placed", Lavasurvival.INSTANCE);
                     Lavasurvival.INSTANCE.getPhysicsHandler().placeClassicBlockAt(event.getLocation(), event.getLogicContainer().logicFor(), event.getFrom());
+                    cancelLocation(event.getLocation());
                 }
             }, tickCount);
-            tasks.add(task);
+            ConcurrentLinkedQueue<Integer> temp = new ConcurrentLinkedQueue<>();
+            Location location = event.getLocation();
+            if (toTasks.containsKey(location) && toTasks.get(location) != null && toTasks.get(location).size() > 0)
+                temp = toTasks.get(location);
+            temp.add(task);
+            toTasks.put(event.getLocation(), temp);
         }
+    }
+
+    public static void cancelLocation(Location loc) {
+        if (!toTasks.containsKey(loc))
+            return;
+        ConcurrentLinkedQueue<Integer> queue = toTasks.get(loc);
+        if (queue != null) {
+            while (!queue.isEmpty()) {
+                Integer t = queue.poll();
+                if (t != null)
+                    try {
+                        Bukkit.getScheduler().cancelTask(t);
+                    } catch (Exception e) {}
+            }
+        }
+        toTasks.remove(loc);
     }
 
     public static String getMeltTimeAsString(MaterialData data) {
         int seconds = ticksToMelt.containsKey(data) ? ticksToMelt.get(data) / 20 : 0;
-        if (seconds == 0) {
+        if (seconds == 0)
             return "Immediately";
-        } else if (seconds < 0) {
+        else if (seconds < 0)
             return "Never";
-        } else {
+        else
             return seconds + " Second" + (seconds == 1 ? "" : "s");
-        }
     }
 
     public static int getMeltTime(MaterialData data) {//seconds
         return ticksToMelt.containsKey(data) ? ticksToMelt.get(data) / 20 : 0;
     }
 
-    public void cancelAllTasks() {
-        tasks.clear();
+    private static void cancelAllTasks() {
+        for (Location l : toTasks.keySet())
+            cancelLocation(l);
     }
 
     public void cleanup() {

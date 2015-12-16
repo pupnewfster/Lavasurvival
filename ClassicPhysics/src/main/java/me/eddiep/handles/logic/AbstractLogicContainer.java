@@ -68,7 +68,6 @@ public abstract class AbstractLogicContainer implements LogicContainer {
                 Block block = queue.poll();
                 if (block == null)
                     continue;
-
                 tickForBlock(block, block.getLocation());
             }
         }

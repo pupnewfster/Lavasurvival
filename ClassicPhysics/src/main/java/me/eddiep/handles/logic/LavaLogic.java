@@ -19,6 +19,8 @@ public class LavaLogic extends AbstractLogicContainer {
     }
 
     protected void checkLocation(Location location, Location from) {
+        if (location.getWorld() == null || !location.getChunk().isLoaded() || location.getBlock() == null)//World isn't loaded
+            return;
         Block block = location.getBlock();
         Material newBlock = block.getType();
 

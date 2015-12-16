@@ -59,7 +59,7 @@ public class PlayerListener implements Listener {
         if (game != null && game.isVoting()) {
             event.setCancelled(true);
             if (game.hasVoted(player)) {
-                if (player.hasPermission("ls.voteSpeak"))
+                if (player.hasPermission("lavasurvival.voteSpeak"))
                     event.setCancelled(false);
                 else
                     player.sendMessage(ChatColor.RED + "" + ChatColor.BOLD + "You already voted!");
@@ -79,7 +79,7 @@ public class PlayerListener implements Listener {
                     }
             }
 
-            if (!player.hasPermission("ls.voteSpeak"))
+            if (!player.hasPermission("lavasurvival.voteSpeak"))
                 player.sendMessage(ChatColor.RED + "No talking during the vote!");
             else
                 event.setCancelled(false);
@@ -95,10 +95,8 @@ public class PlayerListener implements Listener {
         Material material = event.getBlock().getType();
         if (invalidBlocks.contains(material) || (Gamemode.getCurrentGame() != null && Gamemode.getCurrentGame().isAlive(event.getPlayer())))
             return;
-        if (Gamemode.getCurrentGame() != null) {
-            String state = Gamemode.getCurrentGame().isDead(event.getPlayer()) ? ChatColor.RED + "DEAD" : ChatColor.GRAY + "SPECTATING";
-            event.getPlayer().sendMessage("You are " + state + ChatColor.RESET + ". You cannot delete or place blocks!");
-        }
+        if (Gamemode.getCurrentGame() != null)
+            event.getPlayer().sendMessage("You are " + ChatColor.RED + "DEAD" + ChatColor.RESET + ". You cannot delete or place blocks!");
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
@@ -156,6 +154,7 @@ public class PlayerListener implements Listener {
                 block.setType(Material.AIR);
                 if (block.hasMetadata("player_placed"))
                     block.removeMetadata("player_placed", Lavasurvival.INSTANCE);
+                PhysicsListener.cancelLocation(block.getLocation());
                 Bukkit.getPluginManager().callEvent(new BlockBreakEvent(block, event.getPlayer()));
             }
         }
