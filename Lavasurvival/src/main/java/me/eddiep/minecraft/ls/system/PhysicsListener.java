@@ -202,7 +202,7 @@ public class PhysicsListener implements Listener {
         int seconds = ticksToMelt.containsKey(data) ? ticksToMelt.get(data) / 20 : 0;
         if (seconds == 0) {
             return "Immediately";
-        } else if (seconds == -1) {
+        } else if (seconds < 0) {
             return "Never";
         } else {
             return seconds + " Second" + (seconds == 1 ? "" : "s");
