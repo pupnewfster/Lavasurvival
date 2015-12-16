@@ -204,7 +204,7 @@ public class PhysicsListener implements Listener {
         } else if (seconds == -1) {
             return "Never";
         } else {
-            return seconds + " Seconds";
+            return seconds + " Second" + (seconds == 1 ? "" : "s");
         }
     }
 
