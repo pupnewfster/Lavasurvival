@@ -31,10 +31,10 @@ public class PhysicsListener implements Listener {
             return;
         //Default blocks
         ticksToMelt.put(new MaterialData(Material.TORCH), 20);
-        ticksToMelt.put(new MaterialData(Material.WOOD), 55 * 20);
+        ticksToMelt.put(new MaterialData(Material.WOOD, (byte) 0), 55 * 20);//Oak plank
         ticksToMelt.put(new MaterialData(Material.DIRT), 100 * 20);
         ticksToMelt.put(new MaterialData(Material.GRASS), 100 * 20);
-        ticksToMelt.put(new MaterialData(Material.SAND), 70 * 20);
+        ticksToMelt.put(new MaterialData(Material.SAND, (byte) 0), 70 * 20);//Sand
         ticksToMelt.put(new MaterialData(Material.COBBLESTONE), 130 * 20);
 
         //Basic blocks
@@ -89,12 +89,9 @@ public class PhysicsListener implements Listener {
         ticksToMelt.put(new MaterialData(Material.THIN_GLASS), 168 * 20);
         ticksToMelt.put(new MaterialData(Material.IRON_FENCE), 195 * 20);//Iron bars
         ticksToMelt.put(new MaterialData(Material.IRON_BLOCK), 200 * 20);
+        ticksToMelt.put(new MaterialData(Material.LADDER), 30 * 20);
 
         //Trusted blocks
-        ticksToMelt.put(new MaterialData(Material.FLOWER_POT_ITEM), 3 * 20);
-        ticksToMelt.put(new MaterialData(Material.FLOWER_POT), 3 * 20);
-        //ticksToMelt.put(new MaterialData(Material.YELLOW_FLOWER), ()) Flowers don't melt :3
-        //ticksToMelt.put(new MaterialData(Material.RED_ROSE), ()); Flowers don't melt :3
         ticksToMelt.put(new MaterialData(Material.WOOD_DOOR), 55 * 20);
         ticksToMelt.put(new MaterialData(Material.WOODEN_DOOR), 55 * 20);
         ticksToMelt.put(new MaterialData(Material.BOOKSHELF), 100 * 20);
@@ -144,6 +141,9 @@ public class PhysicsListener implements Listener {
         ticksToMelt.put(new MaterialData(Material.STAINED_GLASS_PANE, (byte) 13), 168 * 20);//Green glass pane
         ticksToMelt.put(new MaterialData(Material.STAINED_GLASS_PANE, (byte) 14), 168 * 20);//Red glass pane
         ticksToMelt.put(new MaterialData(Material.STAINED_GLASS_PANE, (byte) 15), 168 * 20);//Black glass pane
+        ticksToMelt.put(new MaterialData(Material.PRISMARINE, (byte) 0), 195 * 20);//Prismarine
+        ticksToMelt.put(new MaterialData(Material.PRISMARINE, (byte) 1), 195 * 20);//Prismarine Bricks
+        ticksToMelt.put(new MaterialData(Material.PRISMARINE, (byte) 2), 195 * 20);//Dark Prismarine
 
 
         //Elder blocks
@@ -154,6 +154,55 @@ public class PhysicsListener implements Listener {
         ticksToMelt.put(new MaterialData(Material.NETHER_BRICK), 370 * 20);
         ticksToMelt.put(new MaterialData(Material.NETHER_BRICK_STAIRS), 250 * 20);
         ticksToMelt.put(new MaterialData(Material.ENDER_STONE), 400 * 20);
+
+
+        //Donnor blocks Instant melt)
+        ticksToMelt.put(new MaterialData(Material.WOOD, (byte) 1), 0);//Spruce planks
+        ticksToMelt.put(new MaterialData(Material.WOOD, (byte) 2), 0);//Birch planks
+        ticksToMelt.put(new MaterialData(Material.WOOD, (byte) 3), 0);//Jungle planks
+        ticksToMelt.put(new MaterialData(Material.WOOD, (byte) 4), 0);//Acacia planks
+        ticksToMelt.put(new MaterialData(Material.WOOD, (byte) 5), 0);//Dark oak planks
+        ticksToMelt.put(new MaterialData(Material.SAND, (byte) 1), 70 * 20);//Red sand
+        ticksToMelt.put(new MaterialData(Material.SPRUCE_FENCE), 0);
+        ticksToMelt.put(new MaterialData(Material.BIRCH_FENCE), 0);
+        ticksToMelt.put(new MaterialData(Material.JUNGLE_FENCE), 0);
+        ticksToMelt.put(new MaterialData(Material.ACACIA_FENCE), 0);
+        ticksToMelt.put(new MaterialData(Material.DARK_OAK_FENCE), 0);
+        ticksToMelt.put(new MaterialData(Material.FENCE_GATE), 0);
+        ticksToMelt.put(new MaterialData(Material.SPRUCE_FENCE_GATE), 0);
+        ticksToMelt.put(new MaterialData(Material.BIRCH_FENCE_GATE), 0);
+        ticksToMelt.put(new MaterialData(Material.JUNGLE_FENCE_GATE), 0);
+        ticksToMelt.put(new MaterialData(Material.ACACIA_FENCE_GATE), 0);
+        ticksToMelt.put(new MaterialData(Material.DARK_OAK_FENCE_GATE), 0);
+        ticksToMelt.put(new MaterialData(Material.SPRUCE_DOOR), 0);
+        ticksToMelt.put(new MaterialData(Material.SPRUCE_DOOR_ITEM), 0);
+        ticksToMelt.put(new MaterialData(Material.BIRCH_DOOR), 0);
+        ticksToMelt.put(new MaterialData(Material.BIRCH_DOOR_ITEM), 0);
+        ticksToMelt.put(new MaterialData(Material.JUNGLE_DOOR), 0);
+        ticksToMelt.put(new MaterialData(Material.JUNGLE_DOOR_ITEM), 0);
+        ticksToMelt.put(new MaterialData(Material.ACACIA_DOOR), 0);
+        ticksToMelt.put(new MaterialData(Material.ACACIA_DOOR_ITEM), 0);
+        ticksToMelt.put(new MaterialData(Material.DARK_OAK_DOOR), 0);
+        ticksToMelt.put(new MaterialData(Material.DARK_OAK_DOOR_ITEM), 0);
+        ticksToMelt.put(new MaterialData(Material.SEA_LANTERN), 0);
+        ticksToMelt.put(new MaterialData(Material.CARPET, (byte) 0), 0);//White carpet
+        ticksToMelt.put(new MaterialData(Material.CARPET, (byte) 1), 0);//Orange carpet
+        ticksToMelt.put(new MaterialData(Material.CARPET, (byte) 2), 0);//Magenta carpet
+        ticksToMelt.put(new MaterialData(Material.CARPET, (byte) 3), 0);//Light blue carpet
+        ticksToMelt.put(new MaterialData(Material.CARPET, (byte) 4), 0);//Yellow carpet
+        ticksToMelt.put(new MaterialData(Material.CARPET, (byte) 5), 0);//Lime carpet
+        ticksToMelt.put(new MaterialData(Material.CARPET, (byte) 6), 0);//Pink carpet
+        ticksToMelt.put(new MaterialData(Material.CARPET, (byte) 7), 0);//Gray carpet
+        ticksToMelt.put(new MaterialData(Material.CARPET, (byte) 8), 0);//Light gray carpet
+        ticksToMelt.put(new MaterialData(Material.CARPET, (byte) 9), 0);//Cyan carpet
+        ticksToMelt.put(new MaterialData(Material.CARPET, (byte) 10), 0);//Purple carpet
+        ticksToMelt.put(new MaterialData(Material.CARPET, (byte) 11), 0);//Blue carpet
+        ticksToMelt.put(new MaterialData(Material.CARPET, (byte) 12), 0);//Brown carpet
+        ticksToMelt.put(new MaterialData(Material.CARPET, (byte) 13), 0);//Green carpet
+        ticksToMelt.put(new MaterialData(Material.CARPET, (byte) 14), 0);//Red carpet
+        ticksToMelt.put(new MaterialData(Material.CARPET, (byte) 15), 0);//Black carpet
+        ticksToMelt.put(new MaterialData(Material.FLOWER_POT_ITEM), 0);
+        ticksToMelt.put(new MaterialData(Material.FLOWER_POT), 0);
 
 
         //Unburnable

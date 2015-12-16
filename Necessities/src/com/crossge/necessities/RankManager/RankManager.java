@@ -284,7 +284,7 @@ public class RankManager {
             try {
                 configFileSubranks.createNewFile();
                 YamlConfiguration configSubranks = YamlConfiguration.loadConfiguration(configFileSubranks);
-                configSubranks.set("Necessities.Donator", Arrays.asList("Necessities.colorchat"));;
+                configSubranks.set("Necessities.Donator", Arrays.asList("Necessities.colorchat", "lavasurvival.donator"));;
                 configSubranks.save(configFileSubranks);
             } catch (Exception e) {
                 e.printStackTrace();

@@ -171,8 +171,8 @@ public class Lavasurvival extends JavaPlugin {
     }
 
     private void setupShops() {
-        MenuFramework.enable(new MenuRegistry(this, RankShop.class, BlockShopCategory.class, BasicBlockShop.class,
-                AdvancedBlockShop.class, SurvivorBlockShop.class, TrustedBlockShop.class, ElderBlockShop.class));
+        MenuFramework.enable(new MenuRegistry(this, RankShop.class, BlockShopCategory.class, BasicBlockShop.class, AdvancedBlockShop.class,
+                SurvivorBlockShop.class, TrustedBlockShop.class,ElderBlockShop.class, DonatorBlockShop.class));
 
         ArrayList<String> lore = new ArrayList<>();
         lore.add(ChatColor.GOLD + "" + ChatColor.ITALIC + "Buy more blocks!");
