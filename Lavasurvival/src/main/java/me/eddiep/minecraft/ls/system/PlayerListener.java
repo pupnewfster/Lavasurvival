@@ -28,6 +28,7 @@ import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.material.MaterialData;
+import org.bukkit.metadata.FixedMetadataValue;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -197,6 +198,7 @@ public class PlayerListener implements Listener {
                 return;
             }
             event.setCancelled(false);
+            event.getBlock().setMetadata("player_placed", new FixedMetadataValue(Lavasurvival.INSTANCE, event.getPlayer().getUniqueId()));
             if (!survival) {
                 final int index = event.getPlayer().getInventory().first(event.getBlock().getType());
                 final ItemStack cloned = event.getPlayer().getInventory().getItem(index).clone();

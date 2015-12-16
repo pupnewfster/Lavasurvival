@@ -186,7 +186,8 @@ public class PhysicsListener implements Listener {
             long tickCount = ticksToMelt.get(dat);
             if (tickCount == -1) //It's unburnable
                 return;
-
+            if (!blockChecking.hasMetadata("player_placed"))
+                tickCount /= 2;
             int task = Bukkit.getScheduler().scheduleSyncDelayedTask(Lavasurvival.INSTANCE, new Runnable() {
                 @Override
                 public void run() {
