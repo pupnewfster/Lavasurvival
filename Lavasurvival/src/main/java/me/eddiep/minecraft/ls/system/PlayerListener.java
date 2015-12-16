@@ -239,7 +239,7 @@ public class PlayerListener implements Listener {
                         if (BukkitUtils.hasItem(p.getInventory(), toGive))
                             continue;
                         ItemMeta im = toGive.getItemMeta();
-                        im.setLore(Arrays.asList("Melt time: " + PhysicsListener.getMeltTime(new MaterialData(toGive.getType())) + " seconds"));
+                        im.setLore(Arrays.asList("Melt time: " + PhysicsListener.getMeltTimeAsString(new MaterialData(toGive.getType()))));
                         toGive.setItemMeta(im);
                         event.getPlayer().getInventory().addItem(toGive);
                     }

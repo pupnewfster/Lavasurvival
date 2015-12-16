@@ -197,6 +197,17 @@ public class PhysicsListener implements Listener {
         }
     }
 
+    public static String getMeltTimeAsString(MaterialData data) {
+        int seconds = ticksToMelt.containsKey(data) ? ticksToMelt.get(data) / 20 : 0;
+        if (seconds == 0) {
+            return "Immediately";
+        } else if (seconds == -1) {
+            return "Never";
+        } else {
+            return seconds + " Seconds";
+        }
+    }
+
     public static int getMeltTime(MaterialData data) {//seconds
         return ticksToMelt.containsKey(data) ? ticksToMelt.get(data) / 20 : 0;
     }

@@ -20,7 +20,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 import java.util.Arrays;
 
 @MenuInventory(slots = 54, name = "Trusted Block Shop")
-public class TrustedBlockShop extends Menu {
+public class TrustedBlockShop extends BlockShop {
     public TrustedBlockShop(MenuManager manager, Inventory inv) {
         super(manager, inv);
     }
@@ -508,19 +508,7 @@ public class TrustedBlockShop extends Menu {
         }
     }
 
-    @PreProcessor
-    public void process(Inventory inv){
-        for (int i = 1; i < inv.getSize(); i++) {
-            ItemStack is = inv.getItem(i);
-            if (is == null)
-                continue;
-            ItemMeta m = is.getItemMeta();
-            m.setLore(Arrays.asList(price(is.getType()) + " ggs", "Melt time: " + PhysicsListener.getMeltTime(is.getData()) + " seconds"));
-            is.setItemMeta(m);
-            inv.setItem(i, is);
-        }
-    }
-
+    @Override
     protected int price(Material type) {
         switch (type) {
             case FLOWER_POT_ITEM:

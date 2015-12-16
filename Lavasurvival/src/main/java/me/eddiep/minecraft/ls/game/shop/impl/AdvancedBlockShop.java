@@ -20,7 +20,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 import java.util.Arrays;
 
 @MenuInventory(slots = 18, name = "Advanced Block Shop")
-public class AdvancedBlockShop extends Menu {
+public class AdvancedBlockShop extends BlockShop {
     public AdvancedBlockShop(MenuManager manager, Inventory inv) {
         super(manager, inv);
     }
@@ -181,19 +181,6 @@ public class AdvancedBlockShop extends Menu {
         else {
             player.getBukkit().sendMessage(ChatColor.RED + "You must be Advanced or higher to purchase from this shop.");
             return false;
-        }
-    }
-
-    @PreProcessor
-    public void process(Inventory inv){
-        for (int i = 1; i < inv.getSize(); i++) {
-            ItemStack is = inv.getItem(i);
-            if (is == null)
-                continue;
-            ItemMeta m = is.getItemMeta();
-            m.setLore(Arrays.asList(price(is.getType()) + " ggs", "Melt time: " + PhysicsListener.getMeltTime(is.getData()) + " seconds"));
-            is.setItemMeta(m);
-            inv.setItem(i, is);
         }
     }
 

@@ -125,7 +125,7 @@ public class UserInfo {
     private ItemStack getItem(MaterialData dat) {
         ItemStack i = dat.toItemStack(1);
         ItemMeta im = i.getItemMeta();
-        im.setLore(Arrays.asList("Melt time: " + PhysicsListener.getMeltTime(dat) + " seconds"));
+        im.setLore(Arrays.asList("Melt time: " + PhysicsListener.getMeltTimeAsString(dat)));
         i.setItemMeta(im);
         return i;
     }
