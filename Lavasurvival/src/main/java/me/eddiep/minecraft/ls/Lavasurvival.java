@@ -205,6 +205,7 @@ public class Lavasurvival extends JavaPlugin {
         um = new com.crossge.necessities.RankManager.UserManager();
         rm = new RankManager();
         uuiDs = new GetUUID();
+        userManager.readUsers();
     }
 
     private boolean setupEcon() {

@@ -30,6 +30,13 @@ public class UserManager {
         });
     }
 
+    public void forceParseUser(final Player p) {
+        if (players.containsKey(p.getUniqueId()))
+            players.get(p.getUniqueId()).setPlayer(p);
+        else
+            players.put(p.getUniqueId(), new UserInfo(p));
+    }
+
     public HashMap<UUID, UserInfo> getUsers() {
         return players;
     }

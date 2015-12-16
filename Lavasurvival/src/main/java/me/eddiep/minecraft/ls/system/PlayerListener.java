@@ -226,7 +226,7 @@ public class PlayerListener implements Listener {
     @EventHandler(priority = EventPriority.HIGHEST)
     public void playerJoin(final PlayerJoinEvent event) {
         um.addUser(event.getPlayer());
-        um.parseUser(event.getPlayer());
+        um.forceParseUser(event.getPlayer());
 
         if (!Lavasurvival.INSTANCE.getEconomy().hasAccount(event.getPlayer()))
             Lavasurvival.INSTANCE.getEconomy().createPlayerAccount(event.getPlayer());

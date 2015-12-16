@@ -191,9 +191,9 @@ public class PhysicsListener implements Listener {
             int task = Bukkit.getScheduler().scheduleSyncDelayedTask(Lavasurvival.INSTANCE, new Runnable() {
                 @Override
                 public void run() {
-                    Lavasurvival.INSTANCE.getPhysicsHandler().placeClassicBlockAt(event.getLocation(), event.getLogicContainer().logicFor(), event.getFrom());
                     if (blockChecking.hasMetadata("player_placed"))
                         blockChecking.removeMetadata("player_placed", Lavasurvival.INSTANCE);
+                    Lavasurvival.INSTANCE.getPhysicsHandler().placeClassicBlockAt(event.getLocation(), event.getLogicContainer().logicFor(), event.getFrom());
                 }
             }, tickCount);
             tasks.add(task);
