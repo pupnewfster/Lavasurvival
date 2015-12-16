@@ -20,7 +20,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 import java.util.Arrays;
 
 @MenuInventory(slots = 18, name = "Advanced Block Shop")
-public class AdvancedBlockShop extends BlockShop {
+public class AdvancedBlockShop extends Menu {
     public AdvancedBlockShop(MenuManager manager, Inventory inv) {
         super(manager, inv);
     }
@@ -35,7 +35,7 @@ public class AdvancedBlockShop extends BlockShop {
 
     @MenuItem(
             slot = 1,
-            item = @ItemStackAnnotation(material = Material.STEP, durability = 0, name = "Stone slab")
+            item = @ItemStackAnnotation(material = Material.STEP, durability = 0, name = "")
     )
     public void buyStoneSlab(MenuPlayer player) {
         if (canBuy(player))
@@ -44,7 +44,7 @@ public class AdvancedBlockShop extends BlockShop {
 
     @MenuItem(
             slot = 2,
-            item = @ItemStackAnnotation(material = Material.STEP, durability = 1, name = "Sandstone slab")
+            item = @ItemStackAnnotation(material = Material.STEP, durability = 1, name = "")
     )
     public void buySandstoneSlab(MenuPlayer player) {
         if (canBuy(player))
@@ -53,7 +53,7 @@ public class AdvancedBlockShop extends BlockShop {
 
     @MenuItem(
             slot = 3,
-            item = @ItemStackAnnotation(material = Material.STEP, durability = 3, name = "Cobblestone slab")
+            item = @ItemStackAnnotation(material = Material.STEP, durability = 3, name = "")
     )
     public void buyCobbleSlab(MenuPlayer player) {
         if (canBuy(player))
@@ -62,7 +62,7 @@ public class AdvancedBlockShop extends BlockShop {
 
     @MenuItem(
             slot = 4,
-            item = @ItemStackAnnotation(material = Material.STEP, durability = 4, name = "Brick slab")
+            item = @ItemStackAnnotation(material = Material.STEP, durability = 4, name = "")
     )
     public void buyBrickSlab(MenuPlayer player) {
         if (canBuy(player))
@@ -71,7 +71,7 @@ public class AdvancedBlockShop extends BlockShop {
 
     @MenuItem(
             slot = 5,
-            item = @ItemStackAnnotation(material = Material.STEP, durability = 5, name = "Stone brick slab")
+            item = @ItemStackAnnotation(material = Material.STEP, durability = 5, name = "")
     )
     public void buyStonebrickSlab(MenuPlayer player) {
         if (canBuy(player))
@@ -80,7 +80,7 @@ public class AdvancedBlockShop extends BlockShop {
 
     @MenuItem(
             slot = 6,
-            item = @ItemStackAnnotation(material = Material.STEP, durability = 7, name = "Quartz slab")
+            item = @ItemStackAnnotation(material = Material.STEP, durability = 7, name = "")
     )
     public void buyQuartzSlab(MenuPlayer player) {
         if (canBuy(player))
@@ -89,7 +89,7 @@ public class AdvancedBlockShop extends BlockShop {
 
     @MenuItem(
             slot = 7,
-            item = @ItemStackAnnotation(material = Material.WOOD_STEP, durability = 0, name = "Oak slab")
+            item = @ItemStackAnnotation(material = Material.WOOD_STEP, durability = 0, name = "")
     )
     public void buyOakSlab(MenuPlayer player) {
         if (canBuy(player))
@@ -98,7 +98,7 @@ public class AdvancedBlockShop extends BlockShop {
 
     @MenuItem(
             slot = 8,
-            item = @ItemStackAnnotation(material = Material.WOOD_STEP, durability = 1, name = "Spruce slab")
+            item = @ItemStackAnnotation(material = Material.WOOD_STEP, durability = 1, name = "")
     )
     public void buySpruceSlab(MenuPlayer player) {
         if (canBuy(player))
@@ -107,7 +107,7 @@ public class AdvancedBlockShop extends BlockShop {
 
     @MenuItem(
             slot = 9,
-            item = @ItemStackAnnotation(material = Material.WOOD_STEP, durability = 2, name = "Birch slab")
+            item = @ItemStackAnnotation(material = Material.WOOD_STEP, durability = 2, name = "")
     )
     public void buyBirchSlab(MenuPlayer player) {
         if (canBuy(player))
@@ -116,7 +116,7 @@ public class AdvancedBlockShop extends BlockShop {
 
     @MenuItem(
             slot = 10,
-            item = @ItemStackAnnotation(material = Material.WOOD_STEP, durability = 3, name = "Jungle slab")
+            item = @ItemStackAnnotation(material = Material.WOOD_STEP, durability = 3, name = "")
     )
     public void buyJungleSlab(MenuPlayer player) {
         if (canBuy(player))
@@ -125,7 +125,7 @@ public class AdvancedBlockShop extends BlockShop {
 
     @MenuItem(
             slot = 11,
-            item = @ItemStackAnnotation(material = Material.WOOD_STEP, durability = 4, name = "Acacia slab")
+            item = @ItemStackAnnotation(material = Material.WOOD_STEP, durability = 4, name = "")
     )
     public void buyAcaciaSlab(MenuPlayer player) {
         if (canBuy(player))
@@ -134,7 +134,7 @@ public class AdvancedBlockShop extends BlockShop {
 
     @MenuItem(
             slot = 12,
-            item = @ItemStackAnnotation(material = Material.WOOD_STEP, durability = 5, name = "Dark oak slab")
+            item = @ItemStackAnnotation(material = Material.WOOD_STEP, durability = 5, name = "")
     )
     public void buyDarkOakSlab(MenuPlayer player) {
         if (canBuy(player))
@@ -143,7 +143,7 @@ public class AdvancedBlockShop extends BlockShop {
 
     @MenuItem(
             slot = 13,
-            item = @ItemStackAnnotation(material = Material.MOSSY_COBBLESTONE, name = "Mossy cobblestone")
+            item = @ItemStackAnnotation(material = Material.MOSSY_COBBLESTONE, name = "")
     )
     public void buyMossyCobble(MenuPlayer player) {
         if (canBuy(player))
@@ -152,7 +152,7 @@ public class AdvancedBlockShop extends BlockShop {
 
     @MenuItem(
             slot = 14,
-            item = @ItemStackAnnotation(material = Material.SMOOTH_BRICK, durability = 2, name = "Cracked stone brick")
+            item = @ItemStackAnnotation(material = Material.SMOOTH_BRICK, durability = 2, name = "")
     )
     public void buyStoneBrick(MenuPlayer player) {
         if (canBuy(player))
@@ -181,6 +181,19 @@ public class AdvancedBlockShop extends BlockShop {
         else {
             player.getBukkit().sendMessage(ChatColor.RED + "You must be Advanced or higher to purchase from this shop.");
             return false;
+        }
+    }
+
+    @PreProcessor
+    public void process(Inventory inv) {
+        for (int i = 1; i < inv.getSize(); i++) {
+            ItemStack is = inv.getItem(i);
+            if (is == null)
+                continue;
+            ItemMeta m = is.getItemMeta();
+            m.setLore(Arrays.asList(price(is.getType()) + " ggs", "Melt time: " + PhysicsListener.getMeltTimeAsString(is.getData())));
+            is.setItemMeta(m);
+            inv.setItem(i, is);
         }
     }
 

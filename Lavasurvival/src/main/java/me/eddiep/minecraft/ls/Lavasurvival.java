@@ -149,6 +149,8 @@ public class Lavasurvival extends JavaPlugin {
                 setups.get(uuid).end();
             setups.clear();
 
+            userManager.saveAll();
+
             log("Disabled");
         }
         running = false;

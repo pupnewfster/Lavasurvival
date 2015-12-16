@@ -38,6 +38,7 @@ permissions:
             lavasurvival.lvote: true
             lavasurvival.voteSpeak: true
             lavasurvival.endGame: true
+            lavasurviva.donator: true
             lavasurvival.rules: true
     lavasurvival.lvote:
         description: Allows you to vote for maps.
@@ -53,4 +54,7 @@ permissions:
         default: op
     lavasurvival.endGame:
         description: Allows you to end the current game.
+        default: op
+    lavasurvival.donator:
+        description: Allows you to buy donator blocks.
         default: op

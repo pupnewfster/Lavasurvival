@@ -9,16 +9,20 @@ import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.material.MaterialData;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.UUID;
 
 public class UserInfo {
+    private File configFileUsers = new File(Lavasurvival.INSTANCE.getDataFolder(), "userinfo.yml");
     private ArrayList<MaterialData> ownedBlocks = new ArrayList<>();
     private long lastBreak = System.currentTimeMillis(), blockChangeCount;
     private boolean inWater = false;
@@ -29,6 +33,7 @@ public class UserInfo {
     public UserInfo(Player p) {
         this.bukkitPlayer = p;
         this.userUUID = p.getUniqueId();
+        load();
     }
 
     public UserInfo(UUID uuid) {
@@ -45,11 +50,44 @@ public class UserInfo {
     }
 
     public void load() {
-        //TODO Load all persistent data
+        YamlConfiguration configUsers = YamlConfiguration.loadConfiguration(configFileUsers);
+        if (!configUsers.contains(getUUID().toString()))
+            return;
+        if (configUsers.contains(getUUID().toString() + ".boughtBlocks") || !this.ownedBlocks.isEmpty()) {
+            for (String key : configUsers.getStringList(getUUID().toString() + ".boughtBlocks"))
+                if (!key.equals("") && key.split("-").length == 2) {
+                    String name = key.split("-")[0];
+                    byte damage = (byte) Integer.parseInt(key.split("-")[1]);
+                    this.ownedBlocks.add(new MaterialData(Material.valueOf(name), damage));
+                }
+        } else {
+            configUsers.set(getUUID().toString() + ".boughtBlocks", Arrays.asList(""));
+            try {
+                configUsers.save(configFileUsers);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     public void save() {
-        //TODO Save all persistent data
+        if (this.ownedBlocks.isEmpty())
+            return;
+        YamlConfiguration configUsers = YamlConfiguration.loadConfiguration(configFileUsers);
+        if (!configUsers.contains(getUUID().toString()))
+            return;
+        List<String> bl = configUsers.getStringList(getUUID().toString() + ".boughtBlocks");
+        if (bl.contains(""))
+            bl.remove("");
+        for (MaterialData data : this.ownedBlocks)
+            if (!bl.contains(data.getItemType().toString() + "-" + data.getData()))
+                bl.add(data.getItemType().toString() + "-" + data.getData());
+        configUsers.set(getUUID().toString() + ".boughtBlocks", bl);
+        try {
+            configUsers.save(configFileUsers);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     public void logOut() {

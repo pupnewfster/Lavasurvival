@@ -37,6 +37,11 @@ public class UserManager {
             players.put(p.getUniqueId(), new UserInfo(p));
     }
 
+    public void saveAll() {
+        for (UUID uuid : players.keySet())
+            players.get(uuid).save();
+    }
+
     public HashMap<UUID, UserInfo> getUsers() {
         return players;
     }

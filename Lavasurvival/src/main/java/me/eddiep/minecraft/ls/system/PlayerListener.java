@@ -253,6 +253,9 @@ public class PlayerListener implements Listener {
 
                     ShopFactory.validateInventory(inv);
 
+                    UserInfo u = um.getUser(event.getPlayer().getUniqueId());
+                    u.giveBoughtBlocks();
+
                     if (!Gamemode.getCurrentGame().isInGame(p))
                         Gamemode.getCurrentGame().playerJoin(p);
                 }

@@ -16,7 +16,7 @@ public class BlockShopCategory extends Menu {
     }
 
     @MenuItem(
-            slot = 2,
+            slot = 1,
             item = @ItemStackAnnotation(material = Material.WOOD, name = "Basic Shop!")
     )
     public void BasicRank(MenuPlayer player) {
@@ -24,7 +24,7 @@ public class BlockShopCategory extends Menu {
     }
 
     @MenuItem(
-            slot = 3,
+            slot = 2,
             item = @ItemStackAnnotation(material = Material.IRON_BLOCK, name = "Advanced Shop")
     )
     public void AdvanceRank(MenuPlayer player) {
@@ -32,7 +32,7 @@ public class BlockShopCategory extends Menu {
     }
 
     @MenuItem(
-            slot = 4,
+            slot = 3,
             item = @ItemStackAnnotation(material = Material.FENCE_GATE, name = "Survivor Shop")
     )
     public void SurvivorRank(MenuPlayer player) {
@@ -40,7 +40,7 @@ public class BlockShopCategory extends Menu {
     }
 
     @MenuItem(
-            slot = 5,
+            slot = 4,
             item = @ItemStackAnnotation(material = Material.IRON_FENCE, name = "Trusted Shop")
     )
     public void TrustedRank(MenuPlayer player) {
@@ -48,10 +48,18 @@ public class BlockShopCategory extends Menu {
     }
 
     @MenuItem(
-            slot = 6,
+            slot = 5,
             item = @ItemStackAnnotation(material = Material.NETHER_BRICK, name = "Elder Shop")
     )
     public void ElderRank(MenuPlayer player) {
         player.setActiveMenu(new ElderBlockShop(player.getMenuManager(), null));
+    }
+
+    @MenuItem(
+            slot = 6,
+            item = @ItemStackAnnotation(material = Material.RED_ROSE, name = "Donator Shop", lore = {"Decorative blocks"})
+    )
+    public void Dontator(MenuPlayer player) {
+        player.setActiveMenu(new DonatorBlockShop(player.getMenuManager(), null));
     }
 }

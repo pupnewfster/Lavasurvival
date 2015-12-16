@@ -20,7 +20,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 import java.util.Arrays;
 
 @MenuInventory(slots = 27, name = "Basic Block Shop")
-public class BasicBlockShop extends BlockShop {
+public class BasicBlockShop extends Menu {
     public BasicBlockShop(MenuManager manager, Inventory inv) {
         super(manager, inv);
     }
@@ -35,7 +35,7 @@ public class BasicBlockShop extends BlockShop {
 
     @MenuItem(
             slot = 1,
-            item = @ItemStackAnnotation(material = Material.GRAVEL, name = "Gravel")
+            item = @ItemStackAnnotation(material = Material.GRAVEL, name = "")
     )
     public void buyGravel(MenuPlayer player) {
         if (canBuy(player))
@@ -44,7 +44,7 @@ public class BasicBlockShop extends BlockShop {
 
     @MenuItem(
             slot = 2,
-            item = @ItemStackAnnotation(material = Material.STONE, name = "Stone")
+            item = @ItemStackAnnotation(material = Material.STONE, name = "")
     )
     public void buyStone(MenuPlayer player) {
         if (canBuy(player))
@@ -53,7 +53,7 @@ public class BasicBlockShop extends BlockShop {
 
     @MenuItem(
             slot = 3,
-            item = @ItemStackAnnotation(material = Material.LOG, durability = 0, name = "Oak log")
+            item = @ItemStackAnnotation(material = Material.LOG, durability = 0, name = "")
     )
     public void buyOakLog(MenuPlayer player) {
         if (canBuy(player))
@@ -62,7 +62,7 @@ public class BasicBlockShop extends BlockShop {
 
     @MenuItem(
             slot = 4,
-            item = @ItemStackAnnotation(material = Material.LOG, durability = 1, name = "Spruce log")
+            item = @ItemStackAnnotation(material = Material.LOG, durability = 1, name = "")
     )
     public void buySpruceLog(MenuPlayer player) {
         if (canBuy(player))
@@ -71,7 +71,7 @@ public class BasicBlockShop extends BlockShop {
 
     @MenuItem(
             slot = 5,
-            item = @ItemStackAnnotation(material = Material.LOG, durability = 2, name = "Birch log")
+            item = @ItemStackAnnotation(material = Material.LOG, durability = 2, name = "")
     )
     public void buyBirchLog(MenuPlayer player) {
         if (canBuy(player))
@@ -80,7 +80,7 @@ public class BasicBlockShop extends BlockShop {
 
     @MenuItem(
             slot = 6,
-            item = @ItemStackAnnotation(material = Material.LOG, durability = 3, name = "Jungle log")
+            item = @ItemStackAnnotation(material = Material.LOG, durability = 3, name = "")
     )
     public void buyJungleLog(MenuPlayer player) {
         if (canBuy(player))
@@ -89,7 +89,7 @@ public class BasicBlockShop extends BlockShop {
 
     @MenuItem(
             slot = 7,
-            item = @ItemStackAnnotation(material = Material.LOG_2, durability = 0, name = "Acacia log")
+            item = @ItemStackAnnotation(material = Material.LOG_2, durability = 0, name = "")
     )
     public void buyAcaciaLog(MenuPlayer player) {
         if (canBuy(player))
@@ -98,7 +98,7 @@ public class BasicBlockShop extends BlockShop {
 
     @MenuItem(
             slot = 8,
-            item = @ItemStackAnnotation(material = Material.LOG_2, durability = 1, name = "Dark oak log")
+            item = @ItemStackAnnotation(material = Material.LOG_2, durability = 1, name = "")
     )
     public void buyDarkOakLog(MenuPlayer player) {
         if (canBuy(player))
@@ -107,7 +107,7 @@ public class BasicBlockShop extends BlockShop {
 
     @MenuItem(
             slot = 9,
-            item = @ItemStackAnnotation(material = Material.SANDSTONE, name = "Sandstone")
+            item = @ItemStackAnnotation(material = Material.SANDSTONE, name = "")
     )
     public void buySandstone(MenuPlayer player) {
         if (canBuy(player))
@@ -116,7 +116,7 @@ public class BasicBlockShop extends BlockShop {
 
     @MenuItem(
             slot = 10,
-            item = @ItemStackAnnotation(material = Material.HARD_CLAY, name = "Hardened clay")
+            item = @ItemStackAnnotation(material = Material.HARD_CLAY, name = "")
     )
     public void buyHardClay(MenuPlayer player) {
         if (canBuy(player))
@@ -125,7 +125,7 @@ public class BasicBlockShop extends BlockShop {
 
     @MenuItem(
             slot = 11,
-            item = @ItemStackAnnotation(material = Material.STAINED_CLAY, durability = 0, name = "White stained clay")
+            item = @ItemStackAnnotation(material = Material.STAINED_CLAY, durability = 0, name = "")
     )
     public void buyWhiteClay(MenuPlayer player) {
         if (canBuy(player))
@@ -134,7 +134,7 @@ public class BasicBlockShop extends BlockShop {
 
     @MenuItem(
             slot = 12,
-            item = @ItemStackAnnotation(material = Material.STAINED_CLAY, durability = 1, name = "Orange stained clay")
+            item = @ItemStackAnnotation(material = Material.STAINED_CLAY, durability = 1, name = "")
     )
     public void buyOrangeClay(MenuPlayer player) {
         if (canBuy(player))
@@ -143,7 +143,7 @@ public class BasicBlockShop extends BlockShop {
 
     @MenuItem(
             slot = 13,
-            item = @ItemStackAnnotation(material = Material.STAINED_CLAY, durability = 2, name = "Magenta stained clay")
+            item = @ItemStackAnnotation(material = Material.STAINED_CLAY, durability = 2, name = "")
     )
     public void buyMagentaClay(MenuPlayer player) {
         if (canBuy(player))
@@ -152,7 +152,7 @@ public class BasicBlockShop extends BlockShop {
 
     @MenuItem(
             slot = 14,
-            item = @ItemStackAnnotation(material = Material.STAINED_CLAY, durability = 3, name = "Light blue stained clay")
+            item = @ItemStackAnnotation(material = Material.STAINED_CLAY, durability = 3, name = "")
     )
     public void buyLightBlueClay(MenuPlayer player) {
         if (canBuy(player))
@@ -161,7 +161,7 @@ public class BasicBlockShop extends BlockShop {
 
     @MenuItem(
             slot = 15,
-            item = @ItemStackAnnotation(material = Material.STAINED_CLAY, durability = 4, name = "Yellow stained clay")
+            item = @ItemStackAnnotation(material = Material.STAINED_CLAY, durability = 4, name = "")
     )
     public void buyYellowClay(MenuPlayer player) {
         if (canBuy(player))
@@ -170,7 +170,7 @@ public class BasicBlockShop extends BlockShop {
 
     @MenuItem(
             slot = 16,
-            item = @ItemStackAnnotation(material = Material.STAINED_CLAY, durability = 5, name = "Lime stained clay")
+            item = @ItemStackAnnotation(material = Material.STAINED_CLAY, durability = 5, name = "")
     )
     public void buyLimeClay(MenuPlayer player) {
         if (canBuy(player))
@@ -179,7 +179,7 @@ public class BasicBlockShop extends BlockShop {
 
     @MenuItem(
             slot = 17,
-            item = @ItemStackAnnotation(material = Material.STAINED_CLAY, durability = 6, name = "Pink stained clay")
+            item = @ItemStackAnnotation(material = Material.STAINED_CLAY, durability = 6, name = "")
     )
     public void buyPinkClay(MenuPlayer player) {
         if (canBuy(player))
@@ -188,7 +188,7 @@ public class BasicBlockShop extends BlockShop {
 
     @MenuItem(
             slot = 18,
-            item = @ItemStackAnnotation(material = Material.STAINED_CLAY, durability = 7, name = "Gray stained clay")
+            item = @ItemStackAnnotation(material = Material.STAINED_CLAY, durability = 7, name = "")
     )
     public void buyGrayClay(MenuPlayer player) {
         if (canBuy(player))
@@ -197,7 +197,7 @@ public class BasicBlockShop extends BlockShop {
 
     @MenuItem(
             slot = 19,
-            item = @ItemStackAnnotation(material = Material.STAINED_CLAY, durability = 8, name = "Light gray stained clay")
+            item = @ItemStackAnnotation(material = Material.STAINED_CLAY, durability = 8, name = "")
     )
     public void buyLightGrayClay(MenuPlayer player) {
         if (canBuy(player))
@@ -206,7 +206,7 @@ public class BasicBlockShop extends BlockShop {
 
     @MenuItem(
             slot = 20,
-            item = @ItemStackAnnotation(material = Material.STAINED_CLAY, durability = 9, name = "Cyan stained clay")
+            item = @ItemStackAnnotation(material = Material.STAINED_CLAY, durability = 9, name = "")
     )
     public void buyCyanClay(MenuPlayer player) {
         if (canBuy(player))
@@ -215,7 +215,7 @@ public class BasicBlockShop extends BlockShop {
 
     @MenuItem(
             slot = 21,
-            item = @ItemStackAnnotation(material = Material.STAINED_CLAY, durability = 10, name = "Purple stained clay")
+            item = @ItemStackAnnotation(material = Material.STAINED_CLAY, durability = 10, name = "")
     )
     public void buyPurpleClay(MenuPlayer player) {
         if (canBuy(player))
@@ -224,7 +224,7 @@ public class BasicBlockShop extends BlockShop {
 
     @MenuItem(
             slot = 22,
-            item = @ItemStackAnnotation(material = Material.STAINED_CLAY, durability = 11, name = "Blue stained clay")
+            item = @ItemStackAnnotation(material = Material.STAINED_CLAY, durability = 11, name = "")
     )
     public void buyBlueClay(MenuPlayer player) {
         if (canBuy(player))
@@ -233,7 +233,7 @@ public class BasicBlockShop extends BlockShop {
 
     @MenuItem(
             slot = 23,
-            item = @ItemStackAnnotation(material = Material.STAINED_CLAY, durability = 12, name = "Brown staied clay")
+            item = @ItemStackAnnotation(material = Material.STAINED_CLAY, durability = 12, name = "")
     )
     public void buyBrownClay(MenuPlayer player) {
         if (canBuy(player))
@@ -242,7 +242,7 @@ public class BasicBlockShop extends BlockShop {
 
     @MenuItem(
             slot = 24,
-            item = @ItemStackAnnotation(material = Material.STAINED_CLAY, durability = 13, name = "Green stained clay")
+            item = @ItemStackAnnotation(material = Material.STAINED_CLAY, durability = 13, name = "")
     )
     public void buyGreenClay(MenuPlayer player) {
         if (canBuy(player))
@@ -251,7 +251,7 @@ public class BasicBlockShop extends BlockShop {
 
     @MenuItem(
             slot = 25,
-            item = @ItemStackAnnotation(material = Material.STAINED_CLAY, durability = 14, name = "Red stained clay")
+            item = @ItemStackAnnotation(material = Material.STAINED_CLAY, durability = 14, name = "")
     )
     public void buyRedClay(MenuPlayer player) {
         if (canBuy(player))
@@ -260,7 +260,7 @@ public class BasicBlockShop extends BlockShop {
 
     @MenuItem(
             slot = 26,
-            item = @ItemStackAnnotation(material = Material.STAINED_CLAY, durability = 15, name = "Black stained clay")
+            item = @ItemStackAnnotation(material = Material.STAINED_CLAY, durability = 15, name = "")
     )
     public void buyBlackClay(MenuPlayer player) {
         if (canBuy(player))
@@ -283,7 +283,19 @@ public class BasicBlockShop extends BlockShop {
         }
     }
 
-    @Override
+    @PreProcessor
+    public void process(Inventory inv) {
+        for (int i = 1; i < inv.getSize(); i++) {
+            ItemStack is = inv.getItem(i);
+            if (is == null)
+                continue;
+            ItemMeta m = is.getItemMeta();
+            m.setLore(Arrays.asList(price(is.getType()) + " ggs", "Melt time: " + PhysicsListener.getMeltTimeAsString(is.getData())));
+            is.setItemMeta(m);
+            inv.setItem(i, is);
+        }
+    }
+
     protected int price(Material type) {
         switch (type) {
             case GRAVEL:

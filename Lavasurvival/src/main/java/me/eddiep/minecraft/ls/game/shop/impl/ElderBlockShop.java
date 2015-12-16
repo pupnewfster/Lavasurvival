@@ -20,7 +20,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 import java.util.Arrays;
 
 @MenuInventory(slots = 9, name = "Elder Block Shop")
-public class ElderBlockShop extends BlockShop {
+public class ElderBlockShop extends Menu {
     public ElderBlockShop(MenuManager manager, Inventory inv) {
         super(manager, inv);
     }
@@ -35,7 +35,7 @@ public class ElderBlockShop extends BlockShop {
 
     @MenuItem(
             slot = 1,
-            item = @ItemStackAnnotation(material = Material.GLOWSTONE, name = "Glowstone")
+            item = @ItemStackAnnotation(material = Material.GLOWSTONE, name = "")
     )
     public void buyGlowstone(MenuPlayer player) {
         if (canBuy(player))
@@ -44,7 +44,7 @@ public class ElderBlockShop extends BlockShop {
 
     @MenuItem(
             slot = 2,
-            item = @ItemStackAnnotation(material = Material.NETHER_FENCE, name = "Nether brick fence")
+            item = @ItemStackAnnotation(material = Material.NETHER_FENCE, name = "")
     )
     public void buyNetherFence(MenuPlayer player) {
         if (canBuy(player))
@@ -53,7 +53,7 @@ public class ElderBlockShop extends BlockShop {
 
     @MenuItem(
             slot = 3,
-            item = @ItemStackAnnotation(material = Material.NETHERRACK, name = "Netherrack")
+            item = @ItemStackAnnotation(material = Material.NETHERRACK, name = "")
     )
     public void buyNetherrack(MenuPlayer player) {
         if (canBuy(player))
@@ -62,7 +62,7 @@ public class ElderBlockShop extends BlockShop {
 
     @MenuItem(
             slot = 4,
-            item = @ItemStackAnnotation(material = Material.NETHER_BRICK_STAIRS, name = "Nether brick stairs")
+            item = @ItemStackAnnotation(material = Material.NETHER_BRICK_STAIRS, name = "")
     )
     public void buyNetherStairs(MenuPlayer player) {
         if (canBuy(player))
@@ -71,7 +71,7 @@ public class ElderBlockShop extends BlockShop {
 
     @MenuItem(
             slot = 5,
-            item = @ItemStackAnnotation(material = Material.NETHER_BRICK, name = "Nether brick")
+            item = @ItemStackAnnotation(material = Material.NETHER_BRICK, name = "")
     )
     public void buyNetherBrick(MenuPlayer player) {
         if (canBuy(player))
@@ -80,7 +80,7 @@ public class ElderBlockShop extends BlockShop {
 
     @MenuItem(
             slot = 6,
-            item = @ItemStackAnnotation(material = Material.STEP, durability = 6, name = "Nether brick slab")
+            item = @ItemStackAnnotation(material = Material.STEP, durability = 6, name = "")
     )
     public void buyNetherBrickSlab(MenuPlayer player) {
         if (canBuy(player))
@@ -89,7 +89,7 @@ public class ElderBlockShop extends BlockShop {
 
     @MenuItem(
             slot = 7,
-            item = @ItemStackAnnotation(material = Material.ENDER_STONE, name = "Endstone")
+            item = @ItemStackAnnotation(material = Material.ENDER_STONE, name = "")
     )
     public void buyEndstone(MenuPlayer player) {
         if (canBuy(player))
@@ -112,7 +112,19 @@ public class ElderBlockShop extends BlockShop {
         }
     }
 
-    @Override
+    @PreProcessor
+    public void process(Inventory inv) {
+        for (int i = 1; i < inv.getSize(); i++) {
+            ItemStack is = inv.getItem(i);
+            if (is == null)
+                continue;
+            ItemMeta m = is.getItemMeta();
+            m.setLore(Arrays.asList(price(is.getType()) + " ggs", "Melt time: " + PhysicsListener.getMeltTimeAsString(is.getData())));
+            is.setItemMeta(m);
+            inv.setItem(i, is);
+        }
+    }
+
     protected int price(Material type) {
         switch (type) {
             case GLOWSTONE:

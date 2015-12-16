@@ -20,7 +20,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 import java.util.Arrays;
 
 @MenuInventory(slots = 9, name = "Survivor Block Shop")
-public class SurvivorBlockShop extends BlockShop {
+public class SurvivorBlockShop extends Menu {
     public SurvivorBlockShop(MenuManager manager, Inventory inv) {
         super(manager, inv);
     }
@@ -35,7 +35,7 @@ public class SurvivorBlockShop extends BlockShop {
 
     @MenuItem(
             slot = 1,
-            item = @ItemStackAnnotation(material = Material.PACKED_ICE, name = "Packed ice")
+            item = @ItemStackAnnotation(material = Material.PACKED_ICE, name = "")
     )
     public void buyPackedIce(MenuPlayer player) {
         if (canBuy(player))
@@ -44,7 +44,7 @@ public class SurvivorBlockShop extends BlockShop {
 
     @MenuItem(
             slot = 2,
-            item = @ItemStackAnnotation(material = Material.BRICK, name = "Brick")
+            item = @ItemStackAnnotation(material = Material.BRICK, name = "")
     )
     public void buyBrick(MenuPlayer player) {
         if (canBuy(player))
@@ -53,7 +53,7 @@ public class SurvivorBlockShop extends BlockShop {
 
     @MenuItem(
             slot = 3,
-            item = @ItemStackAnnotation(material = Material.SMOOTH_BRICK, durability = 0, name = "Stone brick")
+            item = @ItemStackAnnotation(material = Material.SMOOTH_BRICK, durability = 0, name = "")
     )
     public void buyStoneBrick(MenuPlayer player) {
         if (canBuy(player))
@@ -62,7 +62,7 @@ public class SurvivorBlockShop extends BlockShop {
 
     @MenuItem(
             slot = 4,
-            item = @ItemStackAnnotation(material = Material.THIN_GLASS, name = "Glass pane")
+            item = @ItemStackAnnotation(material = Material.THIN_GLASS, name = "")
     )
     public void buyGlassPane(MenuPlayer player) {
         if (canBuy(player))
@@ -71,7 +71,7 @@ public class SurvivorBlockShop extends BlockShop {
 
     @MenuItem(
             slot = 5,
-            item = @ItemStackAnnotation(material = Material.IRON_FENCE, name = "Iron bars")
+            item = @ItemStackAnnotation(material = Material.IRON_FENCE, name = "")
     )
     public void buyIronBars(MenuPlayer player) {
         if (canBuy(player))
@@ -80,11 +80,20 @@ public class SurvivorBlockShop extends BlockShop {
 
     @MenuItem(
             slot = 6,
-            item = @ItemStackAnnotation(material = Material.IRON_BLOCK, name = "Block of iron")
+            item = @ItemStackAnnotation(material = Material.IRON_BLOCK, name = "")
     )
     public void buyIron(MenuPlayer player) {
         if (canBuy(player))
             getUser(player).buyBlock(Material.IRON_BLOCK, price(Material.IRON_BLOCK));
+    }
+
+    @MenuItem(
+            slot = 7,
+            item = @ItemStackAnnotation(material = Material.LADDER, name = "")
+    )
+    public void buyLadder(MenuPlayer player) {
+        if (canBuy(player))
+            getUser(player).buyBlock(Material.LADDER, price(Material.LADDER));
     }
 
     private UserInfo getUser(MenuPlayer player) {
@@ -103,7 +112,19 @@ public class SurvivorBlockShop extends BlockShop {
         }
     }
 
-    @Override
+    @PreProcessor
+    public void process(Inventory inv) {
+        for (int i = 1; i < inv.getSize(); i++) {
+            ItemStack is = inv.getItem(i);
+            if (is == null)
+                continue;
+            ItemMeta m = is.getItemMeta();
+            m.setLore(Arrays.asList(price(is.getType()) + " ggs", "Melt time: " + PhysicsListener.getMeltTimeAsString(is.getData())));
+            is.setItemMeta(m);
+            inv.setItem(i, is);
+        }
+    }
+
     protected int price(Material type) {
         switch (type) {
             case PACKED_ICE:
@@ -118,6 +139,8 @@ public class SurvivorBlockShop extends BlockShop {
                 return 450;
             case IRON_BLOCK:
                 return 480;
+            case LADDER:
+                return 100;
             default:
                 return 0;
         }
