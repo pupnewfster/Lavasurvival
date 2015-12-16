@@ -14,15 +14,16 @@ public class ClassicPhysicsEvent extends Event implements Cancellable {
     private boolean cancel, isClassicEvent;
     private LogicContainer container;
     private Material newBlock;
-    private Location location;
+    private Location location, from;
     private Block oldBlock;
 
-    public ClassicPhysicsEvent(Block oldBlock, Material newBlock, boolean isClassicEvent, Location location, LogicContainer logicContainer) {
+    public ClassicPhysicsEvent(Block oldBlock, Material newBlock, boolean isClassicEvent, Location location, LogicContainer logicContainer, Location from) {
         this.oldBlock = oldBlock;
         this.newBlock = newBlock;
         this.isClassicEvent = isClassicEvent;
         this.location = location;
         this.container = logicContainer;
+        this.from = from;
     }
 
     public LogicContainer getLogicContainer() {
@@ -31,6 +32,10 @@ public class ClassicPhysicsEvent extends Event implements Cancellable {
 
     public Location getLocation() {
         return this.location;
+    }
+
+    public Location getFrom() {
+        return this.from;
     }
 
     public boolean isChanging() {

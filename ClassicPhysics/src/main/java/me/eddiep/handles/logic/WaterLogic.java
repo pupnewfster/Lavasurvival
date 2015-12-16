@@ -11,8 +11,8 @@ public class WaterLogic extends LavaLogic {
     }
 
     @Override
-    protected void checkLocation(Location location) {
-        super.checkLocation(location); //TODO Do different checks for water
+    protected void checkLocation(Location location, Location from) {
+        super.checkLocation(location, from); //TODO Do different checks for water
     }
 
     @Override

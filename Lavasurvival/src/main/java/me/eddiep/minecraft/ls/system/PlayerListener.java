@@ -154,9 +154,13 @@ public class PlayerListener implements Listener {
                     }
                 }
                 block.setType(Material.AIR);
+                if (block.hasMetadata("player_placed"))
+                    block.removeMetadata("player_placed", Lavasurvival.INSTANCE);
                 Bukkit.getPluginManager().callEvent(new BlockBreakEvent(block, event.getPlayer()));
             }
         }
+        if (event.getClickedBlock() == null)
+            return;
         Material type = event.getClickedBlock().getType();
         if (event.getAction() == Action.RIGHT_CLICK_BLOCK && !event.getPlayer().isSneaking() && (event.getClickedBlock() instanceof InventoryHolder || type.equals(Material.WORKBENCH) ||
                 type.equals(Material.ANVIL) || type.equals(Material.ENCHANTMENT_TABLE) || type.equals(Material.ENDER_CHEST) || type.equals(Material.BEACON)) || type.equals(Material.BED_BLOCK))

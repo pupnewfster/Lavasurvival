@@ -24,11 +24,28 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public final class ClassicPhysicsHandler implements Listener {
     private ArrayList<LogicContainerHolder> logicContainers = new ArrayList<>();
-    private final ConcurrentHashMap<Location, Material> locations = new ConcurrentHashMap<>();
+    private final ConcurrentHashMap<ToAndFrom, Material> locations = new ConcurrentHashMap<>();
     private ArrayList<Player> lplacers = new ArrayList<>();
     private ArrayList<Player> wplacers = new ArrayList<>();
     private boolean running = false;
     private Plugin owner;
+
+    private class ToAndFrom {
+        Location from, to;
+
+        public ToAndFrom(Location to, Location from) {
+            this.to = to;
+            this.from = from;
+        }
+
+        public Location getTo() {
+            return this.to;
+        }
+
+        public Location getFrom() {
+            return this.from;
+        }
+    }
 
     private long tickCount;
     private final BukkitRunnable PHYSICS_TICK = new BukkitRunnable() {
@@ -50,15 +67,24 @@ public final class ClassicPhysicsHandler implements Listener {
             if (running)
                 return;
             running = true;
-            for (Location l : locations.keySet()) {
+            for (ToAndFrom taf : locations.keySet()) {
+                Location l = taf.getTo();
                 if (l.getWorld() == null || !l.getChunk().isLoaded()) {//World isn't loaded
-                    locations.remove(l);
+                    locations.remove(taf);
                     continue;
                 }
                 Block blc = l.getBlock();
-                Material type = locations.get(l);
+                Material type = locations.get(taf);
+                if (!taf.getFrom().getBlock().hasMetadata("classic_block") || !taf.getFrom().getBlock().isLiquid()) {
+                    locations.remove(taf);
+                    continue;
+                }
                 if (!blc.hasMetadata("classic_block"))
                     blc.setMetadata("classic_block", new FixedMetadataValue(ClassicPhysics.INSTANCE, true));
+                else {
+                    locations.remove(taf);
+                    continue;
+                }
                 blc.setType(type);
                 for (LogicContainerHolder holder : logicContainers) {
                     if (holder.container.doesHandle(type)) {
@@ -66,7 +92,7 @@ public final class ClassicPhysicsHandler implements Listener {
                         break; //TODO Maybe don't break?
                     }
                 }
-                locations.remove(l);
+                locations.remove(taf);
             }
             running = false;
         }
@@ -125,6 +151,8 @@ public final class ClassicPhysicsHandler implements Listener {
             forcePlaceClassicBlockAt(event.getBlockPlaced().getLocation(), Material.WATER);
             event.setCancelled(true);
         }
+        if (event.getBlock().hasMetadata("classic_block"))
+            event.getBlock().removeMetadata("classic_block", ClassicPhysics.INSTANCE);
         requestUpdateAround(event.getBlock().getLocation());
     }
 
@@ -217,12 +245,12 @@ public final class ClassicPhysicsHandler implements Listener {
             }
     }
 
-    public void placeClassicBlockAt(Location location, final Material type) {
-        if (location.getWorld() == null || locations.containsKey(location))//World isn't loaded
+    public void placeClassicBlockAt(Location location, Material type, Location from) {
+        if (location.getWorld() == null)//World isn't loaded
             return;
         for (LogicContainerHolder holder : logicContainers)
             if (holder.container.doesHandle(type)) {
-                locations.put(location, type);
+                locations.put(new ToAndFrom(location, from), type);
                 break;
             }
     }

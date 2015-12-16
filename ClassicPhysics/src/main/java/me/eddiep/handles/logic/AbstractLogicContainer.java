@@ -96,7 +96,7 @@ public abstract class AbstractLogicContainer implements LogicContainer {
 
     protected abstract void tickForBlock(Block block, Location location);
 
-    protected void placeClassicBlock(Material material, Location location) {
-        ClassicPhysics.INSTANCE.getPhysicsHandler().placeClassicBlockAt(location, material);
+    protected void placeClassicBlock(Material material, Location location, Location from) {
+        ClassicPhysics.INSTANCE.getPhysicsHandler().placeClassicBlockAt(location, material, from);
     }
 }
