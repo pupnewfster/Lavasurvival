@@ -9,11 +9,13 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Block;
+import org.bukkit.entity.FallingBlock;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.*;
+import org.bukkit.event.entity.EntityChangeBlockEvent;
 import org.bukkit.event.world.WorldUnloadEvent;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.plugin.Plugin;
@@ -228,6 +230,16 @@ public final class ClassicPhysicsHandler implements Listener {
         if (ClassicPhysics.TYPE == PhysicsType.DEFAULT)
             return;
         event.setCancelled(true);
+    }
+
+    @EventHandler
+    public void blockFall(EntityChangeBlockEvent event) {
+        if (ClassicPhysics.TYPE == PhysicsType.DEFAULT)
+            return;
+        if (event.getEntity() instanceof FallingBlock) {
+            event.setCancelled(true);
+            event.getBlock().getState().update(true, false);
+        }
     }
 
     @EventHandler
