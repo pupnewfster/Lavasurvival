@@ -221,31 +221,34 @@ public class PhysicsListener implements Listener {
     }
 
     @EventHandler(priority = EventPriority.MONITOR)
-    public synchronized void onClassicPhysics(final ClassicPhysicsEvent event) {
-        if (!event.isClassicEvent() || Gamemode.getCurrentGame().hasEnded())
-            return;
-
-        Block blockChecking = event.getOldBlock();
-        if (blockChecking.getType().equals(Material.AIR))
-            return;
-
-        MaterialData dat = new MaterialData(blockChecking.getType(), blockChecking.getData());
-        if (!ticksToMelt.containsKey(dat))
-            dat = new MaterialData(blockChecking.getType());
-
-        if (ticksToMelt.containsKey(dat)) {
-            event.setCancelled(true);
-            long meltTicks = ticksToMelt.get(dat);
-            if (meltTicks == -1) //It's unburnable
+    public void onClassicPhysics(final ClassicPhysicsEvent event) {
+        synchronized (toTasks) {
+            if (!event.isClassicEvent() || Gamemode.getCurrentGame().hasEnded() || event.getLocation() == null || event.getLocation().getWorld() == null ||
+                    !event.getLocation().getChunk().isLoaded() || event.getLocation().getBlock() == null)
                 return;
-            if (!blockChecking.hasMetadata("player_placed"))
-                meltTicks *= 0.5;
-            ConcurrentLinkedQueue<BlockTaskInfo> temp = new ConcurrentLinkedQueue<>();
-            Location location = event.getLocation();
-            if (toTasks.containsKey(location) && toTasks.get(location) != null && toTasks.get(location).size() > 0)
-                temp = toTasks.get(location);
-            temp.add(new BlockTaskInfo(event.getLocation(), event.getLogicContainer().logicFor(), event.getFrom(), blockChecking, meltTicks));
-            toTasks.put(event.getLocation(), temp);
+
+            Block blockChecking = event.getOldBlock();
+            if (blockChecking.getType().equals(Material.AIR))
+                return;
+
+            MaterialData dat = new MaterialData(blockChecking.getType(), blockChecking.getData());
+            if (!ticksToMelt.containsKey(dat))
+                dat = new MaterialData(blockChecking.getType());
+
+            if (ticksToMelt.containsKey(dat)) {
+                event.setCancelled(true);
+                long meltTicks = ticksToMelt.get(dat);
+                if (meltTicks == -1) //It's unburnable
+                    return;
+                if (!blockChecking.hasMetadata("player_placed"))
+                    meltTicks *= 0.5;
+                ConcurrentLinkedQueue<BlockTaskInfo> temp = new ConcurrentLinkedQueue<>();
+                Location location = event.getLocation();
+                if (toTasks.containsKey(location) && toTasks.get(location) != null && toTasks.get(location).size() > 0)
+                    temp = toTasks.get(location);
+                temp.add(new BlockTaskInfo(event.getLocation(), event.getLogicContainer().logicFor(), event.getFrom(), blockChecking, meltTicks));
+                toTasks.put(event.getLocation(), temp);
+            }
         }
     }
 

@@ -265,6 +265,9 @@ public abstract class Gamemode {
             player.getPlayer().sendMessage(ChatColor.GREEN + "+ " + ChatColor.GOLD + "You won " + ChatColor.BOLD + reward + ChatColor.RESET + "" + ChatColor.GOLD + " GGs!");
         }
 
+        Lavasurvival.INSTANCE.MONEY_VIEWER.run();
+        lastMoneyCheck = System.currentTimeMillis();
+
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -406,10 +409,6 @@ public abstract class Gamemode {
         globalMessage(ChatColor.GREEN + "The round has ended!");
         isEnding = false;
         hasEnded = true;
-        if (System.currentTimeMillis() - lastMoneyCheck >= 20000) {
-            Lavasurvival.INSTANCE.MONEY_VIEWER.run();
-            lastMoneyCheck = System.currentTimeMillis();
-        }
     }
 
     protected Gamemode pickRandomGame() {
