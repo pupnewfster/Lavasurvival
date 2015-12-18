@@ -319,7 +319,7 @@ public class RankManager {
                 configRanks.set("Elder.subranks", Arrays.asList(""));
                 configRanks.set("Elder.rankTitle", "&4[&0Elder&4]&d");
                 configRanks.set("Elder.previousRank", "Trusted");
-                configRanks.set("Op.permissions", Arrays.asList("ls.setup", "ls.voteSpeak", "Necessities.promote", "Necessities.demote", "Necessities.setrank", "Necessities.warn",
+                configRanks.set("Op.permissions", Arrays.asList("lavasurvival.setup", "lavasurvival.voteSpeak", "Necessities.promote", "Necessities.demote", "Necessities.setrank", "Necessities.warn",
                         "Necessities.hide", "Necessities.opchat", "Necessities.kick", "Necessities.gamemode", "Necessities.teleport"));
                 configRanks.set("Op.subranks", Arrays.asList(""));
                 configRanks.set("Op.rankTitle", "&4[&6Op&4]&b");
