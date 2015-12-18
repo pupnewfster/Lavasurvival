@@ -305,29 +305,39 @@ public class RankManager {
                 configRanks.set("Basic.previousRank", "New");
                 configRanks.set("Advanced.permissions", Arrays.asList(""));
                 configRanks.set("Advanced.subranks", Arrays.asList(""));
-                configRanks.set("Advanced.rankTitle", "&4[&1Advanced&4]&2");
+                configRanks.set("Advanced.rankTitle", "&4[&3Advanced&4]&9");
                 configRanks.set("Advanced.previousRank", "Basic");
                 configRanks.set("Survivor.permissions", Arrays.asList(""));
                 configRanks.set("Survivor.subranks", Arrays.asList(""));
-                configRanks.set("Survivor.rankTitle", "&4[&4Survivor&4]&f");
+                configRanks.set("Survivor.rankTitle", "&4[&2Survivor&4]&2");
                 configRanks.set("Survivor.previousRank", "Advanced");
                 configRanks.set("Trusted.permissions", Arrays.asList(""));
                 configRanks.set("Trusted.subranks", Arrays.asList(""));
-                configRanks.set("Trusted.rankTitle", "&4[&fTrusted&4]&f");
+                configRanks.set("Trusted.rankTitle", "&4[&l&fTrusted&r&4]&f");
                 configRanks.set("Trusted.previousRank", "Survivor");
                 configRanks.set("Elder.permissions", Arrays.asList(""));
                 configRanks.set("Elder.subranks", Arrays.asList(""));
-                configRanks.set("Elder.rankTitle", "&4[&0Elder&4]&d");
+                configRanks.set("Elder.rankTitle", "&4[&l&fElder&4]&d");
                 configRanks.set("Elder.previousRank", "Trusted");
-                configRanks.set("Op.permissions", Arrays.asList("lavasurvival.setup", "lavasurvival.voteSpeak", "Necessities.promote", "Necessities.demote", "Necessities.setrank", "Necessities.warn",
+                configRanks.set("Moderator.permissions", Arrays.asList("lavasurvival.setup", "lavasurvival.voteSpeak", "Necessities.promote", "Necessities.demote", "Necessities.setrank", "Necessities.warn",
                         "Necessities.hide", "Necessities.opchat", "Necessities.kick", "Necessities.gamemode", "Necessities.teleport"));
-                configRanks.set("Op.subranks", Arrays.asList(""));
-                configRanks.set("Op.rankTitle", "&4[&6Op&4]&b");
-                configRanks.set("Op.previousRank", "Elder");
-                configRanks.set("Admin.permissions", Arrays.asList("Necessities.ban", "Necessities.tempban", "Necessities.unban", "Necessities.unbanip", "Necessities.banip", "ls.endGame"));
+                configRanks.set("Moderator.subranks", Arrays.asList(""));
+                configRanks.set("Moderator.rankTitle", "&4[&2Mod&4]&a");
+                configRanks.set("Moderator.previousRank", "Elder");
+                configRanks.set("Admin.permissions", Arrays.asList("Necessities.ban", "Necessities.tempban", "Necessities.unban", "Necessities.unbanip", "Necessities.banip", "lavasurvival.endGame"));
                 configRanks.set("Admin.subranks", Arrays.asList(""));
-                configRanks.set("Admin.rankTitle", "&4[&cAdmin&4]&6");
-                configRanks.set("Admin.previousRank", "Op");
+                configRanks.set("Admin.rankTitle", "&4[&1Admin&4]&b");
+                configRanks.set("Admin.previousRank", "Moderator");
+                configRanks.set("Manager.permissions", Arrays.asList("*", "-Necessities.rankmanager.setranksame", "minecraft.command.*", "bukkit.broadcast.*", "-minecraft.command.deop",
+                        "bukkit.command.whitelist.*", "bukkit.command.gamerule", "-minecraft.command.op", "-bukkit.command.op"));
+                configRanks.set("Manager.subranks", Arrays.asList("*"));
+                configRanks.set("Manager.rankTitle", "&4[&1Manager&4]&6b");
+                configRanks.set("Manager.previousRank", "Admin");
+                configRanks.set("Director.permissions", Arrays.asList("Necessities.rankmanager.setranksame", "minecraft.command.gamerule", "minecraft.command.deop", "minecraft.command.op",
+                        "bukkit.command.op"));
+                configRanks.set("Director.subranks", Arrays.asList(""));
+                configRanks.set("Director.rankTitle", "&4[&bDirector&4]&6");
+                configRanks.set("Director.previousRank", "Manager");
                 configRanks.save(configFileRanks);
             } catch (Exception e) {
                 e.printStackTrace();
