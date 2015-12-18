@@ -18,7 +18,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class PhysicsListener implements Listener {
-    private static final long DEFAULT_SPEED = 5 * 20;
     private static final HashMap<MaterialData, Integer> ticksToMelt = new HashMap<>();
     private static final ConcurrentHashMap<Location, ConcurrentLinkedQueue<BlockTaskInfo>> toTasks = new ConcurrentHashMap<>();
 
@@ -90,6 +89,7 @@ public class PhysicsListener implements Listener {
         ticksToMelt.put(new MaterialData(Material.IRON_FENCE), 195 * 20);//Iron bars
         ticksToMelt.put(new MaterialData(Material.IRON_BLOCK), 200 * 20);
         ticksToMelt.put(new MaterialData(Material.LADDER), 30 * 20);
+        ticksToMelt.put(new MaterialData(Material.ICE), 10 * 20);
 
         //Trusted blocks
         ticksToMelt.put(new MaterialData(Material.WOOD_DOOR), 55 * 20);
@@ -220,7 +220,7 @@ public class PhysicsListener implements Listener {
     }
 
     @EventHandler(priority = EventPriority.MONITOR)
-    public void onClassicPhysics(final ClassicPhysicsEvent event) {
+    public void onClassicPhysics(ClassicPhysicsEvent event) {
         synchronized (toTasks) {
             if (!event.isClassicEvent() || Gamemode.getCurrentGame().hasEnded() || event.getLocation() == null || event.getLocation().getWorld() == null ||
                     !event.getLocation().getChunk().isLoaded() || event.getLocation().getBlock() == null)
@@ -237,7 +237,7 @@ public class PhysicsListener implements Listener {
             if (ticksToMelt.containsKey(dat)) {
                 event.setCancelled(true);
                 long meltTicks = ticksToMelt.get(dat);
-                if (meltTicks == -1) //It's unburnable
+                if (meltTicks < 0) //It's unburnable
                     return;
                 if (!blockChecking.hasMetadata("player_placed"))
                     meltTicks *= 0.5;
@@ -284,18 +284,21 @@ public class PhysicsListener implements Listener {
     }
 
     public static String getMeltTimeAsString(MaterialData data) {
-        int seconds = ticksToMelt.containsKey(data) ? ticksToMelt.get(data) / 20 : 0;
+        int seconds = ticksToMelt.containsKey(data) ? ticksToMelt.get(data) : 0;
+        if (seconds < 0)
+            return "Never";
+        seconds = seconds / 20;
         if (seconds == 0)
             return "Immediately";
-        else if (seconds < 0)
-            return "Never";
         else
             return seconds + " Second" + (seconds == 1 ? "" : "s");
     }
 
-    private static void cancelAllTasks() {
+    private void cancelAllTasks() {
         for (Location l : toTasks.keySet())
             cancelLocation(l);
+        PHYSICS_TICK.cancel();
+        tickCount = 0;
     }
 
     public void cleanup() {

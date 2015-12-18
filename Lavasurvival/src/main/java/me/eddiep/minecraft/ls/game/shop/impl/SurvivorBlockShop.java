@@ -35,6 +35,15 @@ public class SurvivorBlockShop extends Menu {
 
     @MenuItem(
             slot = 1,
+            item = @ItemStackAnnotation(material = Material.ICE, name = "")
+    )
+    public void buyIce(MenuPlayer player) {
+        if (canBuy(player))
+            getUser(player).buyBlock(Material.ICE, price(Material.ICE));
+    }
+
+    @MenuItem(
+            slot = 2,
             item = @ItemStackAnnotation(material = Material.PACKED_ICE, name = "")
     )
     public void buyPackedIce(MenuPlayer player) {
@@ -43,7 +52,7 @@ public class SurvivorBlockShop extends Menu {
     }
 
     @MenuItem(
-            slot = 2,
+            slot = 3,
             item = @ItemStackAnnotation(material = Material.BRICK, name = "")
     )
     public void buyBrick(MenuPlayer player) {
@@ -52,7 +61,7 @@ public class SurvivorBlockShop extends Menu {
     }
 
     @MenuItem(
-            slot = 3,
+            slot = 4,
             item = @ItemStackAnnotation(material = Material.SMOOTH_BRICK, durability = 0, name = "")
     )
     public void buyStoneBrick(MenuPlayer player) {
@@ -61,7 +70,7 @@ public class SurvivorBlockShop extends Menu {
     }
 
     @MenuItem(
-            slot = 4,
+            slot = 5,
             item = @ItemStackAnnotation(material = Material.THIN_GLASS, name = "")
     )
     public void buyGlassPane(MenuPlayer player) {
@@ -70,7 +79,7 @@ public class SurvivorBlockShop extends Menu {
     }
 
     @MenuItem(
-            slot = 5,
+            slot = 6,
             item = @ItemStackAnnotation(material = Material.IRON_FENCE, name = "")
     )
     public void buyIronBars(MenuPlayer player) {
@@ -79,7 +88,7 @@ public class SurvivorBlockShop extends Menu {
     }
 
     @MenuItem(
-            slot = 6,
+            slot = 7,
             item = @ItemStackAnnotation(material = Material.IRON_BLOCK, name = "")
     )
     public void buyIron(MenuPlayer player) {
@@ -88,7 +97,7 @@ public class SurvivorBlockShop extends Menu {
     }
 
     @MenuItem(
-            slot = 7,
+            slot = 8,
             item = @ItemStackAnnotation(material = Material.LADDER, name = "")
     )
     public void buyLadder(MenuPlayer player) {
@@ -127,6 +136,8 @@ public class SurvivorBlockShop extends Menu {
 
     protected int price(Material type) {
         switch (type) {
+            case ICE:
+                return 60;
             case PACKED_ICE:
                 return 20;
             case BRICK:

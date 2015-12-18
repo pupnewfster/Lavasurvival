@@ -55,9 +55,7 @@ public class Flood extends Gamemode {
     @Override
     public void playerJoin(Player player) {
         super.playerJoin(player);
-
         bonus += Gamemode.RANDOM.nextInt(10);
-
         bonusScore.setScore(bonus);
     }
 

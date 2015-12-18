@@ -101,7 +101,8 @@ public class PlayerListener implements Listener {
         if(event.getEntity() instanceof Player && !survival && Gamemode.getCurrentGame() != null &&
                 Gamemode.getCurrentGame().isAlive((Player) event.getEntity()) && (event.getCause().equals(EntityDamageEvent.DamageCause.FIRE_TICK) ||
                 event.getCause().equals(EntityDamageEvent.DamageCause.FIRE) || event.getCause().equals(EntityDamageEvent.DamageCause.FALL) ||
-                event.getCause().equals(EntityDamageEvent.DamageCause.ENTITY_ATTACK) || event.getCause().equals(EntityDamageEvent.DamageCause.FALLING_BLOCK)))
+                event.getCause().equals(EntityDamageEvent.DamageCause.ENTITY_ATTACK) || event.getCause().equals(EntityDamageEvent.DamageCause.FALLING_BLOCK) ||
+                event.getCause().equals(EntityDamageEvent.DamageCause.CONTACT)))
             event.setCancelled(true);
         else if (event.getEntity() instanceof Player && !survival && Gamemode.getCurrentGame() != null && Gamemode.getCurrentGame().isAlive((Player) event.getEntity()) &&
                 event.getCause().equals(EntityDamageEvent.DamageCause.LAVA)) {
@@ -180,13 +181,12 @@ public class PlayerListener implements Listener {
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
-    public void blockPlace(final BlockPlaceEvent event) {
+    public void blockPlace(BlockPlaceEvent event) {
         if (Lavasurvival.INSTANCE.getSetups().containsKey(event.getPlayer().getUniqueId()))
             return;
         if(!event.getPlayer().getGameMode().equals(GameMode.CREATIVE))//Allows players in creative to edit maps
             event.setCancelled(true);
-        if (Gamemode.getCurrentGame() != null && Gamemode.getCurrentGame().isAlive(event.getPlayer()) &&
-                (event.getPlayer().getInventory().contains(event.getBlock().getType()) ||
+        if (Gamemode.getCurrentGame() != null && Gamemode.getCurrentGame().isAlive(event.getPlayer()) && (event.getPlayer().getInventory().contains(event.getBlock().getType()) ||
                         event.getPlayer().getInventory().contains(Material.getMaterial(event.getBlock().getType().toString() + "_ITEM")) ||
                         event.getPlayer().getInventory().contains(Material.getMaterial(event.getBlock().getType().toString().replaceAll("DOOR_BLOCK", "DOOR"))))) {
             if (event.getBlock().getLocation().getBlockY() >= Gamemode.getCurrentMap().getLavaY()) {
@@ -200,14 +200,8 @@ public class PlayerListener implements Listener {
             event.setCancelled(false);
             event.getBlock().setMetadata("player_placed", new FixedMetadataValue(Lavasurvival.INSTANCE, event.getPlayer().getUniqueId()));
             if (!survival) {
-                final int index = event.getPlayer().getInventory().first(event.getBlock().getType());
-                final ItemStack cloned = event.getPlayer().getInventory().getItem(index).clone();
-                Bukkit.getScheduler().scheduleSyncDelayedTask(Lavasurvival.INSTANCE, new Runnable() {
-                    @Override
-                    public void run() {
-                        event.getPlayer().getInventory().setItem(index, cloned);
-                    }
-                }, 2);
+                int index = event.getPlayer().getInventory().first(event.getBlock().getType());
+                event.getPlayer().getInventory().setItem(index, event.getPlayer().getInventory().getItem(index).clone());
             }
         }
         UserInfo u = um.getUser(event.getPlayer().getUniqueId());
@@ -228,14 +222,9 @@ public class PlayerListener implements Listener {
             Lavasurvival.INSTANCE.getEconomy().createPlayerAccount(event.getPlayer());
 
         if (Gamemode.getCurrentGame() != null) {
-            Bukkit.getScheduler().scheduleSyncDelayedTask(Lavasurvival.INSTANCE, new Runnable() {
-                @Override
-                public void run() {
-                    event.getPlayer().teleport(Gamemode.getCurrentWorld().getSpawnLocation().clone());
-                    if (!Gamemode.getCurrentGame().isInGame(event.getPlayer()))
-                        Gamemode.getCurrentGame().playerJoin(event.getPlayer());
-                }
-            }, 7);
+            event.getPlayer().teleport(Gamemode.getCurrentWorld().getSpawnLocation().clone());
+            if (!Gamemode.getCurrentGame().isInGame(event.getPlayer()))
+                Gamemode.getCurrentGame().playerJoin(event.getPlayer());
         }
 
         if (Gamemode.getCurrentGame() != null)

@@ -12,7 +12,7 @@ public class BukkitUtils {
         return true;
     }
 
-    public static boolean isInventoryFull(Inventory inv) {
+    public static boolean isInventoryFull(Inventory inv) {//Does this check armor slots if so it might need to change a little
         return inv.firstEmpty() == -1;
     }
 

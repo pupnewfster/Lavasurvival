@@ -483,8 +483,6 @@ public abstract class Gamemode {
         int blockCount = countAirBlocksAround(onlinePlayer, 20);
         System.out.println(onlinePlayer.getName() + " had " + blockCount + " blocks around them!");
 
-        Location loc = onlinePlayer.getLocation();
-
         return base + (bonusAdd * blockCount);
     }
 
@@ -505,8 +503,8 @@ public abstract class Gamemode {
         globalMessageNoPrefix(ChatColor.GREEN + "+ " + player.getDisplayName() + ChatColor.RESET + " has joined the game!");
 
         Inventory inv = player.getInventory();
-        for (int i = 0; i < Gamemode.DEFAULT_BLOCKS.length; i++) {
-            ItemStack toGive = new ItemStack(Gamemode.DEFAULT_BLOCKS[i], 1);
+        for (Material DEFAULT_BLOCK : DEFAULT_BLOCKS) {
+            ItemStack toGive = new ItemStack(DEFAULT_BLOCK, 1);
             if (BukkitUtils.hasItem(player.getInventory(), toGive))
                 continue;
             ItemMeta im = toGive.getItemMeta();
@@ -529,7 +527,6 @@ public abstract class Gamemode {
         String name = player.getName();
         if (dead.hasEntry(name))
             dead.removeEntry(name);
-
         alive.addEntry(name);
         player.setGameMode(GameMode.SURVIVAL);
         Lavasurvival.log(name + " has joined the alive team.");
@@ -541,14 +538,11 @@ public abstract class Gamemode {
         String name = player.getName();
         if (alive.hasEntry(name))
             alive.removeEntry(name);
-
         dead.addEntry(name);
         player.setGameMode(GameMode.SPECTATOR);
         Lavasurvival.log(name + " has joined the dead team.");
-
-        if (alive.getSize() == 0) {
+        if (alive.getSize() == 0)
             endRound();
-        }
     }
 
     public boolean isAlive(Player player) {

@@ -62,9 +62,7 @@ public class Rise extends Gamemode {
     @Override
     public void playerJoin(Player player) {
         super.playerJoin(player);
-
         bonus += Gamemode.RANDOM.nextInt(10);
-
         bonusScore.setScore(bonus);
     }
 
@@ -100,8 +98,7 @@ public class Rise extends Gamemode {
             if (nextMinute != lastMinute) {
                 lastMinute = nextMinute;
 
-                Location lavaPoint = getCurrentMap().getLavaSpawnAsLocation();
-                getCurrentWorld().strikeLightningEffect(lavaPoint);//Changed to just effect not to kill unknowing player nearby
+                getCurrentWorld().strikeLightningEffect(getCurrentMap().getLavaSpawnAsLocation(0, lvl - getCurrentMap().getHeight(), 0));//Changed to just effect not to kill unknowing player nearby
                 globalMessage("The " + (LAVA ? "lava" : "water") + " will rise in " + ChatColor.DARK_RED + TimeUtils.toFriendlyTime(duration - since));
             }
         } else if (!super.poured) {
@@ -124,7 +121,7 @@ public class Rise extends Gamemode {
     }
 
     private void pourAndAdvance(long time) {
-        final Location loc = getCurrentMap().getLavaSpawnAsLocation(0, -(getCurrentMap().getHeight()) + lvl, 0);
+        final Location loc = getCurrentMap().getLavaSpawnAsLocation(0, lvl - getCurrentMap().getHeight(), 0);
 
         if (loc.getBlockY() > getCurrentMap().getLavaY()) { //If we have passed the original lava spawn, that means the previous pour was the last one
             if (!isRoundEnding()) {
@@ -143,7 +140,8 @@ public class Rise extends Gamemode {
 
         lvl++;
         layersLeft.setScore(getCurrentMap().getLavaY() - loc.getBlockY());
-        if (loc.getBlockY() <= getCurrentMap().getLavaY()) liquidUp(time); //Only advance up if we are still less than the actual lava spawn or if we are at the lava spawn (the next check will end the game, see above)
+        if (loc.getBlockY() <= getCurrentMap().getLavaY())
+            liquidUp(time); //Only advance up if we are still less than the actual lava spawn or if we are at the lava spawn (the next check will end the game, see above)
     }
 
     @Override
