@@ -6,8 +6,10 @@ import me.eddiep.handles.ClassicPhysicsEvent;
 import me.eddiep.minecraft.ls.Lavasurvival;
 import me.eddiep.minecraft.ls.game.impl.Flood;
 import me.eddiep.minecraft.ls.game.impl.Rise;
+import me.eddiep.minecraft.ls.game.shop.ShopFactory;
 import me.eddiep.minecraft.ls.ranks.UserInfo;
 import me.eddiep.minecraft.ls.ranks.UserManager;
+import me.eddiep.minecraft.ls.system.BukkitUtils;
 import me.eddiep.minecraft.ls.system.FileUtils;
 import me.eddiep.minecraft.ls.system.PhysicsListener;
 import me.eddiep.minecraft.ls.system.PlayerListener;
@@ -15,6 +17,10 @@ import mkremins.fanciful.FancyMessage;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.material.MaterialData;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.scoreboard.Team;
@@ -498,8 +504,23 @@ public abstract class Gamemode {
         player.setHealth(player.getMaxHealth());
         globalMessageNoPrefix(ChatColor.GREEN + "+ " + player.getDisplayName() + ChatColor.RESET + " has joined the game!");
 
-        UserInfo u = Lavasurvival.INSTANCE.getUserManager().getUser(player.getUniqueId());
-        u.giveBoughtBlocks(); //Always do this
+        Inventory inv = player.getInventory();
+        for (int i = 0; i < Gamemode.DEFAULT_BLOCKS.length; i++) {
+            ItemStack toGive = new ItemStack(Gamemode.DEFAULT_BLOCKS[i], 1);
+            if (BukkitUtils.hasItem(player.getInventory(), toGive))
+                continue;
+            ItemMeta im = toGive.getItemMeta();
+            im.setLore(Arrays.asList("Melt time: " + PhysicsListener.getMeltTimeAsString(new MaterialData(toGive.getType()))));
+            toGive.setItemMeta(im);
+            player.getInventory().addItem(toGive);
+        }
+        if (!player.getInventory().containsAtLeast(Lavasurvival.INSTANCE.getRules(), 1))
+            player.getInventory().addItem(Lavasurvival.INSTANCE.getRules());
+        ShopFactory.validateInventory(inv);
+        UserManager um = Lavasurvival.INSTANCE.getUserManager();
+        UserInfo u = um.getUser(player.getUniqueId());
+        if (u != null)
+            u.giveBoughtBlocks();
     }
 
     public void setAlive(Player player) {

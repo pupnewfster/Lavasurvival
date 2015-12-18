@@ -3,7 +3,6 @@ package me.eddiep.minecraft.ls.system;
 import me.eddiep.minecraft.ls.Lavasurvival;
 import me.eddiep.minecraft.ls.game.Gamemode;
 import me.eddiep.minecraft.ls.game.LavaMap;
-import me.eddiep.minecraft.ls.game.shop.ShopFactory;
 import me.eddiep.minecraft.ls.ranks.UserInfo;
 import me.eddiep.minecraft.ls.ranks.UserManager;
 import org.bukkit.*;
@@ -26,8 +25,6 @@ import org.bukkit.event.player.*;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.material.MaterialData;
 import org.bukkit.metadata.FixedMetadataValue;
 
 import java.util.ArrayList;
@@ -234,30 +231,9 @@ public class PlayerListener implements Listener {
             Bukkit.getScheduler().scheduleSyncDelayedTask(Lavasurvival.INSTANCE, new Runnable() {
                 @Override
                 public void run() {
-                    event.getPlayer().teleport(Gamemode.getCurrentWorld().getSpawnLocation());
-
-                    Inventory inv = event.getPlayer().getInventory();
-                    Player p = event.getPlayer();
-
-                    for (int i = 0; i < Gamemode.DEFAULT_BLOCKS.length; i++) {
-                        ItemStack toGive = new ItemStack(Gamemode.DEFAULT_BLOCKS[i], 1);
-                        if (BukkitUtils.hasItem(p.getInventory(), toGive))
-                            continue;
-                        ItemMeta im = toGive.getItemMeta();
-                        im.setLore(Arrays.asList("Melt time: " + PhysicsListener.getMeltTimeAsString(new MaterialData(toGive.getType()))));
-                        toGive.setItemMeta(im);
-                        event.getPlayer().getInventory().addItem(toGive);
-                    }
-                    if (!event.getPlayer().getInventory().containsAtLeast(Lavasurvival.INSTANCE.getRules(), 1))
-                        event.getPlayer().getInventory().addItem(Lavasurvival.INSTANCE.getRules());
-
-                    ShopFactory.validateInventory(inv);
-
-                    UserInfo u = um.getUser(event.getPlayer().getUniqueId());
-                    u.giveBoughtBlocks();
-
-                    if (!Gamemode.getCurrentGame().isInGame(p))
-                        Gamemode.getCurrentGame().playerJoin(p);
+                    event.getPlayer().teleport(Gamemode.getCurrentWorld().getSpawnLocation().clone());
+                    if (!Gamemode.getCurrentGame().isInGame(event.getPlayer()))
+                        Gamemode.getCurrentGame().playerJoin(event.getPlayer());
                 }
             }, 7);
         }
