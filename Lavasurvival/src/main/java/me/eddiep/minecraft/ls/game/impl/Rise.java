@@ -40,7 +40,8 @@ public class Rise extends Gamemode {
         lastMinute = 0;
         bonus = Gamemode.RANDOM.nextInt(80) + 50;
         bonusScore.setScore(bonus);
-        layersLeft.setScore((getCurrentMap().getHeight()) + lvl);
+        final Location loc = getCurrentMap().getLavaSpawnAsLocation(0, -(getCurrentMap().getHeight()) + lvl, 0);
+        layersLeft.setScore(getCurrentMap().getLavaY() - loc.getBlockY());
 
         Gamemode.getPlayerListener().survival = false;
         doubleReward = Math.random() < 0.25;
@@ -124,7 +125,6 @@ public class Rise extends Gamemode {
 
     private void pourAndAdvance(long time) {
         final Location loc = getCurrentMap().getLavaSpawnAsLocation(0, -(getCurrentMap().getHeight()) + lvl, 0);
-        final int trueY = getCurrentMap().getLavaSpawnAsLocation().getBlockY();
 
         if (loc.getBlockY() > getCurrentMap().getLavaY()) { //If we have passed the original lava spawn, that means the previous pour was the last one
             if (!isRoundEnding()) {
@@ -142,7 +142,7 @@ public class Rise extends Gamemode {
         getCurrentWorld().strikeLightningEffect(loc); //Actions are better than words :3
 
         lvl++;
-        layersLeft.setScore(trueY - lvl);
+        layersLeft.setScore(getCurrentMap().getLavaY() - loc.getBlockY());
         if (loc.getBlockY() <= getCurrentMap().getLavaY()) liquidUp(time); //Only advance up if we are still less than the actual lava spawn or if we are at the lava spawn (the next check will end the game, see above)
     }
 

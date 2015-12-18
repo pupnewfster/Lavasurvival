@@ -301,6 +301,7 @@ public class PlayerListener implements Listener {
         if (Gamemode.getCurrentGame() != null)
             Gamemode.getCurrentGame().setDead(event.getEntity());
         event.getEntity().getInventory().clear();
+        event.getDrops().clear();
         event.setDroppedExp(0);
     }
 

@@ -119,6 +119,7 @@ public abstract class Gamemode {
             physicsListener = new PhysicsListener();
             Lavasurvival.INSTANCE.getServer().getPluginManager().registerEvents(physicsListener, Lavasurvival.INSTANCE);
         }
+        physicsListener.prepare();
 
         if (map == null) {
             String[] files = LavaMap.getPossibleMaps();

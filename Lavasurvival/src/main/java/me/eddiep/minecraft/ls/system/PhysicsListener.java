@@ -24,7 +24,6 @@ public class PhysicsListener implements Listener {
 
     public PhysicsListener() {
         setup();
-        PHYSICS_TICK.runTaskTimerAsynchronously(Lavasurvival.INSTANCE, 0, 1);
     }
 
     private static void setup() {
@@ -302,6 +301,10 @@ public class PhysicsListener implements Listener {
     public void cleanup() {
         cancelAllTasks();
         HandlerList.unregisterAll(this);
+    }
+
+    public void prepare() {
+        PHYSICS_TICK.runTaskTimerAsynchronously(Lavasurvival.INSTANCE, 0, 1);
     }
 
     private class BlockTaskInfo {
