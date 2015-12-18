@@ -2,6 +2,7 @@ package me.eddiep.minecraft.ls.game;
 
 import com.crossge.necessities.GetUUID;
 import com.crossge.necessities.RankManager.Rank;
+import me.eddiep.handles.ClassicPhysicsEvent;
 import me.eddiep.minecraft.ls.Lavasurvival;
 import me.eddiep.minecraft.ls.game.impl.Flood;
 import me.eddiep.minecraft.ls.game.impl.Rise;
@@ -12,6 +13,7 @@ import me.eddiep.minecraft.ls.system.PhysicsListener;
 import me.eddiep.minecraft.ls.system.PlayerListener;
 import mkremins.fanciful.FancyMessage;
 import org.bukkit.*;
+import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scoreboard.Scoreboard;
@@ -198,6 +200,32 @@ public abstract class Gamemode {
     protected abstract void onTick();
 
     protected abstract double calculateReward(Player player);
+
+    protected int countAirBlocksAround(Player player, int limit) {
+        return airBlocksAround(player.getLocation(), player.getLocation(), limit, new ArrayList<Block>());
+    }
+
+    protected int airBlocksAround(Location original, Location location, int limit, List<Block> alreadyChecked) {
+        if (original.toVector().distanceSquared(location.toVector()) >= limit)
+            return 1;
+
+        int total = 0;
+        for (int x = -1; x <= 1; x++) {
+            for (int y = -1; y <= 1; y++) {
+                for (int z = -1; z <= 1; z++) {
+                    Block check = location.clone().add(x, y, z).getBlock();
+                    if (alreadyChecked.contains(check))
+                        continue;
+                    if (!check.getType().isSolid() && !check.isLiquid()) {
+                        alreadyChecked.add(check);
+                        total += airBlocksAround(original, check.getLocation(), limit, alreadyChecked) + 1;
+                    }
+                }
+            }
+        }
+
+        return total;
+    }
 
     protected boolean isEnding, hasEnded;
     public void endRoundIn(long seconds) {
@@ -407,6 +435,8 @@ public abstract class Gamemode {
     private void end() {
         tickTask.cancel();
         Bukkit.getScheduler().cancelTasks(Lavasurvival.INSTANCE);
+        ClassicPhysicsEvent.getHandlerList().unregister(physicsListener);
+        physicsListener = null;
         globalMessage(ChatColor.GREEN + "The round has ended!");
         isEnding = false;
         hasEnded = true;
@@ -442,29 +472,14 @@ public abstract class Gamemode {
 
         double base = 100.0;
         Rank rank = Lavasurvival.INSTANCE.getNecessitiesUserManager().getUser(player.getUniqueId()).getRank();
-        double bonusAdd = 8.0 * (1 + Lavasurvival.INSTANCE.getRankManager().getOrder().indexOf(rank));
+        double bonusAdd = 5.0 * (1 + Lavasurvival.INSTANCE.getRankManager().getOrder().indexOf(rank));
+
+        int blockCount = countAirBlocksAround(onlinePlayer, 20);
+        System.out.println(onlinePlayer.getName() + " had " + blockCount + " blocks around them!");
 
         Location loc = onlinePlayer.getLocation();
 
-        return base + (bonusAdd * Math.min(recursiveFill(loc.getWorld(), loc.getBlockX(), loc.getBlockY(), loc.getBlockZ(), 0), 100));
-    }
-
-    private int recursiveFill(World world, int x, int y, int z, int curBlockCount) {
-        if (curBlockCount >= 100)
-            return curBlockCount;
-
-        for (int xadd = -1; xadd <= 1; xadd++)
-            for (int yadd = -1; yadd <= 1; yadd++)
-                for (int zadd = -1; zadd <= 1; zadd++)
-                    if (!world.getBlockAt(x + xadd, y + yadd, z + zadd).getType().isSolid() && !world.getBlockAt(x + xadd, y + yadd, z + zadd).isLiquid()) {
-                        curBlockCount = Math.min(curBlockCount + 1, 100);
-                        curBlockCount = recursiveFill(world, x + xadd, y + yadd, z + zadd, curBlockCount);
-
-                        if (curBlockCount >= 100)
-                            return curBlockCount;
-                    }
-
-        return curBlockCount;
+        return base + (bonusAdd * blockCount);
     }
 
     protected void setNextGame(Gamemode game) {
@@ -509,6 +524,10 @@ public abstract class Gamemode {
         dead.addEntry(name);
         player.setGameMode(GameMode.SPECTATOR);
         Lavasurvival.log(name + " has joined the dead team.");
+
+        if (alive.getSize() == 0) {
+            endRound();
+        }
     }
 
     public boolean isAlive(Player player) {
