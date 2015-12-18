@@ -1,5 +1,6 @@
 package me.eddiep.minecraft.ls.system;
 
+import me.eddiep.handles.ClassicBlockPlaceEvent;
 import me.eddiep.minecraft.ls.Lavasurvival;
 import me.eddiep.minecraft.ls.game.Gamemode;
 import me.eddiep.minecraft.ls.game.LavaMap;
@@ -106,7 +107,8 @@ public class PlayerListener implements Listener {
             event.setCancelled(true);
         else if (event.getEntity() instanceof Player && !survival && Gamemode.getCurrentGame() != null && Gamemode.getCurrentGame().isAlive((Player) event.getEntity()) &&
                 event.getCause().equals(EntityDamageEvent.DamageCause.LAVA)) {
-            event.setDamage(EntityDamageEvent.DamageModifier.BASE, 1.5);
+            ((Player) event.getEntity()).damage(Gamemode.DAMAGE);
+            event.setCancelled(true);
         }
     }
 
@@ -247,13 +249,13 @@ public class PlayerListener implements Listener {
     public void playerMove(PlayerMoveEvent event) {
         Location from = event.getFrom(), to = event.getTo();
         boolean locationChanged = Math.abs(from.getX() - to.getX()) > 0.1 || Math.abs(from.getY() - to.getY()) > 0.1 || Math.abs(from.getZ() - to.getZ()) > 0.1;
-        if (locationChanged && Gamemode.getCurrentGame() != null && Gamemode.WATER_DAMAGE != 0 && Gamemode.getCurrentGame().isAlive(event.getPlayer())) {
+        if (locationChanged && Gamemode.getCurrentGame() != null && Gamemode.DAMAGE != 0 && Gamemode.getCurrentGame().isAlive(event.getPlayer())) {
             UserInfo u = um.getUser(event.getPlayer().getUniqueId());
             if(((to.getBlock().getType().equals(Material.WATER) || to.getBlock().getType().equals(Material.STATIONARY_WATER)) && to.getBlock().hasMetadata("classic_block")) ||
                 ((to.getBlock().getRelative(BlockFace.UP).getType().equals(Material.WATER) || to.getBlock().getRelative(BlockFace.UP).getType().equals(Material.STATIONARY_WATER)) &&
                 to.getBlock().getRelative(BlockFace.UP).hasMetadata("classic_block"))) {
-                if(!u.isInWater()) {
-                    event.getPlayer().damage(Gamemode.WATER_DAMAGE);
+                if (!u.isInWater()) {
+                    event.getPlayer().damage(Gamemode.DAMAGE);
                     u.setInWater(true);
                 }
             } else if(u.isInWater())
@@ -262,9 +264,28 @@ public class PlayerListener implements Listener {
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
+    public void classicBlockPlace(ClassicBlockPlaceEvent event) {
+        Material type = event.getLocation().getBlock().getType();
+        if (Gamemode.getCurrentGame() != null && Gamemode.DAMAGE != 0 && !type.equals(Material.WATER) && !type.equals(Material.STATIONARY_WATER))
+            return;
+        Location loc = event.getLocation().getBlock().getLocation();
+        for (Player p : Bukkit.getOnlinePlayers())
+            if (Gamemode.getCurrentGame().isAlive(p) && (p.getLocation().getBlock().getLocation().equals(loc) || p.getLocation().getBlock().getRelative(BlockFace.UP).getLocation().equals(loc))) {
+                UserInfo u = um.getUser(p.getUniqueId());
+                if (!u.isInWater()) {
+                    p.damage(Gamemode.DAMAGE);
+                    u.setInWater(true);
+                }
+            }
+    }
+
+    @EventHandler(priority = EventPriority.HIGHEST)
     public void playerDeath(PlayerDeathEvent event) {
-        if (Gamemode.getCurrentGame() != null)
+        if (Gamemode.getCurrentGame() != null) {
             Gamemode.getCurrentGame().setDead(event.getEntity());
+            UserInfo u = um.getUser(event.getEntity().getUniqueId());
+            u.setInWater(false);
+        }
         event.getEntity().getInventory().clear();
         event.getDrops().clear();
         event.setDroppedExp(0);

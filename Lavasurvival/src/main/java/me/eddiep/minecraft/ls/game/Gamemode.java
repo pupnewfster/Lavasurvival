@@ -52,7 +52,7 @@ public abstract class Gamemode {
     }
 
     public static final Random RANDOM = new Random();
-    public static double WATER_DAMAGE = 0, DAMAGE_FREQUENCY = 3;
+    public static double DAMAGE = 3, DAMAGE_FREQUENCY = 0.5;
     public static boolean LAVA = true, voting = false;
     private static LavaMap[] nextMaps = new LavaMap[VOTE_COUNT];
     private static int[] votes = new int[VOTE_COUNT];
@@ -154,7 +154,6 @@ public abstract class Gamemode {
         hasEnded = false;
 
         LAVA = RANDOM.nextInt(100) < 75; //Have water/lava check be in here instead of as arguement
-        WATER_DAMAGE = LAVA ? 0 : 2;
 
         clearTeam(alive);
         clearTeam(dead);

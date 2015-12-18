@@ -119,12 +119,12 @@ public class UserInfo {
         this.inWater = value;
         if(!isInWater())
             Bukkit.getScheduler().cancelTask(this.taskID);
-        if(value && getPlayer() != null && Gamemode.getCurrentGame() != null && Gamemode.WATER_DAMAGE != 0 && Gamemode.getCurrentGame().isAlive(getPlayer()))
+        if(value && getPlayer() != null && Gamemode.getCurrentGame() != null && Gamemode.DAMAGE != 0 && Gamemode.getCurrentGame().isAlive(getPlayer()))
             this.taskID = Bukkit.getScheduler().scheduleSyncDelayedTask(Lavasurvival.INSTANCE, new Runnable() {
                 @Override
                 public void run() {
                     if (isInWater() && getPlayer() != null) {
-                        getPlayer().damage(Gamemode.WATER_DAMAGE);
+                        getPlayer().damage(Gamemode.DAMAGE);
                         Block b = getPlayer().getLocation().getBlock();
                         setInWater(((b.getType().equals(Material.WATER) || b.getType().equals(Material.STATIONARY_WATER)) && b.hasMetadata("classic_block")) ||
                                 ((b.getRelative(BlockFace.UP).getType().equals(Material.WATER) || b.getType().equals(Material.STATIONARY_WATER)) &&

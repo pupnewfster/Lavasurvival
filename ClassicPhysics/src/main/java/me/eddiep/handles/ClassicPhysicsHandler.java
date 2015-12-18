@@ -104,6 +104,7 @@ public final class ClassicPhysicsHandler implements Listener {
                 if (!blc.hasMetadata("classic_block"))
                     blc.setMetadata("classic_block", new FixedMetadataValue(ClassicPhysics.INSTANCE, true));
                 blc.setType(type);
+                ClassicPhysics.INSTANCE.getServer().getPluginManager().callEvent(new ClassicBlockPlaceEvent(l));
                 for (LogicContainerHolder holder : logicContainers) {
                     if (holder.container.doesHandle(type)) {
                         holder.container.queueBlock(blc);
