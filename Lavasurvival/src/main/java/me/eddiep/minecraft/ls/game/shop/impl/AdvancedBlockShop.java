@@ -53,6 +53,15 @@ public class AdvancedBlockShop extends Menu {
 
     @MenuItem(
             slot = 3,
+            item = @ItemStackAnnotation(material = Material.STONE_SLAB2, name = "")
+    )
+    public void buyRedSandstoneSlab(MenuPlayer player) {
+        if (canBuy(player))
+            getUser(player).buyBlock(Material.STONE_SLAB2, price(Material.STONE_SLAB2));
+    }
+
+    @MenuItem(
+            slot = 4,
             item = @ItemStackAnnotation(material = Material.STEP, durability = 3, name = "")
     )
     public void buyCobbleSlab(MenuPlayer player) {
@@ -61,7 +70,7 @@ public class AdvancedBlockShop extends Menu {
     }
 
     @MenuItem(
-            slot = 4,
+            slot = 5,
             item = @ItemStackAnnotation(material = Material.STEP, durability = 4, name = "")
     )
     public void buyBrickSlab(MenuPlayer player) {
@@ -70,7 +79,7 @@ public class AdvancedBlockShop extends Menu {
     }
 
     @MenuItem(
-            slot = 5,
+            slot = 6,
             item = @ItemStackAnnotation(material = Material.STEP, durability = 5, name = "")
     )
     public void buyStonebrickSlab(MenuPlayer player) {
@@ -79,7 +88,7 @@ public class AdvancedBlockShop extends Menu {
     }
 
     @MenuItem(
-            slot = 6,
+            slot = 7,
             item = @ItemStackAnnotation(material = Material.STEP, durability = 7, name = "")
     )
     public void buyQuartzSlab(MenuPlayer player) {
@@ -88,7 +97,7 @@ public class AdvancedBlockShop extends Menu {
     }
 
     @MenuItem(
-            slot = 7,
+            slot = 8,
             item = @ItemStackAnnotation(material = Material.WOOD_STEP, durability = 0, name = "")
     )
     public void buyOakSlab(MenuPlayer player) {
@@ -97,7 +106,7 @@ public class AdvancedBlockShop extends Menu {
     }
 
     @MenuItem(
-            slot = 8,
+            slot = 9,
             item = @ItemStackAnnotation(material = Material.WOOD_STEP, durability = 1, name = "")
     )
     public void buySpruceSlab(MenuPlayer player) {
@@ -106,7 +115,7 @@ public class AdvancedBlockShop extends Menu {
     }
 
     @MenuItem(
-            slot = 9,
+            slot = 10,
             item = @ItemStackAnnotation(material = Material.WOOD_STEP, durability = 2, name = "")
     )
     public void buyBirchSlab(MenuPlayer player) {
@@ -115,7 +124,7 @@ public class AdvancedBlockShop extends Menu {
     }
 
     @MenuItem(
-            slot = 10,
+            slot = 11,
             item = @ItemStackAnnotation(material = Material.WOOD_STEP, durability = 3, name = "")
     )
     public void buyJungleSlab(MenuPlayer player) {
@@ -124,7 +133,7 @@ public class AdvancedBlockShop extends Menu {
     }
 
     @MenuItem(
-            slot = 11,
+            slot = 12,
             item = @ItemStackAnnotation(material = Material.WOOD_STEP, durability = 4, name = "")
     )
     public void buyAcaciaSlab(MenuPlayer player) {
@@ -133,7 +142,7 @@ public class AdvancedBlockShop extends Menu {
     }
 
     @MenuItem(
-            slot = 12,
+            slot = 13,
             item = @ItemStackAnnotation(material = Material.WOOD_STEP, durability = 5, name = "")
     )
     public void buyDarkOakSlab(MenuPlayer player) {
@@ -142,7 +151,7 @@ public class AdvancedBlockShop extends Menu {
     }
 
     @MenuItem(
-            slot = 13,
+            slot = 14,
             item = @ItemStackAnnotation(material = Material.MOSSY_COBBLESTONE, name = "")
     )
     public void buyMossyCobble(MenuPlayer player) {
@@ -151,7 +160,7 @@ public class AdvancedBlockShop extends Menu {
     }
 
     @MenuItem(
-            slot = 14,
+            slot = 15,
             item = @ItemStackAnnotation(material = Material.SMOOTH_BRICK, durability = 2, name = "")
     )
     public void buyStoneBrick(MenuPlayer player) {
@@ -160,7 +169,7 @@ public class AdvancedBlockShop extends Menu {
     }
 
     @MenuItem(
-            slot = 15,
+            slot = 16,
             item = @ItemStackAnnotation(material = Material.GLASS, name = "Glass")
     )
     public void buyGlass(MenuPlayer player) {
@@ -200,6 +209,8 @@ public class AdvancedBlockShop extends Menu {
     protected int price(Material type) {
         switch (type) {
             case STEP:
+                return 1500;
+            case STONE_SLAB2:
                 return 1500;
             case WOOD_STEP:
                 return 1200;

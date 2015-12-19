@@ -71,12 +71,43 @@ public class PhysicsListener implements Listener {
         ticksToMelt.put(new MaterialData(Material.STEP, (byte) 4), 120 * 20);//Brick slab
         ticksToMelt.put(new MaterialData(Material.STEP, (byte) 5), 120 * 20);//Stone brick slab
         ticksToMelt.put(new MaterialData(Material.STEP, (byte) 7), 120 * 20);//Quartz slab
+        ticksToMelt.put(new MaterialData(Material.STEP, (byte) 8), 120 * 20);//Upper Stone slab
+        ticksToMelt.put(new MaterialData(Material.STEP, (byte) 9), 120 * 20);//Upper Sandstone slab
+        ticksToMelt.put(new MaterialData(Material.STEP, (byte) 11), 120 * 20);//Upper Cobble slab
+        ticksToMelt.put(new MaterialData(Material.STEP, (byte) 12), 120 * 20);//Upper Brick slab
+        ticksToMelt.put(new MaterialData(Material.STEP, (byte) 13), 120 * 20);//Upper Stone brick slab
+        ticksToMelt.put(new MaterialData(Material.STEP, (byte) 15), 120 * 20);//Upper Quartz slab
+        ticksToMelt.put(new MaterialData(Material.STONE_SLAB2, (byte) 0), 120 * 20);//Red sandstone slab
+        ticksToMelt.put(new MaterialData(Material.STONE_SLAB2, (byte) 8), 120 * 20);//Upper red sandstone slab
+        ticksToMelt.put(new MaterialData(Material.DOUBLE_STEP, (byte) 0), 120 * 20);//Double Stone slab
+        ticksToMelt.put(new MaterialData(Material.DOUBLE_STEP, (byte) 1), 120 * 20);//Double Sandstone slab
+        ticksToMelt.put(new MaterialData(Material.DOUBLE_STEP, (byte) 3), 120 * 20);//Double Cobble slab
+        ticksToMelt.put(new MaterialData(Material.DOUBLE_STEP, (byte) 4), 120 * 20);//Double Brick slab
+        ticksToMelt.put(new MaterialData(Material.DOUBLE_STEP, (byte) 5), 120 * 20);//Double Stone brick slab
+        ticksToMelt.put(new MaterialData(Material.DOUBLE_STEP, (byte) 7), 120 * 20);//Double Quartz slab
+        ticksToMelt.put(new MaterialData(Material.DOUBLE_STEP, (byte) 8), 120 * 20);//Smooth Double Stone slab
+        ticksToMelt.put(new MaterialData(Material.DOUBLE_STEP, (byte) 9), 120 * 20);//Smooth Double Sandstone slab
+        ticksToMelt.put(new MaterialData(Material.DOUBLE_STEP, (byte) 15), 120 * 20);//Smooth Double Quartz slab
+        ticksToMelt.put(new MaterialData(Material.DOUBLE_STONE_SLAB2, (byte) 0), 120 * 20);//Double red sandstone slab
+        ticksToMelt.put(new MaterialData(Material.DOUBLE_STONE_SLAB2, (byte) 8), 120 * 20);//Smooth double red sandstone slab
         ticksToMelt.put(new MaterialData(Material.WOOD_STEP, (byte) 0), 30 * 20);//Oak slab
         ticksToMelt.put(new MaterialData(Material.WOOD_STEP, (byte) 1), 30 * 20);//Spruce slab
         ticksToMelt.put(new MaterialData(Material.WOOD_STEP, (byte) 2), 30 * 20);//Birch slab
         ticksToMelt.put(new MaterialData(Material.WOOD_STEP, (byte) 3), 30 * 20);//Jungle slab
         ticksToMelt.put(new MaterialData(Material.WOOD_STEP, (byte) 4), 30 * 20);//Acacia slab
         ticksToMelt.put(new MaterialData(Material.WOOD_STEP, (byte) 5), 30 * 20);//Dark oak slab
+        ticksToMelt.put(new MaterialData(Material.WOOD_STEP, (byte) 8), 30 * 20);//Upper Oak slab
+        ticksToMelt.put(new MaterialData(Material.WOOD_STEP, (byte) 9), 30 * 20);//Upper Spruce slab
+        ticksToMelt.put(new MaterialData(Material.WOOD_STEP, (byte) 10), 30 * 20);//Upper Birch slab
+        ticksToMelt.put(new MaterialData(Material.WOOD_STEP, (byte) 11), 30 * 20);//Upper Jungle slab
+        ticksToMelt.put(new MaterialData(Material.WOOD_STEP, (byte) 12), 30 * 20);//Upper Acacia slab
+        ticksToMelt.put(new MaterialData(Material.WOOD_STEP, (byte) 13), 30 * 20);//Upper Dark oak slab
+        ticksToMelt.put(new MaterialData(Material.WOOD_DOUBLE_STEP, (byte) 0), 30 * 20);//Double Oak slab
+        ticksToMelt.put(new MaterialData(Material.WOOD_DOUBLE_STEP, (byte) 1), 30 * 20);//Double Spruce slab
+        ticksToMelt.put(new MaterialData(Material.WOOD_DOUBLE_STEP, (byte) 2), 30 * 20);//Double Birch slab
+        ticksToMelt.put(new MaterialData(Material.WOOD_DOUBLE_STEP, (byte) 3), 30 * 20);//Double Jungle slab
+        ticksToMelt.put(new MaterialData(Material.WOOD_DOUBLE_STEP, (byte) 4), 30 * 20);//Double Acacia slab
+        ticksToMelt.put(new MaterialData(Material.WOOD_DOUBLE_STEP, (byte) 5), 30 * 20);//Double Dark oak slab
         ticksToMelt.put(new MaterialData(Material.MOSSY_COBBLESTONE), 150 * 20);
         ticksToMelt.put(new MaterialData(Material.SMOOTH_BRICK, (byte) 2), 120 * 20);//Cracked stone brick
         ticksToMelt.put(new MaterialData(Material.GLASS), 150 * 20);
@@ -152,6 +183,8 @@ public class PhysicsListener implements Listener {
         //Elder blocks
         ticksToMelt.put(new MaterialData(Material.GLOWSTONE), 240 * 20);
         ticksToMelt.put(new MaterialData(Material.STEP, (byte) 6), 300 * 20);//Nether brick slab
+        ticksToMelt.put(new MaterialData(Material.STEP, (byte) 14), 300 * 20);//Upper Nether brick slab
+        ticksToMelt.put(new MaterialData(Material.DOUBLE_STEP, (byte) 6), 300 * 20);//Double Nether brick slab
         ticksToMelt.put(new MaterialData(Material.NETHER_FENCE), 300 * 20);
         ticksToMelt.put(new MaterialData(Material.NETHERRACK), 330 * 20);
         ticksToMelt.put(new MaterialData(Material.NETHER_BRICK), 300 * 20);
