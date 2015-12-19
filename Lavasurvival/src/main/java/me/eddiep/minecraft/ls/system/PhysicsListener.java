@@ -300,9 +300,7 @@ public class PhysicsListener implements Listener {
     private void cancelAllTasks() {
         for (Location l : toTasks.keySet())
             cancelLocation(l);
-        try {
-            PHYSICS_TICK.cancel();
-        } catch (Exception e) {}
+        PHYSICS_TICK.cancel();
         tickCount = 0;
     }
 
