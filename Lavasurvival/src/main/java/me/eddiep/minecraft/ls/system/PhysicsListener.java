@@ -198,7 +198,7 @@ public class PhysicsListener implements Listener {
         ticksToMelt.put(new MaterialData(Material.WOOD, (byte) 3), 0);//Jungle planks
         ticksToMelt.put(new MaterialData(Material.WOOD, (byte) 4), 0);//Acacia planks
         ticksToMelt.put(new MaterialData(Material.WOOD, (byte) 5), 0);//Dark oak planks
-        ticksToMelt.put(new MaterialData(Material.SAND, (byte) 1), 70 * 20);//Red sand
+        ticksToMelt.put(new MaterialData(Material.SAND, (byte) 1), 0);//Red sand
         ticksToMelt.put(new MaterialData(Material.SPRUCE_FENCE), 0);
         ticksToMelt.put(new MaterialData(Material.BIRCH_FENCE), 0);
         ticksToMelt.put(new MaterialData(Material.JUNGLE_FENCE), 0);
