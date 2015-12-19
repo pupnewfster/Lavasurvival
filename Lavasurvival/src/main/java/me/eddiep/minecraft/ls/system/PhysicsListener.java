@@ -297,19 +297,19 @@ public class PhysicsListener implements Listener {
             return seconds + " Second" + (seconds == 1 ? "" : "s");
     }
 
-    private void cancelAllTasks() {
+    private static void cancelAllTasks() {
         for (Location l : toTasks.keySet())
             cancelLocation(l);
-        PHYSICS_TICK.cancel();
-        tickCount = 0;
     }
 
     public void cleanup() {
         cancelAllTasks();
+        PHYSICS_TICK.cancel();
         HandlerList.unregisterAll(this);
     }
 
     public void prepare() {
+        tickCount = 0;
         PHYSICS_TICK.runTaskTimerAsynchronously(Lavasurvival.INSTANCE, 0, 1);
     }
 
