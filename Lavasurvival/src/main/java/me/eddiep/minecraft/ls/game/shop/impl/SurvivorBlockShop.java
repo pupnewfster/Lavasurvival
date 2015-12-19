@@ -19,7 +19,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.Arrays;
 
-@MenuInventory(slots = 9, name = "Survivor Block Shop")
+@MenuInventory(slots = 18, name = "Survivor Block Shop")
 public class SurvivorBlockShop extends Menu {
     public SurvivorBlockShop(MenuManager manager, Inventory inv) {
         super(manager, inv);
@@ -105,6 +105,33 @@ public class SurvivorBlockShop extends Menu {
             getUser(player).buyBlock(Material.LADDER, price(Material.LADDER));
     }
 
+    @MenuItem(
+            slot = 9,
+            item = @ItemStackAnnotation(material = Material.QUARTZ_BLOCK, name = "")
+    )
+    public void buyQuartzBlock(MenuPlayer player) {
+        if (canBuy(player))
+            getUser(player).buyBlock(Material.QUARTZ_BLOCK, price(Material.QUARTZ_BLOCK));
+    }
+
+    @MenuItem(
+            slot = 10,
+            item = @ItemStackAnnotation(material = Material.QUARTZ_BLOCK, durability = 1, name = "")
+    )
+    public void buyChiseledQuartzBlock(MenuPlayer player) {
+        if (canBuy(player))
+            getUser(player).buyBlock(Material.QUARTZ_BLOCK, price(Material.QUARTZ_BLOCK), (byte) 1);
+    }
+
+    @MenuItem(
+            slot = 11,
+            item = @ItemStackAnnotation(material = Material.QUARTZ_BLOCK, durability = 2, name = "")
+    )
+    public void buyPillarQuartzBlock(MenuPlayer player) {
+        if (canBuy(player))
+            getUser(player).buyBlock(Material.QUARTZ_BLOCK, price(Material.QUARTZ_BLOCK), (byte) 2);
+    }
+
     private UserInfo getUser(MenuPlayer player) {
         return Lavasurvival.INSTANCE.getUserManager().getUser(player.getBukkit().getUniqueId());
     }
@@ -137,21 +164,23 @@ public class SurvivorBlockShop extends Menu {
     protected int price(Material type) {
         switch (type) {
             case ICE:
-                return 60;
+                return 600;
             case PACKED_ICE:
-                return 20;
+                return 600;
             case BRICK:
-                return 220;
+                return 2000;
             case SMOOTH_BRICK:
-                return 300;
+                return 2000;
             case THIN_GLASS:
-                return 380;
+                return 1750;
             case IRON_FENCE:
-                return 450;
+                return 1750;
             case IRON_BLOCK:
-                return 480;
+                return 2000;
             case LADDER:
-                return 100;
+                return 600;
+            case QUARTZ_BLOCK:
+                return 1750;
             default:
                 return 0;
         }

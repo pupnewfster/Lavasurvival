@@ -299,19 +299,19 @@ public class BasicBlockShop extends Menu {
     protected int price(Material type) {
         switch (type) {
             case GRAVEL:
-                return 75;
+                return 1000;
             case STONE:
-                return 100;
+                return 1000;
             case LOG:
-                return 135;
+                return 600;
             case LOG_2:
-                return 135;
+                return 600;
             case SANDSTONE:
-                return 180;
+                return 1000;
             case HARD_CLAY:
-                return 185;
+                return 1000;
             case STAINED_CLAY:
-                return 185;
+                return 1000;
             default:
                 return 0;
         }

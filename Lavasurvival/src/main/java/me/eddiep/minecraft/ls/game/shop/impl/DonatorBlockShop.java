@@ -406,47 +406,47 @@ public class DonatorBlockShop extends Menu {
     protected int price(Material type) {
         switch (type) {
             case WOOD:
-                return 100;
+                return 1500;
             case SAND:
-                return 100;
+                return 1500;
             case SPRUCE_FENCE:
-                return 100;
+                return 1500;
             case BIRCH_FENCE:
-                return 100;
+                return 1500;
             case JUNGLE_FENCE:
-                return 100;
+                return 1500;
             case DARK_OAK_FENCE:
-                return 100;
+                return 1500;
             case ACACIA_FENCE:
-                return 100;
+                return 1500;
             case FENCE_GATE:
-                return 100;
+                return 1500;
             case SPRUCE_FENCE_GATE:
-                return 100;
+                return 1500;
             case BIRCH_FENCE_GATE:
-                return 100;
+                return 1500;
             case JUNGLE_FENCE_GATE:
-                return 100;
+                return 1500;
             case DARK_OAK_FENCE_GATE:
-                return 100;
+                return 1500;
             case ACACIA_FENCE_GATE:
-                return 100;
+                return 1500;
             case SPRUCE_DOOR_ITEM:
-                return 100;
+                return 1500;
             case BIRCH_DOOR_ITEM:
-                return 100;
+                return 1500;
             case JUNGLE_DOOR_ITEM:
-                return 100;
+                return 1500;
             case DARK_OAK_DOOR_ITEM:
-                return 100;
+                return 1500;
             case ACACIA_DOOR_ITEM:
-                return 100;
+                return 1500;
             case SEA_LANTERN:
-                return 100;
+                return 1500;
             case CARPET:
-                return 100;
+                return 1500;
             case FLOWER_POT_ITEM:
-                return 20;
+                return 1500;
             default:
                 return 0;
         }

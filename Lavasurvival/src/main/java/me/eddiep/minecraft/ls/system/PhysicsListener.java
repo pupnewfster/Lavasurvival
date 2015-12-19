@@ -30,130 +30,133 @@ public class PhysicsListener implements Listener {
             return;
         //Default blocks
         ticksToMelt.put(new MaterialData(Material.TORCH), 20);
-        ticksToMelt.put(new MaterialData(Material.WOOD, (byte) 0), 55 * 20);//Oak plank
-        ticksToMelt.put(new MaterialData(Material.DIRT), 100 * 20);
-        ticksToMelt.put(new MaterialData(Material.GRASS), 100 * 20);
-        ticksToMelt.put(new MaterialData(Material.SAND, (byte) 0), 70 * 20);//Sand
-        ticksToMelt.put(new MaterialData(Material.COBBLESTONE), 130 * 20);
+        ticksToMelt.put(new MaterialData(Material.WOOD, (byte) 0), 30 * 20);//Oak plank
+        ticksToMelt.put(new MaterialData(Material.DIRT), 90 * 20);
+        ticksToMelt.put(new MaterialData(Material.GRASS), 90 * 20);
+        ticksToMelt.put(new MaterialData(Material.SAND, (byte) 0), 90 * 20);//Sand
+        ticksToMelt.put(new MaterialData(Material.COBBLESTONE), 120 * 20);
 
         //Basic blocks
-        ticksToMelt.put(new MaterialData(Material.GRAVEL), 140 * 20);
-        ticksToMelt.put(new MaterialData(Material.STONE), 190 * 20);
-        ticksToMelt.put(new MaterialData(Material.LOG, (byte) 0), 80 * 20);//Oak log
-        ticksToMelt.put(new MaterialData(Material.LOG, (byte) 1), 80 * 20);//Spruce log
-        ticksToMelt.put(new MaterialData(Material.LOG, (byte) 2), 80 * 20);//Birch log
-        ticksToMelt.put(new MaterialData(Material.LOG, (byte) 3), 80 * 20);//Jungle log
-        ticksToMelt.put(new MaterialData(Material.LOG_2, (byte) 0), 80 * 20);//Acacia log
-        ticksToMelt.put(new MaterialData(Material.LOG_2, (byte) 1), 80 * 20);//Dark oak log
-        ticksToMelt.put(new MaterialData(Material.SANDSTONE), 160 * 20);
-        ticksToMelt.put(new MaterialData(Material.HARD_CLAY), 130 * 20);
-        ticksToMelt.put(new MaterialData(Material.STAINED_CLAY, (byte) 0), 115 * 20);//White clay
-        ticksToMelt.put(new MaterialData(Material.STAINED_CLAY, (byte) 1), 115 * 20);//Orange clay
-        ticksToMelt.put(new MaterialData(Material.STAINED_CLAY, (byte) 2), 115 * 20);//Magenta clay
-        ticksToMelt.put(new MaterialData(Material.STAINED_CLAY, (byte) 3), 115 * 20);//Light blue clay
-        ticksToMelt.put(new MaterialData(Material.STAINED_CLAY, (byte) 4), 115 * 20);//Yellow clay
-        ticksToMelt.put(new MaterialData(Material.STAINED_CLAY, (byte) 5), 115 * 20);//Lime clay
-        ticksToMelt.put(new MaterialData(Material.STAINED_CLAY, (byte) 6), 115 * 20);//Pink clay
-        ticksToMelt.put(new MaterialData(Material.STAINED_CLAY, (byte) 7), 115 * 20);//Gray clay
-        ticksToMelt.put(new MaterialData(Material.STAINED_CLAY, (byte) 8), 115 * 20);//Light gray clay
-        ticksToMelt.put(new MaterialData(Material.STAINED_CLAY, (byte) 9), 115 * 20);//Cyan clay
-        ticksToMelt.put(new MaterialData(Material.STAINED_CLAY, (byte) 10), 115 * 20);//Purple clay
-        ticksToMelt.put(new MaterialData(Material.STAINED_CLAY, (byte) 11), 115 * 20);//Blue clay
-        ticksToMelt.put(new MaterialData(Material.STAINED_CLAY, (byte) 12), 115 * 20);//Brown clay
-        ticksToMelt.put(new MaterialData(Material.STAINED_CLAY, (byte) 13), 115 * 20);//Green clay
-        ticksToMelt.put(new MaterialData(Material.STAINED_CLAY, (byte) 14), 115 * 20);//Red clay
-        ticksToMelt.put(new MaterialData(Material.STAINED_CLAY, (byte) 15), 115 * 20);//Black clay
+        ticksToMelt.put(new MaterialData(Material.GRAVEL), 120 * 20);
+        ticksToMelt.put(new MaterialData(Material.STONE), 120 * 20);
+        ticksToMelt.put(new MaterialData(Material.LOG, (byte) 0), 30 * 20);//Oak log
+        ticksToMelt.put(new MaterialData(Material.LOG, (byte) 1), 30 * 20);//Spruce log
+        ticksToMelt.put(new MaterialData(Material.LOG, (byte) 2), 30 * 20);//Birch log
+        ticksToMelt.put(new MaterialData(Material.LOG, (byte) 3), 30 * 20);//Jungle log
+        ticksToMelt.put(new MaterialData(Material.LOG_2, (byte) 0), 30 * 20);//Acacia log
+        ticksToMelt.put(new MaterialData(Material.LOG_2, (byte) 1), 30 * 20);//Dark oak log
+        ticksToMelt.put(new MaterialData(Material.SANDSTONE), 120 * 20);
+        ticksToMelt.put(new MaterialData(Material.HARD_CLAY), 120 * 20);
+        ticksToMelt.put(new MaterialData(Material.STAINED_CLAY, (byte) 0), 120 * 20);//White clay
+        ticksToMelt.put(new MaterialData(Material.STAINED_CLAY, (byte) 1), 120 * 20);//Orange clay
+        ticksToMelt.put(new MaterialData(Material.STAINED_CLAY, (byte) 2), 120 * 20);//Magenta clay
+        ticksToMelt.put(new MaterialData(Material.STAINED_CLAY, (byte) 3), 120 * 20);//Light blue clay
+        ticksToMelt.put(new MaterialData(Material.STAINED_CLAY, (byte) 4), 120 * 20);//Yellow clay
+        ticksToMelt.put(new MaterialData(Material.STAINED_CLAY, (byte) 5), 120 * 20);//Lime clay
+        ticksToMelt.put(new MaterialData(Material.STAINED_CLAY, (byte) 6), 120 * 20);//Pink clay
+        ticksToMelt.put(new MaterialData(Material.STAINED_CLAY, (byte) 7), 120 * 20);//Gray clay
+        ticksToMelt.put(new MaterialData(Material.STAINED_CLAY, (byte) 8), 120 * 20);//Light gray clay
+        ticksToMelt.put(new MaterialData(Material.STAINED_CLAY, (byte) 9), 120 * 20);//Cyan clay
+        ticksToMelt.put(new MaterialData(Material.STAINED_CLAY, (byte) 10), 120 * 20);//Purple clay
+        ticksToMelt.put(new MaterialData(Material.STAINED_CLAY, (byte) 11), 120 * 20);//Blue clay
+        ticksToMelt.put(new MaterialData(Material.STAINED_CLAY, (byte) 12), 120 * 20);//Brown clay
+        ticksToMelt.put(new MaterialData(Material.STAINED_CLAY, (byte) 13), 120 * 20);//Green clay
+        ticksToMelt.put(new MaterialData(Material.STAINED_CLAY, (byte) 14), 120 * 20);//Red clay
+        ticksToMelt.put(new MaterialData(Material.STAINED_CLAY, (byte) 15), 120 * 20);//Black clay
 
         //Advanced blocks
-        ticksToMelt.put(new MaterialData(Material.STEP, (byte) 0), 170 * 20);//Stone slab
-        ticksToMelt.put(new MaterialData(Material.STEP, (byte) 1), 170 * 20);//Sandstone slab
-        ticksToMelt.put(new MaterialData(Material.STEP, (byte) 3), 155 * 20);//Cobble slab
-        ticksToMelt.put(new MaterialData(Material.STEP, (byte) 4), 170 * 20);//Brick slab
-        ticksToMelt.put(new MaterialData(Material.STEP, (byte) 5), 175 * 20);//Stone brick slab
-        ticksToMelt.put(new MaterialData(Material.STEP, (byte) 7), 178 * 20);//Quartz slab
-        ticksToMelt.put(new MaterialData(Material.WOOD_STEP, (byte) 0), 50 * 20);//Oak slab
-        ticksToMelt.put(new MaterialData(Material.WOOD_STEP, (byte) 1), 50 * 20);//Spruce slab
-        ticksToMelt.put(new MaterialData(Material.WOOD_STEP, (byte) 2), 50 * 20);//Birch slab
-        ticksToMelt.put(new MaterialData(Material.WOOD_STEP, (byte) 3), 50 * 20);//Jungle slab
-        ticksToMelt.put(new MaterialData(Material.WOOD_STEP, (byte) 4), 50 * 20);//Acacia slab
-        ticksToMelt.put(new MaterialData(Material.WOOD_STEP, (byte) 5), 50 * 20);//Dark oak slab
-        ticksToMelt.put(new MaterialData(Material.MOSSY_COBBLESTONE), 165 * 20);
-        ticksToMelt.put(new MaterialData(Material.SMOOTH_BRICK, (byte) 2), 164 * 20);//Cracked stone brick
-        ticksToMelt.put(new MaterialData(Material.GLASS), 168 * 20);
+        ticksToMelt.put(new MaterialData(Material.STEP, (byte) 0), 120 * 20);//Stone slab
+        ticksToMelt.put(new MaterialData(Material.STEP, (byte) 1), 120 * 20);//Sandstone slab
+        ticksToMelt.put(new MaterialData(Material.STEP, (byte) 3), 120 * 20);//Cobble slab
+        ticksToMelt.put(new MaterialData(Material.STEP, (byte) 4), 120 * 20);//Brick slab
+        ticksToMelt.put(new MaterialData(Material.STEP, (byte) 5), 120 * 20);//Stone brick slab
+        ticksToMelt.put(new MaterialData(Material.STEP, (byte) 7), 120 * 20);//Quartz slab
+        ticksToMelt.put(new MaterialData(Material.WOOD_STEP, (byte) 0), 30 * 20);//Oak slab
+        ticksToMelt.put(new MaterialData(Material.WOOD_STEP, (byte) 1), 30 * 20);//Spruce slab
+        ticksToMelt.put(new MaterialData(Material.WOOD_STEP, (byte) 2), 30 * 20);//Birch slab
+        ticksToMelt.put(new MaterialData(Material.WOOD_STEP, (byte) 3), 30 * 20);//Jungle slab
+        ticksToMelt.put(new MaterialData(Material.WOOD_STEP, (byte) 4), 30 * 20);//Acacia slab
+        ticksToMelt.put(new MaterialData(Material.WOOD_STEP, (byte) 5), 30 * 20);//Dark oak slab
+        ticksToMelt.put(new MaterialData(Material.MOSSY_COBBLESTONE), 150 * 20);
+        ticksToMelt.put(new MaterialData(Material.SMOOTH_BRICK, (byte) 2), 120 * 20);//Cracked stone brick
+        ticksToMelt.put(new MaterialData(Material.GLASS), 150 * 20);
+        ticksToMelt.put(new MaterialData(Material.QUARTZ_BLOCK, (byte) 0), 150 * 20);
+        ticksToMelt.put(new MaterialData(Material.QUARTZ_BLOCK, (byte) 1), 150 * 20);
+        ticksToMelt.put(new MaterialData(Material.QUARTZ_BLOCK, (byte) 2), 150 * 20);
 
         //Survivor blocks
-        ticksToMelt.put(new MaterialData(Material.PACKED_ICE), 10 * 20);
-        ticksToMelt.put(new MaterialData(Material.BRICK), 180 * 20);
-        ticksToMelt.put(new MaterialData(Material.SMOOTH_BRICK, (byte) 0), 184 * 20);//Stone brick
-        ticksToMelt.put(new MaterialData(Material.THIN_GLASS), 168 * 20);
-        ticksToMelt.put(new MaterialData(Material.IRON_FENCE), 195 * 20);//Iron bars
-        ticksToMelt.put(new MaterialData(Material.IRON_BLOCK), 200 * 20);
+        ticksToMelt.put(new MaterialData(Material.PACKED_ICE), 30 * 20);
+        ticksToMelt.put(new MaterialData(Material.BRICK), 120 * 20);
+        ticksToMelt.put(new MaterialData(Material.SMOOTH_BRICK, (byte) 0), 180 * 20);//Stone brick
+        ticksToMelt.put(new MaterialData(Material.THIN_GLASS), 150 * 20);
+        ticksToMelt.put(new MaterialData(Material.IRON_FENCE), 150 * 20);//Iron bars
+        ticksToMelt.put(new MaterialData(Material.IRON_BLOCK), 180 * 20);
         ticksToMelt.put(new MaterialData(Material.LADDER), 30 * 20);
         ticksToMelt.put(new MaterialData(Material.ICE), 10 * 20);
 
         //Trusted blocks
-        ticksToMelt.put(new MaterialData(Material.WOOD_DOOR), 55 * 20);
-        ticksToMelt.put(new MaterialData(Material.WOODEN_DOOR), 55 * 20);
-        ticksToMelt.put(new MaterialData(Material.BOOKSHELF), 100 * 20);
-        ticksToMelt.put(new MaterialData(Material.FENCE), 53 * 20);
-        ticksToMelt.put(new MaterialData(Material.WOOD_STAIRS), 65 * 20);//Oak stairs
-        ticksToMelt.put(new MaterialData(Material.COBBLESTONE_STAIRS), 65 * 20);
-        ticksToMelt.put(new MaterialData(Material.BRICK_STAIRS), 65 * 20);
-        ticksToMelt.put(new MaterialData(Material.SMOOTH_STAIRS), 65 * 20);//Stone brick stairs
-        ticksToMelt.put(new MaterialData(Material.SANDSTONE_STAIRS), 65 * 20);
-        ticksToMelt.put(new MaterialData(Material.SPRUCE_WOOD_STAIRS), 65 * 20);
-        ticksToMelt.put(new MaterialData(Material.BIRCH_WOOD_STAIRS), 65 * 20);
-        ticksToMelt.put(new MaterialData(Material.JUNGLE_WOOD_STAIRS), 65 * 20);
-        ticksToMelt.put(new MaterialData(Material.QUARTZ_STAIRS), 65 * 20);
-        ticksToMelt.put(new MaterialData(Material.ACACIA_STAIRS), 65 * 20);
-        ticksToMelt.put(new MaterialData(Material.DARK_OAK_STAIRS), 65 * 20);
-        ticksToMelt.put(new MaterialData(Material.COBBLE_WALL, (byte) 0), 130 * 20);//Cobblestone wall
-        ticksToMelt.put(new MaterialData(Material.COBBLE_WALL, (byte) 1), 130 * 20);//Mossy cobblestone wall
-        ticksToMelt.put(new MaterialData(Material.STAINED_GLASS, (byte) 0), 168 * 20);//White glass
-        ticksToMelt.put(new MaterialData(Material.STAINED_GLASS, (byte) 1), 168 * 20);//Orange glass
-        ticksToMelt.put(new MaterialData(Material.STAINED_GLASS, (byte) 2), 168 * 20);//Magenta glass
-        ticksToMelt.put(new MaterialData(Material.STAINED_GLASS, (byte) 3), 168 * 20);//Light blue glass
-        ticksToMelt.put(new MaterialData(Material.STAINED_GLASS, (byte) 4), 168 * 20);//Yellow glass
-        ticksToMelt.put(new MaterialData(Material.STAINED_GLASS, (byte) 5), 168 * 20);//Lime glass
-        ticksToMelt.put(new MaterialData(Material.STAINED_GLASS, (byte) 6), 168 * 20);//Pink glass
-        ticksToMelt.put(new MaterialData(Material.STAINED_GLASS, (byte) 7), 168 * 20);//Gray glass
-        ticksToMelt.put(new MaterialData(Material.STAINED_GLASS, (byte) 8), 168 * 20);//Light gray glass
-        ticksToMelt.put(new MaterialData(Material.STAINED_GLASS, (byte) 9), 168 * 20);//Cyan glass
-        ticksToMelt.put(new MaterialData(Material.STAINED_GLASS, (byte) 10), 168 * 20);//Purple glass
-        ticksToMelt.put(new MaterialData(Material.STAINED_GLASS, (byte) 11), 168 * 20);//Blue glass
-        ticksToMelt.put(new MaterialData(Material.STAINED_GLASS, (byte) 12), 168 * 20);//Brown glass
-        ticksToMelt.put(new MaterialData(Material.STAINED_GLASS, (byte) 13), 168 * 20);//Green glass
-        ticksToMelt.put(new MaterialData(Material.STAINED_GLASS, (byte) 14), 168 * 20);//Red glass
-        ticksToMelt.put(new MaterialData(Material.STAINED_GLASS, (byte) 15), 168 * 20);//Black glass
-        ticksToMelt.put(new MaterialData(Material.STAINED_GLASS_PANE, (byte) 0), 168 * 20);//White glass pane
-        ticksToMelt.put(new MaterialData(Material.STAINED_GLASS_PANE, (byte) 1), 168 * 20);//Orange glass pane
-        ticksToMelt.put(new MaterialData(Material.STAINED_GLASS_PANE, (byte) 2), 168 * 20);//Magenta glass pane
-        ticksToMelt.put(new MaterialData(Material.STAINED_GLASS_PANE, (byte) 3), 168 * 20);//Light blue glass pane
-        ticksToMelt.put(new MaterialData(Material.STAINED_GLASS_PANE, (byte) 4), 168 * 20);//Yellow glass pane
-        ticksToMelt.put(new MaterialData(Material.STAINED_GLASS_PANE, (byte) 5), 168 * 20);//Lime glass pane
-        ticksToMelt.put(new MaterialData(Material.STAINED_GLASS_PANE, (byte) 6), 168 * 20);//Pink glass pane
-        ticksToMelt.put(new MaterialData(Material.STAINED_GLASS_PANE, (byte) 7), 168 * 20);//Gray glass pane
-        ticksToMelt.put(new MaterialData(Material.STAINED_GLASS_PANE, (byte) 8), 168 * 20);//Light gray glass pane
-        ticksToMelt.put(new MaterialData(Material.STAINED_GLASS_PANE, (byte) 9), 168 * 20);//Cyan glass pane
-        ticksToMelt.put(new MaterialData(Material.STAINED_GLASS_PANE, (byte) 10), 168 * 20);//Purple glass pane
-        ticksToMelt.put(new MaterialData(Material.STAINED_GLASS_PANE, (byte) 11), 168 * 20);//Blue glass pane
-        ticksToMelt.put(new MaterialData(Material.STAINED_GLASS_PANE, (byte) 12), 168 * 20);//Brown glass pane
-        ticksToMelt.put(new MaterialData(Material.STAINED_GLASS_PANE, (byte) 13), 168 * 20);//Green glass pane
-        ticksToMelt.put(new MaterialData(Material.STAINED_GLASS_PANE, (byte) 14), 168 * 20);//Red glass pane
-        ticksToMelt.put(new MaterialData(Material.STAINED_GLASS_PANE, (byte) 15), 168 * 20);//Black glass pane
-        ticksToMelt.put(new MaterialData(Material.PRISMARINE, (byte) 0), 195 * 20);//Prismarine
-        ticksToMelt.put(new MaterialData(Material.PRISMARINE, (byte) 1), 195 * 20);//Prismarine Bricks
-        ticksToMelt.put(new MaterialData(Material.PRISMARINE, (byte) 2), 195 * 20);//Dark Prismarine
+        ticksToMelt.put(new MaterialData(Material.WOOD_DOOR), 30 * 20);
+        ticksToMelt.put(new MaterialData(Material.WOODEN_DOOR), 30 * 20);
+        ticksToMelt.put(new MaterialData(Material.BOOKSHELF), 30 * 20);
+        ticksToMelt.put(new MaterialData(Material.FENCE), 30 * 20);
+        ticksToMelt.put(new MaterialData(Material.WOOD_STAIRS), 30 * 20);//Oak stairs
+        ticksToMelt.put(new MaterialData(Material.COBBLESTONE_STAIRS), 120 * 20);
+        ticksToMelt.put(new MaterialData(Material.BRICK_STAIRS), 120 * 20);
+        ticksToMelt.put(new MaterialData(Material.SMOOTH_STAIRS), 180 * 20);//Stone brick stairs
+        ticksToMelt.put(new MaterialData(Material.SANDSTONE_STAIRS), 120 * 20);
+        ticksToMelt.put(new MaterialData(Material.SPRUCE_WOOD_STAIRS), 30 * 20);
+        ticksToMelt.put(new MaterialData(Material.BIRCH_WOOD_STAIRS), 30 * 20);
+        ticksToMelt.put(new MaterialData(Material.JUNGLE_WOOD_STAIRS), 30 * 20);
+        ticksToMelt.put(new MaterialData(Material.QUARTZ_STAIRS), 150 * 20);
+        ticksToMelt.put(new MaterialData(Material.ACACIA_STAIRS), 30 * 20);
+        ticksToMelt.put(new MaterialData(Material.DARK_OAK_STAIRS), 30 * 20);
+        ticksToMelt.put(new MaterialData(Material.COBBLE_WALL, (byte) 0), 120 * 20);//Cobblestone wall
+        ticksToMelt.put(new MaterialData(Material.COBBLE_WALL, (byte) 1), 120 * 20);//Mossy cobblestone wall
+        ticksToMelt.put(new MaterialData(Material.STAINED_GLASS, (byte) 0), 150 * 20);//White glass
+        ticksToMelt.put(new MaterialData(Material.STAINED_GLASS, (byte) 1), 150 * 20);//Orange glass
+        ticksToMelt.put(new MaterialData(Material.STAINED_GLASS, (byte) 2), 150 * 20);//Magenta glass
+        ticksToMelt.put(new MaterialData(Material.STAINED_GLASS, (byte) 3), 150 * 20);//Light blue glass
+        ticksToMelt.put(new MaterialData(Material.STAINED_GLASS, (byte) 4), 150 * 20);//Yellow glass
+        ticksToMelt.put(new MaterialData(Material.STAINED_GLASS, (byte) 5), 150 * 20);//Lime glass
+        ticksToMelt.put(new MaterialData(Material.STAINED_GLASS, (byte) 6), 150 * 20);//Pink glass
+        ticksToMelt.put(new MaterialData(Material.STAINED_GLASS, (byte) 7), 150 * 20);//Gray glass
+        ticksToMelt.put(new MaterialData(Material.STAINED_GLASS, (byte) 8), 150 * 20);//Light gray glass
+        ticksToMelt.put(new MaterialData(Material.STAINED_GLASS, (byte) 9), 150 * 20);//Cyan glass
+        ticksToMelt.put(new MaterialData(Material.STAINED_GLASS, (byte) 10), 150 * 20);//Purple glass
+        ticksToMelt.put(new MaterialData(Material.STAINED_GLASS, (byte) 11), 150 * 20);//Blue glass
+        ticksToMelt.put(new MaterialData(Material.STAINED_GLASS, (byte) 12), 150 * 20);//Brown glass
+        ticksToMelt.put(new MaterialData(Material.STAINED_GLASS, (byte) 13), 150 * 20);//Green glass
+        ticksToMelt.put(new MaterialData(Material.STAINED_GLASS, (byte) 14), 150 * 20);//Red glass
+        ticksToMelt.put(new MaterialData(Material.STAINED_GLASS, (byte) 15), 150 * 20);//Black glass
+        ticksToMelt.put(new MaterialData(Material.STAINED_GLASS_PANE, (byte) 0), 150 * 20);//White glass pane
+        ticksToMelt.put(new MaterialData(Material.STAINED_GLASS_PANE, (byte) 1), 150 * 20);//Orange glass pane
+        ticksToMelt.put(new MaterialData(Material.STAINED_GLASS_PANE, (byte) 2), 150 * 20);//Magenta glass pane
+        ticksToMelt.put(new MaterialData(Material.STAINED_GLASS_PANE, (byte) 3), 150 * 20);//Light blue glass pane
+        ticksToMelt.put(new MaterialData(Material.STAINED_GLASS_PANE, (byte) 4), 150 * 20);//Yellow glass pane
+        ticksToMelt.put(new MaterialData(Material.STAINED_GLASS_PANE, (byte) 5), 150 * 20);//Lime glass pane
+        ticksToMelt.put(new MaterialData(Material.STAINED_GLASS_PANE, (byte) 6), 150 * 20);//Pink glass pane
+        ticksToMelt.put(new MaterialData(Material.STAINED_GLASS_PANE, (byte) 7), 150 * 20);//Gray glass pane
+        ticksToMelt.put(new MaterialData(Material.STAINED_GLASS_PANE, (byte) 8), 150 * 20);//Light gray glass pane
+        ticksToMelt.put(new MaterialData(Material.STAINED_GLASS_PANE, (byte) 9), 150 * 20);//Cyan glass pane
+        ticksToMelt.put(new MaterialData(Material.STAINED_GLASS_PANE, (byte) 10), 150 * 20);//Purple glass pane
+        ticksToMelt.put(new MaterialData(Material.STAINED_GLASS_PANE, (byte) 11), 150 * 20);//Blue glass pane
+        ticksToMelt.put(new MaterialData(Material.STAINED_GLASS_PANE, (byte) 12), 150 * 20);//Brown glass pane
+        ticksToMelt.put(new MaterialData(Material.STAINED_GLASS_PANE, (byte) 13), 150 * 20);//Green glass pane
+        ticksToMelt.put(new MaterialData(Material.STAINED_GLASS_PANE, (byte) 14), 150 * 20);//Red glass pane
+        ticksToMelt.put(new MaterialData(Material.STAINED_GLASS_PANE, (byte) 15), 150 * 20);//Black glass pane
+        ticksToMelt.put(new MaterialData(Material.PRISMARINE, (byte) 0), 210 * 20);//Prismarine
+        ticksToMelt.put(new MaterialData(Material.PRISMARINE, (byte) 1), 210 * 20);//Prismarine Bricks
+        ticksToMelt.put(new MaterialData(Material.PRISMARINE, (byte) 2), 210 * 20);//Dark Prismarine
 
 
         //Elder blocks
-        ticksToMelt.put(new MaterialData(Material.GLOWSTONE), 100 * 20);
-        ticksToMelt.put(new MaterialData(Material.STEP, (byte) 6), 165 * 20);//Nether brick slab
+        ticksToMelt.put(new MaterialData(Material.GLOWSTONE), 240 * 20);
+        ticksToMelt.put(new MaterialData(Material.STEP, (byte) 6), 300 * 20);//Nether brick slab
         ticksToMelt.put(new MaterialData(Material.NETHER_FENCE), 300 * 20);
         ticksToMelt.put(new MaterialData(Material.NETHERRACK), 330 * 20);
-        ticksToMelt.put(new MaterialData(Material.NETHER_BRICK), 370 * 20);
-        ticksToMelt.put(new MaterialData(Material.NETHER_BRICK_STAIRS), 250 * 20);
-        ticksToMelt.put(new MaterialData(Material.ENDER_STONE), 400 * 20);
+        ticksToMelt.put(new MaterialData(Material.NETHER_BRICK), 300 * 20);
+        ticksToMelt.put(new MaterialData(Material.NETHER_BRICK_STAIRS), 300 * 20);
+        ticksToMelt.put(new MaterialData(Material.ENDER_STONE), 360 * 20);
 
 
         //Donnor blocks Instant melt)

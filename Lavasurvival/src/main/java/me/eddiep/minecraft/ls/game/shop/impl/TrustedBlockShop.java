@@ -542,45 +542,45 @@ public class TrustedBlockShop extends Menu {
     protected int price(Material type) {
         switch (type) {
             case YELLOW_FLOWER:
-                return 30;
+                return 600;
             case RED_ROSE:
-                return 40;
+                return 600;
             case WOOD_DOOR:
-                return 40;
+                return 2100;
             case BOOKSHELF:
-                return 80;
+                return 2100;
             case FENCE:
-                return 130;
+                return 2100;
             case WOOD_STAIRS:
-                return 170;
+                return 2100;
             case COBBLESTONE_STAIRS:
-                return 170;
+                return 2500;
             case BRICK_STAIRS:
-                return 170;
+                return 2500;
             case SMOOTH_STAIRS:
-                return 170;
+                return 2500;
             case SANDSTONE_STAIRS:
-                return 170;
+                return 2500;
             case SPRUCE_WOOD_STAIRS:
-                return 170;
+                return 2100;
             case BIRCH_WOOD_STAIRS:
-                return 170;
+                return 2100;
             case JUNGLE_WOOD_STAIRS:
-                return 170;
+                return 2100;
             case QUARTZ_STAIRS:
-                return 170;
+                return 2500;
             case ACACIA_STAIRS:
-                return 170;
+                return 2100;
             case DARK_OAK_STAIRS:
-                return 170;
+                return 2100;
             case COBBLE_WALL:
-                return 190;
+                return 2500;
             case STAINED_GLASS:
-                return 400;
+                return 2100;
             case STAINED_GLASS_PANE:
-                return 400;
+                return 2100;
             case PRISMARINE:
-                return 100;
+                return 2500;
             default:
                 return 0;
         }

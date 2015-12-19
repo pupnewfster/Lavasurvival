@@ -199,20 +199,16 @@ public class AdvancedBlockShop extends Menu {
 
     protected int price(Material type) {
         switch (type) {
-            case GRAVEL:
-                return 75;
-            case STONE:
-                return 100;
             case STEP:
-                return 70;
+                return 1500;
             case WOOD_STEP:
-                return 70;
+                return 1200;
             case MOSSY_COBBLESTONE:
-                return 130;
+                return 1500;
             case SMOOTH_BRICK:
-                return 230;
+                return 1500;
             case GLASS:
-                return 400;
+                return 1200;
             default:
                 return 0;
         }

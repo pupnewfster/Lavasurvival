@@ -128,19 +128,19 @@ public class ElderBlockShop extends Menu {
     protected int price(Material type) {
         switch (type) {
             case GLOWSTONE:
-                return 580;
+                return 3250;
             case NETHER_FENCE:
-                return 720;
+                return 3500;
             case NETHERRACK:
-                return 720;
+                return 3500;
             case NETHER_BRICK_STAIRS:
-                return 730;
+                return 3500;
             case NETHER_BRICK:
-                return 900;
+                return 3500;
             case STEP:
-                return 900;
+                return 3500;
             case ENDER_STONE:
-                return 1100;
+                return 5000;
             default:
                 return 0;
         }
