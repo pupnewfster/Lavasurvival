@@ -127,7 +127,7 @@ public class UserInfo {
                         getPlayer().damage(Gamemode.DAMAGE);
                         Block b = getPlayer().getLocation().getBlock();
                         setInWater(((b.getType().equals(Material.WATER) || b.getType().equals(Material.STATIONARY_WATER)) && b.hasMetadata("classic_block")) ||
-                                ((b.getRelative(BlockFace.UP).getType().equals(Material.WATER) || b.getType().equals(Material.STATIONARY_WATER)) &&
+                                ((b.getRelative(BlockFace.UP).getType().equals(Material.WATER) || b.getRelative(BlockFace.UP).getType().equals(Material.STATIONARY_WATER)) &&
                                         b.getRelative(BlockFace.UP).hasMetadata("classic_block")));
                     }
                 }
