@@ -62,15 +62,6 @@ public class TrustedBlockShop extends Menu {
 
     @MenuItem(
             slot = 4,
-            item = @ItemStackAnnotation(material = Material.BOOKSHELF, name = "")
-    )
-    public void buyBookshelf(MenuPlayer player) {
-        if (canBuy(player))
-            getUser(player).buyBlock(Material.BOOKSHELF, price(Material.BOOKSHELF));
-    }
-
-    @MenuItem(
-            slot = 5,
             item = @ItemStackAnnotation(material = Material.FENCE, name = "")
     )
     public void buyFence(MenuPlayer player) {
@@ -79,7 +70,7 @@ public class TrustedBlockShop extends Menu {
     }
 
     @MenuItem(
-            slot = 6,
+            slot = 5,
             item = @ItemStackAnnotation(material = Material.WOOD_STAIRS, name = "")
     )
     public void buyOakStairs(MenuPlayer player) {
@@ -88,7 +79,7 @@ public class TrustedBlockShop extends Menu {
     }
 
     @MenuItem(
-            slot = 7,
+            slot = 6,
             item = @ItemStackAnnotation(material = Material.COBBLESTONE_STAIRS, name = "")
     )
     public void buyCobbleStairs(MenuPlayer player) {
@@ -97,7 +88,7 @@ public class TrustedBlockShop extends Menu {
     }
 
     @MenuItem(
-            slot = 8,
+            slot = 7,
             item = @ItemStackAnnotation(material = Material.BRICK_STAIRS, name = "")
     )
     public void buyBrickStairs(MenuPlayer player) {
@@ -106,7 +97,7 @@ public class TrustedBlockShop extends Menu {
     }
 
     @MenuItem(
-            slot = 9,
+            slot = 8,
             item = @ItemStackAnnotation(material = Material.SMOOTH_STAIRS, name = "")
     )
     public void buyStoneBrickStairs(MenuPlayer player) {
@@ -115,12 +106,21 @@ public class TrustedBlockShop extends Menu {
     }
 
     @MenuItem(
-            slot = 10,
+            slot = 9,
             item = @ItemStackAnnotation(material = Material.SANDSTONE_STAIRS, name = "")
     )
     public void buySandstoneStairs(MenuPlayer player) {
         if (canBuy(player))
             getUser(player).buyBlock(Material.SANDSTONE_STAIRS, price(Material.SANDSTONE_STAIRS));
+    }
+
+    @MenuItem(
+            slot = 10,
+            item = @ItemStackAnnotation(material = Material.RED_SANDSTONE_STAIRS, name = "")
+    )
+    public void buyRedSandstoneStairs(MenuPlayer player) {
+        if (canBuy(player))
+            getUser(player).buyBlock(Material.RED_SANDSTONE_STAIRS, price(Material.RED_SANDSTONE_STAIRS));
     }
 
     @MenuItem(
@@ -547,8 +547,6 @@ public class TrustedBlockShop extends Menu {
                 return 600;
             case WOOD_DOOR:
                 return 2100;
-            case BOOKSHELF:
-                return 2100;
             case FENCE:
                 return 2100;
             case WOOD_STAIRS:
@@ -560,6 +558,8 @@ public class TrustedBlockShop extends Menu {
             case SMOOTH_STAIRS:
                 return 2500;
             case SANDSTONE_STAIRS:
+                return 2500;
+            case RED_SANDSTONE_STAIRS:
                 return 2500;
             case SPRUCE_WOOD_STAIRS:
                 return 2100;

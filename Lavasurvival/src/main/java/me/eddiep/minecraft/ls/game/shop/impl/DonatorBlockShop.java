@@ -382,6 +382,15 @@ public class DonatorBlockShop extends Menu {
             getUser(player).buyBlock(Material.FLOWER_POT_ITEM, price(Material.FLOWER_POT_ITEM));
     }
 
+    @MenuItem(
+            slot = 40,
+            item = @ItemStackAnnotation(material = Material.BOOKSHELF, name = "")
+    )
+    public void buyBookshelf(MenuPlayer player) {
+        if (canBuy(player))
+            getUser(player).buyBlock(Material.BOOKSHELF, price(Material.BOOKSHELF));
+    }
+
     private UserInfo getUser(MenuPlayer player) {
         return Lavasurvival.INSTANCE.getUserManager().getUser(player.getBukkit().getUniqueId());
     }
@@ -446,6 +455,8 @@ public class DonatorBlockShop extends Menu {
             case CARPET:
                 return 1500;
             case FLOWER_POT_ITEM:
+                return 1500;
+            case BOOKSHELF:
                 return 1500;
             default:
                 return 0;

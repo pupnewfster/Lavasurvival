@@ -19,7 +19,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.Arrays;
 
-@MenuInventory(slots = 27, name = "Basic Block Shop")
+@MenuInventory(slots = 36, name = "Basic Block Shop")
 public class BasicBlockShop extends Menu {
     public BasicBlockShop(MenuManager manager, Inventory inv) {
         super(manager, inv);
@@ -116,6 +116,15 @@ public class BasicBlockShop extends Menu {
 
     @MenuItem(
             slot = 10,
+            item = @ItemStackAnnotation(material = Material.RED_SANDSTONE, name = "")
+    )
+    public void buyRedSandstone(MenuPlayer player) {
+        if (canBuy(player))
+            getUser(player).buyBlock(Material.RED_SANDSTONE, price(Material.RED_SANDSTONE));
+    }
+
+    @MenuItem(
+            slot = 11,
             item = @ItemStackAnnotation(material = Material.HARD_CLAY, name = "")
     )
     public void buyHardClay(MenuPlayer player) {
@@ -124,7 +133,7 @@ public class BasicBlockShop extends Menu {
     }
 
     @MenuItem(
-            slot = 11,
+            slot = 12,
             item = @ItemStackAnnotation(material = Material.STAINED_CLAY, durability = 0, name = "")
     )
     public void buyWhiteClay(MenuPlayer player) {
@@ -133,7 +142,7 @@ public class BasicBlockShop extends Menu {
     }
 
     @MenuItem(
-            slot = 12,
+            slot = 13,
             item = @ItemStackAnnotation(material = Material.STAINED_CLAY, durability = 1, name = "")
     )
     public void buyOrangeClay(MenuPlayer player) {
@@ -142,7 +151,7 @@ public class BasicBlockShop extends Menu {
     }
 
     @MenuItem(
-            slot = 13,
+            slot = 14,
             item = @ItemStackAnnotation(material = Material.STAINED_CLAY, durability = 2, name = "")
     )
     public void buyMagentaClay(MenuPlayer player) {
@@ -151,7 +160,7 @@ public class BasicBlockShop extends Menu {
     }
 
     @MenuItem(
-            slot = 14,
+            slot = 15,
             item = @ItemStackAnnotation(material = Material.STAINED_CLAY, durability = 3, name = "")
     )
     public void buyLightBlueClay(MenuPlayer player) {
@@ -160,7 +169,7 @@ public class BasicBlockShop extends Menu {
     }
 
     @MenuItem(
-            slot = 15,
+            slot = 16,
             item = @ItemStackAnnotation(material = Material.STAINED_CLAY, durability = 4, name = "")
     )
     public void buyYellowClay(MenuPlayer player) {
@@ -169,7 +178,7 @@ public class BasicBlockShop extends Menu {
     }
 
     @MenuItem(
-            slot = 16,
+            slot = 17,
             item = @ItemStackAnnotation(material = Material.STAINED_CLAY, durability = 5, name = "")
     )
     public void buyLimeClay(MenuPlayer player) {
@@ -178,7 +187,7 @@ public class BasicBlockShop extends Menu {
     }
 
     @MenuItem(
-            slot = 17,
+            slot = 18,
             item = @ItemStackAnnotation(material = Material.STAINED_CLAY, durability = 6, name = "")
     )
     public void buyPinkClay(MenuPlayer player) {
@@ -187,7 +196,7 @@ public class BasicBlockShop extends Menu {
     }
 
     @MenuItem(
-            slot = 18,
+            slot = 19,
             item = @ItemStackAnnotation(material = Material.STAINED_CLAY, durability = 7, name = "")
     )
     public void buyGrayClay(MenuPlayer player) {
@@ -196,7 +205,7 @@ public class BasicBlockShop extends Menu {
     }
 
     @MenuItem(
-            slot = 19,
+            slot = 20,
             item = @ItemStackAnnotation(material = Material.STAINED_CLAY, durability = 8, name = "")
     )
     public void buyLightGrayClay(MenuPlayer player) {
@@ -205,7 +214,7 @@ public class BasicBlockShop extends Menu {
     }
 
     @MenuItem(
-            slot = 20,
+            slot = 21,
             item = @ItemStackAnnotation(material = Material.STAINED_CLAY, durability = 9, name = "")
     )
     public void buyCyanClay(MenuPlayer player) {
@@ -214,7 +223,7 @@ public class BasicBlockShop extends Menu {
     }
 
     @MenuItem(
-            slot = 21,
+            slot = 22,
             item = @ItemStackAnnotation(material = Material.STAINED_CLAY, durability = 10, name = "")
     )
     public void buyPurpleClay(MenuPlayer player) {
@@ -223,7 +232,7 @@ public class BasicBlockShop extends Menu {
     }
 
     @MenuItem(
-            slot = 22,
+            slot = 23,
             item = @ItemStackAnnotation(material = Material.STAINED_CLAY, durability = 11, name = "")
     )
     public void buyBlueClay(MenuPlayer player) {
@@ -232,7 +241,7 @@ public class BasicBlockShop extends Menu {
     }
 
     @MenuItem(
-            slot = 23,
+            slot = 24,
             item = @ItemStackAnnotation(material = Material.STAINED_CLAY, durability = 12, name = "")
     )
     public void buyBrownClay(MenuPlayer player) {
@@ -241,7 +250,7 @@ public class BasicBlockShop extends Menu {
     }
 
     @MenuItem(
-            slot = 24,
+            slot = 25,
             item = @ItemStackAnnotation(material = Material.STAINED_CLAY, durability = 13, name = "")
     )
     public void buyGreenClay(MenuPlayer player) {
@@ -250,7 +259,7 @@ public class BasicBlockShop extends Menu {
     }
 
     @MenuItem(
-            slot = 25,
+            slot = 26,
             item = @ItemStackAnnotation(material = Material.STAINED_CLAY, durability = 14, name = "")
     )
     public void buyRedClay(MenuPlayer player) {
@@ -259,7 +268,7 @@ public class BasicBlockShop extends Menu {
     }
 
     @MenuItem(
-            slot = 26,
+            slot = 27,
             item = @ItemStackAnnotation(material = Material.STAINED_CLAY, durability = 15, name = "")
     )
     public void buyBlackClay(MenuPlayer player) {
@@ -307,6 +316,8 @@ public class BasicBlockShop extends Menu {
             case LOG_2:
                 return 600;
             case SANDSTONE:
+                return 1000;
+            case RED_SANDSTONE:
                 return 1000;
             case HARD_CLAY:
                 return 1000;

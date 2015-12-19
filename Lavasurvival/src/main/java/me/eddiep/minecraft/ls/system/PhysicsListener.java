@@ -46,6 +46,7 @@ public class PhysicsListener implements Listener {
         ticksToMelt.put(new MaterialData(Material.LOG_2, (byte) 0), 30 * 20);//Acacia log
         ticksToMelt.put(new MaterialData(Material.LOG_2, (byte) 1), 30 * 20);//Dark oak log
         ticksToMelt.put(new MaterialData(Material.SANDSTONE), 120 * 20);
+        ticksToMelt.put(new MaterialData(Material.RED_SANDSTONE), 120 * 20);
         ticksToMelt.put(new MaterialData(Material.HARD_CLAY), 120 * 20);
         ticksToMelt.put(new MaterialData(Material.STAINED_CLAY, (byte) 0), 120 * 20);//White clay
         ticksToMelt.put(new MaterialData(Material.STAINED_CLAY, (byte) 1), 120 * 20);//Orange clay
@@ -128,13 +129,13 @@ public class PhysicsListener implements Listener {
         //Trusted blocks
         ticksToMelt.put(new MaterialData(Material.WOOD_DOOR), 30 * 20);
         ticksToMelt.put(new MaterialData(Material.WOODEN_DOOR), 30 * 20);
-        ticksToMelt.put(new MaterialData(Material.BOOKSHELF), 30 * 20);
         ticksToMelt.put(new MaterialData(Material.FENCE), 30 * 20);
         ticksToMelt.put(new MaterialData(Material.WOOD_STAIRS), 30 * 20);//Oak stairs
         ticksToMelt.put(new MaterialData(Material.COBBLESTONE_STAIRS), 120 * 20);
         ticksToMelt.put(new MaterialData(Material.BRICK_STAIRS), 120 * 20);
         ticksToMelt.put(new MaterialData(Material.SMOOTH_STAIRS), 180 * 20);//Stone brick stairs
         ticksToMelt.put(new MaterialData(Material.SANDSTONE_STAIRS), 120 * 20);
+        ticksToMelt.put(new MaterialData(Material.RED_SANDSTONE_STAIRS), 120 * 20);
         ticksToMelt.put(new MaterialData(Material.SPRUCE_WOOD_STAIRS), 30 * 20);
         ticksToMelt.put(new MaterialData(Material.BIRCH_WOOD_STAIRS), 30 * 20);
         ticksToMelt.put(new MaterialData(Material.JUNGLE_WOOD_STAIRS), 30 * 20);
@@ -239,6 +240,7 @@ public class PhysicsListener implements Listener {
         ticksToMelt.put(new MaterialData(Material.CARPET, (byte) 15), 0);//Black carpet
         ticksToMelt.put(new MaterialData(Material.FLOWER_POT_ITEM), 0);
         ticksToMelt.put(new MaterialData(Material.FLOWER_POT), 0);
+        ticksToMelt.put(new MaterialData(Material.BOOKSHELF), 0);
 
 
         //Unburnable
