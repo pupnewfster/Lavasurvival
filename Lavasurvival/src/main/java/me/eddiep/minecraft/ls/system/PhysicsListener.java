@@ -3,6 +3,7 @@ package me.eddiep.minecraft.ls.system;
 import me.eddiep.handles.ClassicPhysicsEvent;
 import me.eddiep.minecraft.ls.Lavasurvival;
 import me.eddiep.minecraft.ls.game.Gamemode;
+import me.eddiep.minecraft.ls.game.LavaMap;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -259,11 +260,17 @@ public class PhysicsListener implements Listener {
 
     @EventHandler(priority = EventPriority.MONITOR)
     public void onClassicPhysics(ClassicPhysicsEvent event) {
-        synchronized (toTasks) {
-            if (!event.isClassicEvent() || Gamemode.getCurrentGame().hasEnded() || event.getLocation() == null || event.getLocation().getWorld() == null ||
-                    !event.getLocation().getChunk().isLoaded() || event.getLocation().getBlock() == null)
-                return;
+        if (!event.isClassicEvent() || Gamemode.getCurrentGame().hasEnded() || event.getLocation() == null || event.getLocation().getWorld() == null ||
+                !event.getLocation().getChunk().isLoaded() || event.getLocation().getBlock() == null)
+            return;
 
+        LavaMap map = Gamemode.getCurrentMap();
+        if (map.isInSafeZone(event.getLocation())) {
+            event.setCancelled(true); //Do not allow physics inside the safezone!
+            return;
+        }
+
+        synchronized (toTasks) {
             Block blockChecking = event.getOldBlock();
             if (blockChecking.getType().equals(Material.AIR))
                 return;

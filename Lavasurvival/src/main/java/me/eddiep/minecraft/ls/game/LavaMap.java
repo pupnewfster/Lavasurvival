@@ -158,8 +158,15 @@ public class LavaMap {
     }
 
     public boolean isInSafeZone(Location loc) {
-        return this.minSafeZone.getX() <= loc.getX() && this.minSafeZone.getY() <= loc.getY() && this.minSafeZone.getZ() <= loc.getZ() &&
-                loc.getX() <= this.maxSafeZone.getX() && loc.getY() <= this.maxSafeZone.getY() && loc.getZ() <= this.maxSafeZone.getZ();
+        double minX = this.minSafeZone.getX() - 1;
+        double maxX = this.maxSafeZone.getX() + 1;
+        double minY = this.minSafeZone.getY() - 1;
+        double maxY = this.maxSafeZone.getY() + 1;
+        double minZ = this.minSafeZone.getZ() - 1;
+        double maxZ = this.maxSafeZone.getZ() + 1;
+
+        return minX <= loc.getX() && minY <= loc.getY() && minZ <= loc.getZ() &&
+                loc.getX() <= maxX && loc.getY() <= maxY && loc.getZ() <= maxZ;
     }
 
     public String getName() {
