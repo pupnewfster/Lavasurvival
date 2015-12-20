@@ -413,7 +413,7 @@ public abstract class Gamemode {
             int highest = 0;
 
             for (int i = 0; i < nextMaps.length; i++) {
-                globalMessage(ChatColor.BOLD + next.getName() + ChatColor.RESET + " - " + votes[i] + " votes");
+                globalMessage(ChatColor.BOLD + nextMaps[i].getName() + ChatColor.RESET + " - " + votes[i] + " votes");
 
                 if (next == null)
                     next = nextMaps[i];
