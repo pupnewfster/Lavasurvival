@@ -54,8 +54,9 @@ public abstract class Gamemode {
     public static final Random RANDOM = new Random();
     public static double DAMAGE = 3, DAMAGE_FREQUENCY = 0.5;
     public static boolean LAVA = true, voting = false;
-    private static LavaMap[] nextMaps = new LavaMap[VOTE_COUNT];
-    private static int[] votes = new int[VOTE_COUNT];
+    private LavaMap[] nextMaps = new LavaMap[VOTE_COUNT];
+    private int[] votes = new int[VOTE_COUNT];
+    private int voteCount;
     private static LavaMap lastMap, currentMap;
     private static Team alive, dead;
     private static Scoreboard scoreboard;
@@ -320,17 +321,19 @@ public abstract class Gamemode {
 
     public void voteFor(int index) {
         votes[index]++;
+        voteCount++;
     }
 
     private ArrayList<OfflinePlayer> voted = new ArrayList<>();
     public void voteFor(int number, Player player) {
-        if (number >= Gamemode.nextMaps.length) {
-            player.sendMessage(ChatColor.DARK_RED + "Invalid number! Please choose a number between (1 - " + Gamemode.nextMaps.length + ").");
+        if (number >= nextMaps.length) {
+            player.sendMessage(ChatColor.DARK_RED + "Invalid number! Please choose a number between (1 - " + nextMaps.length + ").");
             return;
         }
         voted.add(player);
-        Gamemode.votes[number]++;
-        player.sendMessage(ChatColor.GREEN + "+ " + ChatColor.RESET + "" + ChatColor.BOLD + "You voted for " + Gamemode.nextMaps[number].getName() + "!");
+        votes[number]++;
+        voteCount++;
+        player.sendMessage(ChatColor.GREEN + "+ " + ChatColor.RESET + "" + ChatColor.BOLD + "You voted for " + nextMaps[number].getName() + "!");
     }
 
     public boolean isVoting() {
@@ -391,16 +394,27 @@ public abstract class Gamemode {
             globalRawMessage(message);
             globalMessageNoPrefix(" ");
 
-            try {
-                Thread.sleep(50000);
-            } catch (InterruptedException ignored) {
+            long start = System.currentTimeMillis();
+            while (true) {
+                long cur = System.currentTimeMillis();
+                if (voteCount >= Bukkit.getServer().getOnlinePlayers().size() || cur - start >= 50000)
+                    break;
+
+                try {
+                    Thread.sleep(500);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
             }
 
             voting = false;
+            voteCount = 0;
             LavaMap next = null;
             int highest = 0;
 
             for (int i = 0; i < nextMaps.length; i++) {
+                globalMessage(ChatColor.BOLD + next.getName() + ChatColor.RESET + " - " + votes[i] + " votes");
+
                 if (next == null)
                     next = nextMaps[i];
                 else if (votes[i] > highest) {
