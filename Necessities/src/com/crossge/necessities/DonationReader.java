@@ -25,24 +25,36 @@ public class DonationReader {
             Class.forName("com.mysql.jdbc.Driver");
             Connection conn = DriverManager.getConnection("jdbc:mysql://egservers.net:3306/donation", "donation", this.pass);
             Statement stmt = conn.createStatement();
+            Statement stmt2 = conn.createStatement();
             ResultSet rs = stmt.executeQuery("SELECT * FROM actions");
+            ResultSet rs2 = stmt2.executeQuery("SELECT * FROM steamuuiddb");
             while (rs.next()) {
-                if (Integer.parseInt(rs.getString("server").replaceAll("[^0-9]", "")) == 7 && rs.getInt("delivered") == 0) {
-                    UUID uuid = UUID.fromString(rs.getString("uuid").replaceAll("(\\w{8})(\\w{4})(\\w{4})(\\w{4})(\\w{12})", "$1-$2-$3-$4-$5"));
-                    if (get.hasJoined(uuid)) {
+                if (Integer.parseInt(rs.getString("server").replaceAll("[^0-9]", "")) == 9 && rs.getInt("delivered") == 0) {
+                    int steamID = rs.getInt("steamID");
+                    UUID uuid = null;
+                    while (rs2.next()) {
+                        if (rs2.getInt("steamID") == steamID) {
+                            uuid = UUID.fromString(rs2.getString("uuid").replaceAll("(\\w{8})(\\w{4})(\\w{4})(\\w{4})(\\w{12})", "$1-$2-$3-$4-$5"));
+                            break;
+                        }
+                    }
+                    if (uuid != null && get.hasJoined(uuid)) {
                         User u = um.getUser(uuid);
                         String subrank = "Necessities.Donator" + rs.getInt("package");
                         if (!rm.validSubrank(subrank))
                             continue;
                         um.updateUserSubrank(uuid, rm.getSub(subrank), false);
                         Bukkit.broadcastMessage(u.getDispName() + var.getMessages() + " just donated.");
-                        PreparedStatement stmt2 = conn.prepareStatement("UPDATE actions SET delivered =" + 1);
-                        stmt2.executeUpdate();
+                        PreparedStatement stmt3 = conn.prepareStatement("UPDATE actions SET delivered =" + 1 + " WHERE id = " + rs.getInt("id"));
+                        stmt3.executeUpdate();
+                        stmt3.close();
                     }
                 }
             }
             rs.close();
+            rs2.close();
             stmt.close();
+            stmt2.close();
             conn.close();
         } catch (Exception e) { }
     }
