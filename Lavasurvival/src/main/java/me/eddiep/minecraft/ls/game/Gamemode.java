@@ -96,9 +96,10 @@ public abstract class Gamemode {
     public static void cleanup() {
         clearTeam(alive);
         clearTeam(dead);
-
-        listener.cleanup();
-        physicsListener.cleanup();
+        if (listener != null)
+            listener.cleanup();
+        if (physicsListener != null)
+            physicsListener.cleanup();
     }
 
     public void prepare() {
