@@ -1,7 +1,11 @@
 package me.eddiep.minecraft.ls.ranks;
 
+import com.crossge.necessities.RankManager.Rank;
 import me.eddiep.minecraft.ls.Lavasurvival;
 import me.eddiep.minecraft.ls.game.Gamemode;
+import me.eddiep.minecraft.ls.glicko.Glicko2;
+import me.eddiep.minecraft.ls.glicko.GlickoRank;
+import me.eddiep.minecraft.ls.glicko.Rankable;
 import me.eddiep.minecraft.ls.system.BukkitUtils;
 import me.eddiep.minecraft.ls.system.PhysicsListener;
 import org.bukkit.Bukkit;
@@ -22,7 +26,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
-public class UserInfo {
+public class UserInfo implements Rankable {
     private File configFileUsers = new File(Lavasurvival.INSTANCE.getDataFolder(), "userinfo.yml");
     private ArrayList<MaterialData> ownedBlocks = new ArrayList<>();
     private long lastBreak = System.currentTimeMillis(), blockChangeCount;
@@ -31,15 +35,18 @@ public class UserInfo {
     private int taskID = 0;
     private UUID userUUID;
     private ItemStack[] BANK = new ItemStack[54];
+    private GlickoRank rank;
 
     public UserInfo(Player p) {
         this.bukkitPlayer = p;
         this.userUUID = p.getUniqueId();
+        rank = Glicko2.getInstance().defaultRank();
         load();
     }
 
     public UserInfo(UUID uuid) {
         this.userUUID = uuid;
+        rank = Glicko2.getInstance().defaultRank();
         load();
     }
 
@@ -62,6 +69,8 @@ public class UserInfo {
                 BANK = temp.toArray(new ItemStack[temp.size()]);
             }
         }
+
+        rank.load(getUUID().toString(), configUsers);
 
         if (configUsers.contains(getUUID().toString() + ".boughtBlocks") || !this.ownedBlocks.isEmpty()) {
             for (String key : configUsers.getStringList(getUUID().toString() + ".boughtBlocks"))
@@ -113,6 +122,7 @@ public class UserInfo {
                 bl.add(data.getItemType().toString() + "-" + data.getData());
         configUsers.set(getUUID().toString() + ".boughtBlocks", bl);
         configUsers.set(getUUID() + ".bank", BANK);
+        rank.save(getUUID().toString(), configUsers);
         try {
             configUsers.save(configFileUsers);
         } catch (Exception e) {
@@ -236,5 +246,10 @@ public class UserInfo {
 
     public void incrimentBlockCount() {
         blockChangeCount++;
+    }
+
+    @Override
+    public GlickoRank getRanking() {
+        return rank;
     }
 }

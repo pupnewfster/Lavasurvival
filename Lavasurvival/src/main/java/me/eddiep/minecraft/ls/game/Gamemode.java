@@ -257,7 +257,7 @@ public abstract class Gamemode {
             return;
 
         end();
-        UserManager um = Lavasurvival.INSTANCE.getUserManager();
+        final UserManager um = Lavasurvival.INSTANCE.getUserManager();
         GetUUID get = Lavasurvival.INSTANCE.getUUIDs();
 
         int amount = alive.getSize();
@@ -285,6 +285,8 @@ public abstract class Gamemode {
             globalMessage("Congratulations to all " + amount + " survivors!");
         }
 
+        final HashMap<Player, Double> winners = new HashMap<>();
+
         for (String name : alive.getEntries()) {
             if (name == null)
                 continue;
@@ -295,8 +297,35 @@ public abstract class Gamemode {
             if (id == null || player == null)
                 continue;
             double reward = calculateReward(player);
+
+            winners.put(player, reward);
+
             Lavasurvival.INSTANCE.getEconomy().depositPlayer(player, reward);
             player.getPlayer().sendMessage(ChatColor.GREEN + "+ " + ChatColor.GOLD + "You won " + ChatColor.BOLD + reward + ChatColor.RESET + "" + ChatColor.GOLD + " GGs!");
+        }
+
+        for (Player player : winners.keySet()) {
+            double reward = winners.get(player);
+            UserInfo info = um.getUser(player.getUniqueId());
+
+            for (Player other : winners.keySet()) {
+                if (player.equals(other))
+                    continue;
+
+                UserInfo otherInfo = um.getUser(other.getUniqueId());
+
+                double otherReward = winners.get(other);
+
+                double result;
+                if (reward > otherReward)
+                    result = 1; //They won
+                else if (reward < otherReward)
+                    result = 0; //They lost
+                else
+                    result = 0.5; //They tied
+
+                info.getRanking().addResult(otherInfo, result);
+            }
         }
 
         Lavasurvival.INSTANCE.MONEY_VIEWER.run();
@@ -306,6 +335,24 @@ public abstract class Gamemode {
             @Override
             public void run() {
                 startVoting();
+            }
+        }).start();
+
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                System.out.println("Updating ratings..");
+                int count = 0;
+                long start = System.currentTimeMillis();
+                for (Player p : winners.keySet()) {
+                    UserInfo info = um.getUser(p.getUniqueId());
+
+                    if (info.getRanking().shouldUpdate()) {
+                        info.getRanking().update();
+                        count++;
+                    }
+                }
+                System.out.println("Updated " + count + " in " + (System.currentTimeMillis() - start) + "ms !");
             }
         }).start();
     }
