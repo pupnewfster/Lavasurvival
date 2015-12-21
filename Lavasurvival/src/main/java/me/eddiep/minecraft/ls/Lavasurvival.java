@@ -182,8 +182,12 @@ public class Lavasurvival extends JavaPlugin {
         ArrayList<String> lore2 = new ArrayList<>();
         lore2.add(ChatColor.GREEN + "" + ChatColor.ITALIC + "Level up!");
 
-        ShopFactory.createShop(this, "Block Shop", BlockShopCategory.class, Material.EMERALD, lore);
-        ShopFactory.createShop(this, "Rank Shop", RankShop.class, Material.EXP_BOTTLE, lore2);
+        ArrayList<String> lore3 = new ArrayList<>();
+        lore3.add(ChatColor.AQUA + "" + ChatColor.ITALIC + "Store unused blocks!");
+
+        ShopFactory.createShop(this, "Block Shop", new MenuShopManager(BlockShopCategory.class), Material.EMERALD, lore);
+        ShopFactory.createShop(this, "Rank Shop", new MenuShopManager(RankShop.class), Material.EXP_BOTTLE, lore2);
+        ShopFactory.createShop(this, "Bank", new BankShopManager(), Material.CHEST, lore3);
     }
 
     private void init() {

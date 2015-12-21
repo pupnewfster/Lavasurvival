@@ -11,6 +11,7 @@ import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.material.MaterialData;
@@ -29,6 +30,7 @@ public class UserInfo {
     private Player bukkitPlayer;
     private int taskID = 0;
     private UUID userUUID;
+    private ItemStack[] BANK = new ItemStack[54];
 
     public UserInfo(Player p) {
         this.bukkitPlayer = p;
@@ -53,6 +55,14 @@ public class UserInfo {
         YamlConfiguration configUsers = YamlConfiguration.loadConfiguration(configFileUsers);
         if (!configUsers.contains(getUUID().toString()))
             return;
+
+        if (configUsers.contains(getUUID() + ".bank")) {
+            List<ItemStack> temp = (List<ItemStack>) configUsers.getList(getUUID() + ".bank");
+            if (temp != null) {
+                BANK = temp.toArray(new ItemStack[temp.size()]);
+            }
+        }
+
         if (configUsers.contains(getUUID().toString() + ".boughtBlocks") || !this.ownedBlocks.isEmpty()) {
             for (String key : configUsers.getStringList(getUUID().toString() + ".boughtBlocks"))
                 if (!key.equals("") && key.split("-").length == 2) {
@@ -70,6 +80,25 @@ public class UserInfo {
         }
     }
 
+    public Inventory createBankInventory() {
+        Inventory view = Bukkit.createInventory(null, 54, "Bank");
+        for (int i = 0; i < BANK.length; i++) {
+            ItemStack item = BANK[i];
+            if (item == null)
+                continue;
+
+            view.setItem(i, item);
+        }
+
+        return view;
+    }
+
+    public void saveBank(Inventory inventory) {
+        for (int i = 0; i < inventory.getSize(); i++) {
+            BANK[i] = inventory.getItem(i);
+        }
+    }
+
     public void save() {
         if (this.ownedBlocks.isEmpty())
             return;
@@ -83,6 +112,7 @@ public class UserInfo {
             if (!bl.contains(data.getItemType().toString() + "-" + data.getData()))
                 bl.add(data.getItemType().toString() + "-" + data.getData());
         configUsers.set(getUUID().toString() + ".boughtBlocks", bl);
+        configUsers.set(getUUID() + ".bank", BANK);
         try {
             configUsers.save(configFileUsers);
         } catch (Exception e) {
