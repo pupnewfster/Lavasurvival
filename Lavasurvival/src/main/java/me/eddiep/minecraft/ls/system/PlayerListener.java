@@ -129,6 +129,10 @@ public class PlayerListener implements Listener {
                     event.getPlayer().sendMessage(ChatColor.RED + "" + ChatColor.BOLD + "You are building to high!");
                     return;
                 }
+                if (Gamemode.getCurrentMap().isInSafeZone(block.getLocation())) {
+                    event.getPlayer().sendMessage(ChatColor.RED + "" + ChatColor.BOLD + "You are not allowed to build in spawn!");
+                    return;
+                }
                 UserInfo u = um.getUser(event.getPlayer().getUniqueId());
                 if (System.currentTimeMillis() - u.getLastBreak() <= 100)//So that two blocks don't break instantly, may need to be adjusted
                     return;
