@@ -257,6 +257,9 @@ public abstract class Gamemode {
             return;
 
         end();
+        UserManager um = Lavasurvival.INSTANCE.getUserManager();
+        GetUUID get = Lavasurvival.INSTANCE.getUUIDs();
+
         int amount = alive.getSize();
         if (amount == 0) {
             globalMessage("No one survived..");
