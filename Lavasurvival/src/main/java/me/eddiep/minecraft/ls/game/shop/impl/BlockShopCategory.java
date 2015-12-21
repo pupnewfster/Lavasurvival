@@ -55,11 +55,11 @@ public class BlockShopCategory extends Menu {
         player.setActiveMenu(new ElderBlockShop(player.getMenuManager(), null));
     }
 
-    @MenuItem(
+    /*@MenuItem(
             slot = 6,
             item = @ItemStackAnnotation(material = Material.RED_ROSE, name = "Donator Shop", lore = {"Decorative blocks"})
     )
     public void Dontator(MenuPlayer player) {
         player.setActiveMenu(new DonatorBlockShop(player.getMenuManager(), null));
-    }
+    }*/
 }
