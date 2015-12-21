@@ -29,7 +29,7 @@ public class Flood extends Gamemode {
 
         super.start();
 
-        duration = Gamemode.RANDOM.nextInt(300000) + 600000;
+        duration = Gamemode.RANDOM.nextInt(180000) + 300000;
         globalMessage("The " + (LAVA ? "lava" : "water") + " will pour in " + ChatColor.DARK_RED + TimeUtils.toFriendlyTime(duration));
         gameStart = System.currentTimeMillis();
         lastMinute = 0;
