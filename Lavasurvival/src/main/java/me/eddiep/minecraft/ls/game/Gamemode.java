@@ -558,7 +558,7 @@ public abstract class Gamemode {
         dead.addEntry(name);
         player.setGameMode(GameMode.SPECTATOR);
         Lavasurvival.log(name + " has joined the dead team.");
-        if (alive.getSize() == 0)
+        if (dead.getSize() == Bukkit.getOnlinePlayers().size())
             endRound();
     }
 
