@@ -294,6 +294,9 @@ public abstract class Gamemode {
             Player player = Bukkit.getPlayer(id);
             if (id == null || player == null)
                 continue;
+            if (map.isInSafeZone(player.getLocation()))
+                continue;
+
             double reward = calculateReward(player);
             Lavasurvival.INSTANCE.getEconomy().depositPlayer(player, reward);
             player.getPlayer().sendMessage(ChatColor.GREEN + "+ " + ChatColor.GOLD + "You won " + ChatColor.BOLD + reward + ChatColor.RESET + "" + ChatColor.GOLD + " GGs!");
