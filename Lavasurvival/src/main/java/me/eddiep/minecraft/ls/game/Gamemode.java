@@ -58,7 +58,7 @@ public abstract class Gamemode {
     private int[] votes = new int[VOTE_COUNT];
     private int voteCount;
     private static LavaMap lastMap, currentMap;
-    private static Team alive, dead;
+    private static Team alive, dead, spawn;
     private static Scoreboard scoreboard;
     private static PlayerListener listener;
     private static PhysicsListener physicsListener;
@@ -121,15 +121,23 @@ public abstract class Gamemode {
             dead.setDisplayName("Dead");
             dead.setPrefix(ChatColor.RED + "[Dead] ");
         }
+        if (spawn == null) {
+            if (scoreboard.getTeam("Spawn") == null)
+                spawn = scoreboard.registerNewTeam("Spawn");
+            else
+                spawn = scoreboard.getTeam("Spawn");
+            spawn.setDisplayName("Spawn");
+            spawn.setPrefix(ChatColor.GRAY + "[Spawn] ");
+        }
         if (listener == null) {
             listener = new PlayerListener();
             Lavasurvival.INSTANCE.getServer().getPluginManager().registerEvents(listener, Lavasurvival.INSTANCE);
         }
         if (physicsListener == null) {
             physicsListener = new PhysicsListener();
-            Lavasurvival.INSTANCE.getServer().getPluginManager().registerEvents(physicsListener, Lavasurvival.INSTANCE);
         }
         physicsListener.prepare();
+        Lavasurvival.INSTANCE.getServer().getPluginManager().registerEvents(physicsListener, Lavasurvival.INSTANCE);
 
         if (map == null) {
             String[] files = LavaMap.getPossibleMaps();
@@ -296,6 +304,7 @@ public abstract class Gamemode {
             Player player = Bukkit.getPlayer(id);
             if (id == null || player == null)
                 continue;
+
             double reward = calculateReward(player);
 
             winners.put(player, reward);
@@ -582,6 +591,17 @@ public abstract class Gamemode {
             u.giveBoughtBlocks();
     }
 
+    public void setSpawn(Player player) {
+        if (player == null)
+            return;
+        String name = player.getName();
+        if (alive.hasEntry(name))
+            alive.removeEntry(name);
+        spawn.addEntry(name);
+        player.setGameMode(GameMode.SURVIVAL);
+        Lavasurvival.log(name + " has joined the spawn team.");
+    }
+
     public void setAlive(Player player) {
         if (player == null)
             return;
@@ -597,15 +617,19 @@ public abstract class Gamemode {
         if (player == null)
             return;
         String name = player.getName();
+
         if (alive.hasEntry(name))
             alive.removeEntry(name);
+        if (spawn.hasEntry(name))
+            spawn.removeEntry(name);
+
         dead.addEntry(name);
         player.setGameMode(GameMode.SPECTATOR);
         Lavasurvival.log(name + " has joined the dead team.");
     }
 
     public boolean isAlive(Player player) {
-        return player != null && alive.hasEntry(player.getName());
+        return player != null && (alive.hasEntry(player.getName()));
     }
 
     public boolean isDead(Player player) {
@@ -613,7 +637,7 @@ public abstract class Gamemode {
     }
 
     public boolean isInGame(Player player) {
-         return player != null && (alive.hasEntry(player.getName()) || dead.hasEntry(player.getName()));
+         return player != null && (alive.hasEntry(player.getName()) || dead.hasEntry(player.getName()) || spawn.hasEntry(player.getName()));
     }
 
     public void globalMessage(String message) {
@@ -633,5 +657,9 @@ public abstract class Gamemode {
 
     protected Material getMat() {
         return LAVA ? Material.STATIONARY_LAVA : Material.STATIONARY_WATER;
+    }
+
+    public boolean isInSpawn(Player player) {
+        return player != null && spawn.hasEntry(player.getName());
     }
 }

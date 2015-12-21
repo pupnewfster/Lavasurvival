@@ -273,6 +273,15 @@ public class PlayerListener implements Listener {
     public void playerMove(PlayerMoveEvent event) {
         Location from = event.getFrom(), to = event.getTo();
         boolean locationChanged = Math.abs(from.getX() - to.getX()) > 0.1 || Math.abs(from.getY() - to.getY()) > 0.1 || Math.abs(from.getZ() - to.getZ()) > 0.1;
+
+        if (Gamemode.getCurrentGame() != null && locationChanged && !Gamemode.getCurrentGame().isDead(event.getPlayer())) {
+            if (Gamemode.getCurrentMap().isInSafeZone(to) && Gamemode.getCurrentGame().isAlive(event.getPlayer())) {
+                Gamemode.getCurrentGame().setSpawn(event.getPlayer());
+            } else if (!Gamemode.getCurrentMap().isInSafeZone(to) && Gamemode.getCurrentGame().isInSpawn(event.getPlayer())) {
+                Gamemode.getCurrentGame().setAlive(event.getPlayer());
+            }
+        }
+
         if (locationChanged && Gamemode.getCurrentGame() != null && Gamemode.DAMAGE != 0 && Gamemode.getCurrentGame().isAlive(event.getPlayer())) {
             UserInfo u = um.getUser(event.getPlayer().getUniqueId());
             if(((to.getBlock().getType().equals(Material.WATER) || to.getBlock().getType().equals(Material.STATIONARY_WATER)) && to.getBlock().hasMetadata("classic_block")) ||
