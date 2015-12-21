@@ -213,6 +213,8 @@ public class PlayerListener implements Listener {
                 MaterialData holdingItemData = new MaterialData(event.getBlock().getType(), event.getBlock().getData());
                 for (int i = 0; i < inventory.getSize(); i++) {
                     MaterialData curItemdata = inventory.getItem(i).getData();
+                    if (curItemdata == null)
+                        continue;
                     if (curItemdata.equals(holdingItemData)) {
                         index = i;
                         break;
