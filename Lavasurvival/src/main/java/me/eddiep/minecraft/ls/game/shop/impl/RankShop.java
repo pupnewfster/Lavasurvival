@@ -21,10 +21,10 @@ public class RankShop extends Menu {
 
     @MenuItem(
             slot = 2,
-            item = @ItemStackAnnotation(material = Material.WOOD, name = "Basic", lore = {"§l§6Start buying blocks!", "500 ggs"})
+            item = @ItemStackAnnotation(material = Material.WOOD, name = "Basic", lore = {"§l§6Start buying blocks!", "7000 ggs"})
     )
     public void BasicRank(MenuPlayer player) {
-        buyRank(player, "Basic", 500);
+        buyRank(player, "Basic", 7000);
     }
 
     @MenuItem(
@@ -37,26 +37,26 @@ public class RankShop extends Menu {
 
     @MenuItem(
             slot = 4,
-            item = @ItemStackAnnotation(material = Material.LAVA_BUCKET, name = "Survivor", lore = {"§6§lAre you a survivor?", "§6§lProve yourself!", "120,000 ggs"})
+            item = @ItemStackAnnotation(material = Material.LAVA_BUCKET, name = "Survivor", lore = {"§6§lAre you a survivor?", "§6§lProve yourself!", "90,000 ggs"})
     )
     public void SurvivorRank(MenuPlayer player) {
-        buyRank(player, "Survivor", 120000);
+        buyRank(player, "Survivor", 90000);
     }
 
     @MenuItem(
             slot = 5,
-            item = @ItemStackAnnotation(material = Material.APPLE, name = "Trusted", lore = {"§6§lDecorate that nice", "§6§lhouse with some", "§6§lfurniture!", "230,000 ggs"})
+            item = @ItemStackAnnotation(material = Material.APPLE, name = "Trusted", lore = {"§6§lDecorate that nice", "§6§lhouse with some", "§6§lfurniture!", "180,000 ggs"})
     )
     public void TrustedRank(MenuPlayer player) {
-        buyRank(player, "Trusted", 230000);
+        buyRank(player, "Trusted", 180000);
     }
 
     @MenuItem(
             slot = 6,
-            item = @ItemStackAnnotation(material = Material.GOLDEN_APPLE, name = "Elder", lore = {"§6§lOnly true elders", "§6§lcan achieve this", "§6§lrank..are you", "§6§lone of them?", "610,000 ggs"})
+            item = @ItemStackAnnotation(material = Material.GOLDEN_APPLE, name = "Elder", lore = {"§6§lOnly true elders", "§6§lcan achieve this", "§6§lrank..are you", "§6§lone of them?", "300,000 ggs"})
     )
     public void ElderRank(MenuPlayer player) {
-        buyRank(player, "Elder", 610000);
+        buyRank(player, "Elder", 300000);
     }
 
     public void buyRank(MenuPlayer player, String RANK, double price) {
