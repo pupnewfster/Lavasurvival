@@ -207,13 +207,27 @@ public class PlayerListener implements Listener {
             event.setCancelled(false);
             event.getBlock().setMetadata("player_placed", new FixedMetadataValue(Lavasurvival.INSTANCE, event.getPlayer().getUniqueId()));
             if (!survival) {
+                int index = -1;
                 Inventory inventory = event.getPlayer().getInventory();
                 MaterialData holdingItemData = new MaterialData(event.getBlock().getType(), event.getBlock().getData());
-                ItemStack item = new ItemStack(event.getBlock().getType(), 1);
-                item.setData(holdingItemData);
-                int index = inventory.first(item);
+                for (int i = 0; i < inventory.getSize(); i++) {
+                    if (inventory.getItem(i) == null)
+                        continue;
 
-                event.getPlayer().getInventory().setItem(index, event.getPlayer().getInventory().getItem(index).clone());
+                    MaterialData curItemdata = inventory.getItem(i).getData();
+                    if (curItemdata == null)
+                        continue;
+                    if (curItemdata.equals(holdingItemData)) {
+                        index = i;
+                        break;
+                    }
+                }
+
+                if (index == -1) {
+                    System.err.println("Could not find block for " + event.getBlock());
+                } else {
+                    event.getPlayer().getInventory().setItem(index, event.getPlayer().getInventory().getItem(index).clone());
+                }
             }
         }
         UserInfo u = um.getUser(event.getPlayer().getUniqueId());

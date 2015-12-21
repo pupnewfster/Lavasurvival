@@ -182,11 +182,22 @@ public class UserInfo implements Rankable {
         this.bukkitPlayer = p;
     }
 
+    public boolean isInBank(MaterialData data) {
+        for (ItemStack item : BANK) {
+            if (item == null)
+                continue;
+
+            if (data.equals(item.getData()))
+                return true;
+        }
+        return false;
+    }
+
     public void giveBoughtBlocks() {
         Player p = getPlayer();
         if(p != null)
             for (MaterialData dat : this.ownedBlocks) {
-                if (BukkitUtils.hasItem(p.getInventory(), dat))
+                if (BukkitUtils.hasItem(p.getInventory(), dat) || isInBank(dat))
                     continue;
                 p.getInventory().addItem(getItem(dat));
             }
