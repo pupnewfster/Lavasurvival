@@ -24,7 +24,7 @@ public class LavaLogic extends AbstractLogicContainer {
 
         synchronized (ClassicPhysics.INSTANCE.getServer()) {
             Block block = location.getBlock();
-            if (block.hasMetadata("classic_block"))
+            if (block.hasMetadata("classic_block") && block.isLiquid())
                 return;
             Material newBlock = block.getType();
 

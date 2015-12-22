@@ -296,18 +296,18 @@ public class RankManager {
             try {
                 configFileRanks.createNewFile();
                 YamlConfiguration configRanks = YamlConfiguration.loadConfiguration(configFileRanks);
-                configRanks.set("New.permissions", Arrays.asList(""));
+                configRanks.set("New.permissions", Arrays.asList("bukkit.broadcast.user", "bukkit.command.plugins", "Necessities.me", "-bukkit.command.list", "-minecraft.command.list"));
                 configRanks.set("New.subranks", Arrays.asList(""));
                 configRanks.set("New.rankTitle", "&4[&7New&4]&7");
                 configRanks.set("Basic.permissions", Arrays.asList(""));
                 configRanks.set("Basic.subranks", Arrays.asList(""));
                 configRanks.set("Basic.rankTitle", "&4[&bBasic&4]&1");
                 configRanks.set("Basic.previousRank", "New");
-                configRanks.set("Advanced.permissions", Arrays.asList(""));
+                configRanks.set("Advanced.permissions", Arrays.asList("Necessities.title", "Necessities.bracket"));
                 configRanks.set("Advanced.subranks", Arrays.asList(""));
                 configRanks.set("Advanced.rankTitle", "&4[&3Advanced&4]&9");
                 configRanks.set("Advanced.previousRank", "Basic");
-                configRanks.set("Survivor.permissions", Arrays.asList(""));
+                configRanks.set("Survivor.permissions", Arrays.asList("Necessities.nick"));
                 configRanks.set("Survivor.subranks", Arrays.asList(""));
                 configRanks.set("Survivor.rankTitle", "&4[&2Survivor&4]&2");
                 configRanks.set("Survivor.previousRank", "Advanced");
@@ -319,12 +319,13 @@ public class RankManager {
                 configRanks.set("Elder.subranks", Arrays.asList(""));
                 configRanks.set("Elder.rankTitle", "&4[&l&fElder&4]&d");
                 configRanks.set("Elder.previousRank", "Trusted");
-                configRanks.set("Moderator.permissions", Arrays.asList("lavasurvival.setup", "lavasurvival.voteSpeak", "Necessities.promote", "Necessities.demote", "Necessities.setrank", "Necessities.warn",
-                        "Necessities.hide", "Necessities.opchat", "Necessities.kick", "Necessities.gamemode", "Necessities.teleport"));
+                configRanks.set("Moderator.permissions", Arrays.asList("lavasurvival.setup", "lavasurvival.voteSpeak", "Necessities.warn", "Necessities.hide", "Necessities.opchat", "Necessities.kick",
+                        "Necessities.gamemode", "Necessities.teleport"));
                 configRanks.set("Moderator.subranks", Arrays.asList(""));
                 configRanks.set("Moderator.rankTitle", "&4[&2Mod&4]&a");
                 configRanks.set("Moderator.previousRank", "Elder");
-                configRanks.set("Admin.permissions", Arrays.asList("Necessities.ban", "Necessities.tempban", "Necessities.unban", "Necessities.unbanip", "Necessities.banip", "lavasurvival.endGame"));
+                configRanks.set("Admin.permissions", Arrays.asList("Necessities.ban", "Necessities.tempban", "Necessities.unban", "Necessities.unbanip", "Necessities.banip", "lavasurvival.endGame",
+                        "Necessities.promote", "Necessities.demote", "Necessities.setrank"));
                 configRanks.set("Admin.subranks", Arrays.asList(""));
                 configRanks.set("Admin.rankTitle", "&4[&1Admin&4]&b");
                 configRanks.set("Admin.previousRank", "Moderator");

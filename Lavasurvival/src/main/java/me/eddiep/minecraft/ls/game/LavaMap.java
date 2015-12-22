@@ -109,7 +109,7 @@ public class LavaMap {
         world.setPVP(false);
         world.setAnimalSpawnLimit(0);
         world.setMonsterSpawnLimit(0);
-        world.setAnimalSpawnLimit(0);
+        world.setSpawnFlags(false, false);//Do not let mobs or animals spawn
         world.setSpawnLocation(mapSpawn.getBlockX(), mapSpawn.getBlockY(), mapSpawn.getBlockZ());
         world.setTime(time.getStartTimeTick());
 

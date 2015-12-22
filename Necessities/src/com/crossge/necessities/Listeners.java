@@ -64,34 +64,6 @@ public class Listeners implements Listener {
             p.setDisplayName(u.getNick());
         UUID uuid = p.getUniqueId();
         e.setJoinMessage(null);
-        if (!get.hasJoined(uuid)) {
-            YamlConfiguration config = YamlConfiguration.loadConfiguration(configFile);
-            final String welcome = ChatColor.translateAlternateColorCodes('&', config.getString("Necessities.firstTime")).replaceAll("\\{NAME\\}", p.getName());
-
-            if (Necessities.isTracking()) {
-                Necessities.trackAction(p, "NewLogin", p.getName());
-            }
-
-            get.addUUID(uuid);
-            Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(Necessities.getInstance(), new Runnable() {
-                @Override
-                public void run() {
-                    Bukkit.broadcastMessage(welcome);
-                    Bukkit.broadcastMessage(JanetName + "Welcome to GamezGalaxy! Enjoy your stay.");
-                }
-            });
-        } else {
-            final boolean hidden = hide.isHidden(e.getPlayer());
-            Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(Necessities.getInstance(), new Runnable() {
-                @Override
-                public void run() {
-                    if (hidden)
-                        Bukkit.broadcast(var.getMessages() + "To Ops - " + JanetName + "Welcome back.", "Necessities.opBroadcast");
-                    else
-                        Bukkit.broadcastMessage(JanetName + "Welcome back.");
-                }
-            });
-        }
         bot.logIn(uuid);
         hide.playerJoined(p);
         if (hide.isHidden(e.getPlayer())) {
@@ -131,10 +103,6 @@ public class Listeners implements Listener {
         UUID uuid = e.getPlayer().getUniqueId();
         e.setQuitMessage(null);
         User u = um.getUser(e.getPlayer().getUniqueId());
-        if (hide.isHidden(e.getPlayer())) {
-            Bukkit.broadcast(var.getMessages() + "To Ops -" + e.getQuitMessage(), "Necessities.opBroadcast");
-            e.setQuitMessage(null);
-        }
         u.logOut();
         bot.logOut(uuid);
         um.removeUser(uuid);
@@ -191,9 +159,9 @@ public class Listeners implements Listener {
         final UUID uuid = player.getUniqueId();
         String status = u.getStatus();
         if (status.equals("dead"))
-            status = ChatColor.RED + "[Dead]";
+            status = ChatColor.RED + "[Dead] " + ChatColor.RESET;
         else if (status.equals("alive"))
-            status = ChatColor.GREEN + "[Alive]";
+            status = ChatColor.GREEN + "[Alive] " + ChatColor.RESET;
         if (hide.isHidden(player))
             status = "";
         String m = e.getMessage();

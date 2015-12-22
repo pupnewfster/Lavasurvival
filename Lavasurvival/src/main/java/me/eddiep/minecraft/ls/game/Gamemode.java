@@ -596,11 +596,12 @@ public abstract class Gamemode {
         player.setGameMode(GameMode.SURVIVAL);
         player.setHealth(player.getMaxHealth());
         globalMessageNoPrefix(ChatColor.GREEN + "+ " + player.getDisplayName() + ChatColor.RESET + " has joined the game!");
-
+        UserManager um = Lavasurvival.INSTANCE.getUserManager();
+        UserInfo u = um.getUser(player.getUniqueId());
         Inventory inv = player.getInventory();
         for (Material DEFAULT_BLOCK : DEFAULT_BLOCKS) {
             ItemStack toGive = new ItemStack(DEFAULT_BLOCK, 1);
-            if (BukkitUtils.hasItem(player.getInventory(), toGive))
+            if (BukkitUtils.hasItem(player.getInventory(), toGive) || u.isInBank(new MaterialData(DEFAULT_BLOCK)))
                 continue;
             ItemMeta im = toGive.getItemMeta();
             im.setLore(Arrays.asList("Melt time: " + PhysicsListener.getMeltTimeAsString(new MaterialData(toGive.getType()))));
@@ -610,8 +611,6 @@ public abstract class Gamemode {
         if (!player.getInventory().containsAtLeast(Lavasurvival.INSTANCE.getRules(), 1))
             player.getInventory().addItem(Lavasurvival.INSTANCE.getRules());
         ShopFactory.validateInventory(inv);
-        UserManager um = Lavasurvival.INSTANCE.getUserManager();
-        UserInfo u = um.getUser(player.getUniqueId());
         if (u != null)
             u.giveBoughtBlocks();
     }
