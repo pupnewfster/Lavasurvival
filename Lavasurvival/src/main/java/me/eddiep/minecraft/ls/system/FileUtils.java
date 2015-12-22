@@ -90,7 +90,12 @@ public class FileUtils {
      */
     public static void writeText(String filePath, String text) throws IOException {
         createIfNotExist(filePath);
-        Formatter formatter = new Formatter(new FileWriter(new File(filePath), true));
+
+        File file = new File(filePath);
+        if (file.exists())
+            file.delete();
+
+        Formatter formatter = new Formatter(new FileWriter(file, true));
         formatter.out().append(text).append("\r\n");
         formatter.close();
     }
