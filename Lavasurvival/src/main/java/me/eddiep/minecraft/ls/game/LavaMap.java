@@ -27,11 +27,11 @@ public class LavaMap {
     private int lavax, lavay, lavaz, mapHeight;
     private Vector minSafeZone, maxSafeZone, mapSpawn;
     private int configVersion = 1; //Default version
+
     private RiseOptions riseOptions = RiseOptions.defaults();
     private FloodOptions floodOptions = FloodOptions.defaults();
     private TimeOptions time = TimeOptions.defaults();
     private LavaOptions lavaOptions = LavaOptions.defaults(this);
-    private String clock = "cycle";
 
     private volatile World world;
     private volatile boolean poured;
