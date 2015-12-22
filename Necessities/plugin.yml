@@ -31,16 +31,6 @@ commands:
       usage: /<command>
       permission: Necessities.ragequit
       aliases: [rage, nrage, nragequit]
-   loginmessage:
-      description: Changes your login message to <message>.
-      usage: /<command> <message>
-      permission: Necessities.loginmessage
-      aliases: [loginmsg, setloginmessage, setloginmsg, nloginmsg, nsetloginmsg, nsetloginmessage, nloginmessage]
-   logoutmessage:
-      description: Changes your logout message to <message>.
-      usage: /<command> <message>
-      permission: Necessities.logoutmessage
-      aliases: [setlogoutmessage, logoutmsg, setlogoutmsg, nsetlogoutmessage, nlogoutmsg, nlogoutmessage, nsetlogoutmsg]
    devs:
       description: Shows the developers of Necessities.
       usage: /<command>
@@ -671,12 +661,6 @@ permissions:
         default: op
     Necessities.spy:
         description: Can spy on commands.
-        default: op
-    Necessities.loginmessage:
-        description: Allows you to set your login message.
-        default: op
-    Necessities.logoutmessage:
-        description: Allows you to set your logout message.
         default: op
     Necessities.worldmanager.world:
         description: Allows you to teleport between worlds.

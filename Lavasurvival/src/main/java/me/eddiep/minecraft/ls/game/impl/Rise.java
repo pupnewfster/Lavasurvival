@@ -91,7 +91,6 @@ public class Rise extends Gamemode {
             objective.setDisplayName("Round Ends In: " + ChatColor.BOLD + time);
             return;
         }
-
         objective.setDisplayName((!super.poured ? "Prepare Time: " : "Next Pour: ") + ChatColor.BOLD + time);
 
         if (!super.poured && since < duration) {

@@ -4,6 +4,7 @@ import com.crossge.necessities.Commands.CmdHide;
 import com.crossge.necessities.Hats.Hat;
 import com.crossge.necessities.Hats.HatType;
 import com.crossge.necessities.Necessities;
+import com.crossge.necessities.ScoreBoards;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -23,7 +24,7 @@ public class User {
     private ArrayList<UUID> ignored = new ArrayList<>();
     private boolean opChat = false, muted = false;
     private PermissionAttachment attachment;
-    private String appended = "", nick = null, lastContact;
+    private String appended = "", nick = null, lastContact, status = "dead";
     private int pastTotal = 0;
     private long login = 0;
     private Player bukkitPlayer;
@@ -99,6 +100,8 @@ public class User {
 
     public void logOut() {
         updateTimePlayed();
+        ScoreBoards sb = new ScoreBoards();
+        sb.delPlayer(this);
         if (this.hat != null)
             this.hat.despawn();
         this.bukkitPlayer = null;
@@ -220,6 +223,14 @@ public class User {
         }
     }
 
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    public String getStatus() {
+        return this.status;
+    }
+
     public Hat getHat() {
         return this.hat;
     }
@@ -290,6 +301,8 @@ public class User {
     }
 
     public void givePerms() {
+        ScoreBoards sb = new ScoreBoards();
+        sb.addPlayer(this);
         YamlConfiguration configUsers = YamlConfiguration.loadConfiguration(configFileUsers);
         YamlConfiguration configSubranks = YamlConfiguration.loadConfiguration(configFileSubranks);
         this.attachment = this.bukkitPlayer.addAttachment(Necessities.getInstance());

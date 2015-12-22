@@ -1,5 +1,6 @@
 package me.eddiep.minecraft.ls;
 
+import com.crossge.necessities.Commands.CmdHide;
 import com.crossge.necessities.GetUUID;
 import com.crossge.necessities.RankManager.RankManager;
 import com.google.gson.Gson;
@@ -52,6 +53,7 @@ public class Lavasurvival extends JavaPlugin {
     private Economy econ;
     private ClassicPhysics physics;
     private GetUUID uuiDs;
+    private CmdHide hide;
     private UserManager userManager;
     private com.crossge.necessities.RankManager.UserManager um;
     private RankManager rm;
@@ -211,6 +213,7 @@ public class Lavasurvival extends JavaPlugin {
         um = new com.crossge.necessities.RankManager.UserManager();
         rm = new RankManager();
         uuiDs = new GetUUID();
+        hide = new CmdHide();
         userManager.readUsers();
     }
 
@@ -238,6 +241,10 @@ public class Lavasurvival extends JavaPlugin {
 
     public UserManager getUserManager() {
         return userManager;
+    }
+
+    public CmdHide getHide() {
+        return hide;
     }
 
     public com.crossge.necessities.RankManager.UserManager getNecessitiesUserManager() {

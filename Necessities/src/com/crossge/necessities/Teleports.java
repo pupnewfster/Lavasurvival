@@ -5,7 +5,7 @@ import java.util.HashMap;
 import java.util.UUID;
 
 public class Teleports {
-    private static HashMap<UUID, ArrayList<String>> teleportRequests = new HashMap<UUID, ArrayList<String>>();
+    private static HashMap<UUID, ArrayList<String>> teleportRequests = new HashMap<>();
 
     public void removeRequests(UUID uuid) {
         teleportRequests.remove(uuid);

@@ -260,19 +260,19 @@ public class PhysicsListener implements Listener {
 
     @EventHandler(priority = EventPriority.MONITOR)
     public void onClassicPhysics(ClassicPhysicsEvent event) {
-        if (!event.isClassicEvent() || Gamemode.getCurrentGame().hasEnded() || event.getLocation() == null || event.getLocation().getWorld() == null ||
-                !event.getLocation().getChunk().isLoaded() || event.getLocation().getBlock() == null)
-            return;
-
-        LavaMap map = Gamemode.getCurrentMap();
-        if (map.isInSafeZone(event.getLocation())) {
-            event.setCancelled(true); //Do not allow physics inside the safezone!
-            return;
-        }
-
         synchronized (toTasks) {
+            if (!event.isClassicEvent() || Gamemode.getCurrentGame().hasEnded() || event.getLocation() == null || event.getLocation().getWorld() == null ||
+                    !event.getLocation().getChunk().isLoaded() || event.getLocation().getBlock() == null)
+                return;
+
+            LavaMap map = Gamemode.getCurrentMap();
+            if (map.isInSafeZone(event.getLocation())) {
+                event.setCancelled(true); //Do not allow physics inside the safezone!
+                return;
+            }
+
             Block blockChecking = event.getOldBlock();
-            if (blockChecking.getType().equals(Material.AIR))
+            if (blockChecking.getType().equals(Material.AIR) || blockChecking.hasMetadata("classic_block"))
                 return;
 
             MaterialData dat = new MaterialData(blockChecking.getType(), blockChecking.getData());
@@ -290,7 +290,7 @@ public class PhysicsListener implements Listener {
                 Location location = event.getLocation();
                 if (toTasks.containsKey(location) && toTasks.get(location) != null && toTasks.get(location).size() > 0)
                     temp = toTasks.get(location);
-                temp.add(new BlockTaskInfo(event.getLocation(), event.getLogicContainer().logicFor(), event.getFrom(), blockChecking, meltTicks));
+                temp.add(new BlockTaskInfo(event.getLogicContainer().logicFor(), event.getFrom(), blockChecking, meltTicks));
                 toTasks.put(event.getLocation(), temp);
             }
         }
@@ -313,9 +313,9 @@ public class PhysicsListener implements Listener {
                                         return;
                                     if (blockChecking.hasMetadata("player_placed"))
                                         blockChecking.removeMetadata("player_placed", Lavasurvival.INSTANCE);
-                                    Lavasurvival.INSTANCE.getPhysicsHandler().placeClassicBlockAt(b.getLocation(), b.getLogicFor(), b.getFrom());
+                                    Lavasurvival.INSTANCE.getPhysicsHandler().placeClassicBlockAt(loc, b.getLogicFor(), b.getFrom());
                                 }
-                                cancelLocation(b.getLocation());
+                                cancelLocation(loc);
                                 break;
                             }
                         }
@@ -357,13 +357,12 @@ public class PhysicsListener implements Listener {
 
     private class BlockTaskInfo {
         private long ticksToMelt, startTick;
-        private Location location, from;
+        private Location from;
         private Material logicFor;
         private Block oldBlock;
 
-        public BlockTaskInfo(Location location, Material logicFor, Location from, Block oldBlock, long ticksToMelt) {
+        public BlockTaskInfo(Material logicFor, Location from, Block oldBlock, long ticksToMelt) {
             this.startTick = tickCount;
-            this.location = location;
             this.from = from;
             this.logicFor = logicFor;
             this.oldBlock = oldBlock;
@@ -376,10 +375,6 @@ public class PhysicsListener implements Listener {
 
         public long getTicksToMelt() {
             return this.ticksToMelt;
-        }
-
-        public Location getLocation() {
-            return this.location;
         }
 
         public Location getFrom() {

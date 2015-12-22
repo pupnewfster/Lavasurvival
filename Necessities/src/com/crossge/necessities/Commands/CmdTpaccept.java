@@ -31,7 +31,7 @@ public class CmdTpaccept extends Cmd {
                 return true;
             }
             Player target = sender.getServer().getPlayer(uuid);
-            String tPrefix = sb.getPrefix(um.getUser(uuid)), pPrefix = sb.getPrefix(um.getUser(p.getUniqueId()));
+            String tPrefix = um.getUser(uuid).getStatus(), pPrefix = um.getUser(p.getUniqueId()).getStatus();
             if (!p.hasPermission("Necessities.seehidden") && hide.isHidden(target)) {
                 sender.sendMessage(var.getEr() + "Error: " + var.getErMsg() + "Invalid player.");
                 return true;
