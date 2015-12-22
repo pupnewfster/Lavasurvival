@@ -4,7 +4,9 @@ import me.eddiep.minecraft.ls.Lavasurvival;
 import me.eddiep.minecraft.ls.game.impl.Flood;
 import me.eddiep.minecraft.ls.game.impl.Rise;
 import me.eddiep.minecraft.ls.game.options.FloodOptions;
+import me.eddiep.minecraft.ls.game.options.LavaOptions;
 import me.eddiep.minecraft.ls.game.options.RiseOptions;
+import me.eddiep.minecraft.ls.game.options.TimeOptions;
 import me.eddiep.minecraft.ls.system.FileUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -19,7 +21,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class LavaMap {
-    public static final int CONFIG_VERSION = 2;
+    public static final int CONFIG_VERSION = 3;
 
     private String name, worldName, filePath;
     private int lavax, lavay, lavaz, mapHeight;
@@ -27,6 +29,9 @@ public class LavaMap {
     private int configVersion = 1; //Default version
     private RiseOptions riseOptions = RiseOptions.defaults();
     private FloodOptions floodOptions = FloodOptions.defaults();
+    private TimeOptions time = TimeOptions.defaults();
+    private LavaOptions lavaOptions = LavaOptions.defaults(this);
+    private String clock = "cycle";
 
     private volatile World world;
     private volatile boolean poured;
@@ -36,6 +41,10 @@ public class LavaMap {
         LavaMap map = Lavasurvival.GSON.fromJson(contents, LavaMap.class);
         map.poured = false;
         map.filePath = file;
+
+        if (!map.lavaOptions.hasParent()) {
+            map.lavaOptions.setParent(map);
+        }
 
         if (map.configVersion < CONFIG_VERSION) { //Update config with new values
             map.configVersion = CONFIG_VERSION;
@@ -83,10 +92,12 @@ public class LavaMap {
         me.eddiep.minecraft.ls.system.FileUtils.writeText(new File(Lavasurvival.INSTANCE.getDataFolder(), "maps/" + name + ".map").getAbsolutePath(), json);
     }
 
+    @Deprecated
     public Location getLavaSpawnAsLocation() {
         return world.getBlockAt(lavax, lavay, lavaz).getLocation();
     }
 
+    @Deprecated
     public Location getLavaSpawnAsLocation(int xoffset, int yoffset, int zoffet) {
         return world.getBlockAt(lavax + xoffset, lavay + yoffset, lavaz + zoffet).getLocation();
     }
@@ -100,6 +111,7 @@ public class LavaMap {
         world.setMonsterSpawnLimit(0);
         world.setAnimalSpawnLimit(0);
         world.setSpawnLocation(mapSpawn.getBlockX(), mapSpawn.getBlockY(), mapSpawn.getBlockZ());
+        world.setTime(time.getStartTimeTick());
 
         for (Entity e : world.getEntities())
             e.remove();
@@ -148,14 +160,17 @@ public class LavaMap {
         this.lavaz = lavaSpawn.getBlockZ();
     }
 
+    @Deprecated
     public int getLavaX() {
         return lavax;
     }
 
+    @Deprecated
     public int getLavaY() {
         return lavay;
     }
 
+    @Deprecated
     public int getLavaZ() {
         return lavaz;
     }
@@ -215,5 +230,21 @@ public class LavaMap {
 
     public File getFile() {
         return new File(filePath);
+    }
+
+    public TimeOptions getTimeOptions() {
+        return time;
+    }
+
+    public FloodOptions getFloodOptions() {
+        return floodOptions;
+    }
+
+    public RiseOptions getRiseOptions() {
+        return riseOptions;
+    }
+
+    public LavaOptions getLavaOptions() {
+        return lavaOptions;
     }
 }

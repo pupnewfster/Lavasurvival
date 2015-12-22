@@ -11,6 +11,8 @@ import org.bukkit.scoreboard.DisplaySlot;
 import org.bukkit.scoreboard.Objective;
 import org.bukkit.scoreboard.Score;
 
+import java.util.List;
+
 public class Rise extends Gamemode {
     private int lastMinute, bonus, lvl = 1, sched = 0;
     private long lastEvent, duration, timeOut;
@@ -31,8 +33,8 @@ public class Rise extends Gamemode {
 
         super.start();
 
-        duration = Gamemode.RANDOM.nextInt(360000) + 240000;
-        timeOut = Gamemode.RANDOM.nextInt(15000) + 15000;
+        duration = getCurrentMap().getRiseOptions().generateRandomPrepareTime();
+        timeOut = getCurrentMap().getRiseOptions().generateRandomRiseTime();
         globalMessage("The current gamemode is " + ChatColor.RED + ChatColor.BOLD + "RISE");
         globalMessage("The " + (LAVA ? "lava" : "water") + " will rise every " + ChatColor.DARK_RED + TimeUtils.toFriendlyTime(timeOut));
         globalMessage("You have " + ChatColor.DARK_RED + TimeUtils.toFriendlyTime(duration) + ChatColor.RESET + " to prepare!");
@@ -40,8 +42,7 @@ public class Rise extends Gamemode {
         lastMinute = 0;
         bonus = Gamemode.RANDOM.nextInt(80) + 50;
         bonusScore.setScore(bonus);
-        final Location loc = getCurrentMap().getLavaSpawnAsLocation(0, -(getCurrentMap().getHeight()) + lvl, 0);
-        layersLeft.setScore(getCurrentMap().getLavaY() - loc.getBlockY());
+        layersLeft.setScore(getCurrentMap().getHeight());
 
         Gamemode.getPlayerListener().survival = false;
         doubleReward = Math.random() < 0.25;
@@ -98,7 +99,8 @@ public class Rise extends Gamemode {
             if (nextMinute != lastMinute) {
                 lastMinute = nextMinute;
 
-                getCurrentWorld().strikeLightningEffect(getCurrentMap().getLavaSpawnAsLocation(0, lvl - getCurrentMap().getHeight(), 0));//Changed to just effect not to kill unknowing player nearby
+                List<Location> locations = getCurrentMap().getLavaOptions().getSpawnLocation(0, lvl - getCurrentMap().getHeight(), 0);
+                getCurrentWorld().strikeLightningEffect(locations.get(RANDOM.nextInt(locations.size()))); //Changed to just effect not to kill unknowing player nearby
                 globalMessage("The " + (LAVA ? "lava" : "water") + " will rise in " + ChatColor.DARK_RED + TimeUtils.toFriendlyTime(duration - since));
             }
         } else if (!super.poured) {
@@ -121,26 +123,39 @@ public class Rise extends Gamemode {
     }
 
     private void pourAndAdvance(long time) {
-        final Location loc = getCurrentMap().getLavaSpawnAsLocation(0, lvl - getCurrentMap().getHeight(), 0);
+        List<Location> locs = getCurrentMap().getLavaOptions().getSpawnLocation(0, lvl - getCurrentMap().getHeight(), 0);
 
-        if (loc.getBlockY() > getCurrentMap().getLavaY()) { //If we have passed the original lava spawn, that means the previous pour was the last one
+        int highestCurrentY = locs.get(0).getBlockY();
+        for (Location loc : locs) {
+            if (loc.getBlockY() > highestCurrentY)
+                highestCurrentY = loc.getBlockY();
+        }
+
+        //final Location loc = getCurrentMap().getLavaSpawnAsLocation(0, lvl - getCurrentMap().getHeight(), 0);
+
+        int lavaY = getCurrentMap().getLavaOptions().getHighestLocation().getBlockY();
+
+        if (highestCurrentY > lavaY) { //If we have passed the original lava spawn, that means the previous pour was the last one
             if (!isRoundEnding()) {
                 lastEvent = System.currentTimeMillis(); //Set the last event to now
-                duration = ((Gamemode.RANDOM.nextInt(5) + 3) * 60);
+                duration = getCurrentMap().getRiseOptions().generateRandomEndTime() / 1000L;
                 super.endRoundIn(duration);
-                duration *= 1000;
+                duration *= 1000L;
             }
             return;
         }
 
-        Lavasurvival.INSTANCE.getPhysicsHandler().forcePlaceClassicBlockAt(loc, getMat());
+        for (Location location : locs) {
+            Lavasurvival.INSTANCE.getPhysicsHandler().forcePlaceClassicBlockAt(location, getMat());
+        }
+
 
         lastEvent = System.currentTimeMillis(); //Set the last event to now
-        getCurrentWorld().strikeLightningEffect(loc); //Actions are better than words :3
+        getCurrentWorld().strikeLightningEffect(locs.get(RANDOM.nextInt(locs.size()))); //Actions are better than words :3
 
         lvl++;
-        layersLeft.setScore(getCurrentMap().getLavaY() - loc.getBlockY());
-        if (loc.getBlockY() <= getCurrentMap().getLavaY())
+        layersLeft.setScore(lavaY - highestCurrentY);
+        if (highestCurrentY <= lavaY)
             liquidUp(time); //Only advance up if we are still less than the actual lava spawn or if we are at the lava spawn (the next check will end the game, see above)
     }
 

@@ -10,12 +10,15 @@ import org.bukkit.scoreboard.DisplaySlot;
 import org.bukkit.scoreboard.Objective;
 import org.bukkit.scoreboard.Score;
 
+import java.util.List;
+
 public class Flood extends Gamemode {
     private long gameStart, duration;
     private int lastMinute, bonus;
     private boolean doubleReward;
     private Objective objective;
     private Score bonusScore;
+    private List<Location> lavaPoints;
 
     @Override
     public void start() {
@@ -29,7 +32,9 @@ public class Flood extends Gamemode {
 
         super.start();
 
-        duration = Gamemode.RANDOM.nextInt(180000) + 300000;
+        duration = getCurrentMap().getFloodOptions().generateRandomPrepareTime();
+        lavaPoints = getCurrentMap().getLavaOptions().getSpawnLocations();
+        //duration = Gamemode.RANDOM.nextInt(180000) + 300000;
         globalMessage("The " + (LAVA ? "lava" : "water") + " will pour in " + ChatColor.DARK_RED + TimeUtils.toFriendlyTime(duration));
         gameStart = System.currentTimeMillis();
         lastMinute = 0;
@@ -55,7 +60,7 @@ public class Flood extends Gamemode {
     @Override
     public void playerJoin(Player player) {
         super.playerJoin(player);
-        bonus += Gamemode.RANDOM.nextInt(10);
+        bonus += Gamemode.RANDOM.nextInt(70) + 20;
         bonusScore.setScore(bonus);
     }
 
@@ -77,15 +82,20 @@ public class Flood extends Gamemode {
         int seconds = (int) (((duration - since) / 1000) % 60);
 
         String time = (minutes < 10 ? "0" + minutes : minutes) + ":" + (seconds < 10 ? "0" + seconds : seconds);
-        objective.setDisplayName((LAVA ? "Lava" : "Water") + " Pour: " + ChatColor.BOLD + time);
+
+        if (!super.poured) {
+            objective.setDisplayName((LAVA ? "Lava" : "Water") + " Pour: " + ChatColor.BOLD + time);
+        } else {
+            objective.setDisplayName("Round Ends In: " + ChatColor.BOLD + time);
+        }
+
 
         if (!super.poured && since < duration) {
             int nextMinute = (int) Math.floor((since / 1000.0) / 60.0);
             if (nextMinute != lastMinute) {
                 lastMinute = nextMinute;
 
-                Location lavaPoint = getCurrentMap().getLavaSpawnAsLocation();
-                getCurrentWorld().strikeLightningEffect(lavaPoint);//Changed to just effect not to kill unknowing player nearby
+                getCurrentWorld().strikeLightningEffect(lavaPoints.get(RANDOM.nextInt(lavaPoints.size()))); //Changed to just effect not to kill unknowing player nearby
                 globalMessage("The " + (LAVA ? "lava" : "water") + " will pour in " + ChatColor.DARK_RED + TimeUtils.toFriendlyTime(duration - since));
             }
         } else if (!super.poured) {
@@ -93,17 +103,20 @@ public class Flood extends Gamemode {
             globalMessage(ChatColor.DARK_RED + "Here comes the " + (LAVA ? "lava" : "water") + "!");
 
             gameStart = System.currentTimeMillis();
-            Lavasurvival.INSTANCE.getPhysicsHandler().forcePlaceClassicBlockAt(getCurrentMap().getLavaSpawnAsLocation(), getMat());
-            duration = Gamemode.RANDOM.nextInt(240000) + 180000;
-            objective.setDisplayName("Time Till Round End");
+
+            for (Location location : lavaPoints) {
+                Lavasurvival.INSTANCE.getPhysicsHandler().forcePlaceClassicBlockAt(location, getMat());
+            }
+
+            duration = getCurrentMap().getFloodOptions().generateRandomEndTime();
+            objective.setDisplayName("Round Ends In: " + ChatColor.BOLD + time);
         } else {
             if (since < duration) {
                 int nextMinute = (int) Math.floor((since / 1000.0) / 60.0);
                 if (nextMinute != lastMinute) {
                     lastMinute = nextMinute;
 
-                    Location lavaPoint = getCurrentMap().getLavaSpawnAsLocation();
-                    getCurrentWorld().strikeLightningEffect(lavaPoint);
+                    getCurrentWorld().strikeLightningEffect(lavaPoints.get(RANDOM.nextInt(lavaPoints.size()))); //Changed to just effect not to kill unknowing player nearby
                     globalMessage("The round will end in " + ChatColor.DARK_RED + TimeUtils.toFriendlyTime(duration - since));
                 }
             } else

@@ -196,10 +196,10 @@ public abstract class Gamemode {
                     Lavasurvival.INSTANCE.MONEY_VIEWER.run();
                     lastMoneyCheck = System.currentTimeMillis();
                 }
-                onTick();
+                tick();
             }
         };
-        tickTask.runTaskTimer(Lavasurvival.INSTANCE, 0, 20);//Possibly should make async
+        tickTask.runTaskTimer(Lavasurvival.INSTANCE, 0, 20);
     }
 
     private void restoreBackup(World world) {
@@ -210,6 +210,23 @@ public abstract class Gamemode {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    private long timeTickCount;
+    private void tick() {
+        double multiplier = currentMap.getTimeOptions().getMultiplier();
+        if (currentMap.getTimeOptions().isEnabled()) {
+            if (multiplier != 1.0) {
+                timeTickCount++;
+
+                long tick = (long) (timeTickCount * multiplier);
+                getCurrentWorld().setTime(currentMap.getTimeOptions().getStartTimeTick() + timeTickCount);
+            }
+        } else {
+            currentMap.getWorld().setTime(currentMap.getTimeOptions().getStartTimeTick());
+        }
+
+        onTick();
     }
 
     protected abstract void onTick();

@@ -3,7 +3,6 @@ package me.eddiep.minecraft.ls.game.options;
 import java.util.Random;
 
 public class FloodOptions extends BaseOptions {
-    private static final Random RANDOM = new Random();
 
     private int minPrepareTimeSeconds = 300;
     private int maxPrepareTimeSeconds = 480;
