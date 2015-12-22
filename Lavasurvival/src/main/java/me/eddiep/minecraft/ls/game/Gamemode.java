@@ -182,6 +182,7 @@ public abstract class Gamemode {
     }
 
     private long timeTickCount;
+    private long lastBlockUpdate = 0;
     private void tick() {
         double multiplier = currentMap.getTimeOptions().getMultiplier();
         if (currentMap.getTimeOptions().isEnabled()) {
@@ -193,6 +194,15 @@ public abstract class Gamemode {
             }
         } else {
             currentMap.getWorld().setTime(currentMap.getTimeOptions().getStartTimeTick());
+        }
+
+        if (System.currentTimeMillis() - lastBlockUpdate >= 3000) {
+            lastBlockUpdate = System.currentTimeMillis();
+
+            for (Player p : Bukkit.getOnlinePlayers()) {
+                int blocksAround = countAirBlocksAround(p, 20);
+                p.setLevel(blocksAround);
+            }
         }
 
         onTick();
