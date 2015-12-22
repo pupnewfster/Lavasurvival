@@ -312,7 +312,7 @@ public abstract class Gamemode {
                 System.out.println("Updating ratings..");
                 int count = 0;
                 long start = System.currentTimeMillis();
-                for (Player p : winners.keySet()) {
+                for (Player p : Bukkit.getOnlinePlayers()) {
                     UserInfo info = um.getUser(p.getUniqueId());
 
                     if (info.getRanking().shouldUpdate()) {
