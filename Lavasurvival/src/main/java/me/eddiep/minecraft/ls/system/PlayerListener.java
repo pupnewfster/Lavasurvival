@@ -141,18 +141,6 @@ public class PlayerListener implements Listener {
                 UserInfo u = um.getUser(event.getPlayer().getUniqueId());
                 if (System.currentTimeMillis() - u.getLastBreak() <= 100)//So that two blocks don't break instantly, may need to be adjusted
                     return;
-                if (block.hasMetadata("player_placed")) {
-                    FixedMetadataValue meta = (FixedMetadataValue) block.getMetadata("player_placed");
-                    UUID uuid = (UUID) meta.value();
-                    if (!event.getPlayer().getUniqueId().equals(uuid)) {
-                        userManager.getUser(uuid);
-                        User user = userManager.getUser(event.getPlayer().getUniqueId());
-                        if (rm.getOrder().indexOf(user.getRank()) - rm.getOrder().indexOf(userManager.getUser(uuid).getRank()) < 0) {
-                            event.getPlayer().sendMessage(ChatColor.RED + "" + ChatColor.BOLD + "You are not allowed to break a higher ranks blocks!");
-                            return;
-                        }
-                    }
-                }
                 u.setLastBreak(System.currentTimeMillis());
                 u.incrimentBlockCount();
                 if (survival) {

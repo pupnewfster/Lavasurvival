@@ -199,9 +199,16 @@ public abstract class Gamemode {
         if (System.currentTimeMillis() - lastBlockUpdate >= 3000) {
             lastBlockUpdate = System.currentTimeMillis();
 
+            UserManager um = new UserManager();
+
             for (Player p : Bukkit.getOnlinePlayers()) {
-                int blocksAround = countAirBlocksAround(p, 20);
-                p.setLevel(blocksAround);
+                if (p.hasPermission("lavasurvival.seemmr")) {
+                    UserInfo info = um.getUser(p.getUniqueId());
+
+                    p.setLevel(info.getRanking().getRating());
+                    p.setTotalExperience(info.getRanking().isRanked() ? 10 : 15);
+                    p.setExp(info.getRanking().getGameCount());
+                }
             }
         }
 

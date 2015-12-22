@@ -280,4 +280,12 @@ public class GlickoRank {
             }
         };
     }
+
+    public int getGameCount() {
+        return outcomes.size();
+    }
+
+    public boolean isRanked() {
+        return isRanked;
+    }
 }
