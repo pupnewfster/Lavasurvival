@@ -1,5 +1,7 @@
 package me.eddiep.minecraft.ls.system;
 
+import com.crossge.necessities.RankManager.RankManager;
+import com.crossge.necessities.RankManager.User;
 import me.eddiep.handles.ClassicBlockPlaceEvent;
 import me.eddiep.minecraft.ls.Lavasurvival;
 import me.eddiep.minecraft.ls.game.Gamemode;
@@ -31,6 +33,7 @@ import org.bukkit.metadata.FixedMetadataValue;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.UUID;
 
 public class PlayerListener implements Listener {
     public final ArrayList<Material> invalidBlocks = new ArrayList<>(Arrays.asList(new Material[]{
@@ -44,6 +47,8 @@ public class PlayerListener implements Listener {
             Material.BEDROCK,
             Material.BARRIER
     }));
+    private com.crossge.necessities.RankManager.UserManager userManager = Lavasurvival.INSTANCE.getNecessitiesUserManager();
+    private RankManager rm = Lavasurvival.INSTANCE.getRankManager();
     private final UserManager um = Lavasurvival.INSTANCE.getUserManager();
     public boolean survival = false;
 
@@ -136,6 +141,18 @@ public class PlayerListener implements Listener {
                 UserInfo u = um.getUser(event.getPlayer().getUniqueId());
                 if (System.currentTimeMillis() - u.getLastBreak() <= 100)//So that two blocks don't break instantly, may need to be adjusted
                     return;
+                if (block.hasMetadata("player_placed")) {
+                    FixedMetadataValue meta = (FixedMetadataValue) block.getMetadata("player_placed");
+                    UUID uuid = (UUID) meta.value();
+                    if (!event.getPlayer().getUniqueId().equals(uuid)) {
+                        userManager.getUser(uuid);
+                        User user = userManager.getUser(event.getPlayer().getUniqueId());
+                        if (rm.getOrder().indexOf(user.getRank()) - rm.getOrder().indexOf(userManager.getUser(uuid).getRank()) < 0) {
+                            event.getPlayer().sendMessage(ChatColor.RED + "" + ChatColor.BOLD + "You are not allowed to break a higher ranks blocks!");
+                            return;
+                        }
+                    }
+                }
                 u.setLastBreak(System.currentTimeMillis());
                 u.incrimentBlockCount();
                 if (survival) {
