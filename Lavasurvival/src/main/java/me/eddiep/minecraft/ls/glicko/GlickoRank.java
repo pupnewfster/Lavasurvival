@@ -61,7 +61,7 @@ public class GlickoRank {
 
     public void save(String baseKey, FileConfiguration configuration) {
         configuration.set(baseKey + ".tau", tau);
-        configuration.set(baseKey + ".rating", rating);
+        configuration.set(baseKey + ".rating", getRating());
         configuration.set(baseKey + ".rd", rd);
         configuration.set(baseKey + ".vol", vol);
         configuration.set(baseKey + ".outcomes", outcomes);
@@ -72,7 +72,9 @@ public class GlickoRank {
 
     public void load(String baseKey, FileConfiguration configuration) {
         tau = configuration.getDouble(baseKey + ".tau", Glicko2.getInstance().getTau());
-        rating = configuration.getDouble(baseKey + ".rating", Glicko2.getInstance().getDefaultRating());
+
+        setRating(configuration.getInt(baseKey + ".rating", Glicko2.getInstance().getDefaultRating()));
+
         rd = configuration.getDouble(baseKey + ".rd", Glicko2.getInstance().getDefaultRd());
         vol = configuration.getDouble(baseKey + ".vol", Glicko2.getInstance().getDefaultVol());
         outcomes = configuration.getDoubleList(baseKey + ".outcomes");

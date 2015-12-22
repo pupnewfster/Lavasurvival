@@ -206,8 +206,6 @@ public abstract class Gamemode {
                     UserInfo info = um.getUser(p.getUniqueId());
 
                     p.setLevel(info.getRanking().getRating());
-                    p.setTotalExperience(info.getRanking().isRanked() ? 10 : 15);
-                    p.setExp(info.getRanking().getGameCount());
                 }
             }
         }

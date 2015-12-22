@@ -37,7 +37,7 @@ public class Glicko2 {
         return tau;
     }
 
-    public double getDefaultRating() {
+    public int getDefaultRating() {
         return default_rating;
     }
 
