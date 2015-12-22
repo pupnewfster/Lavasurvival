@@ -107,9 +107,7 @@ public final class ClassicPhysicsHandler implements Listener {
                 }
                 if (!blc.hasMetadata("classic_block"))
                     blc.setMetadata("classic_block", new FixedMetadataValue(ClassicPhysics.INSTANCE, true));
-                //blc.setType(type);
                 setBlockFast(blc.getWorld(), blc.getX(), blc.getY(), blc.getZ(), type.getId(), (byte) 0);
-                //blc.getWorld().refreshChunk(blc.getChunk().getX(), blc.getChunk().getZ());
                 chunks.put((long) blc.getChunk().getX() << 32 | blc.getChunk().getZ() & 0xFFFFFFFFL, blc.getWorld());
                 ClassicPhysics.INSTANCE.getServer().getPluginManager().callEvent(new ClassicBlockPlaceEvent(l));
                 for (LogicContainerHolder holder : logicContainers) {
@@ -129,13 +127,13 @@ public final class ClassicPhysicsHandler implements Listener {
                 toFroms.remove(l);
                 locations.remove(taf);
             }
+            running = false;
             for (long l : chunks.keySet()) {
                 World w = chunks.get(l);
                 if (w != null)
                     w.refreshChunk((int) (l >> 32), (int) l);
                 chunks.remove(l);
             }
-            running = false;
         }
     };
 
