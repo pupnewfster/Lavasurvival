@@ -5,10 +5,13 @@ import me.eddiep.PhysicsType;
 import me.eddiep.handles.logic.LavaLogic;
 import me.eddiep.handles.logic.LogicContainer;
 import me.eddiep.handles.logic.WaterLogic;
+import net.minecraft.server.v1_8_R3.BlockPosition;
+import net.minecraft.server.v1_8_R3.IBlockData;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Block;
+import org.bukkit.craftbukkit.v1_8_R3.CraftWorld;
 import org.bukkit.entity.FallingBlock;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -28,6 +31,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 public final class ClassicPhysicsHandler implements Listener {
     private ArrayList<LogicContainerHolder> logicContainers = new ArrayList<>();
     private final ConcurrentHashMap<ToAndFrom, Material> locations = new ConcurrentHashMap<>();
+    private final ConcurrentHashMap<Long, World> chunks = new ConcurrentHashMap<>();
     private final ConcurrentHashMap<Location, ConcurrentLinkedQueue<ToAndFrom>> toFroms = new ConcurrentHashMap<>();
     private ArrayList<Player> lplacers = new ArrayList<>();
     private ArrayList<Player> wplacers = new ArrayList<>();
@@ -103,7 +107,10 @@ public final class ClassicPhysicsHandler implements Listener {
                 }
                 if (!blc.hasMetadata("classic_block"))
                     blc.setMetadata("classic_block", new FixedMetadataValue(ClassicPhysics.INSTANCE, true));
-                blc.setType(type);
+                //blc.setType(type);
+                setBlockFast(blc.getWorld(), blc.getX(), blc.getY(), blc.getZ(), type.getId(), (byte) 0);
+                //blc.getWorld().refreshChunk(blc.getChunk().getX(), blc.getChunk().getZ());
+                chunks.put((long) blc.getChunk().getX() << 32 | blc.getChunk().getZ() & 0xFFFFFFFFL, blc.getWorld());
                 ClassicPhysics.INSTANCE.getServer().getPluginManager().callEvent(new ClassicBlockPlaceEvent(l));
                 for (LogicContainerHolder holder : logicContainers) {
                     if (holder.container.doesHandle(type)) {
@@ -122,9 +129,22 @@ public final class ClassicPhysicsHandler implements Listener {
                 toFroms.remove(l);
                 locations.remove(taf);
             }
+            for (long l : chunks.keySet()) {
+                World w = chunks.get(l);
+                if (w != null)
+                    w.refreshChunk((int) (l >> 32), (int) l);
+                chunks.remove(l);
+            }
             running = false;
         }
     };
+
+    public void setBlockFast(World world, int x, int y, int z, int blockId, byte data) {
+        net.minecraft.server.v1_8_R3.World w = ((CraftWorld) world).getHandle();
+        net.minecraft.server.v1_8_R3.Chunk chunk = w.getChunkAt(x >> 4, z >> 4);
+        IBlockData ibd = net.minecraft.server.v1_8_R3.Block.getByCombinedId(blockId + (data << 12));
+        chunk.a(new BlockPosition(x, y, z), ibd);
+    }
 
     public ClassicPhysicsHandler(Plugin plugin) {
         this.owner = plugin;
