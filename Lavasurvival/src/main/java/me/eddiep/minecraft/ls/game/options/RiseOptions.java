@@ -20,4 +20,7 @@ public class RiseOptions extends FloodOptions {
     }
 
 
+    public int getLayerCount() {
+        return layerCount;
+    }
 }

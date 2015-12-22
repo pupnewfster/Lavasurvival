@@ -131,7 +131,12 @@ public abstract class Gamemode {
         isEnding = false;
         hasEnded = false;
 
-        LAVA = RANDOM.nextInt(100) < 75; //Have water/lava check be in here instead of as arguement
+        if (currentMap.getFloodOptions().isLavaEnabled() && currentMap.getFloodOptions().isWaterEnabled()) {
+            LAVA = RANDOM.nextInt(100) < 75; //Have water/lava check be in here instead of as arguement
+        } else {
+            LAVA = currentMap.getFloodOptions().isLavaEnabled() || !currentMap.getFloodOptions().isWaterEnabled() && RANDOM.nextInt(100) < 75;
+        }
+
 
         alive = new ArrayList<>();
         dead = new ArrayList<>();

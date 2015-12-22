@@ -152,7 +152,7 @@ public class Rise extends Gamemode {
         lastEvent = System.currentTimeMillis(); //Set the last event to now
         getCurrentWorld().strikeLightningEffect(locs.get(RANDOM.nextInt(locs.size()))); //Actions are better than words :3
 
-        lvl++;
+        lvl += getCurrentMap().getRiseOptions().getLayerCount();
         layersLeft.setScore(lavaY - highestCurrentY);
         if (highestCurrentY <= lavaY)
             liquidUp(time); //Only advance up if we are still less than the actual lava spawn or if we are at the lava spawn (the next check will end the game, see above)

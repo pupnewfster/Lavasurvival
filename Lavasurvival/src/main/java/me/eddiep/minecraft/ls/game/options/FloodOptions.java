@@ -8,6 +8,8 @@ public class FloodOptions extends BaseOptions {
     private int maxPrepareTimeSeconds = 480;
     private int minEndTimeSeconds = 180;
     private int maxEndTimeSeconds = 420;
+    private boolean enableLava = true;
+    private boolean enableWater = true;
 
     public static FloodOptions defaults() {
         return new FloodOptions();
@@ -25,5 +27,13 @@ public class FloodOptions extends BaseOptions {
         int seconds = RANDOM.nextInt(maxEndTimeSeconds - minEndTimeSeconds) + minEndTimeSeconds;
 
         return seconds * 1000L;
+    }
+
+    public boolean isLavaEnabled() {
+        return enableLava;
+    }
+
+    public boolean isWaterEnabled() {
+        return enableWater;
     }
 }
