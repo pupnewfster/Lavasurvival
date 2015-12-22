@@ -1,6 +1,5 @@
 package me.eddiep.minecraft.ls.ranks;
 
-import com.crossge.necessities.RankManager.Rank;
 import me.eddiep.minecraft.ls.Lavasurvival;
 import me.eddiep.minecraft.ls.game.Gamemode;
 import me.eddiep.minecraft.ls.glicko.Glicko2;
@@ -51,11 +50,11 @@ public class UserInfo implements Rankable {
     }
 
     public long getBlockChangeCount() {
-        return blockChangeCount;
+        return this.blockChangeCount;
     }
 
     public void resetBlockChangeCount() {
-        blockChangeCount = 0;
+        this.blockChangeCount = 0;
     }
 
     public void load() {
@@ -217,13 +216,6 @@ public class UserInfo implements Rankable {
         im.setLore(Arrays.asList("Melt time: " + PhysicsListener.getMeltTimeAsString(dat)));
         i.setItemMeta(im);
         return i;
-    }
-
-    public void clearBlocks() {
-        if (getPlayer() != null)
-            for (MaterialData dat : this.ownedBlocks)
-                getPlayer().getInventory().remove(dat.toItemStack());
-        this.ownedBlocks.clear();
     }
 
     public boolean ownsBlock(MaterialData dat) {

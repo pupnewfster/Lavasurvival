@@ -21,15 +21,18 @@ public class LavaLogic extends AbstractLogicContainer {
     protected void checkLocation(Location location, Location from) {
         if (location.getWorld() == null || !location.getChunk().isLoaded() || location.getBlock() == null)//World isn't loaded
             return;
-        Block block = location.getBlock();
-        Material newBlock = block.getType();
 
-        if (!block.getType().isSolid() && !doesHandle(block.getType())) {
-            newBlock = logicFor();
-        }
-
-        ClassicPhysicsEvent event = new ClassicPhysicsEvent(location.getBlock(), newBlock, true, location, this, from);
         synchronized (ClassicPhysics.INSTANCE.getServer()) {
+            Block block = location.getBlock();
+            if (block.hasMetadata("classic_block"))
+                return;
+            Material newBlock = block.getType();
+
+            if (!block.getType().isSolid() && !doesHandle(block.getType())) {
+                newBlock = logicFor();
+            }
+
+            ClassicPhysicsEvent event = new ClassicPhysicsEvent(location.getBlock(), newBlock, true, location, this, from);
             ClassicPhysics.INSTANCE.getServer().getPluginManager().callEvent(event);
             if (event.isCancelled())
                 return;

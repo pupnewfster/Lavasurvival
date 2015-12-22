@@ -20,8 +20,6 @@ public class Initialization {
     private File configFilePM = new File("plugins/Necessities/WorldManager", "portals.yml");
     private File configFileUsers = new File("plugins/Necessities/RankManager", "users.yml");
     private File configFileWM = new File("plugins/Necessities/WorldManager", "worlds.yml");
-    private File configFileLogOut = new File("plugins/Necessities", "logoutmessages.yml");
-    private File configFileLogIn = new File("plugins/Necessities", "loginmessages.yml");
     private File configFileCensors = new File("plugins/Necessities", "censors.yml");
     private File configFileSpying = new File("plugins/Necessities", "spying.yml");
     private File configFileHiding = new File("plugins/Necessities", "hiding.yml");
@@ -31,6 +29,7 @@ public class Initialization {
     PortalManager pm = new PortalManager();
     WarpManager warps = new WarpManager();
     WorldManager wm = new WorldManager();
+    ScoreBoards sb = new ScoreBoards();
     RankManager rm = new RankManager();
     JanetWarn warns = new JanetWarn();
     Console console = new Console();
@@ -54,6 +53,7 @@ public class Initialization {
         rm.setRanks();
         rm.setSubranks();
         rm.readRanks();
+        sb.createScoreboard();
         
         YamlConfiguration config = YamlConfiguration.loadConfiguration(configFile);
         //WorldManager
@@ -98,12 +98,10 @@ public class Initialization {
     }
 
     private void createYaml() {
-        addYML(configFileLogOut);
         addYML(configFileTitles);
         addYML(configFileSpying);
         addYML(configFileHiding);
         addYML(configFileWarps);
-        addYML(configFileLogIn);
         addYML(configFileUsers);
         addYML(configFileWM);
         addYML(configFilePM);

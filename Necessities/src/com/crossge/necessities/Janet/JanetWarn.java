@@ -97,7 +97,7 @@ public class JanetWarn {
 
     private String warnMessage(UUID uuid, String reason, String warner) {
         reason = ChatColor.translateAlternateColorCodes('&', reason);
-        Bukkit.getPlayer(uuid).sendMessage(JanetName + ChatColor.DARK_RED + "Warning, " + ChatColor.WHITE + "Do not " + reason + ".");
+        Bukkit.getPlayer(uuid).sendMessage(JanetName + ChatColor.DARK_RED + "Warning, " + ChatColor.WHITE + "You were warned for " + reason + ".");
         broadcast(JanetName + getName(uuid) + " was warned by " + warner + " for " + reason + ".", uuid);
         return getName(uuid) + " was warned by " + warner + " for " + reason + ".";
     }

@@ -2,12 +2,9 @@ package me.eddiep.minecraft.ls.glicko;
 
 import me.eddiep.minecraft.ls.system.PFunction;
 import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.configuration.serialization.ConfigurationSerializable;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public class GlickoRank {
 

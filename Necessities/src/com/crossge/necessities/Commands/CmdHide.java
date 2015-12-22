@@ -16,8 +16,6 @@ import java.util.UUID;
 public class CmdHide extends Cmd {
     private static ArrayList<UUID> hidden = new ArrayList<UUID>();
     private File configFileHiding = new File("plugins/Necessities", "hiding.yml");
-    private File configFileLogOut = new File("plugins/Necessities", "logoutmessages.yml");
-    private File configFileLogIn = new File("plugins/Necessities", "loginmessages.yml");
 
     public boolean commandUse(CommandSender sender, String[] args) {
         if (sender instanceof Player) {
@@ -25,10 +23,6 @@ public class CmdHide extends Cmd {
             User u = um.getUser(p.getUniqueId());
             if (hidden.contains(p.getUniqueId())) {
                 unhidePlayer(p);
-                YamlConfiguration configLogIn = YamlConfiguration.loadConfiguration(configFileLogIn);
-                Bukkit.broadcastMessage((ChatColor.GREEN + " + " + ChatColor.YELLOW + ChatColor.translateAlternateColorCodes('&',
-                        configLogIn.getString(p.getUniqueId().toString()).replaceAll("\\{NAME\\}", p.getDisplayName()).replaceAll("\\{RANK\\}",
-                                um.getUser(p.getUniqueId()).getRank().getTitle()))).replaceAll(ChatColor.RESET + "", ChatColor.YELLOW + ""));
                 hidden.remove(p.getUniqueId());
                 p.sendMessage(var.getMessages() + "You are now visible.");
                 Bukkit.broadcast(var.getMessages() + "To Ops - " + var.getObj() + p.getDisplayName() + var.getMessages() + " - is now " + ChatColor.DARK_GRAY +
@@ -44,10 +38,6 @@ public class CmdHide extends Cmd {
                 }
             } else {
                 hidePlayer(p);
-                YamlConfiguration configLogOut = YamlConfiguration.loadConfiguration(configFileLogOut);
-                Bukkit.broadcastMessage((ChatColor.RED + " - " + ChatColor.YELLOW + ChatColor.translateAlternateColorCodes('&',
-                        configLogOut.getString(p.getUniqueId().toString()).replaceAll("\\{NAME\\}", p.getDisplayName()).replaceAll("\\{RANK\\}",
-                                um.getUser(p.getUniqueId()).getRank().getTitle()))).replaceAll(ChatColor.RESET + "", ChatColor.YELLOW + ""));
                 hidden.add(p.getUniqueId());
                 p.sendMessage(var.getMessages() + "You are now hidden.");
                 Bukkit.broadcast(var.getMessages() + "To Ops - " + var.getObj() + p.getDisplayName() + var.getMessages() + " - is now " + ChatColor.WHITE +

@@ -32,7 +32,7 @@ public class CmdKick extends Cmd {
         for (int i = 1; i < args.length; i++)
             reason += args[i] + " ";
         reason = ChatColor.translateAlternateColorCodes('&', reason.trim());
-        Bukkit.broadcastMessage(var.getMessages() + name + " kicked " + var.getObj() + target.getName() + var.getMessages() + " for " + var.getObj() + reason);
+        Bukkit.broadcastMessage(var.getMessages() + name + " kicked " + var.getObj() + target.getName() + (reason.equals("") ? "" : var.getMessages() + " for " + var.getObj() + reason));
         target.kickPlayer(reason);
         return true;
     }

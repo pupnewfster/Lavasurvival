@@ -31,8 +31,6 @@ import java.util.ArrayList;
 import java.util.UUID;
 
 public class Listeners implements Listener {
-    private File configFileLogOut = new File("plugins/Necessities", "logoutmessages.yml");
-    private File configFileLogIn = new File("plugins/Necessities", "loginmessages.yml");
     private File configFileTitles = new File("plugins/Necessities", "titles.yml");
     private File configFile = new File("plugins/Necessities", "config.yml");
     private static String JanetName = "";
@@ -65,27 +63,7 @@ public class Listeners implements Listener {
         if (u.getNick() != null)
             p.setDisplayName(u.getNick());
         UUID uuid = p.getUniqueId();
-        YamlConfiguration configLogIn = YamlConfiguration.loadConfiguration(configFileLogIn);
-        if (!configLogIn.contains(uuid.toString())) {
-            configLogIn.set(uuid.toString(), "{RANK} {NAME}&r joined the game.");
-            try {
-                configLogIn.save(configFileLogIn);
-            } catch (Exception er) {
-                er.printStackTrace();
-            }
-        }
-        YamlConfiguration configLogOut = YamlConfiguration.loadConfiguration(configFileLogOut);
-        if (!configLogOut.contains(uuid.toString())) {
-            configLogOut.set(uuid.toString(), "{RANK} {NAME}&r Disconnected.");
-            try {
-                configLogOut.save(configFileLogOut);
-            } catch (Exception er) {
-                er.printStackTrace();
-            }
-        }
-        e.setJoinMessage((ChatColor.GREEN + " + " + ChatColor.YELLOW + ChatColor.translateAlternateColorCodes('&',
-                configLogIn.getString(uuid.toString()).replaceAll("\\{NAME\\}", p.getDisplayName()).replaceAll("\\{RANK\\}",
-                        um.getUser(p.getUniqueId()).getRank().getTitle()))).replaceAll(ChatColor.RESET + "", ChatColor.YELLOW + ""));
+        e.setJoinMessage(null);
         if (!get.hasJoined(uuid)) {
             YamlConfiguration config = YamlConfiguration.loadConfiguration(configFile);
             final String welcome = ChatColor.translateAlternateColorCodes('&', config.getString("Necessities.firstTime")).replaceAll("\\{NAME\\}", p.getName());
@@ -151,10 +129,7 @@ public class Listeners implements Listener {
     @EventHandler
     public void onPlayerQuit(PlayerQuitEvent e) {
         UUID uuid = e.getPlayer().getUniqueId();
-        YamlConfiguration configLogOut = YamlConfiguration.loadConfiguration(configFileLogOut);
-        e.setQuitMessage((ChatColor.RED + " - " + ChatColor.YELLOW + ChatColor.translateAlternateColorCodes('&',
-                configLogOut.getString(uuid.toString()).replaceAll("\\{NAME\\}", e.getPlayer().getDisplayName()).replaceAll("\\{RANK\\}",
-                        um.getUser(e.getPlayer().getUniqueId()).getRank().getTitle()))).replaceAll(ChatColor.RESET + "", ChatColor.YELLOW + ""));
+        e.setQuitMessage(null);
         User u = um.getUser(e.getPlayer().getUniqueId());
         if (hide.isHidden(e.getPlayer())) {
             Bukkit.broadcast(var.getMessages() + "To Ops -" + e.getQuitMessage(), "Necessities.opBroadcast");
@@ -214,6 +189,13 @@ public class Listeners implements Listener {
         User u = um.getUser(e.getPlayer().getUniqueId());
         Player player = e.getPlayer();
         final UUID uuid = player.getUniqueId();
+        String status = u.getStatus();
+        if (status.equals("dead"))
+            status = ChatColor.RED + "[Dead]";
+        else if (status.equals("alive"))
+            status = ChatColor.GREEN + "[Alive]";
+        if (hide.isHidden(player))
+            status = "";
         String m = e.getMessage();
         if(m.endsWith(">") && ! m.equals(">")) {
             String appended = u.getAppended() + " " + m.substring(0, m.length() - 1);
@@ -259,7 +241,6 @@ public class Listeners implements Listener {
         if (u.isMuted())
             player.sendMessage(var.getEr() + "Error: " + var.getErMsg() + "You are muted.");
         else {
-            String status = sb.getPrefix(u);
             if (!e.getRecipients().isEmpty()) {
                 ArrayList<Player> toRem = new ArrayList<>();
                 for (Player recip : e.getRecipients())

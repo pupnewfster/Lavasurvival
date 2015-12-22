@@ -1,6 +1,6 @@
 package me.eddiep.minecraft.ls.game;
 
-import com.crossge.necessities.GetUUID;
+import com.crossge.necessities.Commands.CmdHide;
 import com.crossge.necessities.RankManager.Rank;
 import me.eddiep.handles.ClassicPhysicsEvent;
 import me.eddiep.minecraft.ls.Lavasurvival;
@@ -23,7 +23,6 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.material.MaterialData;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scoreboard.Scoreboard;
-import org.bukkit.scoreboard.Team;
 
 import java.io.File;
 import java.io.IOException;
@@ -58,7 +57,7 @@ public abstract class Gamemode {
     private int[] votes = new int[VOTE_COUNT];
     private int voteCount;
     private static LavaMap lastMap, currentMap;
-    private static Team alive, dead, spawn;
+    private static ArrayList<UUID> alive, dead;
     private static Scoreboard scoreboard;
     private static PlayerListener listener;
     private static PhysicsListener physicsListener;
@@ -70,11 +69,6 @@ public abstract class Gamemode {
 
     public static PlayerListener getPlayerListener() {
         return listener;
-    }
-
-    public static void clearTeam(Team team) {
-        for (String p : team.getEntries())
-            team.removeEntry(p);
     }
 
     public static LavaMap getCurrentMap() {
@@ -94,8 +88,6 @@ public abstract class Gamemode {
     }
 
     public static void cleanup() {
-        clearTeam(alive);
-        clearTeam(dead);
         if (listener != null)
             listener.cleanup();
         if (physicsListener != null)
@@ -105,30 +97,6 @@ public abstract class Gamemode {
     public void prepare() {
         if (scoreboard == null)
             scoreboard = Bukkit.getScoreboardManager().getMainScoreboard();
-        if (alive == null) {
-            if (scoreboard.getTeam("Alive") == null)
-                alive = scoreboard.registerNewTeam("Alive");
-            else
-                alive = scoreboard.getTeam("Alive");
-            alive.setDisplayName("Alive");
-            alive.setPrefix(ChatColor.GREEN + "[Alive] ");
-        }
-        if (dead == null) {
-            if (scoreboard.getTeam("Dead") == null)
-                dead = scoreboard.registerNewTeam("Dead");
-            else
-                dead = scoreboard.getTeam("Dead");
-            dead.setDisplayName("Dead");
-            dead.setPrefix(ChatColor.RED + "[Dead] ");
-        }
-        if (spawn == null) {
-            if (scoreboard.getTeam("Spawn") == null)
-                spawn = scoreboard.registerNewTeam("Spawn");
-            else
-                spawn = scoreboard.getTeam("Spawn");
-            spawn.setDisplayName("Spawn");
-            spawn.setPrefix(ChatColor.GRAY + "[Spawn] ");
-        }
         if (listener == null) {
             listener = new PlayerListener();
             Lavasurvival.INSTANCE.getServer().getPluginManager().registerEvents(listener, Lavasurvival.INSTANCE);
@@ -165,8 +133,8 @@ public abstract class Gamemode {
 
         LAVA = RANDOM.nextInt(100) < 75; //Have water/lava check be in here instead of as arguement
 
-        clearTeam(alive);
-        clearTeam(dead);
+        alive = new ArrayList<>();
+        dead = new ArrayList<>();
 
         for (Player p : Bukkit.getOnlinePlayers())
             playerJoin(p);
@@ -266,26 +234,21 @@ public abstract class Gamemode {
 
         end();
         final UserManager um = Lavasurvival.INSTANCE.getUserManager();
-        GetUUID get = Lavasurvival.INSTANCE.getUUIDs();
+        CmdHide hide = Lavasurvival.INSTANCE.getHide();
 
-        int amount = alive.getSize();
+        int amount = alive.size();
         if (amount == 0) {
             globalMessage("No one survived..");
         } else if (amount <= 45) {
             globalMessage("Congratulations to the survivors!");
             String survivors = "";
-            for (String name : alive.getEntries()) {
-                if (name == null)
-                    continue;
-                UUID id = get.getID(name);
-                if (id == null)
-                    id = get.getOfflineID(name);
-                if (id == null || Bukkit.getPlayer(id) == null)
+            for (UUID id : alive) {
+                if (id == null || Bukkit.getPlayer(id) == null || hide.isHidden(Bukkit.getPlayer(id)) || isInSpawn(Bukkit.getPlayer(id)))
                     continue;
                 if (survivors.equals(""))
-                    survivors += name;
+                    survivors += Bukkit.getPlayer(id).getName();
                 else
-                    survivors += ", " + name;
+                    survivors += ", " + Bukkit.getPlayer(id).getName();
             }
 
             globalMessage(survivors);
@@ -295,14 +258,9 @@ public abstract class Gamemode {
 
         final HashMap<Player, Integer> winners = new HashMap<>();
 
-        for (String name : alive.getEntries()) {
-            if (name == null)
-                continue;
-            UUID id = get.getID(name);
-            if (id == null)
-                id = get.getOfflineID(name);
+        for (UUID id : alive) {
             Player player = Bukkit.getPlayer(id);
-            if (id == null || player == null)
+            if (id == null || player == null || hide.isHidden(player) || isInSpawn(Bukkit.getPlayer(id)))
                 continue;
 
             int blockCount = countAirBlocksAround(player, 20);
@@ -369,12 +327,12 @@ public abstract class Gamemode {
                 info.getRanking().addResult(otherInfo, result);
             }
 
-            for (String name : dead.getEntries()) {
-                Player p = Bukkit.getPlayer(name);
+            for (UUID id : dead) {
+                Player p = Bukkit.getPlayer(id);
                 if (p == null)
                     continue;
 
-                UserInfo otherInfo = um.getUser(p.getUniqueId());
+                UserInfo otherInfo = um.getUser(id);
 
                 info.getRanking().addResult(otherInfo, 1.0);
                 otherInfo.getRanking().addResult(info, 0.0);
@@ -617,53 +575,42 @@ public abstract class Gamemode {
             u.giveBoughtBlocks();
     }
 
-    public void setSpawn(Player player) {
-        if (player == null)
-            return;
-        String name = player.getName();
-        if (alive.hasEntry(name))
-            alive.removeEntry(name);
-        spawn.addEntry(name);
-        player.setGameMode(GameMode.SURVIVAL);
-        Lavasurvival.log(name + " has joined the spawn team.");
-    }
-
     public void setAlive(Player player) {
         if (player == null)
             return;
-        String name = player.getName();
-        if (dead.hasEntry(name))
-            dead.removeEntry(name);
-        alive.addEntry(name);
+        UUID uuid = player.getUniqueId();
+        if (dead.contains(uuid))
+            dead.remove(uuid);
+        if (!alive.contains(uuid))
+            alive.add(uuid);
+        Lavasurvival.INSTANCE.getNecessitiesUserManager().getUser(uuid).setStatus("alive");
         player.setGameMode(GameMode.SURVIVAL);
-        Lavasurvival.log(name + " has joined the alive team.");
+        Lavasurvival.log(player.getName() + " has joined the alive team.");
     }
 
     public void setDead(Player player) {
         if (player == null)
             return;
-        String name = player.getName();
-
-        if (alive.hasEntry(name))
-            alive.removeEntry(name);
-        if (spawn.hasEntry(name))
-            spawn.removeEntry(name);
-
-        dead.addEntry(name);
+        UUID uuid = player.getUniqueId();
+        if (alive.contains(uuid))
+            alive.remove(uuid);
+        if (!dead.contains(uuid))
+            dead.add(uuid);
+        Lavasurvival.INSTANCE.getNecessitiesUserManager().getUser(uuid).setStatus("dead");
         player.setGameMode(GameMode.SPECTATOR);
-        Lavasurvival.log(name + " has joined the dead team.");
+        Lavasurvival.log(player.getName() + " has joined the dead team.");
     }
 
     public boolean isAlive(Player player) {
-        return player != null && (alive.hasEntry(player.getName()));
+        return player != null && (alive.contains(player.getUniqueId()));
     }
 
     public boolean isDead(Player player) {
-        return player != null && dead.hasEntry(player.getName());
+        return player != null && dead.contains(player.getUniqueId());
     }
 
     public boolean isInGame(Player player) {
-         return player != null && (alive.hasEntry(player.getName()) || dead.hasEntry(player.getName()) || spawn.hasEntry(player.getName()));
+         return player != null && (alive.contains(player.getUniqueId()) || dead.contains(player.getUniqueId()));
     }
 
     public void globalMessage(String message) {
@@ -686,6 +633,6 @@ public abstract class Gamemode {
     }
 
     public boolean isInSpawn(Player player) {
-        return player != null && spawn.hasEntry(player.getName());
+        return player != null && (getCurrentMap().isInSafeZone(player.getLocation()) || getCurrentMap().isInSafeZone(player.getEyeLocation()));
     }
 }

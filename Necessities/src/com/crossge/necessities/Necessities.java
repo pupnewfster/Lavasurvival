@@ -271,10 +271,6 @@ public class Necessities extends JavaPlugin {
             com = new CmdRagequit();
         else if (isEqual(name, "devs"))
             com = new CmdDevs();
-        else if (isEqual(name, "loginmessage"))
-            com = new CmdLogInMessage();
-        else if (isEqual(name, "logoutmessage"))
-            com = new CmdLogOutMessage();
         else if (isEqual(name, "hat"))
             com = new CmdHat();
         else if (isEqual(name, "hide"))

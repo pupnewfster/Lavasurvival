@@ -27,13 +27,13 @@ public class DonationReader {
             Statement stmt = conn.createStatement();
             Statement stmt2 = conn.createStatement();
             ResultSet rs = stmt.executeQuery("SELECT * FROM actions");
-            ResultSet rs2 = stmt2.executeQuery("SELECT * FROM steamuuiddb");
+            ResultSet rs2 = stmt2.executeQuery("SELECT * FROM players");
             while (rs.next()) {
                 if (Integer.parseInt(rs.getString("server").replaceAll("[^0-9]", "")) == 9 && rs.getInt("delivered") == 0) {
-                    int steamID = rs.getInt("steamID");
+                    long steamID = rs.getLong("uid");
                     UUID uuid = null;
                     while (rs2.next()) {
-                        if (rs2.getInt("steamID") == steamID) {
+                        if (rs2.getLong("uid") == steamID) {
                             uuid = UUID.fromString(rs2.getString("uuid").replaceAll("(\\w{8})(\\w{4})(\\w{4})(\\w{4})(\\w{12})", "$1-$2-$3-$4-$5"));
                             break;
                         }
@@ -41,7 +41,7 @@ public class DonationReader {
                     if (uuid != null && get.hasJoined(uuid)) {
                         User u = um.getUser(uuid);
                         String subrank = "Necessities.Donator" + rs.getInt("package");
-                        if (!rm.validSubrank(subrank))
+                        if (rm.validSubrank(subrank.toLowerCase()))
                             continue;
                         um.updateUserSubrank(uuid, rm.getSub(subrank), false);
                         Bukkit.broadcastMessage(u.getDispName() + var.getMessages() + " just donated.");
