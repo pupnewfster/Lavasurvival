@@ -2,6 +2,7 @@ package me.eddiep.minecraft.ls.game.impl;
 
 import me.eddiep.minecraft.ls.Lavasurvival;
 import me.eddiep.minecraft.ls.game.Gamemode;
+import me.eddiep.minecraft.ls.game.options.FloodOptions;
 import me.eddiep.minecraft.ls.system.TimeUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -58,6 +59,11 @@ public class Rise extends Gamemode {
             globalMessage("The building style will be " + ChatColor.RED + "" + ChatColor.BOLD + "SURVIVAL STYLE");
         else
             globalMessage("The building style will be " + ChatColor.RED + "" + ChatColor.BOLD + "CLASSIC STYLE");*/
+    }
+
+    @Override
+    protected void setIsLava(FloodOptions options) {
+        super.setIsLava(getCurrentMap().getRiseOptions());
     }
 
     @Override

@@ -6,6 +6,7 @@ import me.eddiep.handles.ClassicPhysicsEvent;
 import me.eddiep.minecraft.ls.Lavasurvival;
 import me.eddiep.minecraft.ls.game.impl.Flood;
 import me.eddiep.minecraft.ls.game.impl.Rise;
+import me.eddiep.minecraft.ls.game.options.FloodOptions;
 import me.eddiep.minecraft.ls.game.shop.ShopFactory;
 import me.eddiep.minecraft.ls.ranks.UserInfo;
 import me.eddiep.minecraft.ls.ranks.UserManager;
@@ -131,12 +132,7 @@ public abstract class Gamemode {
         isEnding = false;
         hasEnded = false;
 
-        if (currentMap.getFloodOptions().isLavaEnabled() && currentMap.getFloodOptions().isWaterEnabled()) {
-            LAVA = RANDOM.nextInt(100) < 75; //Have water/lava check be in here instead of as arguement
-        } else {
-            LAVA = currentMap.getFloodOptions().isLavaEnabled() || !currentMap.getFloodOptions().isWaterEnabled() && RANDOM.nextInt(100) < 75;
-        }
-
+        setIsLava(currentMap.getFloodOptions());
 
         alive = new ArrayList<>();
         dead = new ArrayList<>();
@@ -498,6 +494,14 @@ public abstract class Gamemode {
                 tryNextGame();
             }
         }, 20);
+    }
+
+    protected void setIsLava(FloodOptions option) {
+        if (option.isLavaEnabled() && option.isWaterEnabled()) {
+            LAVA = RANDOM.nextInt(100) < 75; //Have water/lava check be in here instead of as arguement
+        } else {
+            LAVA = option.isLavaEnabled() || !option.isWaterEnabled() && RANDOM.nextInt(100) < 75;
+        }
     }
 
     public void forceEnd() {

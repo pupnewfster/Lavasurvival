@@ -9,8 +9,8 @@ import java.util.Arrays;
 import java.util.List;
 
 public class LavaOptions extends BaseOptions {
-    private volatile Vector selectedSpawn;
-    private volatile LavaMap owner;
+    private transient Vector selectedSpawn;
+    private transient LavaMap owner;
 
     private List<Vector> spawnPoints = new ArrayList<>();
 
