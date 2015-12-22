@@ -214,7 +214,7 @@ public abstract class Gamemode {
 
     protected abstract void onTick();
 
-    protected abstract double calculateReward(Player player);
+    protected abstract double calculateReward(Player player, int blockCount);
 
     protected int countAirBlocksAround(Player player, int limit) {
         return airBlocksAround(player.getLocation(), player.getLocation(), limit, new ArrayList<Block>());
@@ -293,7 +293,7 @@ public abstract class Gamemode {
             globalMessage("Congratulations to all " + amount + " survivors!");
         }
 
-        final HashMap<Player, Double> winners = new HashMap<>();
+        final HashMap<Player, Integer> winners = new HashMap<>();
 
         for (String name : alive.getEntries()) {
             if (name == null)
@@ -305,37 +305,16 @@ public abstract class Gamemode {
             if (id == null || player == null)
                 continue;
 
-            double reward = calculateReward(player);
+            int blockCount = countAirBlocksAround(player, 20);
+            double reward = calculateReward(player, blockCount);
 
-            winners.put(player, reward);
+            winners.put(player, blockCount);
 
             Lavasurvival.INSTANCE.getEconomy().depositPlayer(player, reward);
             player.getPlayer().sendMessage(ChatColor.GREEN + "+ " + ChatColor.GOLD + "You won " + ChatColor.BOLD + reward + ChatColor.RESET + "" + ChatColor.GOLD + " GGs!");
         }
 
-        for (Player player : winners.keySet()) {
-            double reward = winners.get(player);
-            UserInfo info = um.getUser(player.getUniqueId());
-
-            for (Player other : winners.keySet()) {
-                if (player.equals(other))
-                    continue;
-
-                UserInfo otherInfo = um.getUser(other.getUniqueId());
-
-                double otherReward = winners.get(other);
-
-                double result;
-                if (reward > otherReward)
-                    result = 1; //They won
-                else if (reward < otherReward)
-                    result = 0; //They lost
-                else
-                    result = 0.5; //They tied
-
-                info.getRanking().addResult(otherInfo, result);
-            }
-        }
+        calculateGlicko(winners, um);
 
         Lavasurvival.INSTANCE.MONEY_VIEWER.run();
         lastMoneyCheck = System.currentTimeMillis();
@@ -364,6 +343,43 @@ public abstract class Gamemode {
                 System.out.println("Updated " + count + " in " + (System.currentTimeMillis() - start) + "ms !");
             }
         }).start();
+    }
+
+    private void calculateGlicko(HashMap<Player, Integer> winners, UserManager um) {
+        for (Player player : winners.keySet()) {
+            int reward = winners.get(player);
+            UserInfo info = um.getUser(player.getUniqueId());
+
+            for (Player other : winners.keySet()) {
+                if (player.equals(other))
+                    continue;
+
+                UserInfo otherInfo = um.getUser(other.getUniqueId());
+
+                int otherReward = winners.get(other);
+
+                double result;
+                if (reward > otherReward)
+                    result = 1; //They won
+                else if (reward < otherReward)
+                    result = 0; //They lost
+                else
+                    result = 0.5; //They tied
+
+                info.getRanking().addResult(otherInfo, result);
+            }
+
+            for (String name : dead.getEntries()) {
+                Player p = Bukkit.getPlayer(name);
+                if (p == null)
+                    continue;
+
+                UserInfo otherInfo = um.getUser(p.getUniqueId());
+
+                info.getRanking().addResult(otherInfo, 1.0);
+                otherInfo.getRanking().addResult(info, 0.0);
+            }
+        }
     }
 
     public List<LavaMap> getMapsInVote() {
@@ -483,12 +499,12 @@ public abstract class Gamemode {
             if(next != null)
                 globalMessage(ChatColor.BOLD + next.getName() + ChatColor.RESET + " won the vote!");
             if (nextGame == null)
-                nextGame = pickRandomGame();
+                nextGame = pickRandomGame(next);
             nextGame.map = next;
         } else {
             try {
                 if (nextGame == null)
-                    nextGame = pickRandomGame();
+                    nextGame = pickRandomGame(null);
                 nextGame.map = LavaMap.load(files[0]);
             } catch (IOException e) {
                 e.printStackTrace();
@@ -518,12 +534,22 @@ public abstract class Gamemode {
         hasEnded = true;
     }
 
-    protected Gamemode pickRandomGame() {
-        Class<?> nextGameClass = GAMES[RANDOM.nextInt(GAMES.length)];
-        try {
-            return (Gamemode) nextGameClass.newInstance();
-        } catch (Exception e) {
-            e.printStackTrace();
+    protected Gamemode pickRandomGame(LavaMap map) {
+        if (map == null) {
+            Class<?> nextGameClass = GAMES[RANDOM.nextInt(GAMES.length)];
+            try {
+                return (Gamemode) nextGameClass.newInstance();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        } else {
+            Class<? extends Gamemode>[] games = map.getEnabledGames();
+            Class<? extends Gamemode> nextGameClass = games[RANDOM.nextInt(games.length)];
+            try {
+                return nextGameClass.newInstance();
+            } catch (InstantiationException | IllegalAccessException e) {
+                e.printStackTrace();
+            }
         }
         return null;
     }
@@ -541,7 +567,7 @@ public abstract class Gamemode {
         }
     }
 
-    protected double getDefaultReward(OfflinePlayer player) {
+    protected double getDefaultReward(OfflinePlayer player, int blockCount) {
         Player onlinePlayer = player.getPlayer();
         if (onlinePlayer == null)
             return 0.0;
@@ -550,7 +576,7 @@ public abstract class Gamemode {
         Rank rank = Lavasurvival.INSTANCE.getNecessitiesUserManager().getUser(player.getUniqueId()).getRank();
         double bonusAdd = 5.0 + (1 + Lavasurvival.INSTANCE.getRankManager().getOrder().indexOf(rank));
 
-        int blockCount = countAirBlocksAround(onlinePlayer, 20);
+        //int blockCount = countAirBlocksAround(onlinePlayer, 20);
         System.out.println(onlinePlayer.getName() + " had " + blockCount + " blocks around them!");
 
         return base + (bonusAdd * blockCount);

@@ -145,11 +145,11 @@ public class Rise extends Gamemode {
     }
 
     @Override
-    public double calculateReward(Player player) {
+    public double calculateReward(Player player, int blockCount) {
         double multiplier = 1.0;//In case we want a triple reward
         if (doubleReward)
             multiplier = 2.0;
-        return (super.getDefaultReward(player) + bonus) * multiplier;
+        return (super.getDefaultReward(player, blockCount) + bonus) * multiplier;
     }
 
     public boolean isRoundEnding() {

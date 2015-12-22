@@ -1,6 +1,10 @@
 package me.eddiep.minecraft.ls.game;
 
 import me.eddiep.minecraft.ls.Lavasurvival;
+import me.eddiep.minecraft.ls.game.impl.Flood;
+import me.eddiep.minecraft.ls.game.impl.Rise;
+import me.eddiep.minecraft.ls.game.options.FloodOptions;
+import me.eddiep.minecraft.ls.game.options.RiseOptions;
 import me.eddiep.minecraft.ls.system.FileUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -12,11 +16,17 @@ import org.bukkit.util.Vector;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 
 public class LavaMap {
+    public static final int CONFIG_VERSION = 2;
+
     private String name, worldName, filePath;
     private int lavax, lavay, lavaz, mapHeight;
     private Vector minSafeZone, maxSafeZone, mapSpawn;
+    private int configVersion = 1; //Default version
+    private RiseOptions riseOptions = RiseOptions.defaults();
+    private FloodOptions floodOptions = FloodOptions.defaults();
 
     private volatile World world;
     private volatile boolean poured;
@@ -26,6 +36,12 @@ public class LavaMap {
         LavaMap map = Lavasurvival.GSON.fromJson(contents, LavaMap.class);
         map.poured = false;
         map.filePath = file;
+
+        if (map.configVersion < CONFIG_VERSION) { //Update config with new values
+            map.configVersion = CONFIG_VERSION;
+            map.save();
+        }
+
         return map;
     }
 
@@ -167,6 +183,18 @@ public class LavaMap {
 
         return minX <= loc.getX() && minY <= loc.getY() && minZ <= loc.getZ() &&
                 loc.getX() <= maxX && loc.getY() <= maxY && loc.getZ() <= maxZ;
+    }
+
+    public Class<? extends Gamemode>[] getEnabledGames() {
+        List<Class<? extends Gamemode>> games = new ArrayList<>();
+
+        if (riseOptions.isEnabled())
+            games.add(Rise.class);
+
+        if (floodOptions.isEnabled())
+            games.add(Flood.class);
+
+        return games.toArray(new Class[games.size()]);
     }
 
     public String getName() {
