@@ -30,6 +30,9 @@ commands:
     usage: /<command>
     permission: lavasurvival.rules
     permission-message: You don't have <permission>
+  spawn:
+    description: Go back to map spawn
+    usage: /<command>
 permissions:
     lavasurvival.*:
         description: Lavasurvival's permission nodes

@@ -198,7 +198,8 @@ public class Lavasurvival extends JavaPlugin {
                 new CmdEndGame(),
                 new CmdLVote(),
                 new CmdRules(),
-                new CmdSetupMap()
+                new CmdSetupMap(),
+                new CmdSpawn()
         };
 
         getDataFolder().mkdir();
