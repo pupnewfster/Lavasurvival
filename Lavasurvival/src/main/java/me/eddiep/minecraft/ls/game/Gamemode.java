@@ -634,7 +634,7 @@ public abstract class Gamemode {
             case 5:
                 return 40;
             default:
-                return 1;
+                return 40;
         }
     }
 
