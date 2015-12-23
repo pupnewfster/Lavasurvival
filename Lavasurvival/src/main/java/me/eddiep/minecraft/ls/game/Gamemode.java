@@ -6,6 +6,7 @@ import me.eddiep.handles.ClassicPhysicsEvent;
 import me.eddiep.minecraft.ls.Lavasurvival;
 import me.eddiep.minecraft.ls.game.impl.Flood;
 import me.eddiep.minecraft.ls.game.impl.Rise;
+import me.eddiep.minecraft.ls.game.items.BaseItem;
 import me.eddiep.minecraft.ls.game.options.FloodOptions;
 import me.eddiep.minecraft.ls.game.shop.ShopFactory;
 import me.eddiep.minecraft.ls.ranks.UserInfo;
@@ -595,6 +596,8 @@ public abstract class Gamemode {
         setAlive(player);
         player.teleport(new Location(getCurrentWorld(), getCurrentMap().getMapSpawn().getX(), getCurrentMap().getMapSpawn().getY(), getCurrentMap().getMapSpawn().getZ()));
         player.setGameMode(GameMode.SURVIVAL);
+
+        BaseItem.MINOR_HEAL.giveItem(player);
 
         //TODO Don't do this. We'll have an item for this
         //player.setMaxHealth(getHealth(Lavasurvival.INSTANCE.getNecessitiesUserManager().getUser(player.getUniqueId()).getRank()));

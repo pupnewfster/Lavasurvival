@@ -4,6 +4,7 @@ import me.eddiep.handles.ClassicBlockPlaceEvent;
 import me.eddiep.minecraft.ls.Lavasurvival;
 import me.eddiep.minecraft.ls.game.Gamemode;
 import me.eddiep.minecraft.ls.game.LavaMap;
+import me.eddiep.minecraft.ls.game.items.BaseItem;
 import me.eddiep.minecraft.ls.ranks.UserInfo;
 import me.eddiep.minecraft.ls.ranks.UserManager;
 import org.bukkit.*;
@@ -184,6 +185,20 @@ public class PlayerListener implements Listener {
     public void dropItem(PlayerDropItemEvent event) {
         if(!survival)
             event.setCancelled(true);
+    }
+
+    @EventHandler(priority = EventPriority.MONITOR)
+    public void itemConsumed(PlayerItemConsumeEvent event) {
+        ItemStack itemStack = event.getItem();
+        for (BaseItem item : BaseItem.ITEMS) {
+            if (item.isItem(itemStack)) {
+                event.setCancelled(true);
+                event.getPlayer().getInventory().remove(itemStack);
+
+                item.consume(event.getPlayer());
+                break;
+            }
+        }
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
