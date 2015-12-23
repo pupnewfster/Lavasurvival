@@ -600,7 +600,7 @@ public abstract class Gamemode {
         BaseItem.MINOR_HEAL.giveItem(player);
 
         //TODO Don't do this. We'll have an item for this
-        //player.setMaxHealth(getHealth(Lavasurvival.INSTANCE.getNecessitiesUserManager().getUser(player.getUniqueId()).getRank()));
+        player.setMaxHealth(getHealth(Lavasurvival.INSTANCE.getNecessitiesUserManager().getUser(player.getUniqueId()).getRank()));
 
         player.setHealth(player.getMaxHealth());
         globalMessageNoPrefix(ChatColor.GREEN + "+ " + player.getDisplayName() + ChatColor.RESET + " has joined the game!");
