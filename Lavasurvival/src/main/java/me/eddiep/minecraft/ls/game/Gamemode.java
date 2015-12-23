@@ -234,7 +234,8 @@ public abstract class Gamemode {
                         continue;
                     if (!check.getType().isSolid() && !check.isLiquid()) {
                         alreadyChecked.add(check);
-                        total += airBlocksAround(original, check.getLocation(), limit, alreadyChecked) + 1;
+                        if (!getCurrentMap().isInSafeZone(check.getLocation()))
+                            total += airBlocksAround(original, check.getLocation(), limit, alreadyChecked) + 1;
                     }
                 }
             }
@@ -594,6 +595,7 @@ public abstract class Gamemode {
         setAlive(player);
         player.teleport(new Location(getCurrentWorld(), getCurrentMap().getMapSpawn().getX(), getCurrentMap().getMapSpawn().getY(), getCurrentMap().getMapSpawn().getZ()));
         player.setGameMode(GameMode.SURVIVAL);
+        player.setMaxHealth(getHealth(Lavasurvival.INSTANCE.getNecessitiesUserManager().getUser(player.getUniqueId()).getRank()));
         player.setHealth(player.getMaxHealth());
         globalMessageNoPrefix(ChatColor.GREEN + "+ " + player.getDisplayName() + ChatColor.RESET + " has joined the game!");
         UserManager um = Lavasurvival.INSTANCE.getUserManager();
@@ -613,6 +615,27 @@ public abstract class Gamemode {
         ShopFactory.validateInventory(inv);
         if (u != null)
             u.giveBoughtBlocks();
+    }
+
+    private double getHealth(Rank r) {
+        if (r == null)
+            return 1;
+        switch (Lavasurvival.INSTANCE.getRankManager().getOrder().indexOf(r)) {
+            case 0:
+                return 10;
+            case 1:
+                return 15;
+            case 2:
+                return 20;
+            case 3:
+                return 25;
+            case 4:
+                return 30;
+            case 5:
+                return 40;
+            default:
+                return 1;
+        }
     }
 
     public void setAlive(Player player) {
