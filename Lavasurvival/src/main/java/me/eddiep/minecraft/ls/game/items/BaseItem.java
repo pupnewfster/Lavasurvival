@@ -6,6 +6,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.inventory.meta.PotionMeta;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -34,6 +35,8 @@ public abstract class BaseItem {
 
         List<String> loreLines = Arrays.asList(description().split("\n"));
         meta.setLore(loreLines);
+
+        item.setItemMeta(meta);
 
         return item;
     }
