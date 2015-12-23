@@ -17,7 +17,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.Arrays;
 
-@MenuInventory(slots = 45, name = "Donator Block Shop")
+@MenuInventory(slots = 54, name = "Donator Block Shop")
 public class DonatorBlockShop extends Menu {
     public DonatorBlockShop(MenuManager manager, Inventory inv) {
         super(manager, inv);
@@ -391,6 +391,96 @@ public class DonatorBlockShop extends Menu {
             getUser(player).buyBlock(Material.BOOKSHELF, price(Material.BOOKSHELF));
     }
 
+    @MenuItem(
+            slot = 41,
+            item = @ItemStackAnnotation(material = Material.YELLOW_FLOWER, name = "")
+    )
+    public void buyDandelion(MenuPlayer player) {
+        if (canBuy(player))
+            getUser(player).buyBlock(Material.YELLOW_FLOWER, price(Material.YELLOW_FLOWER));
+    }
+
+    @MenuItem(
+            slot = 42,
+            item = @ItemStackAnnotation(material = Material.RED_ROSE, durability = 0, name = "")
+    )
+    public void buyPoppy(MenuPlayer player) {
+        if (canBuy(player))
+            getUser(player).buyBlock(Material.RED_ROSE, price(Material.RED_ROSE), (byte) 0);
+    }
+
+    @MenuItem(
+            slot = 43,
+            item = @ItemStackAnnotation(material = Material.RED_ROSE, durability = 1, name = "")
+    )
+    public void buyBlueOrchid(MenuPlayer player) {
+        if (canBuy(player))
+            getUser(player).buyBlock(Material.RED_ROSE, price(Material.RED_ROSE), (byte) 1);
+    }
+
+    @MenuItem(
+            slot = 44,
+            item = @ItemStackAnnotation(material = Material.RED_ROSE, durability = 2, name = "")
+    )
+    public void buyAllium(MenuPlayer player) {
+        if (canBuy(player))
+            getUser(player).buyBlock(Material.RED_ROSE, price(Material.RED_ROSE), (byte) 2);
+    }
+
+    @MenuItem(
+            slot = 45,
+            item = @ItemStackAnnotation(material = Material.RED_ROSE, durability = 3, name = "")
+    )
+    public void buyAzureBluet(MenuPlayer player) {
+        if (canBuy(player))
+            getUser(player).buyBlock(Material.RED_ROSE, price(Material.RED_ROSE), (byte) 3);
+    }
+
+    @MenuItem(
+            slot = 46,
+            item = @ItemStackAnnotation(material = Material.RED_ROSE, durability = 4, name = "")
+    )
+    public void buyRedTulip(MenuPlayer player) {
+        if (canBuy(player))
+            getUser(player).buyBlock(Material.RED_ROSE, price(Material.RED_ROSE), (byte) 4);
+    }
+
+    @MenuItem(
+            slot = 47,
+            item = @ItemStackAnnotation(material = Material.RED_ROSE, durability = 5, name = "")
+    )
+    public void buyOrangeTulip(MenuPlayer player) {
+        if (canBuy(player))
+            getUser(player).buyBlock(Material.RED_ROSE, price(Material.RED_ROSE), (byte) 5);
+    }
+
+    @MenuItem(
+            slot = 48,
+            item = @ItemStackAnnotation(material = Material.RED_ROSE, durability = 6, name = "")
+    )
+    public void buyWhiteTulip(MenuPlayer player) {
+        if (canBuy(player))
+            getUser(player).buyBlock(Material.RED_ROSE, price(Material.RED_ROSE), (byte) 6);
+    }
+
+    @MenuItem(
+            slot = 49,
+            item = @ItemStackAnnotation(material = Material.RED_ROSE, durability = 7, name = "")
+    )
+    public void buyPinkTulip(MenuPlayer player) {
+        if (canBuy(player))
+            getUser(player).buyBlock(Material.RED_ROSE, price(Material.RED_ROSE), (byte) 7);
+    }
+
+    @MenuItem(
+            slot = 50,
+            item = @ItemStackAnnotation(material = Material.RED_ROSE, durability = 8, name = "")
+    )
+    public void buyOxeyeDaisy(MenuPlayer player) {
+        if (canBuy(player))
+            getUser(player).buyBlock(Material.RED_ROSE, price(Material.RED_ROSE), (byte) 8);
+    }
+
     private UserInfo getUser(MenuPlayer player) {
         return Lavasurvival.INSTANCE.getUserManager().getUser(player.getBukkit().getUniqueId());
     }
@@ -457,6 +547,10 @@ public class DonatorBlockShop extends Menu {
             case FLOWER_POT_ITEM:
                 return 1500;
             case BOOKSHELF:
+                return 1500;
+            case YELLOW_FLOWER:
+                return 1500;
+            case RED_ROSE:
                 return 1500;
             default:
                 return 0;

@@ -242,11 +242,19 @@ public class PhysicsListener implements Listener {
         ticksToMelt.put(new MaterialData(Material.FLOWER_POT_ITEM), 0);
         ticksToMelt.put(new MaterialData(Material.FLOWER_POT), 0);
         ticksToMelt.put(new MaterialData(Material.BOOKSHELF), 0);
+        ticksToMelt.put(new MaterialData(Material.YELLOW_FLOWER), 0);
+        ticksToMelt.put(new MaterialData(Material.RED_ROSE, (byte) 0), 0);//Poppy
+        ticksToMelt.put(new MaterialData(Material.RED_ROSE, (byte) 1), 0);//Blue Orchid
+        ticksToMelt.put(new MaterialData(Material.RED_ROSE, (byte) 2), 0);//Allium
+        ticksToMelt.put(new MaterialData(Material.RED_ROSE, (byte) 3), 0);//Azure Bluet
+        ticksToMelt.put(new MaterialData(Material.RED_ROSE, (byte) 4), 0);//Red Tulip
+        ticksToMelt.put(new MaterialData(Material.RED_ROSE, (byte) 5), 0);//Orange Tulip
+        ticksToMelt.put(new MaterialData(Material.RED_ROSE, (byte) 6), 0);//White Tulip
+        ticksToMelt.put(new MaterialData(Material.RED_ROSE, (byte) 7), 0);//Pink Tulip
+        ticksToMelt.put(new MaterialData(Material.RED_ROSE, (byte) 8), 0);//Oxeye Daisy
 
 
         //Unburnable
-        ticksToMelt.put(new MaterialData(Material.YELLOW_FLOWER), -1);
-        ticksToMelt.put(new MaterialData(Material.RED_ROSE), -1);
         ticksToMelt.put(new MaterialData(Material.IRON_DOOR_BLOCK), -1);
         ticksToMelt.put(new MaterialData(Material.BEDROCK), -1);
         ticksToMelt.put(new MaterialData(Material.OBSIDIAN), -1);
