@@ -7,11 +7,15 @@ import me.eddiep.handles.logic.LogicContainer;
 import me.eddiep.handles.logic.WaterLogic;
 import net.minecraft.server.v1_8_R3.BlockPosition;
 import net.minecraft.server.v1_8_R3.IBlockData;
+import net.minecraft.server.v1_8_R3.Packet;
+import net.minecraft.server.v1_8_R3.PacketPlayOutMultiBlockChange;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.craftbukkit.v1_8_R3.CraftWorld;
+import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
 import org.bukkit.entity.FallingBlock;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -31,12 +35,52 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 public final class ClassicPhysicsHandler implements Listener {
     private ArrayList<LogicContainerHolder> logicContainers = new ArrayList<>();
     private final ConcurrentHashMap<ToAndFrom, Material> locations = new ConcurrentHashMap<>();
-    private final ConcurrentHashMap<Long, World> chunks = new ConcurrentHashMap<>();
+    private final ConcurrentHashMap<Long, WorldCount> chunks = new ConcurrentHashMap<>();
     private final ConcurrentHashMap<Location, ConcurrentLinkedQueue<ToAndFrom>> toFroms = new ConcurrentHashMap<>();
     private ArrayList<Player> lplacers = new ArrayList<>();
     private ArrayList<Player> wplacers = new ArrayList<>();
     private boolean running = false;
     private Plugin owner;
+
+    private class WorldCount {
+        private ArrayList<Short> changes = new ArrayList<>();
+        private World world;
+
+        public WorldCount(World world) {
+            this.world = world;
+        }
+
+        public void addChange(int x, int y, int z) {
+            int blockX = x % 16;
+            int blockZ = z % 16;
+            if (blockX < 0)
+                blockX += 16;
+            if (blockX > 15)
+                blockX = blockX % 16;
+            if (blockZ < 0)
+                blockZ += 16;
+            if (blockZ > 15)
+                blockZ = blockZ % 16;
+            short loc = (short) ((blockX << 12) | (blockZ << 8) | (y));
+            if (!this.changes.contains(loc))
+                this.changes.add(loc);
+        }
+
+        public int getCount() {
+            return this.changes.size();
+        }
+
+        public World getWorld() {
+            return this.world;
+        }
+
+        public short[] getChanged() {
+            short[] temp = new short[this.changes.size()];
+            for (int i = 0; i < this.changes.size(); i++)
+                temp[i] = this.changes.get(i);
+            return temp;
+        }
+    }
 
     private class ToAndFrom {
         Location from, to;
@@ -108,7 +152,10 @@ public final class ClassicPhysicsHandler implements Listener {
                 if (!blc.hasMetadata("classic_block"))
                     blc.setMetadata("classic_block", new FixedMetadataValue(ClassicPhysics.INSTANCE, true));
                 setBlockFast(blc.getWorld(), blc.getX(), blc.getY(), blc.getZ(), type.getId(), (byte) 0);
-                chunks.put((long) blc.getChunk().getX() << 32 | blc.getChunk().getZ() & 0xFFFFFFFFL, blc.getWorld());
+                long xz = (long) blc.getChunk().getX() << 32 | blc.getChunk().getZ() & 0xFFFFFFFFL;
+                if (!chunks.containsKey(xz))
+                    chunks.put(xz, new WorldCount(l.getWorld()));
+                chunks.get(xz).addChange(l.getBlockX(), l.getBlockY(), l.getBlockZ());
                 ClassicPhysics.INSTANCE.getServer().getPluginManager().callEvent(new ClassicBlockPlaceEvent(l));
                 for (LogicContainerHolder holder : logicContainers) {
                     if (holder.container.doesHandle(type)) {
@@ -128,12 +175,20 @@ public final class ClassicPhysicsHandler implements Listener {
                 locations.remove(taf);
             }
             running = false;
+            ArrayList<Packet> packets = new ArrayList<>();
             for (long l : chunks.keySet()) {
-                World w = chunks.get(l);
-                if (w != null)
-                    w.refreshChunk((int) (l >> 32), (int) l);
+                WorldCount count = chunks.get(l);
+                World world = count.getWorld();
+                int x = (int) (l >> 32), z = (int) l;
+                if (world != null) {
+                    net.minecraft.server.v1_8_R3.World w = ((CraftWorld) world).getHandle();
+                    packets.add(new PacketPlayOutMultiBlockChange(count.getCount(), count.getChanged(), w.getChunkAt(x, z)));
+                }
                 chunks.remove(l);
             }
+            for (Player p : Bukkit.getOnlinePlayers())
+                for (Packet packet : packets)
+                    ((CraftPlayer)p).getHandle().playerConnection.sendPacket(packet);
         }
     };
 
