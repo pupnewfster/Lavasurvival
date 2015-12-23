@@ -75,12 +75,6 @@ public class Shop implements Listener {
         }
     }
 
-    @EventHandler(priority = EventPriority.LOWEST)
-    public void onInventoryClick(InventoryClickEvent event) {
-        if (event.getCurrentItem() != null && event.getCurrentItem().equals(opener))
-            event.setCancelled(true);
-    }
-
     public String getShopName() {
         return shopName;
     }

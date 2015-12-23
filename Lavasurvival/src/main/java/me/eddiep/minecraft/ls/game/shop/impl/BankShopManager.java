@@ -27,6 +27,11 @@ public class BankShopManager implements ShopManager {
 
     @Override
     public void shopClosed(Player owner, Inventory inventory, Shop shop) {
+        if (inventory.contains(shop.getOpener())) {
+            inventory.remove(shop.getOpener());
+            inventory.setItem(inventory.firstEmpty(), shop.getOpener());
+        }
+
         UserManager um = Lavasurvival.INSTANCE.getUserManager();
 
         UserInfo user = um.getUser(owner.getUniqueId());

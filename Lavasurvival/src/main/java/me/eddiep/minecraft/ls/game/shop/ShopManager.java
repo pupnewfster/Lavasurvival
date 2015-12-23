@@ -1,6 +1,7 @@
 package me.eddiep.minecraft.ls.game.shop;
 
 import org.bukkit.entity.Player;
+import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
 
 public interface ShopManager {
