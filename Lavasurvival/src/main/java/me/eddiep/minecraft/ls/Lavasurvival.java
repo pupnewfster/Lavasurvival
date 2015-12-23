@@ -42,7 +42,8 @@ public class Lavasurvival extends JavaPlugin {
         public void run() {
             Collection<? extends Player> players = Bukkit.getOnlinePlayers();
             for (Player player : players) {
-                ShopFactory.validateInventory(player.getInventory());
+                //TODO Don't validate shop items
+                //ShopFactory.validateInventory(player.getInventory());
                 updateMoneyView(player);
             }
         }
