@@ -5,7 +5,6 @@ import com.crossge.necessities.Commands.CmdHide;
 import com.crossge.necessities.Hats.Hat;
 import com.crossge.necessities.Janet.Janet;
 import com.crossge.necessities.Janet.JanetAI;
-import com.crossge.necessities.RankManager.RankManager;
 import com.crossge.necessities.RankManager.User;
 import com.crossge.necessities.RankManager.UserManager;
 import com.crossge.necessities.WorldManager.PortalManager;
@@ -33,26 +32,15 @@ import java.util.UUID;
 public class Listeners implements Listener {
     private File configFileTitles = new File("plugins/Necessities", "titles.yml");
     private File configFile = new File("plugins/Necessities", "config.yml");
-    private static String JanetName = "";
     CmdCommandSpy spy = new CmdCommandSpy();
     PortalManager pm = new PortalManager();
-    ScoreBoards sb = new ScoreBoards();
     UserManager um = new UserManager();
     Console console = new Console();
     Variables var = new Variables();
     Teleports tps = new Teleports();
     CmdHide hide = new CmdHide();
-    GetUUID get = new GetUUID();
     JanetAI ai = new JanetAI();
     Janet bot = new Janet();
-
-    public Listeners() {
-        RankManager rm = new RankManager();
-        String rank = "";
-        if (!rm.getOrder().isEmpty())
-            rank = ChatColor.translateAlternateColorCodes('&', rm.getRank(rm.getOrder().size() - 1).getTitle() + " ");
-        JanetName = rank + "Janet" + ChatColor.DARK_RED + ": " + ChatColor.WHITE;
-    }
 
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent e) {
@@ -64,41 +52,11 @@ public class Listeners implements Listener {
             p.setDisplayName(u.getNick());
         UUID uuid = p.getUniqueId();
         e.setJoinMessage(null);
-        if (!get.hasJoined(uuid)) {
-            YamlConfiguration config = YamlConfiguration.loadConfiguration(configFile);
-            final String welcome = ChatColor.translateAlternateColorCodes('&', config.getString("Necessities.firstTime")).replaceAll("\\{NAME\\}", p.getName());
-
-            if (Necessities.isTracking()) {
-                Necessities.trackAction(p, "NewLogin", p.getName());
-            }
-
-            get.addUUID(uuid);
-            Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(Necessities.getInstance(), new Runnable() {
-                @Override
-                public void run() {
-                    Bukkit.broadcastMessage(welcome);
-                    Bukkit.broadcastMessage(JanetName + "Welcome to GamezGalaxy! Enjoy your stay.");
-                }
-            });
-        } else {
-            final boolean hidden = hide.isHidden(e.getPlayer());
-            Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(Necessities.getInstance(), new Runnable() {
-                @Override
-                public void run() {
-                    if (hidden)
-                        Bukkit.broadcast(var.getMessages() + "To Ops - " + JanetName + "Welcome back.", "Necessities.opBroadcast");
-                    else
-                        Bukkit.broadcastMessage(JanetName + "Welcome back.");
-                }
-            });
-        }
         bot.logIn(uuid);
+
         hide.playerJoined(p);
-        if (hide.isHidden(e.getPlayer())) {
-            Bukkit.broadcast(var.getMessages() + "To Ops -" + e.getJoinMessage(), "Necessities.opBroadcast");
-            e.setJoinMessage(null);
+        if (hide.isHidden(e.getPlayer()))
             hide.hidePlayer(e.getPlayer());
-        }
         if (!Necessities.getInstance().isProtocolLibLoaded())
             for (User m : um.getUsers().values())
                 m.updateListName();
@@ -131,10 +89,6 @@ public class Listeners implements Listener {
         UUID uuid = e.getPlayer().getUniqueId();
         e.setQuitMessage(null);
         User u = um.getUser(e.getPlayer().getUniqueId());
-        if (hide.isHidden(e.getPlayer())) {
-            Bukkit.broadcast(var.getMessages() + "To Ops -" + e.getQuitMessage(), "Necessities.opBroadcast");
-            e.setQuitMessage(null);
-        }
         u.logOut();
         bot.logOut(uuid);
         um.removeUser(uuid);
@@ -191,9 +145,9 @@ public class Listeners implements Listener {
         final UUID uuid = player.getUniqueId();
         String status = u.getStatus();
         if (status.equals("dead"))
-            status = ChatColor.RED + "[Dead]";
+            status = ChatColor.RED + "[Dead] " + ChatColor.RESET;
         else if (status.equals("alive"))
-            status = ChatColor.GREEN + "[Alive]";
+            status = ChatColor.GREEN + "[Alive] " + ChatColor.RESET;
         if (hide.isHidden(player))
             status = "";
         String m = e.getMessage();

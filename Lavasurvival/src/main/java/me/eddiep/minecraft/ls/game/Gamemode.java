@@ -234,7 +234,8 @@ public abstract class Gamemode {
                         continue;
                     if (!check.getType().isSolid() && !check.isLiquid()) {
                         alreadyChecked.add(check);
-                        total += airBlocksAround(original, check.getLocation(), limit, alreadyChecked) + 1;
+                        if (!getCurrentMap().isInSafeZone(check.getLocation()))
+                            total += airBlocksAround(original, check.getLocation(), limit, alreadyChecked) + 1;
                     }
                 }
             }
@@ -591,19 +592,21 @@ public abstract class Gamemode {
     }
 
     public void playerJoin(Player player) {
-        UserManager um = Lavasurvival.INSTANCE.getUserManager();
-        UserInfo u = um.getUser(player.getUniqueId());
-
         setAlive(player);
         player.teleport(new Location(getCurrentWorld(), getCurrentMap().getMapSpawn().getX(), getCurrentMap().getMapSpawn().getY(), getCurrentMap().getMapSpawn().getZ()));
         player.setGameMode(GameMode.SURVIVAL);
+
+        //TODO Don't do this. We'll have an item for this
+        //player.setMaxHealth(getHealth(Lavasurvival.INSTANCE.getNecessitiesUserManager().getUser(player.getUniqueId()).getRank()));
+
         player.setHealth(player.getMaxHealth());
         globalMessageNoPrefix(ChatColor.GREEN + "+ " + player.getDisplayName() + ChatColor.RESET + " has joined the game!");
-
+        UserManager um = Lavasurvival.INSTANCE.getUserManager();
+        UserInfo u = um.getUser(player.getUniqueId());
         Inventory inv = player.getInventory();
         for (Material DEFAULT_BLOCK : DEFAULT_BLOCKS) {
             ItemStack toGive = new ItemStack(DEFAULT_BLOCK, 1);
-            if (BukkitUtils.hasItem(player.getInventory(), toGive) || u.isInBank(toGive.getData()))
+            if (BukkitUtils.hasItem(player.getInventory(), toGive) || u.isInBank(new MaterialData(DEFAULT_BLOCK)))
                 continue;
             ItemMeta im = toGive.getItemMeta();
             im.setLore(Arrays.asList("Melt time: " + PhysicsListener.getMeltTimeAsString(new MaterialData(toGive.getType()))));
@@ -616,6 +619,27 @@ public abstract class Gamemode {
 
         if (u != null)
             u.giveBoughtBlocks();
+    }
+
+    private double getHealth(Rank r) {
+        if (r == null)
+            return 1;
+        switch (Lavasurvival.INSTANCE.getRankManager().getOrder().indexOf(r)) {
+            case 0:
+                return 10;
+            case 1:
+                return 15;
+            case 2:
+                return 20;
+            case 3:
+                return 25;
+            case 4:
+                return 30;
+            case 5:
+                return 40;
+            default:
+                return 40;
+        }
     }
 
     public void setAlive(Player player) {

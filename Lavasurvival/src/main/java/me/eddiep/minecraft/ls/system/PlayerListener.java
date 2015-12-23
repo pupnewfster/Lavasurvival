@@ -1,7 +1,5 @@
 package me.eddiep.minecraft.ls.system;
 
-import com.crossge.necessities.RankManager.RankManager;
-import com.crossge.necessities.RankManager.User;
 import me.eddiep.handles.ClassicBlockPlaceEvent;
 import me.eddiep.minecraft.ls.Lavasurvival;
 import me.eddiep.minecraft.ls.game.Gamemode;
@@ -33,7 +31,6 @@ import org.bukkit.metadata.FixedMetadataValue;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.UUID;
 
 public class PlayerListener implements Listener {
     public final ArrayList<Material> invalidBlocks = new ArrayList<>(Arrays.asList(new Material[]{
@@ -47,8 +44,6 @@ public class PlayerListener implements Listener {
             Material.BEDROCK,
             Material.BARRIER
     }));
-    private com.crossge.necessities.RankManager.UserManager userManager = Lavasurvival.INSTANCE.getNecessitiesUserManager();
-    private RankManager rm = Lavasurvival.INSTANCE.getRankManager();
     private final UserManager um = Lavasurvival.INSTANCE.getUserManager();
     public boolean survival = false;
 
@@ -199,6 +194,7 @@ public class PlayerListener implements Listener {
             event.setCancelled(true);
         if (Gamemode.getCurrentGame() != null && Gamemode.getCurrentGame().isAlive(event.getPlayer()) && (event.getPlayer().getInventory().contains(event.getBlock().getType()) ||
                         event.getPlayer().getInventory().contains(Material.getMaterial(event.getBlock().getType().toString() + "_ITEM")) ||
+                        (event.getBlock().getType().equals(Material.WOODEN_DOOR) && event.getPlayer().getInventory().contains(Material.WOOD_DOOR)) ||
                         event.getPlayer().getInventory().contains(Material.getMaterial(event.getBlock().getType().toString().replaceAll("DOOR_BLOCK", "DOOR"))))) {
             if (event.getBlock().getLocation().getBlockY() >= Gamemode.getCurrentMap().getLavaY()) {
                 event.getPlayer().sendMessage(ChatColor.RED + "" + ChatColor.BOLD + "You are building to high!");
@@ -238,6 +234,8 @@ public class PlayerListener implements Listener {
             event.getPlayer().teleport(Gamemode.getCurrentWorld().getSpawnLocation().clone());
             if (!Gamemode.getCurrentGame().isInGame(event.getPlayer()))
                 Gamemode.getCurrentGame().playerJoin(event.getPlayer());
+            if (Gamemode.getCurrentGame().isAlive(event.getPlayer()))
+                Lavasurvival.INSTANCE.getNecessitiesUserManager().getUser(event.getPlayer().getUniqueId()).setStatus("alive");
         }
 
         if (Gamemode.getCurrentGame() != null)

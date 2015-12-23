@@ -314,8 +314,8 @@ public class PhysicsListener implements Listener {
                                     if (blockChecking.hasMetadata("player_placed"))
                                         blockChecking.removeMetadata("player_placed", Lavasurvival.INSTANCE);
                                     Lavasurvival.INSTANCE.getPhysicsHandler().placeClassicBlockAt(loc, b.getLogicFor(), b.getFrom());
+                                    cancelLocation(loc);
                                 }
-                                cancelLocation(loc);
                                 break;
                             }
                         }
