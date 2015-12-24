@@ -1,25 +1,30 @@
 package me.eddiep.minecraft.ls.game.items;
 
-import me.eddiep.minecraft.ls.game.items.impl.RestoreHealthItem;
-import org.bukkit.enchantments.Enchantment;
+import me.eddiep.minecraft.ls.game.items.impl.*;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.inventory.meta.PotionMeta;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public abstract class BaseItem {
+public abstract class LavaItem {
 
-    public static final BaseItem[] ITEMS = new BaseItem[] {
-            new RestoreHealthItem()
+    public static final LavaItem[] ITEMS = new LavaItem[] {
+            new MinorHeal(),
+            new Generosity(),
+            new MajorHeal(),
+            new MinorInvincibility(),
+            new MajorInvincibility()
     };
-    public static final BaseItem MINOR_HEAL = ITEMS[0];
+    public static final LavaItem MINOR_HEAL = ITEMS[0];
+    public static final LavaItem GENEROSITY = ITEMS[1];
+    public static final LavaItem MAJOR_HEAL = ITEMS[2];
+    public static final LavaItem MINOR_INVINCIBILITY = ITEMS[3];
+    public static final LavaItem MAJOR_INVINCIBILITY = ITEMS[4];
 
-    public abstract void consume(Player owner);
+    public abstract boolean consume(Player owner);
 
     protected abstract ItemStack displayItem();
 

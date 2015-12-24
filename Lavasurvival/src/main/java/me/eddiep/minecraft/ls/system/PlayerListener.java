@@ -4,7 +4,8 @@ import me.eddiep.handles.ClassicBlockPlaceEvent;
 import me.eddiep.minecraft.ls.Lavasurvival;
 import me.eddiep.minecraft.ls.game.Gamemode;
 import me.eddiep.minecraft.ls.game.LavaMap;
-import me.eddiep.minecraft.ls.game.items.BaseItem;
+import me.eddiep.minecraft.ls.game.items.LavaItem;
+import me.eddiep.minecraft.ls.game.status.PlayerStatusManager;
 import me.eddiep.minecraft.ls.ranks.UserInfo;
 import me.eddiep.minecraft.ls.ranks.UserManager;
 import org.bukkit.*;
@@ -100,6 +101,11 @@ public class PlayerListener implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onPlayerDamage(EntityDamageEvent event) {
+        if (event.getEntity() instanceof Player && PlayerStatusManager.isInvincible((Player)event.getEntity())) {
+            event.setCancelled(true);
+            return;
+        }
+
         if(event.getEntity() instanceof Player && !survival && Gamemode.getCurrentGame() != null &&
                 Gamemode.getCurrentGame().isAlive((Player) event.getEntity()) && (event.getCause().equals(EntityDamageEvent.DamageCause.FIRE_TICK) ||
                 event.getCause().equals(EntityDamageEvent.DamageCause.FIRE) || event.getCause().equals(EntityDamageEvent.DamageCause.FALL) ||
@@ -192,12 +198,13 @@ public class PlayerListener implements Listener {
     @EventHandler(priority = EventPriority.MONITOR)
     public void itemConsumed(PlayerItemConsumeEvent event) {
         ItemStack itemStack = event.getItem();
-        for (BaseItem item : BaseItem.ITEMS) {
+        for (LavaItem item : LavaItem.ITEMS) {
             if (item.isItem(itemStack)) {
                 event.setCancelled(true);
-                event.getPlayer().getInventory().remove(itemStack);
-
-                item.consume(event.getPlayer());
+                if (item.consume(event.getPlayer())) {
+                    int index = event.getPlayer().getInventory().first(itemStack);
+                    event.getPlayer().getInventory().clear(index);
+                }
                 break;
             }
         }

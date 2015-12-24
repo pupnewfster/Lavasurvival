@@ -6,9 +6,10 @@ import me.eddiep.handles.ClassicPhysicsEvent;
 import me.eddiep.minecraft.ls.Lavasurvival;
 import me.eddiep.minecraft.ls.game.impl.Flood;
 import me.eddiep.minecraft.ls.game.impl.Rise;
-import me.eddiep.minecraft.ls.game.items.BaseItem;
+import me.eddiep.minecraft.ls.game.items.LavaItem;
 import me.eddiep.minecraft.ls.game.options.FloodOptions;
 import me.eddiep.minecraft.ls.game.shop.ShopFactory;
+import me.eddiep.minecraft.ls.game.status.PlayerStatusManager;
 import me.eddiep.minecraft.ls.ranks.UserInfo;
 import me.eddiep.minecraft.ls.ranks.UserManager;
 import me.eddiep.minecraft.ls.system.BukkitUtils;
@@ -68,6 +69,7 @@ public abstract class Gamemode {
     private BukkitRunnable tickTask;
     private Gamemode nextGame;
     private LavaMap map;
+    private boolean endGame;
 
     public static PlayerListener getPlayerListener() {
         return listener;
@@ -185,6 +187,8 @@ public abstract class Gamemode {
     private long timeTickCount;
     private long lastBlockUpdate = 0;
     private void tick() {
+        PlayerStatusManager.tick();
+
         double multiplier = currentMap.getTimeOptions().getMultiplier();
         if (currentMap.getTimeOptions().isEnabled()) {
             if (multiplier != 1.0) {
@@ -597,8 +601,6 @@ public abstract class Gamemode {
         player.teleport(new Location(getCurrentWorld(), getCurrentMap().getMapSpawn().getX(), getCurrentMap().getMapSpawn().getY(), getCurrentMap().getMapSpawn().getZ()));
         player.setGameMode(GameMode.SURVIVAL);
 
-        BaseItem.MINOR_HEAL.giveItem(player);
-
         //TODO Don't do this. We'll have an item for this
         player.setMaxHealth(getHealth(Lavasurvival.INSTANCE.getNecessitiesUserManager().getUser(player.getUniqueId()).getRank()));
 
@@ -705,4 +707,10 @@ public abstract class Gamemode {
     public boolean isInSpawn(Player player) {
         return player != null && (getCurrentMap().isInSafeZone(player.getLocation()) || getCurrentMap().isInSafeZone(player.getEyeLocation()));
     }
+
+    public boolean isEndGame() {
+        return endGame;
+    }
+
+    public abstract void addToBonus(double takeOut);
 }
