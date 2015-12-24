@@ -255,7 +255,6 @@ public class PhysicsListener implements Listener {
 
 
         //Unburnable
-        ticksToMelt.put(new MaterialData(Material.IRON_DOOR_BLOCK), -1);
         ticksToMelt.put(new MaterialData(Material.BEDROCK), -1);
         ticksToMelt.put(new MaterialData(Material.OBSIDIAN), -1);
         ticksToMelt.put(new MaterialData(Material.BARRIER), -1);
