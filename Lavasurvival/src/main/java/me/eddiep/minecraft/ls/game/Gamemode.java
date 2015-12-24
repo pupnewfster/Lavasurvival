@@ -6,7 +6,6 @@ import me.eddiep.handles.ClassicPhysicsEvent;
 import me.eddiep.minecraft.ls.Lavasurvival;
 import me.eddiep.minecraft.ls.game.impl.Flood;
 import me.eddiep.minecraft.ls.game.impl.Rise;
-import me.eddiep.minecraft.ls.game.items.LavaItem;
 import me.eddiep.minecraft.ls.game.options.FloodOptions;
 import me.eddiep.minecraft.ls.game.shop.ShopFactory;
 import me.eddiep.minecraft.ls.game.status.PlayerStatusManager;
@@ -274,8 +273,10 @@ public abstract class Gamemode {
         end();
         final UserManager um = Lavasurvival.INSTANCE.getUserManager();
         CmdHide hide = Lavasurvival.INSTANCE.getHide();
-
-        int amount = alive.size();
+        int amount = 0;
+        for (UUID id : alive)
+            if (id != null && Bukkit.getPlayer(id) != null && !hide.isHidden(Bukkit.getPlayer(id)) && !isInSpawn(Bukkit.getPlayer(id)))
+                amount++;
         if (amount == 0) {
             globalMessage("No one survived..");
         } else if (amount <= 45) {
@@ -289,11 +290,9 @@ public abstract class Gamemode {
                 else
                     survivors += ", " + Bukkit.getPlayer(id).getName();
             }
-
             globalMessage(survivors);
-        } else {
+        } else
             globalMessage("Congratulations to all " + amount + " survivors!");
-        }
 
         final HashMap<Player, Integer> winners = new HashMap<>();
 
