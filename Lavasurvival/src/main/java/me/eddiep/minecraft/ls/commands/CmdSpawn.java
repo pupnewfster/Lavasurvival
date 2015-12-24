@@ -16,6 +16,10 @@ public class CmdSpawn extends Cmd {
                 sender.sendMessage(ChatColor.DARK_RED + "Error: there is no game running.");
                 return true;
             }
+            if (Gamemode.getCurrentGame().isAlive(player) && (player.getLocation().getBlock().hasMetadata("classic_block") || player.getEyeLocation().getBlock().hasMetadata("classic_block"))) {
+                sender.sendMessage(ChatColor.DARK_RED + "Error: you are in the lava.");
+                return true;
+            }
             player.teleport(map.getMapSpawn().toLocation(map.getWorld()));
         } else
             sender.sendMessage(ChatColor.DARK_RED + "This command can only be used in game..");

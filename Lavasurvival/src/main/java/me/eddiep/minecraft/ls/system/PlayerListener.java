@@ -256,11 +256,15 @@ public class PlayerListener implements Listener {
             Lavasurvival.INSTANCE.getEconomy().createPlayerAccount(event.getPlayer());
 
         if (Gamemode.getCurrentGame() != null) {
-            event.getPlayer().teleport(Gamemode.getCurrentWorld().getSpawnLocation().clone());
-            if (!Gamemode.getCurrentGame().isInGame(event.getPlayer()))
+            if (!Gamemode.getCurrentGame().isInGame(event.getPlayer())) {
+                event.getPlayer().teleport(Gamemode.getCurrentWorld().getSpawnLocation().clone());
                 Gamemode.getCurrentGame().playerJoin(event.getPlayer());
-            if (Gamemode.getCurrentGame().isAlive(event.getPlayer()))
+            }
+            if (Gamemode.getCurrentGame().isAlive(event.getPlayer())) {
                 Lavasurvival.INSTANCE.getNecessitiesUserManager().getUser(event.getPlayer().getUniqueId()).setStatus("alive");
+                if (!event.getPlayer().getLocation().getBlock().hasMetadata("classic_block") && !event.getPlayer().getEyeLocation().getBlock().hasMetadata("classic_block"))
+                    event.getPlayer().teleport(Gamemode.getCurrentWorld().getSpawnLocation().clone());
+            }
         }
 
         if (Gamemode.getCurrentGame() != null)
