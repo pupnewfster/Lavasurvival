@@ -22,7 +22,7 @@ public class LavaLogic extends AbstractLogicContainer {
         if (location.getWorld() == null || !location.getChunk().isLoaded() || location.getBlock() == null)//World isn't loaded
             return;
 
-        synchronized (ClassicPhysics.INSTANCE.getServer()) {
+        synchronized (ClassicPhysics.Sync) {
             Block block = location.getBlock();
             if (block.hasMetadata("classic_block") && block.isLiquid())
                 return;

@@ -12,6 +12,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import java.util.List;
 
 public class ClassicPhysics extends JavaPlugin {
+    public static final Object Sync = new Object();
     public static ClassicPhysics INSTANCE;
     public static PhysicsType TYPE = PhysicsType.CLASSIC;
     private ClassicPhysicsHandler handler;

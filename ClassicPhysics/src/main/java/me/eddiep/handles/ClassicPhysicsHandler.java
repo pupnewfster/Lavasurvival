@@ -42,12 +42,16 @@ public final class ClassicPhysicsHandler implements Listener {
     private class WorldCount {
         private ArrayList<Short> changes = new ArrayList<>();
         private World world;
+        private int x, y, z;
 
         public WorldCount(World world) {
             this.world = world;
         }
 
         public void addChange(int x, int y, int z) {
+            this.x = x;
+            this.y = y;
+            this.z = z;
             int blockX = x % 16;
             int blockZ = z % 16;
             if (blockX < 0)
@@ -76,6 +80,18 @@ public final class ClassicPhysicsHandler implements Listener {
             for (int i = 0; i < this.changes.size(); i++)
                 temp[i] = this.changes.get(i);
             return temp;
+        }
+
+        public int getX() {
+            return this.x;
+        }
+
+        public int getY() {
+            return this.y;
+        }
+
+        public int getZ() {
+            return this.z;
         }
     }
 
@@ -176,11 +192,14 @@ public final class ClassicPhysicsHandler implements Listener {
             for (long l : chunks.keySet()) {
                 WorldCount count = chunks.get(l);
                 World world = count.getWorld();
-                int x = (int) (l >> 32), z = (int) l;
                 if (world != null) {
+                    int x = (int) (l >> 32), z = (int) l;
                     net.minecraft.server.v1_8_R3.World w = ((CraftWorld) world).getHandle();
                     Chunk c = w.getChunkAt(x, z);
-                    packets.add(new PacketPlayOutMultiBlockChange(count.getCount(), count.getChanged(), c));
+                    if (count.getCount() > 1)
+                        packets.add(new PacketPlayOutMultiBlockChange(count.getCount(), count.getChanged(), c));
+                    else
+                        packets.add(new PacketPlayOutBlockChange(w, new BlockPosition(count.getX(), count.getY(), count.getZ())));
                     c.initLighting();
                 }
                 chunks.remove(l);
@@ -237,6 +256,11 @@ public final class ClassicPhysicsHandler implements Listener {
 
         for (LogicContainerHolder holder : logicContainers)
             holder.container.unloadFor(event.getWorld());
+
+        this.toFroms.clear();//Because we don't call block placing in multiple worlds. If we ever start we need to make it check that it removes correct worlds
+        this.chunks.clear();
+        if (running)
+            running = false;
     }
 
     @EventHandler (priority = EventPriority.MONITOR)
