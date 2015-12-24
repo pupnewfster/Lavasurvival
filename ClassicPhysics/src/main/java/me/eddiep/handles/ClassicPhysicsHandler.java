@@ -5,10 +5,7 @@ import me.eddiep.PhysicsType;
 import me.eddiep.handles.logic.LavaLogic;
 import me.eddiep.handles.logic.LogicContainer;
 import me.eddiep.handles.logic.WaterLogic;
-import net.minecraft.server.v1_8_R3.BlockPosition;
-import net.minecraft.server.v1_8_R3.IBlockData;
-import net.minecraft.server.v1_8_R3.Packet;
-import net.minecraft.server.v1_8_R3.PacketPlayOutMultiBlockChange;
+import net.minecraft.server.v1_8_R3.*;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -160,7 +157,7 @@ public final class ClassicPhysicsHandler implements Listener {
                 for (LogicContainerHolder holder : logicContainers) {
                     if (holder.container.doesHandle(type)) {
                         holder.container.queueBlock(blc);
-                        break; //TODO Maybe don't break?
+                        break;//TODO Maybe don't break?
                     }
                 }
                 ConcurrentLinkedQueue<ToAndFrom> queue = toFroms.get(l);
@@ -182,7 +179,9 @@ public final class ClassicPhysicsHandler implements Listener {
                 int x = (int) (l >> 32), z = (int) l;
                 if (world != null) {
                     net.minecraft.server.v1_8_R3.World w = ((CraftWorld) world).getHandle();
-                    packets.add(new PacketPlayOutMultiBlockChange(count.getCount(), count.getChanged(), w.getChunkAt(x, z)));
+                    Chunk c = w.getChunkAt(x, z);
+                    packets.add(new PacketPlayOutMultiBlockChange(count.getCount(), count.getChanged(), c));
+                    c.initLighting();
                 }
                 chunks.remove(l);
             }
