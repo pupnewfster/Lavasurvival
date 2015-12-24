@@ -210,6 +210,7 @@ public class PlayerListener implements Listener {
         if (Gamemode.getCurrentGame() != null && Gamemode.getCurrentGame().isAlive(event.getPlayer()) && (event.getPlayer().getInventory().contains(event.getBlock().getType()) ||
                         event.getPlayer().getInventory().contains(Material.getMaterial(event.getBlock().getType().toString() + "_ITEM")) ||
                         (event.getBlock().getType().equals(Material.WOODEN_DOOR) && event.getPlayer().getInventory().contains(Material.WOOD_DOOR)) ||
+                        (event.getBlock().getType().equals(Material.WOOD_DOOR) && event.getPlayer().getInventory().contains(Material.WOODEN_DOOR)) ||
                         event.getPlayer().getInventory().contains(Material.getMaterial(event.getBlock().getType().toString().replaceAll("DOOR_BLOCK", "DOOR"))))) {
             if (event.getBlock().getLocation().getBlockY() >= Gamemode.getCurrentMap().getLavaY()) {
                 event.getPlayer().sendMessage(ChatColor.RED + "" + ChatColor.BOLD + "You are building to high!");
