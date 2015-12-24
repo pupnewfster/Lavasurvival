@@ -57,7 +57,9 @@ public class CmdHide extends Cmd {
     }
 
     public void playerJoined(Player p) {
-        unhidePlayer(p);
+        for (Player x : Bukkit.getOnlinePlayers())
+            if (!x.equals(p))
+                x.showPlayer(p);
         if (!p.hasPermission("Necessities.seehidden"))
             for (UUID uuid : hidden)
                 if (Bukkit.getPlayer(uuid) != null)
