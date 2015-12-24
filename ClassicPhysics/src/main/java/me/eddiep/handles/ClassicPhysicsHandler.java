@@ -149,7 +149,7 @@ public final class ClassicPhysicsHandler implements Listener {
                 }
                 Block blc = l.getBlock();
                 Material type = locations.get(taf);
-                if (!taf.getFrom().getBlock().hasMetadata("classic_block") || !taf.getFrom().getBlock().isLiquid() || type == null || blc.hasMetadata("classic_block")) {
+                if (!taf.getFrom().getBlock().hasMetadata("classic_block") || !taf.getFrom().getBlock().isLiquid() || type == null || (blc.hasMetadata("classic_block") && blc.isLiquid())) {
                     ConcurrentLinkedQueue<ToAndFrom> queue = toFroms.get(l);
                     if (queue != null) {
                         while (!queue.isEmpty()) {
@@ -169,6 +169,10 @@ public final class ClassicPhysicsHandler implements Listener {
                 if (!chunks.containsKey(xz))
                     chunks.put(xz, new WorldCount(l.getWorld()));
                 chunks.get(xz).addChange(l.getBlockX(), l.getBlockY(), l.getBlockZ());
+                if (blc.getType().equals(Material.OBSIDIAN)) {
+                    type = Material.STATIONARY_WATER;
+                    setBlockFast(blc.getWorld(), blc.getX(), blc.getY(), blc.getZ(), type.getId(), (byte) 0);
+                }
                 ClassicPhysics.INSTANCE.getServer().getPluginManager().callEvent(new ClassicBlockPlaceEvent(l));
                 for (LogicContainerHolder holder : logicContainers) {
                     if (holder.container.doesHandle(type)) {

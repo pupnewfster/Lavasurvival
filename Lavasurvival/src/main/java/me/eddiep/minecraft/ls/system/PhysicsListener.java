@@ -280,7 +280,7 @@ public class PhysicsListener implements Listener {
             }
 
             Block blockChecking = event.getOldBlock();
-            if (blockChecking.getType().equals(Material.AIR) || blockChecking.hasMetadata("classic_block"))
+            if (blockChecking.getType().equals(Material.AIR) || blockChecking.hasMetadata("classic_block") || blockChecking.isLiquid())
                 return;
 
             MaterialData dat = new MaterialData(blockChecking.getType(), blockChecking.getData());

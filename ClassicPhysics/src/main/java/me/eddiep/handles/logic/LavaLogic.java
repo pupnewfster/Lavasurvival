@@ -2,10 +2,12 @@ package me.eddiep.handles.logic;
 
 
 import me.eddiep.ClassicPhysics;
+import me.eddiep.handles.ClassicBlockPlaceEvent;
 import me.eddiep.handles.ClassicPhysicsEvent;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
+import org.bukkit.metadata.FixedMetadataValue;
 
 
 public class LavaLogic extends AbstractLogicContainer {
@@ -39,6 +41,12 @@ public class LavaLogic extends AbstractLogicContainer {
 
             if (newBlock != block.getType())
                 placeClassicBlock(newBlock, location, from);
+            else if (!block.hasMetadata("classic_block")) {
+                block.setMetadata("classic_block", new FixedMetadataValue(ClassicPhysics.INSTANCE, true));
+                ClassicPhysics.INSTANCE.getServer().getPluginManager().callEvent(new ClassicBlockPlaceEvent(location));
+                if (doesHandle(block.getType()))
+                    queueBlock(block);
+            }
         }
     }
 
