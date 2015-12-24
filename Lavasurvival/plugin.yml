@@ -33,6 +33,9 @@ commands:
   spawn:
     description: Go back to map spawn
     usage: /<command>
+    permission: lavasurvival.spawn
+    permission-message: You don't have <permission>
+    aliases: [setup]
 permissions:
     lavasurvival.*:
         description: Lavasurvival's permission nodes
@@ -44,8 +47,12 @@ permissions:
             lavasurviva.donator: true
             lavasurvival.seemmr: true
             lavasurvival.rules: true
+            lavasurvival.spawn: true
     lavasurvival.lvote:
         description: Allows you to vote for maps.
+        default: true
+    lavasurvival.spawn:
+        description: Allows you to go to spawn.
         default: true
     lavasurvival.rules:
         description: Allows you to read the rules.
