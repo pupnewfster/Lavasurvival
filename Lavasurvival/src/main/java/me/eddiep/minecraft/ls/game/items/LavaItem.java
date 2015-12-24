@@ -7,7 +7,6 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.Arrays;
-import java.util.List;
 
 public abstract class LavaItem {
 
@@ -18,8 +17,8 @@ public abstract class LavaItem {
             new MinorInvincibility(),
             new MajorInvincibility()
     };
-    public static final LavaItem MINOR_HEAL = ITEMS[0];
-    public static final LavaItem GENEROSITY = ITEMS[1];
+    public static final LavaItem GENEROSITY = ITEMS[0];
+    public static final LavaItem MINOR_HEAL = ITEMS[1];
     public static final LavaItem MAJOR_HEAL = ITEMS[2];
     public static final LavaItem MINOR_INVINCIBILITY = ITEMS[3];
     public static final LavaItem MAJOR_INVINCIBILITY = ITEMS[4];
@@ -38,8 +37,7 @@ public abstract class LavaItem {
 
         meta.setDisplayName(name());
 
-        List<String> loreLines = Arrays.asList(description().split("\n"));
-        meta.setLore(loreLines);
+        meta.setLore(Arrays.asList((description() + "\n" + getPrice() + " ggs").split("\n")));
 
         item.setItemMeta(meta);
 
@@ -63,4 +61,6 @@ public abstract class LavaItem {
         inventory.setItem(index, item);
         return true;
     }
+
+    public abstract int getPrice();
 }

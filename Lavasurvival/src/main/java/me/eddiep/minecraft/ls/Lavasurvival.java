@@ -176,7 +176,7 @@ public class Lavasurvival extends JavaPlugin {
     }
 
     private void setupShops() {
-        MenuFramework.enable(new MenuRegistry(this, RankShop.class, BlockShopCategory.class, BasicBlockShop.class, AdvancedBlockShop.class,
+        MenuFramework.enable(new MenuRegistry(this, RankShop.class, ItemShop.class, BlockShopCategory.class, BasicBlockShop.class, AdvancedBlockShop.class,
                 SurvivorBlockShop.class, TrustedBlockShop.class,ElderBlockShop.class, DonatorBlockShop.class));
 
         ArrayList<String> lore = new ArrayList<>();
@@ -186,11 +186,15 @@ public class Lavasurvival extends JavaPlugin {
         lore2.add(ChatColor.GREEN + "" + ChatColor.ITALIC + "Level up!");
 
         ArrayList<String> lore3 = new ArrayList<>();
-        lore3.add(ChatColor.AQUA + "" + ChatColor.ITALIC + "Store unused blocks!");
+        lore3.add(ChatColor.RED + "" + ChatColor.ITALIC + "Buy powerups!");
+
+        ArrayList<String> lore4 = new ArrayList<>();
+        lore4.add(ChatColor.AQUA + "" + ChatColor.ITALIC + "Store unused blocks!");
 
         ShopFactory.createShop(this, "Block Shop", new MenuShopManager(BlockShopCategory.class), Material.EMERALD, lore);
         ShopFactory.createShop(this, "Rank Shop", new MenuShopManager(RankShop.class), Material.EXP_BOTTLE, lore2);
-        ShopFactory.createShop(this, "Bank", new BankShopManager(), Material.CHEST, lore3);
+        ShopFactory.createShop(this, "Item Shop", new MenuShopManager(ItemShop.class), Material.CLAY_BALL, lore3);
+        ShopFactory.createShop(this, "Bank", new BankShopManager(), Material.CHEST, lore4);
     }
 
     private void init() {

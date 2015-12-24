@@ -10,4 +10,9 @@ public class MinorInvincibility extends Invincibility {
     public String name() {
         return "Minor Invincibility";
     }
+
+    @Override
+    public int getPrice() {
+        return 1000;
+    }
 }

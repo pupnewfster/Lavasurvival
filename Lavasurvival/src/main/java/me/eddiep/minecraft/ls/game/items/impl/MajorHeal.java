@@ -10,4 +10,9 @@ public class MajorHeal extends Heal {
     public String name() {
         return "Major Heal";
     }
+
+    @Override
+    public int getPrice() {
+        return 1000;
+    }
 }

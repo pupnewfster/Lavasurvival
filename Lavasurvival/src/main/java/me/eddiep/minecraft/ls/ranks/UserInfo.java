@@ -238,7 +238,7 @@ public class UserInfo implements Rankable {
         else if (!Lavasurvival.INSTANCE.getEconomy().hasAccount(getPlayer()) || Lavasurvival.INSTANCE.getEconomy().getBalance(getPlayer()) < price)
             getPlayer().sendMessage(ChatColor.RED + "You do not have enough money to buy the block type " + dat.getItemType().toString().replaceAll("_", " ").toLowerCase() +
                     (hasData ? " with datavalue " + dat.getData() : "") + "..");
-        else if (BukkitUtils.isInventoryFull(getPlayer().getInventory()))//TODO: Make an item with an extended inventory so they can buy more blocks
+        else if (BukkitUtils.isInventoryFull(getPlayer().getInventory()))
             getPlayer().sendMessage(ChatColor.RED + "You do not have enough inventory space to buy any more blocks..");
         else {
             addBlock(dat);

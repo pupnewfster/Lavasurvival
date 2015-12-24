@@ -41,4 +41,9 @@ public class Generosity extends LavaItem {
     public String description() {
         return "Take 5% of your total money and add it to the current Round Bonus!";
     }
+
+    @Override
+    public int getPrice() {
+        return 1000;
+    }
 }
