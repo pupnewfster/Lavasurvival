@@ -11,7 +11,7 @@ public class RestoreHealthItem extends BaseItem {
     @Override
     public void consume(Player owner) {
         double health = owner.getHealth();
-        double healAdd = owner.getHealth() * 0.25;
+        double healAdd = owner.getMaxHealth() * 0.25;
         owner.setHealth(health + healAdd);
     }
 
