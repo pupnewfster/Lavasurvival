@@ -42,10 +42,16 @@ public class LavaLogic extends AbstractLogicContainer {
             if (newBlock != block.getType())
                 placeClassicBlock(newBlock, location, from);
             else if (!block.hasMetadata("classic_block")) {
-                block.setMetadata("classic_block", new FixedMetadataValue(ClassicPhysics.INSTANCE, true));
-                ClassicPhysics.INSTANCE.getServer().getPluginManager().callEvent(new ClassicBlockPlaceEvent(location));
-                if (doesHandle(block.getType()))
-                    queueBlock(block);
+                if (newBlock.equals(Material.WATER))
+                    placeClassicBlock(Material.STATIONARY_WATER, location, from);
+                else if (newBlock.equals(Material.LAVA))
+                    placeClassicBlock(Material.STATIONARY_LAVA, location, from);
+                else {
+                    block.setMetadata("classic_block", new FixedMetadataValue(ClassicPhysics.INSTANCE, true));
+                    ClassicPhysics.INSTANCE.getServer().getPluginManager().callEvent(new ClassicBlockPlaceEvent(location));
+                    if (doesHandle(block.getType()))
+                        queueBlock(block);
+                }
             }
         }
     }
