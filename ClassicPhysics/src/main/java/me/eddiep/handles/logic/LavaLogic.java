@@ -48,6 +48,8 @@ public class LavaLogic extends AbstractLogicContainer {
                     placeClassicBlock(Material.STATIONARY_LAVA, location, from);
                 else {
                     block.setMetadata("classic_block", new FixedMetadataValue(ClassicPhysics.INSTANCE, true));
+                    if (!ClassicPhysics.INSTANCE.getPhysicsHandler().hasMetaDataLocation(block.getLocation()))
+                        ClassicPhysics.INSTANCE.getPhysicsHandler().addMetaDataLocation(block.getLocation());
                     ClassicPhysics.INSTANCE.getServer().getPluginManager().callEvent(new ClassicBlockPlaceEvent(location));
                     if (doesHandle(block.getType()))
                         queueBlock(block);

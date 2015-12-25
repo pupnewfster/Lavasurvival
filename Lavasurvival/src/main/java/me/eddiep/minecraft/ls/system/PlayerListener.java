@@ -30,6 +30,7 @@ import org.bukkit.event.entity.FoodLevelChangeEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.inventory.CraftItemEvent;
 import org.bukkit.event.player.*;
+import org.bukkit.event.world.WorldUnloadEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
@@ -50,6 +51,7 @@ public class PlayerListener implements Listener {
             Material.BARRIER
     }));
     private final UserManager um = Lavasurvival.INSTANCE.getUserManager();
+    private ArrayList<Location> metaDataLocations = new ArrayList<>();
     public boolean survival = false;
 
     @EventHandler(priority = EventPriority.LOWEST)
@@ -166,8 +168,11 @@ public class PlayerListener implements Listener {
                     }
                 }
                 block.setType(Material.AIR);
-                if (block.hasMetadata("player_placed"))
+                if (block.hasMetadata("player_placed")) {
                     block.removeMetadata("player_placed", Lavasurvival.INSTANCE);
+                    if (metaDataLocations.contains(block.getLocation()))
+                        metaDataLocations.remove(block.getLocation());
+                }
                 PhysicsListener.cancelLocation(block.getLocation());
                 Bukkit.getPluginManager().callEvent(new BlockBreakEvent(block, event.getPlayer()));
             }
@@ -233,6 +238,13 @@ public class PlayerListener implements Listener {
             }
             event.setCancelled(false);
             event.getBlock().setMetadata("player_placed", new FixedMetadataValue(Lavasurvival.INSTANCE, event.getPlayer().getUniqueId()));
+            if (!metaDataLocations.contains(event.getBlock().getLocation()))
+                metaDataLocations.add(event.getBlock().getLocation());
+            if (event.getBlock().getType().toString().contains("DOOR") && event.getBlock().getRelative(BlockFace.UP).getType().equals(event.getBlock().getType())) {
+                event.getBlock().getRelative(BlockFace.UP).setMetadata("player_placed", new FixedMetadataValue(Lavasurvival.INSTANCE, event.getPlayer().getUniqueId()));
+                if (!metaDataLocations.contains(event.getBlock().getRelative(BlockFace.UP).getLocation()))
+                    metaDataLocations.add(event.getBlock().getRelative(BlockFace.UP).getLocation());
+            }
             if (!survival) {
                 int index = event.getPlayer().getInventory().first(event.getItemInHand());
                 event.getPlayer().getInventory().setItem(index, event.getPlayer().getInventory().getItem(index).clone());
@@ -296,7 +308,29 @@ public class PlayerListener implements Listener {
             }
             ((CraftPlayer)event.getPlayer()).getHandle().playerConnection.sendPacket(new PacketPlayOutMapChunkBulk(chunks));
         }
+    }
 
+    @EventHandler(priority = EventPriority.MONITOR)
+    public void onWorldUnload(WorldUnloadEvent event) {
+        if (event.isCancelled())
+            return;
+
+        for (Location l : metaDataLocations)
+            if (l.getBlock().hasMetadata("player_placed"))
+                l.getBlock().removeMetadata("player_placed", Lavasurvival.INSTANCE);
+        metaDataLocations.clear();
+    }
+
+    public boolean hasMetaDataLocation(Location l) {
+        return metaDataLocations.contains(l);
+    }
+
+    public void addMetaDataLocation(Location l) {
+        metaDataLocations.add(l);
+    }
+
+    public void removeMetaDataLocation(Location l) {
+        metaDataLocations.remove(l);
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)

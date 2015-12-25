@@ -318,8 +318,11 @@ public class PhysicsListener implements Listener {
                                     final Block blockChecking = b.getOldBlock();
                                     if (blockChecking.getType().equals(Material.AIR))
                                         return;
-                                    if (blockChecking.hasMetadata("player_placed"))
+                                    if (blockChecking.hasMetadata("player_placed")) {
                                         blockChecking.removeMetadata("player_placed", Lavasurvival.INSTANCE);
+                                        if (Gamemode.getPlayerListener().hasMetaDataLocation(blockChecking.getLocation()))
+                                            Gamemode.getPlayerListener().removeMetaDataLocation(blockChecking.getLocation());
+                                    }
                                     Lavasurvival.INSTANCE.getPhysicsHandler().placeClassicBlockAt(loc, b.getLogicFor(), b.getFrom());
                                     cancelLocation(loc);
                                 }

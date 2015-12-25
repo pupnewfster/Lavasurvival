@@ -11,6 +11,7 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
 import org.bukkit.craftbukkit.v1_8_R3.CraftWorld;
 import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
 import org.bukkit.entity.FallingBlock;
@@ -31,11 +32,11 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 
 public final class ClassicPhysicsHandler implements Listener {
     private ArrayList<LogicContainerHolder> logicContainers = new ArrayList<>();
+    private ArrayList<Location> metaDataLocations = new ArrayList<>();
     private final ConcurrentHashMap<ToAndFrom, Material> locations = new ConcurrentHashMap<>();
     private final ConcurrentHashMap<Long, WorldCount> chunks = new ConcurrentHashMap<>();
     private final ConcurrentHashMap<Location, ConcurrentLinkedQueue<ToAndFrom>> toFroms = new ConcurrentHashMap<>();
-    private ArrayList<Player> lplacers = new ArrayList<>();
-    private ArrayList<Player> wplacers = new ArrayList<>();
+    private ArrayList<Player> lplacers = new ArrayList<>(), wplacers = new ArrayList<>();
     private boolean running = false;
     private Plugin owner;
 
@@ -162,8 +163,11 @@ public final class ClassicPhysicsHandler implements Listener {
                     locations.remove(taf);
                     continue;
                 }
-                if (!blc.hasMetadata("classic_block"))
+                if (!blc.hasMetadata("classic_block")) {
                     blc.setMetadata("classic_block", new FixedMetadataValue(ClassicPhysics.INSTANCE, true));
+                    if (!metaDataLocations.contains(blc.getLocation()))
+                        metaDataLocations.add(blc.getLocation());
+                }
                 setBlockFast(blc.getWorld(), blc.getX(), blc.getY(), blc.getZ(), type.getId(), (byte) 0);
                 long xz = (long) blc.getChunk().getX() << 32 | blc.getChunk().getZ() & 0xFFFFFFFFL;
                 if (!chunks.containsKey(xz))
@@ -253,6 +257,18 @@ public final class ClassicPhysicsHandler implements Listener {
             lplacers.add(player);
     }
 
+    public boolean hasMetaDataLocation(Location l) {
+        return metaDataLocations.contains(l);
+    }
+
+    public void addMetaDataLocation(Location l) {
+        metaDataLocations.add(l);
+    }
+
+    public void removeMetaDataLocation(Location l) {
+        metaDataLocations.remove(l);
+    }
+
     @EventHandler(priority = EventPriority.MONITOR)
     public void onWorldUnload(WorldUnloadEvent event) {
         if (event.isCancelled())
@@ -260,6 +276,11 @@ public final class ClassicPhysicsHandler implements Listener {
 
         for (LogicContainerHolder holder : logicContainers)
             holder.container.unloadFor(event.getWorld());
+
+        for (Location l : metaDataLocations)
+            if (l.getBlock().hasMetadata("classic_block"))
+                l.getBlock().removeMetadata("classic_block", ClassicPhysics.INSTANCE);
+        metaDataLocations.clear();
 
         this.toFroms.clear();//Because we don't call block placing in multiple worlds. If we ever start we need to make it check that it removes correct worlds
         this.chunks.clear();
@@ -279,8 +300,10 @@ public final class ClassicPhysicsHandler implements Listener {
             forcePlaceClassicBlockAt(event.getBlockPlaced().getLocation(), Material.WATER);
             event.setCancelled(true);
         }
-        if (event.getBlock().hasMetadata("classic_block"))
+        if (event.getBlock().hasMetadata("classic_block")) {
             event.getBlock().removeMetadata("classic_block", ClassicPhysics.INSTANCE);
+            metaDataLocations.remove(event.getBlock().getLocation());
+        }
         requestUpdateAround(event.getBlock().getLocation());
     }
 
@@ -355,6 +378,8 @@ public final class ClassicPhysicsHandler implements Listener {
         if (ClassicPhysics.TYPE == PhysicsType.DEFAULT)
             return;
         event.setCancelled(true);
+        if (event.getToBlock().hasMetadata("classic_block") && event.getBlock().hasMetadata("classic_block"))//To is really the from block it is labelled strangely
+            placeClassicBlockAt(event.getBlock().getLocation(), event.getToBlock().getType(), event.getToBlock().getLocation());
     }
 
     public void requestUpdateAround(Location location) {
@@ -375,8 +400,11 @@ public final class ClassicPhysicsHandler implements Listener {
         for (LogicContainerHolder holder : logicContainers)
             if (holder.container.doesHandle(type)) {
                 final Block blc = location.getBlock();
-                if (!blc.hasMetadata("classic_block"))
+                if (!blc.hasMetadata("classic_block")) {
                     blc.setMetadata("classic_block", new FixedMetadataValue(ClassicPhysics.INSTANCE, true));
+                    if (!metaDataLocations.contains(blc.getLocation()))
+                        metaDataLocations.add(blc.getLocation());
+                }
                 blc.setType(type);
                 holder.container.queueBlock(blc);
                 break; //TODO Maybe don't break?
@@ -386,6 +414,10 @@ public final class ClassicPhysicsHandler implements Listener {
     public void placeClassicBlockAt(Location location, Material type, Location from) {
         if (location.getWorld() == null || !location.getChunk().isLoaded() || location.getBlock() == null)//World isn't loaded
             return;
+        if (type.equals(Material.WATER))
+            type = Material.STATIONARY_WATER;
+        else if (type.equals(Material.LAVA))
+            type = Material.STATIONARY_LAVA;
         for (LogicContainerHolder holder : logicContainers)
             if (holder.container.doesHandle(type)) {
                 ToAndFrom taf = new ToAndFrom(location, from);
@@ -414,7 +446,9 @@ public final class ClassicPhysicsHandler implements Listener {
     public void onPhysicsUpdate(BlockPhysicsEvent event) {
         if (ClassicPhysics.TYPE == PhysicsType.DEFAULT)
             return;
-        if (!event.getBlock().getType().toString().contains("DOOR"))
+        if (!event.getBlock().getType().toString().contains("DOOR") || !event.getChangedType().toString().contains("PLATE") ||
+                (event.getBlock().getType().toString().contains("DOOR") && event.getChangedType().toString().contains("PLATE") &&
+                !event.getBlock().getType().equals(event.getBlock().getRelative(BlockFace.UP).getType())))
             event.setCancelled(true);
     }
 
