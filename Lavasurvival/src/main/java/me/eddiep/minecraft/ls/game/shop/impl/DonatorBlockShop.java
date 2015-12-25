@@ -1,6 +1,7 @@
 package me.eddiep.minecraft.ls.game.shop.impl;
 
 import me.eddiep.minecraft.ls.Lavasurvival;
+import me.eddiep.minecraft.ls.game.shop.ShopFactory;
 import me.eddiep.minecraft.ls.ranks.UserInfo;
 import me.eddiep.minecraft.ls.system.PhysicsListener;
 import net.njay.Menu;
@@ -10,6 +11,7 @@ import net.njay.annotation.MenuInventory;
 import net.njay.annotation.MenuItem;
 import net.njay.annotation.PreProcessor;
 import net.njay.player.MenuPlayer;
+import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
@@ -25,7 +27,7 @@ public class DonatorBlockShop extends Menu {
 
     @MenuItem(
             slot = 0,
-            item = @ItemStackAnnotation(material = Material.EMERALD, name = "Back to block shop", lore = {"§6§oBuy more blocks!"})
+            item = @ItemStackAnnotation(material = Material.EMERALD, name = "")
     )
     public void backToMenu(MenuPlayer player) {
         player.setActiveMenu(new BlockShopCategory(player.getMenuManager(), null));
@@ -491,6 +493,13 @@ public class DonatorBlockShop extends Menu {
 
     @PreProcessor
     public void process(Inventory inv) {
+        ItemStack stack = new ItemStack(Material.EMERALD, 1);
+        ItemMeta meta = stack.getItemMeta();
+        meta.setDisplayName("Back to block shop");
+        meta.setLore(Arrays.asList(ChatColor.GOLD + "" + ChatColor.ITALIC + "Buy more blocks!"));
+        stack.setItemMeta(meta);
+        stack = ShopFactory.addGlow(stack);
+        inv.setItem(0, stack);
         for (int i = 1; i < inv.getSize(); i++) {
             ItemStack is = inv.getItem(i);
             if (is == null)
