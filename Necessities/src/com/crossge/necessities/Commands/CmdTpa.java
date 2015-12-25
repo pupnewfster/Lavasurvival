@@ -24,6 +24,10 @@ public class CmdTpa extends Cmd {
             }
             Player target = sender.getServer().getPlayer(uuid);
             Player p = (Player) sender;
+            if (p.getLocation().getBlock().hasMetadata("classic_block") || p.getEyeLocation().getBlock().hasMetadata("classic_block")) {
+                sender.sendMessage(var.getEr() + "Error: " + var.getErMsg() +  "You are in the lava.");
+                return true;
+            }
             String tPrefix = um.getUser(uuid).getStatus(), pPrefix = um.getUser(p.getUniqueId()).getStatus();
             if (!p.hasPermission("Necessities.seehidden") && hide.isHidden(target)) {
                 sender.sendMessage(var.getEr() + "Error: " + var.getErMsg() + "Invalid player.");

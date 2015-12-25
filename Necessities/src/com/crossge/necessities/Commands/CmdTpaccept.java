@@ -16,6 +16,10 @@ public class CmdTpaccept extends Cmd {
     public boolean commandUse(CommandSender sender, String[] args) {
         if (sender instanceof Player) {
             Player p = (Player) sender;
+            if (p.getLocation().getBlock().hasMetadata("classic_block") || p.getEyeLocation().getBlock().hasMetadata("classic_block")) {
+                sender.sendMessage(var.getEr() + "Error: " + var.getErMsg() +  "You are in the lava.");
+                return true;
+            }
             UUID uuid = null;
             if (args.length == 0) {
                 uuid = tps.lastRequest(p.getUniqueId());
