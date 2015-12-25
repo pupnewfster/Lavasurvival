@@ -11,8 +11,8 @@ import java.util.Arrays;
 public abstract class LavaItem {
 
     public static final LavaItem[] ITEMS = new LavaItem[] {
-            new MinorHeal(),
             new Generosity(),
+            new MinorHeal(),
             new MajorHeal(),
             new MinorInvincibility(),
             new MajorInvincibility()

@@ -11,10 +11,10 @@ import java.util.List;
 public class ShopFactory {
     private static ArrayList<Shop> shops = new ArrayList<>();
 
-    public static Shop createShop(Plugin plugin, String ShopName, ShopManager shopManager, Material material, List<String> description) {
+    public static Shop createShop(Plugin plugin, String ShopName, ShopManager shopManager, Material material, List<String> description, boolean haveGlow) {
         Shop shop = new Shop(shopManager);
 
-        shop.createOpenItem(material, ShopName, description);
+        shop.createOpenItem(material, ShopName, description, haveGlow);
 
         shop.register(plugin);
 

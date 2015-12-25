@@ -27,7 +27,7 @@ public class ItemShop extends Menu {
             item = @ItemStackAnnotation(material = Material.WOOD, name = "")
     )
     public void generosity(MenuPlayer player) {
-        buyRank(player, LavaItem.GENEROSITY);
+        buyItem(player, LavaItem.GENEROSITY);
     }
 
     @MenuItem(
@@ -35,7 +35,7 @@ public class ItemShop extends Menu {
             item = @ItemStackAnnotation(material = Material.WOOD, name = "")
     )
     public void minorHeal(MenuPlayer player) {
-        buyRank(player, LavaItem.MINOR_HEAL);
+        buyItem(player, LavaItem.MINOR_HEAL);
     }
 
     @MenuItem(
@@ -43,7 +43,7 @@ public class ItemShop extends Menu {
             item = @ItemStackAnnotation(material = Material.WOOD, name = "")
     )
     public void majorHeal(MenuPlayer player) {
-        buyRank(player, LavaItem.MAJOR_HEAL);
+        buyItem(player, LavaItem.MAJOR_HEAL);
     }
 
     @MenuItem(
@@ -51,7 +51,7 @@ public class ItemShop extends Menu {
             item = @ItemStackAnnotation(material = Material.WOOD, name = "")
     )
     public void minorInvincibility(MenuPlayer player) {
-        buyRank(player, LavaItem.MINOR_INVINCIBILITY);
+        buyItem(player, LavaItem.MINOR_INVINCIBILITY);
     }
 
     @MenuItem(
@@ -59,10 +59,10 @@ public class ItemShop extends Menu {
             item = @ItemStackAnnotation(material = Material.WOOD, name = "")
     )
     public void majorInvincibility(MenuPlayer player) {
-        buyRank(player, LavaItem.MAJOR_INVINCIBILITY);
+        buyItem(player, LavaItem.MAJOR_INVINCIBILITY);
     }
 
-    public void buyRank(MenuPlayer player, LavaItem item) {
+    public void buyItem(MenuPlayer player, LavaItem item) {
         ItemStack is = item.createItem();
         Player p = player.getBukkit();
         if (BukkitUtils.hasItem(p.getInventory(), is))

@@ -1,14 +1,16 @@
 package me.eddiep.minecraft.ls.game.shop;
 
+import net.minecraft.server.v1_8_R3.NBTTagCompound;
+import net.minecraft.server.v1_8_R3.NBTTagList;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
+import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
-import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
@@ -27,7 +29,7 @@ public class Shop implements Listener {
         this.manager = manager;
     }
 
-    public ItemStack createOpenItem(Material material, String ShopName, List<String> descriptions) {
+    public ItemStack createOpenItem(Material material, String ShopName, List<String> descriptions, boolean haveGlow) {
         ItemStack item = new ItemStack(material);
 
         ItemMeta meta = item.getItemMeta();
@@ -36,10 +38,28 @@ public class Shop implements Listener {
 
         item.setItemMeta(meta);
 
+        if (haveGlow)
+            item = addGlow(item);
+
         this.opener = item;
         this.shopName = ShopName;
 
         return opener;
+    }
+
+    private static ItemStack addGlow(ItemStack item){
+        net.minecraft.server.v1_8_R3.ItemStack nmsStack = CraftItemStack.asNMSCopy(item);
+        NBTTagCompound tag = null;
+        if (!nmsStack.hasTag()) {
+            tag = new NBTTagCompound();
+            nmsStack.setTag(tag);
+        }
+        if (tag == null)
+            tag = nmsStack.getTag();
+        NBTTagList ench = new NBTTagList();
+        tag.set("ench", ench);
+        nmsStack.setTag(tag);
+        return CraftItemStack.asCraftMirror(nmsStack);
     }
 
     public ItemStack getOpener() {
