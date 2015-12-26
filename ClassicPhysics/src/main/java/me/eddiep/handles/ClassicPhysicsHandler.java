@@ -173,7 +173,7 @@ public final class ClassicPhysicsHandler implements Listener {
                 if (!chunks.containsKey(xz))
                     chunks.put(xz, new WorldCount(l.getWorld()));
                 chunks.get(xz).addChange(l.getBlockX(), l.getBlockY(), l.getBlockZ());
-                if (blc.getType().equals(Material.OBSIDIAN)) {
+                if (!blc.isLiquid()) {//TODO Change if we add something that flows that isnt liquid
                     type = Material.STATIONARY_WATER;
                     setBlockFast(blc.getWorld(), blc.getX(), blc.getY(), blc.getZ(), type.getId(), (byte) 0);
                 }
