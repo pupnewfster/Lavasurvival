@@ -32,7 +32,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 
 public final class ClassicPhysicsHandler implements Listener {
     private ArrayList<LogicContainerHolder> logicContainers = new ArrayList<>();
-    private ArrayList<Location> metaDataLocations = new ArrayList<>();
+    //private ArrayList<Location> metaDataLocations = new ArrayList<>();
     private final ConcurrentHashMap<ToAndFrom, Material> locations = new ConcurrentHashMap<>();
     private final ConcurrentHashMap<Long, WorldCount> chunks = new ConcurrentHashMap<>();
     private final ConcurrentHashMap<Location, ConcurrentLinkedQueue<ToAndFrom>> toFroms = new ConcurrentHashMap<>();
@@ -165,8 +165,8 @@ public final class ClassicPhysicsHandler implements Listener {
                 }
                 if (!blc.hasMetadata("classic_block")) {
                     blc.setMetadata("classic_block", new FixedMetadataValue(ClassicPhysics.INSTANCE, true));
-                    if (!metaDataLocations.contains(blc.getLocation()))
-                        metaDataLocations.add(blc.getLocation());
+                    //if (!metaDataLocations.contains(blc.getLocation()))
+                        //metaDataLocations.add(blc.getLocation());
                 }
                 setBlockFast(blc.getWorld(), blc.getX(), blc.getY(), blc.getZ(), type.getId(), (byte) 0);
                 long xz = (long) blc.getChunk().getX() << 32 | blc.getChunk().getZ() & 0xFFFFFFFFL;
@@ -258,7 +258,7 @@ public final class ClassicPhysicsHandler implements Listener {
             lplacers.add(player);
     }
 
-    public boolean hasMetaDataLocation(Location l) {
+    /*public boolean hasMetaDataLocation(Location l) {
         return metaDataLocations.contains(l);
     }
 
@@ -268,7 +268,7 @@ public final class ClassicPhysicsHandler implements Listener {
 
     public void removeMetaDataLocation(Location l) {
         metaDataLocations.remove(l);
-    }
+    }*/
 
     @EventHandler(priority = EventPriority.MONITOR)
     public void onWorldUnload(WorldUnloadEvent event) {
@@ -283,10 +283,10 @@ public final class ClassicPhysicsHandler implements Listener {
         if (running)
             running = false;
 
-        for (Location l : metaDataLocations)
+        /*for (Location l : metaDataLocations)
             if (l.getBlock().hasMetadata("classic_block"))
                 l.getBlock().removeMetadata("classic_block", ClassicPhysics.INSTANCE);
-        metaDataLocations.clear();
+        metaDataLocations.clear();*/
     }
 
     @EventHandler (priority = EventPriority.MONITOR)
@@ -303,7 +303,7 @@ public final class ClassicPhysicsHandler implements Listener {
         }
         if (event.getBlock().hasMetadata("classic_block")) {
             event.getBlock().removeMetadata("classic_block", ClassicPhysics.INSTANCE);
-            metaDataLocations.remove(event.getBlock().getLocation());
+            //metaDataLocations.remove(event.getBlock().getLocation());
         }
         requestUpdateAround(event.getBlock().getLocation());
     }
@@ -403,8 +403,8 @@ public final class ClassicPhysicsHandler implements Listener {
                 final Block blc = location.getBlock();
                 if (!blc.hasMetadata("classic_block")) {
                     blc.setMetadata("classic_block", new FixedMetadataValue(ClassicPhysics.INSTANCE, true));
-                    if (!metaDataLocations.contains(blc.getLocation()))
-                        metaDataLocations.add(blc.getLocation());
+                    //if (!metaDataLocations.contains(blc.getLocation()))
+                        //metaDataLocations.add(blc.getLocation());
                 }
                 blc.setType(type);
                 holder.container.queueBlock(blc);

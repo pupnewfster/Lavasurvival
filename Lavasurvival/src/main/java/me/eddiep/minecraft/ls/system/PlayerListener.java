@@ -317,13 +317,13 @@ public class PlayerListener implements Listener {
         if (event.isCancelled())
             return;
 
-        for (Location l : metaDataLocations)
+        /*for (Location l : metaDataLocations)
             if (l.getBlock().hasMetadata("player_placed"))
                 l.getBlock().removeMetadata("player_placed", Lavasurvival.INSTANCE);
-        metaDataLocations.clear();
+        metaDataLocations.clear();*/
     }
 
-    public boolean hasMetaDataLocation(Location l) {
+    /*public boolean hasMetaDataLocation(Location l) {
         return metaDataLocations.contains(l);
     }
 
@@ -333,7 +333,7 @@ public class PlayerListener implements Listener {
 
     public void removeMetaDataLocation(Location l) {
         metaDataLocations.remove(l);
-    }
+    }*/
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void foodLevelChange(FoodLevelChangeEvent event) {
