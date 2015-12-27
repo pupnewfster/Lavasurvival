@@ -9,7 +9,6 @@ import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
-import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.material.MaterialData;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -259,9 +258,9 @@ public class PhysicsListener implements Listener {
         ticksToMelt.put(new MaterialData(Material.OBSIDIAN), -1);
         ticksToMelt.put(new MaterialData(Material.BARRIER), -1);
 
+
         for (Material m : Material.values())
-            if (!m.equals(Material.LAVA) && !m.equals(Material.STATIONARY_LAVA) && !m.equals(Material.WATER) && !m.equals(Material.STATIONARY_WATER) && !m.equals(Material.AIR) &&
-                    !ticksToMelt.containsKey(new MaterialData(m)))
+            if (m.isSolid() && !ticksToMelt.containsKey(new MaterialData(m)))
                 ticksToMelt.put(new MaterialData(m), 30 * 20);
     }
 
