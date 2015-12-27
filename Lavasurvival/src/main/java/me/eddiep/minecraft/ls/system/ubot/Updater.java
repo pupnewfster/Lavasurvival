@@ -11,7 +11,7 @@ import java.util.concurrent.Callable;
 public class Updater implements UpdateNotifier {
     @Override
     public void onPreCheck(UBot uBot) {
-        
+
     }
 
     @Override
