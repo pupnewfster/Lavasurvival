@@ -31,7 +31,7 @@ public class LavaMap {
 
     private RiseOptions riseOptions = RiseOptions.defaults(this);
     private FloodOptions floodOptions = FloodOptions.defaults(this);
-    private FusionOptions fusionOptions = FusionOptions.defaults(this);
+    private FusionOptions fusionOptions = FusionOptions.defaults(this, riseOptions);
     private TimeOptions time = TimeOptions.defaults();
 
     private volatile World world;
