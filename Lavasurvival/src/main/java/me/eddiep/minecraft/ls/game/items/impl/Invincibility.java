@@ -25,7 +25,7 @@ public abstract class Invincibility extends LavaItem {
 
     @Override
     public String description() {
-        return "Become immune to lava/water for " + duration() + " seconds!";
+        return "Become immune to lava/water\nfor " + duration() + " seconds!";
     }
 
     public abstract int duration();

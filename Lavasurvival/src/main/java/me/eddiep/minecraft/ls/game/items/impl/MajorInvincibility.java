@@ -13,6 +13,6 @@ public class MajorInvincibility extends Invincibility{
 
     @Override
     public int getPrice() {
-        return 1000;
+        return 1400;
     }
 }

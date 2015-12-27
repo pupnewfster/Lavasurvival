@@ -1,6 +1,7 @@
 package me.eddiep.minecraft.ls.game;
 
 import com.crossge.necessities.Commands.CmdHide;
+import com.crossge.necessities.Necessities;
 import com.crossge.necessities.RankManager.Rank;
 import me.eddiep.handles.ClassicPhysicsEvent;
 import me.eddiep.minecraft.ls.Lavasurvival;
@@ -106,9 +107,9 @@ public abstract class Gamemode {
         }
         if (physicsListener == null) {
             physicsListener = new PhysicsListener();
+            Lavasurvival.INSTANCE.getServer().getPluginManager().registerEvents(physicsListener, Lavasurvival.INSTANCE);
+            physicsListener.prepare();
         }
-        physicsListener.prepare();
-        Lavasurvival.INSTANCE.getServer().getPluginManager().registerEvents(physicsListener, Lavasurvival.INSTANCE);
 
         if (map == null) {
             String[] files = LavaMap.getPossibleMaps();
@@ -131,6 +132,7 @@ public abstract class Gamemode {
     private long lastMoneyCheck = System.currentTimeMillis();
     public void start() {
         Lavasurvival.log("New game on " + getCurrentWorld().getName());
+
         isEnding = false;
         hasEnded = false;
 
@@ -141,6 +143,16 @@ public abstract class Gamemode {
 
         for (Player p : Bukkit.getOnlinePlayers())
             playerJoin(p);
+
+        UserManager um = new UserManager();
+
+        for (Player p : Bukkit.getOnlinePlayers()) {
+            if (p.hasPermission("lavasurvival.seemmr")) {
+                UserInfo info = um.getUser(p.getUniqueId());
+
+                p.setLevel(info.getRanking().getRating());
+            }
+        }
 
         currentGame = this;
 
@@ -198,20 +210,6 @@ public abstract class Gamemode {
             }
         } else {
             currentMap.getWorld().setTime(currentMap.getTimeOptions().getStartTimeTick());
-        }
-
-        if (System.currentTimeMillis() - lastBlockUpdate >= 3000) {
-            lastBlockUpdate = System.currentTimeMillis();
-
-            UserManager um = new UserManager();
-
-            for (Player p : Bukkit.getOnlinePlayers()) {
-                if (p.hasPermission("lavasurvival.seemmr")) {
-                    UserInfo info = um.getUser(p.getUniqueId());
-
-                    p.setLevel(info.getRanking().getRating());
-                }
-            }
         }
 
         onTick();
@@ -401,6 +399,10 @@ public abstract class Gamemode {
         votes[number]++;
         voteCount++;
         player.sendMessage(ChatColor.GREEN + "+ " + ChatColor.RESET + "" + ChatColor.BOLD + "You voted for " + nextMaps[number].getName() + "!");
+
+        if (Necessities.isTracking()) {
+            Necessities.trackAction(player, "vote", nextMaps[number].getName());
+        }
     }
 
     public boolean isVoting() {
@@ -530,9 +532,7 @@ public abstract class Gamemode {
 
     private void end() {
         tickTask.cancel();
-        Bukkit.getScheduler().cancelTasks(Lavasurvival.INSTANCE);
-        ClassicPhysicsEvent.getHandlerList().unregister(physicsListener);
-        physicsListener = null;
+        //Bukkit.getScheduler().cancelTasks(Lavasurvival.INSTANCE);
         globalMessage(ChatColor.GREEN + "The round has ended!");
         isEnding = false;
         hasEnded = true;
@@ -607,6 +607,7 @@ public abstract class Gamemode {
         globalMessageNoPrefix(ChatColor.GREEN + "+ " + player.getDisplayName() + ChatColor.RESET + " has joined the game!");
         UserManager um = Lavasurvival.INSTANCE.getUserManager();
         UserInfo u = um.getUser(player.getUniqueId());
+        u.resetGenerosity();
         Inventory inv = player.getInventory();
         for (Material DEFAULT_BLOCK : DEFAULT_BLOCKS) {
             ItemStack toGive = new ItemStack(DEFAULT_BLOCK, 1);

@@ -356,8 +356,8 @@ public class PhysicsListener implements Listener {
 
     public void cleanup() {
         cancelAllTasks();
-        PHYSICS_TICK.cancel();
-        HandlerList.unregisterAll(this);
+        //PHYSICS_TICK.cancel();
+        //HandlerList.unregisterAll(this);
     }
 
     public void prepare() {

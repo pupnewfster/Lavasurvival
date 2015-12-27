@@ -67,6 +67,7 @@ public class Flood extends Gamemode {
     @Override
     public void addToBonus(double takeOut) {
         bonus += takeOut;
+        bonusScore.setScore(bonus);
     }
 
     @Override

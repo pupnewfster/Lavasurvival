@@ -13,6 +13,6 @@ public class MinorInvincibility extends Invincibility {
 
     @Override
     public int getPrice() {
-        return 1000;
+        return 800;
     }
 }

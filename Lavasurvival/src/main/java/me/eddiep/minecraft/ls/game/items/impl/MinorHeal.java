@@ -13,6 +13,6 @@ public class MinorHeal extends Heal {
 
     @Override
     public int getPrice() {
-        return 1000;
+        return 500;
     }
 }

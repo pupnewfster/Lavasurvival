@@ -35,6 +35,7 @@ public class UserInfo implements Rankable {
     private UUID userUUID;
     private ItemStack[] BANK = new ItemStack[54];
     private GlickoRank rank;
+    private boolean generosity;
 
     public UserInfo(Player p) {
         this.bukkitPlayer = p;
@@ -254,5 +255,17 @@ public class UserInfo implements Rankable {
     @Override
     public GlickoRank getRanking() {
         return rank;
+    }
+
+    public void usedGenerosity() {
+        generosity = true;
+    }
+
+    public void resetGenerosity() {
+        generosity = false;
+    }
+
+    public boolean wasGenerous() {
+        return generosity;
     }
 }
