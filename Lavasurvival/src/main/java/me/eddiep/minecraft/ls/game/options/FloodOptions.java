@@ -117,7 +117,7 @@ public class FloodOptions extends BaseOptions {
     }
 
     public boolean isUsingMultiSpawn() {
-        return spawnPoints.size() > 0 && super.isEnabled();
+        return spawnPoints != null && spawnPoints.size() > 0 && super.isEnabled();
     }
 
     public void setParent(LavaMap parent) {

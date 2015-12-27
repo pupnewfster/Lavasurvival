@@ -206,10 +206,10 @@ public class LavaMap {
     public Class<? extends Gamemode>[] getEnabledGames() {
         List<Class<? extends Gamemode>> games = new ArrayList<>();
 
-        if (riseOptions.isUsingMultiSpawn())
+        if (riseOptions.isEnabled())
             games.add(Rise.class);
 
-        if (floodOptions.isUsingMultiSpawn())
+        if (floodOptions.isEnabled())
             games.add(Flood.class);
 
         return games.toArray(new Class[games.size()]);
