@@ -8,12 +8,9 @@ import me.eddiep.minecraft.ls.game.items.LavaItem;
 import me.eddiep.minecraft.ls.game.status.PlayerStatusManager;
 import me.eddiep.minecraft.ls.ranks.UserInfo;
 import me.eddiep.minecraft.ls.ranks.UserManager;
-import net.minecraft.server.v1_8_R3.PacketPlayOutMapChunkBulk;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
-import org.bukkit.craftbukkit.v1_8_R3.CraftChunk;
-import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -270,34 +267,10 @@ public class PlayerListener implements Listener {
                 if (!player.getLocation().getBlock().hasMetadata("classic_block") && !player.getEyeLocation().getBlock().hasMetadata("classic_block"))
                     player.teleport(Gamemode.getCurrentWorld().getSpawnLocation().clone());
             }
-            ArrayList<net.minecraft.server.v1_8_R3.Chunk> chunks = new ArrayList<>();
-            for (Chunk c : player.getWorld().getLoadedChunks()) {
-                if (chunks.size() > 10) {
-                    ((CraftPlayer)player).getHandle().playerConnection.sendPacket(new PacketPlayOutMapChunkBulk(chunks));
-                    chunks.clear();
-                }
-                chunks.add(((CraftChunk) c).getHandle());
-            }
-            ((CraftPlayer)player).getHandle().playerConnection.sendPacket(new PacketPlayOutMapChunkBulk(chunks));
         }
 
         if (Gamemode.getCurrentGame() != null)
             event.getPlayer().setScoreboard(Gamemode.getScoreboard());
-    }
-
-    @EventHandler(priority = EventPriority.HIGHEST)
-    public void onWorldChange(PlayerTeleportEvent event) {
-        if (!event.getTo().getWorld().equals(event.getFrom().getWorld())) {
-            ArrayList<net.minecraft.server.v1_8_R3.Chunk> chunks = new ArrayList<>();
-            for (Chunk c : event.getTo().getWorld().getLoadedChunks()) {
-                if (chunks.size() > 10) {
-                    ((CraftPlayer)event.getPlayer()).getHandle().playerConnection.sendPacket(new PacketPlayOutMapChunkBulk(chunks));
-                    chunks.clear();
-                }
-                chunks.add(((CraftChunk) c).getHandle());
-            }
-            ((CraftPlayer)event.getPlayer()).getHandle().playerConnection.sendPacket(new PacketPlayOutMapChunkBulk(chunks));
-        }
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
