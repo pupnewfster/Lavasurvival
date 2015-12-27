@@ -4,7 +4,6 @@ import me.eddiep.minecraft.ls.Lavasurvival;
 import me.eddiep.minecraft.ls.game.impl.Flood;
 import me.eddiep.minecraft.ls.game.impl.Rise;
 import me.eddiep.minecraft.ls.game.options.FloodOptions;
-import me.eddiep.minecraft.ls.game.options.LavaOptions;
 import me.eddiep.minecraft.ls.game.options.RiseOptions;
 import me.eddiep.minecraft.ls.game.options.TimeOptions;
 import me.eddiep.minecraft.ls.system.FileUtils;
@@ -111,10 +110,12 @@ public class LavaMap {
         world.setAutoSave(false);
         world.setPVP(false);
         world.setAnimalSpawnLimit(0);
+        world.setWaterAnimalSpawnLimit(0);
         world.setMonsterSpawnLimit(0);
         world.setSpawnFlags(false, false);//Do not let mobs or animals spawn
         world.setSpawnLocation(mapSpawn.getBlockX(), mapSpawn.getBlockY(), mapSpawn.getBlockZ());
         world.setTime(time.getStartTimeTick());
+        world.setKeepSpawnInMemory(true);
 
         for (Entity e : world.getEntities())
             e.remove();
@@ -125,9 +126,6 @@ public class LavaMap {
         } catch (IOException e) {
             e.printStackTrace();
         }
-
-        for (Entity entity : world.getEntities())
-            entity.remove();
     }
 
     private World loadOrGetWorld(String worldName) {

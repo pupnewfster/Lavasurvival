@@ -22,10 +22,11 @@ public class CmdTpa extends Cmd {
                 sender.sendMessage(var.getEr() + "Error: " + var.getErMsg() + "Invalid player.");
                 return true;
             }
-            Player target = sender.getServer().getPlayer(uuid);
             Player p = (Player) sender;
-            if (p.getLocation().getBlock().hasMetadata("classic_block") || p.getEyeLocation().getBlock().hasMetadata("classic_block")) {
-                sender.sendMessage(var.getEr() + "Error: " + var.getErMsg() +  "You are in the lava.");
+            Player target = sender.getServer().getPlayer(uuid);
+            if (p.getLocation().getBlock().hasMetadata("classic_block") || p.getEyeLocation().getBlock().hasMetadata("classic_block") ||
+                    target.getLocation().getBlock().hasMetadata("classic_block") || target.getEyeLocation().getBlock().hasMetadata("classic_block")) {
+                sender.sendMessage(var.getEr() + "Error: " + var.getErMsg() +  "You or the target are in the lava.");
                 return true;
             }
             String tPrefix = um.getUser(uuid).getStatus(), pPrefix = um.getUser(p.getUniqueId()).getStatus();

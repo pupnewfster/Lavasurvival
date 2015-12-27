@@ -30,9 +30,12 @@ public class LavaLogic extends AbstractLogicContainer {
                 return;
             Material newBlock = block.getType();
 
-            if (!block.getType().isSolid() && !doesHandle(block.getType())) {
+            if (!block.getType().isSolid() && !doesHandle(block.getType()))
                 newBlock = logicFor();
-            }
+            if (newBlock.equals(Material.WATER))
+                newBlock = Material.STATIONARY_WATER;
+            else if (newBlock.equals(Material.LAVA))
+                newBlock = Material.STATIONARY_LAVA;
 
             ClassicPhysicsEvent event = new ClassicPhysicsEvent(location.getBlock(), newBlock, true, location, this, from);
             ClassicPhysics.INSTANCE.getServer().getPluginManager().callEvent(event);
@@ -42,18 +45,10 @@ public class LavaLogic extends AbstractLogicContainer {
             if (newBlock != block.getType())
                 placeClassicBlock(newBlock, location, from);
             else if (!block.hasMetadata("classic_block")) {
-                if (newBlock.equals(Material.WATER))
-                    placeClassicBlock(Material.STATIONARY_WATER, location, from);
-                else if (newBlock.equals(Material.LAVA))
-                    placeClassicBlock(Material.STATIONARY_LAVA, location, from);
-                else {
-                    block.setMetadata("classic_block", new FixedMetadataValue(ClassicPhysics.INSTANCE, true));
-                    //if (!ClassicPhysics.INSTANCE.getPhysicsHandler().hasMetaDataLocation(block.getLocation()))
-                        //ClassicPhysics.INSTANCE.getPhysicsHandler().addMetaDataLocation(block.getLocation());
-                    ClassicPhysics.INSTANCE.getServer().getPluginManager().callEvent(new ClassicBlockPlaceEvent(location));
-                    if (doesHandle(block.getType()))
-                        queueBlock(block);
-                }
+                block.setMetadata("classic_block", new FixedMetadataValue(ClassicPhysics.INSTANCE, true));
+                ClassicPhysics.INSTANCE.getServer().getPluginManager().callEvent(new ClassicBlockPlaceEvent(location));
+                if (doesHandle(block.getType()))
+                    queueBlock(block);
             }
         }
     }
