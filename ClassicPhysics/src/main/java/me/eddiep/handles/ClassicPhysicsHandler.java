@@ -204,6 +204,7 @@ public final class ClassicPhysicsHandler implements Listener {
                     int x = (int) (l >> 32), z = (int) l;
                     net.minecraft.server.v1_8_R3.World w = ((CraftWorld) world).getHandle();
                     Chunk c = w.getChunkAt(x, z);
+
                     if (count.getCount() > 1)
                         packets.add(new PacketPlayOutMultiBlockChange(count.getCount(), count.getChanged(), c));
                     else
@@ -277,15 +278,15 @@ public final class ClassicPhysicsHandler implements Listener {
         for (LogicContainerHolder holder : logicContainers)
             holder.container.unloadFor(event.getWorld());
 
-        for (Location l : metaDataLocations)
-            if (l.getBlock().hasMetadata("classic_block"))
-                l.getBlock().removeMetadata("classic_block", ClassicPhysics.INSTANCE);
-        metaDataLocations.clear();
-
         this.toFroms.clear();//Because we don't call block placing in multiple worlds. If we ever start we need to make it check that it removes correct worlds
         this.chunks.clear();
         if (running)
             running = false;
+
+        for (Location l : metaDataLocations)
+            if (l.getBlock().hasMetadata("classic_block"))
+                l.getBlock().removeMetadata("classic_block", ClassicPhysics.INSTANCE);
+        metaDataLocations.clear();
     }
 
     @EventHandler (priority = EventPriority.MONITOR)
