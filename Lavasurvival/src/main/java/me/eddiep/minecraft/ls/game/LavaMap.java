@@ -22,7 +22,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class LavaMap {
-    public static final int CONFIG_VERSION = 4;
+    public static final int CONFIG_VERSION = 5;
 
     private String name, worldName, filePath;
     private int lavax, lavay, lavaz, mapHeight;
