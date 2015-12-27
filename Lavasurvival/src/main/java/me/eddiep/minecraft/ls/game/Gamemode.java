@@ -170,7 +170,7 @@ public abstract class Gamemode {
                 tick();
             }
         };
-        tickTask.runTaskTimer(Lavasurvival.INSTANCE, 0, 20);
+        tickTask.runTaskTimer(Lavasurvival.INSTANCE, 0, 1);
     }
 
     private void restoreBackup(World world) {

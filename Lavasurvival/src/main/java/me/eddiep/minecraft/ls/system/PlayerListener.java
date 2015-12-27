@@ -12,8 +12,8 @@ import net.minecraft.server.v1_8_R3.*;
 import org.bukkit.*;
 import org.bukkit.Chunk;
 import org.bukkit.Material;
+import org.bukkit.block.*;
 import org.bukkit.block.Block;
-import org.bukkit.block.BlockFace;
 import org.bukkit.craftbukkit.v1_8_R3.CraftChunk;
 import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
 import org.bukkit.entity.Player;
@@ -128,12 +128,12 @@ public class PlayerListener implements Listener {
     public void blockInteract(PlayerInteractEvent event) {
         if (Lavasurvival.INSTANCE.getSetups().containsKey(event.getPlayer().getUniqueId()))
             return;
-        if ((event.getAction() == Action.RIGHT_CLICK_BLOCK || event.getAction() == Action.RIGHT_CLICK_AIR) && event.getItem() != null && event.getItem().getType().equals(Material.WRITTEN_BOOK))
+        if ((event.getAction().equals(Action.RIGHT_CLICK_BLOCK) || event.getAction().equals(Action.RIGHT_CLICK_AIR)) && event.getItem() != null && event.getItem().getType().equals(Material.WRITTEN_BOOK))
             return;//Allow players to read the rule book
         if (Gamemode.getCurrentGame() != null && Gamemode.getCurrentGame().isDead(event.getPlayer()))
             event.setCancelled(true);
         else if (Gamemode.getCurrentGame() != null && Gamemode.getCurrentGame().isAlive(event.getPlayer())) {
-            if (event.getAction() == Action.LEFT_CLICK_BLOCK) {
+            if (event.getAction().equals(Action.LEFT_CLICK_BLOCK)) {
                 Block block = event.getClickedBlock();
                 if (invalidBlocks.contains(block.getType()))
                     return;
@@ -222,18 +222,20 @@ public class PlayerListener implements Listener {
     public void blockPlace(BlockPlaceEvent event) {
         if (event.getPlayer() == null || Lavasurvival.INSTANCE.getSetups().containsKey(event.getPlayer().getUniqueId()))
             return;
-        if(!event.getPlayer().getGameMode().equals(GameMode.CREATIVE))//Allows players in creative to edit maps
-            event.setCancelled(true);
+        if(event.getPlayer().getGameMode().equals(GameMode.CREATIVE))//Allows players in creative to edit maps
+            return;
         if (Gamemode.getCurrentGame() != null && Gamemode.getCurrentGame().isAlive(event.getPlayer()) &&
                 ((event.getBlock().getType().equals(Material.WOODEN_DOOR) && event.getPlayer().getInventory().contains(Material.WOOD_DOOR)) ||
                 event.getPlayer().getInventory().contains(event.getBlock().getType()) || event.getPlayer().getInventory().contains(Material.getMaterial(event.getBlock().getType().toString() + "_ITEM")) ||
                         event.getPlayer().getInventory().contains(Material.getMaterial(event.getBlock().getType().toString().replaceAll("DOOR_BLOCK", "DOOR"))))) {
             if (event.getBlock().getLocation().getBlockY() >= Gamemode.getCurrentMap().getLavaY()) {
                 event.getPlayer().sendMessage(ChatColor.RED + "" + ChatColor.BOLD + "You are building to high!");
+                event.setBuild(false);
                 return;
             }
             if (Gamemode.getCurrentMap().isInSafeZone(event.getBlock().getLocation())) {
                 event.getPlayer().sendMessage(ChatColor.RED + "" + ChatColor.BOLD + "You are not allowed to build in spawn!");
+                event.setBuild(false);
                 return;
             }
             event.setCancelled(false);
