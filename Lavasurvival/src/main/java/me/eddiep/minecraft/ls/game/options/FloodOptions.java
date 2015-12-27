@@ -13,12 +13,8 @@ public class FloodOptions extends BaseOptions {
     private transient LavaMap owner;
 
     private List<Vector> spawnPoints = new ArrayList<>();
-    private int minPrepareTimeSeconds = 300;
-    private int maxPrepareTimeSeconds = 480;
-    private int minEndTimeSeconds = 180;
-    private int maxEndTimeSeconds = 420;
-    private boolean enableLava = true;
-    private boolean enableWater = true;
+    private int minPrepareTimeSeconds = 300, maxPrepareTimeSeconds = 480, minEndTimeSeconds = 180, maxEndTimeSeconds = 420;
+    private boolean enableLava = true, enableWater = true;
 
     public static FloodOptions defaults(LavaMap lavaMap) {
         return new FloodOptions(lavaMap);
@@ -28,13 +24,11 @@ public class FloodOptions extends BaseOptions {
 
     public long generateRandomPrepareTime() {
         int seconds = RANDOM.nextInt(maxPrepareTimeSeconds - minPrepareTimeSeconds) + minPrepareTimeSeconds;
-
         return seconds * 1000L;
     }
 
     public long generateRandomEndTime() {
         int seconds = RANDOM.nextInt(maxEndTimeSeconds - minEndTimeSeconds) + minEndTimeSeconds;
-
         return seconds * 1000L;
     }
 
@@ -47,16 +41,14 @@ public class FloodOptions extends BaseOptions {
     }
 
     public List<Vector> getSpawnPoints() {
-        if (!isUsingMultiSpawn()) {
+        if (!isUsingMultiSpawn())
             return Arrays.asList(new Vector(owner.getLavaX(), owner.getLavaY(), owner.getLavaZ()));
-        }
         return spawnPoints;
     }
 
     public List<Location> getSpawnLocations() {
-        if (!isUsingMultiSpawn()) {
+        if (!isUsingMultiSpawn())
             return Arrays.asList(owner.getLavaSpawnAsLocation());
-        }
 
         List<Location> list = new ArrayList<>();
         for (Vector vector : spawnPoints) {
@@ -68,15 +60,13 @@ public class FloodOptions extends BaseOptions {
     }
 
     public Vector getHighestSpawn() {
-        if (!isUsingMultiSpawn()) {
+        if (!isUsingMultiSpawn())
             return owner.getLavaSpawnAsLocation().toVector();
-        }
 
         Vector highest = spawnPoints.get(0);
-        for (Vector vector : spawnPoints) {
+        for (Vector vector : spawnPoints)
             if (vector.getY() > highest.getY())
                 highest = vector;
-        }
 
         return highest;
     }
@@ -87,9 +77,8 @@ public class FloodOptions extends BaseOptions {
     }
 
     public List<Location> getSpawnLocation(int xoffset, int yoffset, int zoffet) {
-        if (!isUsingMultiSpawn()) {
+        if (!isUsingMultiSpawn())
             return Arrays.asList(owner.getLavaSpawnAsLocation(xoffset, yoffset, zoffet));
-        }
 
         List<Location> list = new ArrayList<>();
         for (Vector vector : spawnPoints) {
@@ -101,12 +90,11 @@ public class FloodOptions extends BaseOptions {
     }
 
     public Vector getSingleSpawn() {
-        if (!isUsingMultiSpawn()) {
+        if (!isUsingMultiSpawn())
             return new Vector(owner.getLavaX(), owner.getLavaY(), owner.getLavaZ());
-        } else {
-            if (selectedSpawn == null) {
+        else {
+            if (selectedSpawn == null)
                 selectedSpawn = spawnPoints.get(RANDOM.nextInt(spawnPoints.size()));
-            }
             return selectedSpawn;
         }
     }

@@ -23,16 +23,14 @@ public class LavaOptions extends BaseOptions {
     }
 
     public List<Vector> getSpawnPoints() {
-        if (!isEnabled()) {
+        if (!isEnabled())
             return Arrays.asList(new Vector(owner.getLavaX(), owner.getLavaY(), owner.getLavaZ()));
-        }
         return spawnPoints;
     }
 
     public List<Location> getSpawnLocations() {
-        if (!isEnabled()) {
+        if (!isEnabled())
             return Arrays.asList(owner.getLavaSpawnAsLocation());
-        }
 
         List<Location> list = new ArrayList<>();
         for (Vector vector : spawnPoints) {
@@ -44,15 +42,13 @@ public class LavaOptions extends BaseOptions {
     }
 
     public Vector getHighestSpawn() {
-        if (!isEnabled()) {
+        if (!isEnabled())
             return owner.getLavaSpawnAsLocation().toVector();
-        }
 
         Vector highest = spawnPoints.get(0);
-        for (Vector vector : spawnPoints) {
+        for (Vector vector : spawnPoints)
             if (vector.getY() > highest.getY())
                 highest = vector;
-        }
 
         return highest;
     }
@@ -63,9 +59,8 @@ public class LavaOptions extends BaseOptions {
     }
 
     public List<Location> getSpawnLocation(int xoffset, int yoffset, int zoffet) {
-        if (!isEnabled()) {
+        if (!isEnabled())
             return Arrays.asList(owner.getLavaSpawnAsLocation(xoffset, yoffset, zoffet));
-        }
 
         List<Location> list = new ArrayList<>();
         for (Vector vector : spawnPoints) {
@@ -77,12 +72,11 @@ public class LavaOptions extends BaseOptions {
     }
 
     public Vector getSingleSpawn() {
-        if (!isEnabled()) {
+        if (!isEnabled())
             return new Vector(owner.getLavaX(), owner.getLavaY(), owner.getLavaZ());
-        } else {
-            if (selectedSpawn == null) {
+        else {
+            if (selectedSpawn == null)
                 selectedSpawn = spawnPoints.get(RANDOM.nextInt(spawnPoints.size()));
-            }
             return selectedSpawn;
         }
     }

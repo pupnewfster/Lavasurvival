@@ -233,8 +233,7 @@ public final class ClassicPhysicsHandler implements Listener {
     public void setBlockFast(World world, int x, int y, int z, int blockId, byte data) {
         net.minecraft.server.v1_8_R3.World w = ((CraftWorld) world).getHandle();
         net.minecraft.server.v1_8_R3.Chunk chunk = w.getChunkAt(x >> 4, z >> 4);
-        IBlockData ibd = net.minecraft.server.v1_8_R3.Block.getByCombinedId(blockId + (data << 12));
-        chunk.a(new BlockPosition(x, y, z), ibd);
+        chunk.a(new BlockPosition(x, y, z), net.minecraft.server.v1_8_R3.Block.getByCombinedId(blockId + (data << 12)));
     }
 
     public ClassicPhysicsHandler(Plugin plugin) {
@@ -384,7 +383,7 @@ public final class ClassicPhysicsHandler implements Listener {
             for (int y = -1; y <= 1; y++)
                 for (int z = -1; z <= 1; z++) {
                     Location newLoc = location.clone().add(x, y, z);
-                    if (!newLoc.getBlock().hasMetadata("classic_block"))//&& !newLoc.getBlock().isLiquid()
+                    if (!newLoc.getBlock().hasMetadata("classic_block"))//|| !newLoc.getBlock().isLiquid()
                         continue;
                     for (LogicContainerHolder holder : logicContainers)
                         holder.container.blockUpdate(newLoc);

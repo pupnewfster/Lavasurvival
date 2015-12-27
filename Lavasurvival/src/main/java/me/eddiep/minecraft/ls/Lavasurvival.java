@@ -124,7 +124,7 @@ public class Lavasurvival extends JavaPlugin {
         //Setup the shops after connecting to vault
         setupShops();
         setRules();
-        if (LavaMap.getPossibleMaps().length > 0) {//Should we make it random here which gamemode we start with
+        if (LavaMap.getPossibleMaps().length > 0) {//Should we make it random here which gamemode we start with and make it obey the allowed maps for that gamemode
             Rise rise = new Rise();
             rise.prepare();
             rise.start();

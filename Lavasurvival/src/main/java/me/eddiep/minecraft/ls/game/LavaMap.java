@@ -2,8 +2,10 @@ package me.eddiep.minecraft.ls.game;
 
 import me.eddiep.minecraft.ls.Lavasurvival;
 import me.eddiep.minecraft.ls.game.impl.Flood;
+import me.eddiep.minecraft.ls.game.impl.Fusion;
 import me.eddiep.minecraft.ls.game.impl.Rise;
 import me.eddiep.minecraft.ls.game.options.FloodOptions;
+import me.eddiep.minecraft.ls.game.options.FusionOptions;
 import me.eddiep.minecraft.ls.game.options.RiseOptions;
 import me.eddiep.minecraft.ls.game.options.TimeOptions;
 import me.eddiep.minecraft.ls.system.FileUtils;
@@ -29,6 +31,7 @@ public class LavaMap {
 
     private RiseOptions riseOptions = RiseOptions.defaults(this);
     private FloodOptions floodOptions = FloodOptions.defaults(this);
+    private FusionOptions fusionOptions = FusionOptions.defaults(this);
     private TimeOptions time = TimeOptions.defaults();
 
     private volatile World world;
@@ -40,13 +43,14 @@ public class LavaMap {
         map.poured = false;
         map.filePath = file;
 
-        if (!map.riseOptions.hasParent()) {
+        if (!map.riseOptions.hasParent())
             map.riseOptions.setParent(map);
-        }
 
-        if (!map.floodOptions.hasParent()) {
+        if (!map.floodOptions.hasParent())
             map.floodOptions.setParent(map);
-        }
+
+        if (!map.fusionOptions.hasParent())
+            map.fusionOptions.setParent(map);
 
         if (map.configVersion < CONFIG_VERSION) { //Update config with new values
             map.configVersion = CONFIG_VERSION;
@@ -210,6 +214,9 @@ public class LavaMap {
         if (floodOptions.isEnabled())
             games.add(Flood.class);
 
+        if (fusionOptions.isEnabled())
+            games.add(Fusion.class);
+
         return games.toArray(new Class[games.size()]);
     }
 
@@ -243,5 +250,9 @@ public class LavaMap {
 
     public RiseOptions getRiseOptions() {
         return riseOptions;
+    }
+
+    public FusionOptions getFusionOptions() {
+        return fusionOptions;
     }
 }

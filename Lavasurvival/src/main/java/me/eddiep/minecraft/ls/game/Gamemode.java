@@ -4,8 +4,7 @@ import com.crossge.necessities.Commands.CmdHide;
 import com.crossge.necessities.Necessities;
 import com.crossge.necessities.RankManager.Rank;
 import me.eddiep.minecraft.ls.Lavasurvival;
-import me.eddiep.minecraft.ls.game.impl.Flood;
-import me.eddiep.minecraft.ls.game.impl.Rise;
+import me.eddiep.minecraft.ls.game.impl.*;
 import me.eddiep.minecraft.ls.game.options.FloodOptions;
 import me.eddiep.minecraft.ls.game.shop.ShopFactory;
 import me.eddiep.minecraft.ls.game.status.PlayerStatusManager;
@@ -41,7 +40,8 @@ public abstract class Gamemode {
     };
     public static final Class[] GAMES = new Class[] {
             Rise.class,
-            Flood.class
+            Flood.class,
+            Fusion.class
     };
 
     public static final int VOTE_COUNT;
