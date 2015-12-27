@@ -4,7 +4,9 @@ import com.crossge.necessities.Commands.CmdHide;
 import com.crossge.necessities.Necessities;
 import com.crossge.necessities.RankManager.Rank;
 import me.eddiep.minecraft.ls.Lavasurvival;
-import me.eddiep.minecraft.ls.game.impl.*;
+import me.eddiep.minecraft.ls.game.impl.Flood;
+import me.eddiep.minecraft.ls.game.impl.Fusion;
+import me.eddiep.minecraft.ls.game.impl.Rise;
 import me.eddiep.minecraft.ls.game.options.FloodOptions;
 import me.eddiep.minecraft.ls.game.shop.ShopFactory;
 import me.eddiep.minecraft.ls.game.status.PlayerStatusManager;
@@ -15,8 +17,11 @@ import me.eddiep.minecraft.ls.system.FileUtils;
 import me.eddiep.minecraft.ls.system.PhysicsListener;
 import me.eddiep.minecraft.ls.system.PlayerListener;
 import mkremins.fanciful.FancyMessage;
+import net.minecraft.server.v1_8_R3.IChatBaseComponent;
+import net.minecraft.server.v1_8_R3.PacketPlayOutTitle;
 import org.bukkit.*;
 import org.bukkit.block.Block;
+import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
@@ -305,6 +310,12 @@ public abstract class Gamemode {
 
             Lavasurvival.INSTANCE.getEconomy().depositPlayer(player, reward);
             player.getPlayer().sendMessage(ChatColor.GREEN + "+ " + ChatColor.GOLD + "You won " + ChatColor.BOLD + reward + ChatColor.RESET + "" + ChatColor.GOLD + " GGs!");
+            IChatBaseComponent titleJSON = IChatBaseComponent.ChatSerializer.a("{'text': 'You won!'}");
+            IChatBaseComponent subtitleJSON = IChatBaseComponent.ChatSerializer.a("{'text': '§6§l" + reward + "§6 GGs!'}");
+            PacketPlayOutTitle titlePacket = new PacketPlayOutTitle(PacketPlayOutTitle.EnumTitleAction.TITLE, titleJSON, 0, 60, 0);
+            PacketPlayOutTitle subtitlePacket = new PacketPlayOutTitle(PacketPlayOutTitle.EnumTitleAction.SUBTITLE, subtitleJSON);
+            ((CraftPlayer)player).getHandle().playerConnection.sendPacket(titlePacket);
+            ((CraftPlayer)player).getHandle().playerConnection.sendPacket(subtitlePacket);
         }
 
         calculateGlicko(winners, um);
@@ -623,6 +634,14 @@ public abstract class Gamemode {
 
         if (u != null)
             u.giveBoughtBlocks();
+
+        boolean doubled = false;//TODO: set properly
+        IChatBaseComponent titleJSON = IChatBaseComponent.ChatSerializer.a("{'text': '§6The current gamemode is §c" + Gamemode.getCurrentGame().getClass().getSimpleName() + "'}");
+        IChatBaseComponent subtitleJSON = IChatBaseComponent.ChatSerializer.a("{'text': '§6Reward is " + (doubled ? "double" : "normal") + "'}");
+        PacketPlayOutTitle titlePacket = new PacketPlayOutTitle(PacketPlayOutTitle.EnumTitleAction.TITLE, titleJSON, 0, 60, 0);
+        PacketPlayOutTitle subtitlePacket = new PacketPlayOutTitle(PacketPlayOutTitle.EnumTitleAction.SUBTITLE, subtitleJSON);
+        ((CraftPlayer)player).getHandle().playerConnection.sendPacket(titlePacket);
+        ((CraftPlayer)player).getHandle().playerConnection.sendPacket(subtitlePacket);
     }
 
     private double getHealth(Rank r) {
