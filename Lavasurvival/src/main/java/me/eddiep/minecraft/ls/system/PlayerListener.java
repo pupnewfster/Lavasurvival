@@ -295,7 +295,8 @@ public class PlayerListener implements Listener {
                 ((to.getBlock().getRelative(BlockFace.UP).getType().equals(Material.WATER) || to.getBlock().getRelative(BlockFace.UP).getType().equals(Material.STATIONARY_WATER)) &&
                 to.getBlock().getRelative(BlockFace.UP).hasMetadata("classic_block"))) {
                 if (!u.isInWater()) {
-                    event.getPlayer().damage(Gamemode.DAMAGE);
+                    if (PlayerStatusManager.isInvincible(event.getPlayer()))
+                        event.getPlayer().damage(Gamemode.DAMAGE);
                     u.setInWater(true);
                 }
             } else if(u.isInWater())
@@ -313,7 +314,8 @@ public class PlayerListener implements Listener {
             if (Gamemode.getCurrentGame().isAlive(p) && (p.getLocation().getBlock().getLocation().equals(loc) || p.getLocation().getBlock().getRelative(BlockFace.UP).getLocation().equals(loc))) {
                 UserInfo u = um.getUser(p.getUniqueId());
                 if (!u.isInWater()) {
-                    p.damage(Gamemode.DAMAGE);
+                    if (PlayerStatusManager.isInvincible(p))
+                        p.damage(Gamemode.DAMAGE);
                     u.setInWater(true);
                 }
             }

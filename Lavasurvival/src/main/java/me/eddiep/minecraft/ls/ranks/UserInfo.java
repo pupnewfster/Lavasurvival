@@ -2,6 +2,7 @@ package me.eddiep.minecraft.ls.ranks;
 
 import me.eddiep.minecraft.ls.Lavasurvival;
 import me.eddiep.minecraft.ls.game.Gamemode;
+import me.eddiep.minecraft.ls.game.status.PlayerStatusManager;
 import me.eddiep.minecraft.ls.glicko.Glicko2;
 import me.eddiep.minecraft.ls.glicko.GlickoRank;
 import me.eddiep.minecraft.ls.glicko.Rankable;
@@ -164,7 +165,8 @@ public class UserInfo implements Rankable {
                 @Override
                 public void run() {
                     if (isInWater() && getPlayer() != null) {
-                        getPlayer().damage(Gamemode.DAMAGE);
+                        if (PlayerStatusManager.isInvincible(getPlayer()))
+                            getPlayer().damage(Gamemode.DAMAGE);
                         Block b = getPlayer().getLocation().getBlock();
                         setInWater(((b.getType().equals(Material.WATER) || b.getType().equals(Material.STATIONARY_WATER)) && b.hasMetadata("classic_block")) ||
                                 ((b.getRelative(BlockFace.UP).getType().equals(Material.WATER) || b.getRelative(BlockFace.UP).getType().equals(Material.STATIONARY_WATER)) &&
