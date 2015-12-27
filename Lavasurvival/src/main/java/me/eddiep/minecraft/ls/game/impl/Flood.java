@@ -33,7 +33,7 @@ public class Flood extends Gamemode {
         super.start();
 
         duration = getCurrentMap().getFloodOptions().generateRandomPrepareTime();
-        lavaPoints = getCurrentMap().getLavaOptions().getSpawnLocations();
+        lavaPoints = getCurrentMap().getFloodOptions().getSpawnLocations();
         //duration = Gamemode.RANDOM.nextInt(180000) + 300000;
         globalMessage("The " + (LAVA ? "lava" : "water") + " will pour in " + ChatColor.DARK_RED + TimeUtils.toFriendlyTime(duration));
         gameStart = System.currentTimeMillis();

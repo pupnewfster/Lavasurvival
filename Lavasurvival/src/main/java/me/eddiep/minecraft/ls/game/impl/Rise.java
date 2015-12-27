@@ -110,7 +110,7 @@ public class Rise extends Gamemode {
             if (nextMinute != lastMinute) {
                 lastMinute = nextMinute;
 
-                List<Location> locations = getCurrentMap().getLavaOptions().getSpawnLocation(0, lvl - getCurrentMap().getHeight(), 0);
+                List<Location> locations = getCurrentMap().getRiseOptions().getSpawnLocation(0, lvl - getCurrentMap().getHeight(), 0);
                 getCurrentWorld().strikeLightningEffect(locations.get(RANDOM.nextInt(locations.size()))); //Changed to just effect not to kill unknowing player nearby
                 globalMessage("The " + (LAVA ? "lava" : "water") + " will rise in " + ChatColor.DARK_RED + TimeUtils.toFriendlyTime(duration - since));
             }
@@ -134,7 +134,7 @@ public class Rise extends Gamemode {
     }
 
     private void pourAndAdvance(long time) {
-        List<Location> locs = getCurrentMap().getLavaOptions().getSpawnLocation(0, lvl - getCurrentMap().getHeight(), 0);
+        List<Location> locs = getCurrentMap().getRiseOptions().getSpawnLocation(0, lvl - getCurrentMap().getHeight(), 0);
 
         int highestCurrentY = locs.get(0).getBlockY();
         for (Location loc : locs) {
@@ -144,7 +144,7 @@ public class Rise extends Gamemode {
 
         //final Location loc = getCurrentMap().getLavaSpawnAsLocation(0, lvl - getCurrentMap().getHeight(), 0);
 
-        int lavaY = getCurrentMap().getLavaOptions().getHighestLocation().getBlockY();
+        int lavaY = getCurrentMap().getRiseOptions().getHighestLocation().getBlockY();
 
         if (highestCurrentY > lavaY) { //If we have passed the original lava spawn, that means the previous pour was the last one
             if (!isRoundEnding()) {

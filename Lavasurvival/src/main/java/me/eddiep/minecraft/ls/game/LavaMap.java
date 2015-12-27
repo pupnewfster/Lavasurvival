@@ -21,17 +21,16 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class LavaMap {
-    public static final int CONFIG_VERSION = 3;
+    public static final int CONFIG_VERSION = 4;
 
     private String name, worldName, filePath;
     private int lavax, lavay, lavaz, mapHeight;
     private Vector minSafeZone, maxSafeZone, mapSpawn;
     private int configVersion = 1; //Default version
 
-    private RiseOptions riseOptions = RiseOptions.defaults();
-    private FloodOptions floodOptions = FloodOptions.defaults();
+    private RiseOptions riseOptions = RiseOptions.defaults(this);
+    private FloodOptions floodOptions = FloodOptions.defaults(this);
     private TimeOptions time = TimeOptions.defaults();
-    private LavaOptions lavaOptions = LavaOptions.defaults(this);
 
     private volatile World world;
     private volatile boolean poured;
@@ -42,8 +41,12 @@ public class LavaMap {
         map.poured = false;
         map.filePath = file;
 
-        if (!map.lavaOptions.hasParent()) {
-            map.lavaOptions.setParent(map);
+        if (!map.riseOptions.hasParent()) {
+            map.riseOptions.setParent(map);
+        }
+
+        if (!map.floodOptions.hasParent()) {
+            map.floodOptions.setParent(map);
         }
 
         if (map.configVersion < CONFIG_VERSION) { //Update config with new values
@@ -203,10 +206,10 @@ public class LavaMap {
     public Class<? extends Gamemode>[] getEnabledGames() {
         List<Class<? extends Gamemode>> games = new ArrayList<>();
 
-        if (riseOptions.isEnabled())
+        if (riseOptions.isUsingMultiSpawn())
             games.add(Rise.class);
 
-        if (floodOptions.isEnabled())
+        if (floodOptions.isUsingMultiSpawn())
             games.add(Flood.class);
 
         return games.toArray(new Class[games.size()]);
@@ -242,9 +245,5 @@ public class LavaMap {
 
     public RiseOptions getRiseOptions() {
         return riseOptions;
-    }
-
-    public LavaOptions getLavaOptions() {
-        return lavaOptions;
     }
 }
