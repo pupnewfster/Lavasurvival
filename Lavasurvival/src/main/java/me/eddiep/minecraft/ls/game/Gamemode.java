@@ -145,6 +145,8 @@ public abstract class Gamemode {
         currentGame = this;
 
         if (lastMap != null) {
+            for (Chunk c : getCurrentWorld().getLoadedChunks())
+                getCurrentWorld().refreshChunk(c.getX(), c.getZ());
             Lavasurvival.log("Unloading " + lastMap.getWorld().getName() + "..");
             boolean success = Bukkit.unloadWorld(lastMap.getWorld(), false);
             if (!success)
