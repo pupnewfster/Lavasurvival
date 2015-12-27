@@ -16,10 +16,6 @@ public class CmdTpaccept extends Cmd {
     public boolean commandUse(CommandSender sender, String[] args) {
         if (sender instanceof Player) {
             Player p = (Player) sender;
-            if (p.getLocation().getBlock().hasMetadata("classic_block") || p.getEyeLocation().getBlock().hasMetadata("classic_block")) {
-                sender.sendMessage(var.getEr() + "Error: " + var.getErMsg() +  "You are in the lava.");
-                return true;
-            }
             UUID uuid = null;
             if (args.length == 0) {
                 uuid = tps.lastRequest(p.getUniqueId());
@@ -35,6 +31,11 @@ public class CmdTpaccept extends Cmd {
                 return true;
             }
             Player target = sender.getServer().getPlayer(uuid);
+            if (p.getLocation().getBlock().hasMetadata("classic_block") || p.getEyeLocation().getBlock().hasMetadata("classic_block") ||
+                    target.getLocation().getBlock().hasMetadata("classic_block") || target.getEyeLocation().getBlock().hasMetadata("classic_block")) {
+                sender.sendMessage(var.getEr() + "Error: " + var.getErMsg() +  "You or the target are in the lava.");
+                return true;
+            }
             String tPrefix = um.getUser(uuid).getStatus(), pPrefix = um.getUser(p.getUniqueId()).getStatus();
             if (!p.hasPermission("Necessities.seehidden") && hide.isHidden(target)) {
                 sender.sendMessage(var.getEr() + "Error: " + var.getErMsg() + "Invalid player.");
