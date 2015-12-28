@@ -1,5 +1,6 @@
 package me.eddiep.handles;
 
+import me.eddiep.ChunkEdit;
 import me.eddiep.ClassicPhysics;
 import me.eddiep.PhysicsType;
 import me.eddiep.handles.logic.LavaLogic;
@@ -37,6 +38,8 @@ public final class ClassicPhysicsHandler implements Listener {
     private final ConcurrentHashMap<Location, ConcurrentLinkedQueue<ToAndFrom>> toFroms = new ConcurrentHashMap<>();
     private ArrayList<Player> lplacers = new ArrayList<>(), wplacers = new ArrayList<>();
     private boolean running = false, sendingPackets = false, removePrevious = false;
+    private World current = null;
+    private ChunkEdit e = null;
     private Plugin owner;
 
     private class WorldCount {
@@ -150,6 +153,10 @@ public final class ClassicPhysicsHandler implements Listener {
                     continue;
                 }
                 Block blc = l.getBlock();
+                if (current == null || !current.equals(blc.getWorld())) {
+                    e = new ChunkEdit(((CraftWorld) blc.getWorld()).getHandle());
+                    current = blc.getWorld();
+                }
                 Material type = locations.get(taf);
                 if (!taf.getFrom().getBlock().hasMetadata("classic_block") || !taf.getFrom().getBlock().isLiquid() || type == null || (blc.hasMetadata("classic_block") && blc.isLiquid())) {
                     ConcurrentLinkedQueue<ToAndFrom> queue = toFroms.get(l);
@@ -166,14 +173,14 @@ public final class ClassicPhysicsHandler implements Listener {
                 }
                 if (!blc.hasMetadata("classic_block"))
                     blc.setMetadata("classic_block", new FixedMetadataValue(ClassicPhysics.INSTANCE, true));
-                setBlockFast(blc.getWorld(), blc.getX(), blc.getY(), blc.getZ(), type.getId(), (byte) 0);
+                e.setBlock(blc.getX(), blc.getY(), blc.getZ(), type);
                 long xz = (long) blc.getChunk().getX() << 32 | blc.getChunk().getZ() & 0xFFFFFFFFL;
                 if (!chunks.containsKey(xz))
                     chunks.put(xz, new WorldCount(l.getWorld()));
                 chunks.get(xz).addChange(l.getBlockX(), l.getBlockY(), l.getBlockZ());
-                if (!blc.isLiquid()) {//TODO Change if we add something that flows that isnt liquid
+                if (!blc.isLiquid() && !blc.hasMetadata("fusion_block")) {
                     type = Material.STATIONARY_WATER;
-                    setBlockFast(blc.getWorld(), blc.getX(), blc.getY(), blc.getZ(), type.getId(), (byte) 0);
+                    e.setBlock(blc.getX(), blc.getY(), blc.getZ(), type);
                 }
                 ClassicPhysics.INSTANCE.getServer().getPluginManager().callEvent(new ClassicBlockPlaceEvent(l));
                 for (LogicContainerHolder holder : logicContainers) {
@@ -198,6 +205,7 @@ public final class ClassicPhysicsHandler implements Listener {
                 return;
             sendingPackets = true;
             ArrayList<Packet> packets = new ArrayList<>();
+            ArrayList<Chunk> chunksToSend = new ArrayList<>();
             for (long l : chunks.keySet()) {
                 if (!sendingPackets)
                     break;
@@ -207,17 +215,27 @@ public final class ClassicPhysicsHandler implements Listener {
                     int x = (int) (l >> 32), z = (int) l;
                     net.minecraft.server.v1_8_R3.World w = ((CraftWorld) world).getHandle();
                     Chunk c = w.getChunkAt(x, z);
-                    if (count.getCount() > 1)
+                    if (count.getCount() > 10) {
+                        if (chunksToSend.size() > 10) {
+                            packets.add(new PacketPlayOutMapChunkBulk(chunksToSend));
+                            chunksToSend.clear();
+                        }
+                        chunksToSend.add(c);
+                    } else if (count.getCount() > 1)
                         packets.add(new PacketPlayOutMultiBlockChange(count.getCount(), count.getChanged(), c));
                     else
                         packets.add(new PacketPlayOutBlockChange(w, new BlockPosition(count.getX(), count.getY(), count.getZ())));
-                    //c.initLighting();
                 }
                 chunks.remove(l);
             }
+            if (!chunksToSend.isEmpty())
+                packets.add(new PacketPlayOutMapChunkBulk(chunksToSend));
+            chunksToSend.clear();
             for (Player p : Bukkit.getOnlinePlayers()) {
                 if (removePrevious)
                     break;
+                if (p == null)
+                    continue;
                 for (Packet packet : packets) {
                     if (removePrevious)//Check again incase on player is mid getting sent
                         break;
@@ -229,12 +247,6 @@ public final class ClassicPhysicsHandler implements Listener {
             sendingPackets = false;
         }
     };
-
-    public void setBlockFast(World world, int x, int y, int z, int blockId, byte data) {
-        net.minecraft.server.v1_8_R3.World w = ((CraftWorld) world).getHandle();
-        net.minecraft.server.v1_8_R3.Chunk chunk = w.getChunkAt(x >> 4, z >> 4);
-        chunk.a(new BlockPosition(x, y, z), net.minecraft.server.v1_8_R3.Block.getByCombinedId(blockId + (data << 12)));
-    }
 
     public ClassicPhysicsHandler(Plugin plugin) {
         this.owner = plugin;
