@@ -24,14 +24,14 @@ public class Updater implements UpdateNotifier {
         return Schedule.when(new Callable<Boolean>() {
             @Override
             public Boolean call() throws Exception {
-                return Gamemode.getCurrentGame().hasEnded(); //TODO Change this
+                return Gamemode.getCurrentGame().hasEnded();
             }
         });
     }
 
     @Override
     public void patchComplete(UpdateType updateType, UBot uBot) {
-        //TODO Restart the server
+
     }
 
     @Override

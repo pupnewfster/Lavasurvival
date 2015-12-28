@@ -81,6 +81,11 @@ public class Fusion extends Gamemode {
     }
 
     @Override
+    public boolean isRewardDoubled() {
+        return doubleReward;
+    }
+
+    @Override
     public void endRound() {
         objective.unregister();
         objective = null;

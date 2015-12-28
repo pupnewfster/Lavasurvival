@@ -65,9 +65,7 @@ public class ItemShop extends Menu {
     public void buyItem(MenuPlayer player, LavaItem item) {
         ItemStack is = item.createItem();
         Player p = player.getBukkit();
-        if (BukkitUtils.hasItem(p.getInventory(), is))
-            p.sendMessage(ChatColor.RED + "You are have a " + item.name());
-        else if (!Lavasurvival.INSTANCE.getEconomy().hasAccount(p) || Lavasurvival.INSTANCE.getEconomy().getBalance(p) < item.getPrice())
+        if (!Lavasurvival.INSTANCE.getEconomy().hasAccount(p) || Lavasurvival.INSTANCE.getEconomy().getBalance(p) < item.getPrice())
             p.sendMessage(ChatColor.RED + "You do not have enough money to buy the item " + item.name() + "..");
         else if (BukkitUtils.isInventoryFull(p.getInventory()))
             p.sendMessage(ChatColor.RED + "You do not have enough inventory space to buy any more items..");

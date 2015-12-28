@@ -610,7 +610,6 @@ public abstract class Gamemode {
         player.teleport(new Location(getCurrentWorld(), getCurrentMap().getMapSpawn().getX(), getCurrentMap().getMapSpawn().getY(), getCurrentMap().getMapSpawn().getZ()));
         player.setGameMode(GameMode.SURVIVAL);
 
-        //TODO Don't do this. We'll have an item for this
         player.setMaxHealth(getHealth(Lavasurvival.INSTANCE.getNecessitiesUserManager().getUser(player.getUniqueId()).getRank()));
 
         player.setHealth(player.getMaxHealth());
@@ -624,7 +623,7 @@ public abstract class Gamemode {
             if (BukkitUtils.hasItem(player.getInventory(), toGive) || u.isInBank(new MaterialData(DEFAULT_BLOCK)))
                 continue;
             ItemMeta im = toGive.getItemMeta();
-            im.setLore(Arrays.asList("Melt time: " + PhysicsListener.getMeltTimeAsString(new MaterialData(toGive.getType()))));
+            im.setLore(Collections.singletonList("Melt time: " + PhysicsListener.getMeltTimeAsString(new MaterialData(toGive.getType()))));
             toGive.setItemMeta(im);
             player.getInventory().addItem(toGive);
         }
@@ -632,11 +631,10 @@ public abstract class Gamemode {
             player.getInventory().addItem(Lavasurvival.INSTANCE.getRules());
         ShopFactory.validateInventory(inv);
 
-        if (u != null)
-            u.giveBoughtBlocks();
+        u.giveBoughtBlocks();
 
-        boolean doubled = false;//TODO: set properly
-        IChatBaseComponent titleJSON = IChatBaseComponent.ChatSerializer.a("{'text': '§6The current gamemode is §c" + Gamemode.getCurrentGame().getClass().getSimpleName() + "'}");
+        boolean doubled = isRewardDoubled();//TODO: set properly
+        IChatBaseComponent titleJSON = IChatBaseComponent.ChatSerializer.a("{'text': '§6Gamemode: §c" + Gamemode.getCurrentGame().getClass().getSimpleName() + "'}");
         IChatBaseComponent subtitleJSON = IChatBaseComponent.ChatSerializer.a("{'text': '§6Reward is " + (doubled ? "double" : "normal") + "'}");
         PacketPlayOutTitle titlePacket = new PacketPlayOutTitle(PacketPlayOutTitle.EnumTitleAction.TITLE, titleJSON, 0, 60, 0);
         PacketPlayOutTitle subtitlePacket = new PacketPlayOutTitle(PacketPlayOutTitle.EnumTitleAction.SUBTITLE, subtitleJSON);
@@ -731,4 +729,6 @@ public abstract class Gamemode {
     }
 
     public abstract void addToBonus(double takeOut);
+
+    public abstract boolean isRewardDoubled();
 }
