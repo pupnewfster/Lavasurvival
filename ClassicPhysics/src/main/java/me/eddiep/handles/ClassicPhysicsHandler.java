@@ -186,7 +186,7 @@ public final class ClassicPhysicsHandler implements Listener {
                 for (LogicContainerHolder holder : logicContainers) {
                     if (holder.container.doesHandle(type)) {
                         holder.container.queueBlock(blc);
-                        break;//TODO Maybe don't break?
+                        break;
                     }
                 }
                 ConcurrentLinkedQueue<ToAndFrom> queue = toFroms.get(l);
@@ -234,13 +234,12 @@ public final class ClassicPhysicsHandler implements Listener {
             for (Player p : Bukkit.getOnlinePlayers()) {
                 if (removePrevious)
                     break;
-                if (p == null)
-                    continue;
-                for (Packet packet : packets) {
-                    if (removePrevious)//Check again incase on player is mid getting sent
-                        break;
-                    ((CraftPlayer) p).getHandle().playerConnection.sendPacket(packet);
-                }
+                if (p != null)
+                    for (Packet packet : packets) {
+                        if (removePrevious)//Check again incase on player is mid getting sent
+                            break;
+                        ((CraftPlayer) p).getHandle().playerConnection.sendPacket(packet);
+                    }
             }
             if (removePrevious)
                 removePrevious = false;
@@ -402,18 +401,31 @@ public final class ClassicPhysicsHandler implements Listener {
                 }
     }
 
-    public void forcePlaceClassicBlockAt(Location location, final Material type) {//Force place block
+    public void forcePlaceClassicBlockAt(Location location, Material type) {//Force place block
         if (location.getWorld() == null || !location.getChunk().isLoaded() || location.getBlock() == null)//World isn't loaded
             return;
+        Block blc = location.getBlock();
+        if (!blc.hasMetadata("classic_block"))
+            blc.setMetadata("classic_block", new FixedMetadataValue(ClassicPhysics.INSTANCE, true));
+        if (current == null || !current.equals(blc.getWorld())) {
+            e = new ChunkEdit(((CraftWorld) blc.getWorld()).getHandle());
+            current = blc.getWorld();
+        }
+        e.setBlock(blc.getX(), blc.getY(), blc.getZ(), type);
+        if (!blc.isLiquid() && !blc.hasMetadata("fusion_block")) {
+            type = Material.STATIONARY_WATER;
+            e.setBlock(blc.getX(), blc.getY(), blc.getZ(), type);
+        }
+        ClassicPhysics.INSTANCE.getServer().getPluginManager().callEvent(new ClassicBlockPlaceEvent(location));
         for (LogicContainerHolder holder : logicContainers)
             if (holder.container.doesHandle(type)) {
-                final Block blc = location.getBlock();
-                if (!blc.hasMetadata("classic_block"))
-                    blc.setMetadata("classic_block", new FixedMetadataValue(ClassicPhysics.INSTANCE, true));
-                blc.setType(type);
                 holder.container.queueBlock(blc);
-                break; //TODO Maybe don't break?
+                break;
             }
+        PacketPlayOutBlockChange packet = new PacketPlayOutBlockChange(((CraftWorld) location.getWorld()).getHandle(), new BlockPosition(location.getBlockX(), location.getBlockY(), location.getBlockZ()));
+        for (Player p : Bukkit.getOnlinePlayers())
+            if (p != null)
+                ((CraftPlayer) p).getHandle().playerConnection.sendPacket(packet);
     }
 
     public void placeClassicBlockAt(Location location, Material type, Location from) {
