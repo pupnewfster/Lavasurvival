@@ -165,7 +165,7 @@ public class UserInfo implements Rankable {
                 @Override
                 public void run() {
                     if (isInWater() && getPlayer() != null) {
-                        if (PlayerStatusManager.isInvincible(getPlayer()))
+                        if (!PlayerStatusManager.isInvincible(getPlayer()))
                             getPlayer().damage(Gamemode.DAMAGE);
                         Block b = getPlayer().getLocation().getBlock();
                         setInWater(((b.getType().equals(Material.WATER) || b.getType().equals(Material.STATIONARY_WATER)) && b.hasMetadata("classic_block")) ||
