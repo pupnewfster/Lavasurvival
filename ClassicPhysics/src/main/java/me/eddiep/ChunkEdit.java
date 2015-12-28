@@ -43,10 +43,16 @@ public class ChunkEdit {
         if (section == null)
             section = new ChunkSection(chunkY, true);
         NibbleArray blockLight;
+        NibbleArray skyLight;
         try {
             blockLight = section.getEmittedLightArray();
         } catch (Exception e) {
             blockLight = new NibbleArray();
+        }
+        try {
+            skyLight = section.getSkyLightArray();
+        } catch (Exception e) {
+            skyLight = new NibbleArray();
         }
         IBlockData d = Block.getByCombinedId(type.getId() + (data << 12));
         TileEntity tileEntity = this.world.getTileEntity(new BlockPosition(x, y, z));
@@ -55,13 +61,24 @@ public class ChunkEdit {
         else
             section.setType(blockX, blockY, blockZ, d);
         blockLight.a(blockX, blockY, blockZ, getLight(type));
+        skyLight.a(blockX, blockY, blockZ, 0);//getSkyLight());
         section.a(blockLight);
+        section.b(skyLight);
         sections[chunkY] = section;
         c.a(sections);
     }
 
     public void setBlock(int x, int y, int z, Material type) {
         setBlock(x, y, z, type, (byte) 0);
+    }
+
+    private int getSkyLight() {
+        long time = this.world.getTime();
+        time = time % 24000;
+        if (time > 12000)
+            return 4;
+        else//if (time > 0)
+            return 15;
     }
 
     private int getLight(Material type) {
