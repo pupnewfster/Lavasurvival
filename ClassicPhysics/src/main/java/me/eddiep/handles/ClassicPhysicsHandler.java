@@ -404,6 +404,10 @@ public final class ClassicPhysicsHandler implements Listener {
     public void forcePlaceClassicBlockAt(Location location, Material type) {//Force place block
         if (location.getWorld() == null || !location.getChunk().isLoaded() || location.getBlock() == null)//World isn't loaded
             return;
+        if (type.equals(Material.WATER))
+            type = Material.STATIONARY_WATER;
+        else if (type.equals(Material.LAVA))
+            type = Material.STATIONARY_LAVA;
         Block blc = location.getBlock();
         if (!blc.hasMetadata("classic_block"))
             blc.setMetadata("classic_block", new FixedMetadataValue(ClassicPhysics.INSTANCE, true));
