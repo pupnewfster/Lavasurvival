@@ -211,7 +211,7 @@ public final class ClassicPhysicsHandler implements Listener {
                         packets.add(new PacketPlayOutMultiBlockChange(count.getCount(), count.getChanged(), c));
                     else
                         packets.add(new PacketPlayOutBlockChange(w, new BlockPosition(count.getX(), count.getY(), count.getZ())));
-                    c.initLighting();
+                    //c.initLighting();
                 }
                 chunks.remove(l);
             }
