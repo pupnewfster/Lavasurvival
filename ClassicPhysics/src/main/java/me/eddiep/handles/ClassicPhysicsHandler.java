@@ -15,8 +15,7 @@ import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.craftbukkit.v1_8_R3.CraftWorld;
 import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
-import org.bukkit.entity.FallingBlock;
-import org.bukkit.entity.Player;
+import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -215,7 +214,7 @@ public final class ClassicPhysicsHandler implements Listener {
                     int x = (int) (l >> 32), z = (int) l;
                     net.minecraft.server.v1_8_R3.World w = ((CraftWorld) world).getHandle();
                     Chunk c = w.getChunkAt(x, z);
-                    if (count.getCount() > 10) {
+                    if (count.getCount() >= 64) {
                         if (chunksToSend.size() > 10) {
                             packets.add(new PacketPlayOutMapChunkBulk(chunksToSend));
                             chunksToSend.clear();
@@ -231,15 +230,21 @@ public final class ClassicPhysicsHandler implements Listener {
             if (!chunksToSend.isEmpty())
                 packets.add(new PacketPlayOutMapChunkBulk(chunksToSend));
             chunksToSend.clear();
+            /*for (Player p : Bukkit.getOnlinePlayers()) {
+                EntityPlayer ep = ((CraftPlayer) p).getHandle();
+                packets.add(new PacketPlayOutEntity(ep.getId()));
+            }*/
             for (Player p : Bukkit.getOnlinePlayers()) {
                 if (removePrevious)
                     break;
-                if (p != null)
+                if (p != null) {
+                    EntityPlayer ep = ((CraftPlayer) p).getHandle();
                     for (Packet packet : packets) {
                         if (removePrevious)//Check again incase on player is mid getting sent
                             break;
-                        ((CraftPlayer) p).getHandle().playerConnection.sendPacket(packet);
+                        ep.playerConnection.sendPacket(packet);
                     }
+                }
             }
             if (removePrevious)
                 removePrevious = false;

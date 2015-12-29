@@ -2,6 +2,7 @@ package me.eddiep;
 
 
 import net.minecraft.server.v1_8_R3.*;
+import net.minecraft.server.v1_8_R3.Block;
 import org.bukkit.Material;
 
 public class ChunkEdit {
@@ -55,13 +56,14 @@ public class ChunkEdit {
             skyLight = new NibbleArray();
         }
         IBlockData d = Block.getByCombinedId(type.getId() + (data << 12));
-        TileEntity tileEntity = this.world.getTileEntity(new BlockPosition(x, y, z));
+        BlockPosition pos = new BlockPosition(x, y, z);
+        TileEntity tileEntity = this.world.getTileEntity(pos);
         if (tileEntity != null)
             c.a(new BlockPosition(x, y, z), d);
         else
             section.setType(blockX, blockY, blockZ, d);
         blockLight.a(blockX, blockY, blockZ, getLight(type));
-        skyLight.a(blockX, blockY, blockZ, 0);//getSkyLight());
+        skyLight.a(blockX, blockY, blockZ, getSkyLight(x, y, z));
         section.a(blockLight);
         section.b(skyLight);
         sections[chunkY] = section;
@@ -72,19 +74,18 @@ public class ChunkEdit {
         setBlock(x, y, z, type, (byte) 0);
     }
 
-    private int getSkyLight() {
-        long time = this.world.getTime();
-        time = time % 24000;
-        if (time > 12000)
-            return 4;
-        else//if (time > 0)
-            return 15;
+    private int getSkyLight(int x, int y, int z) {
+        org.bukkit.block.Block highest = y > 0 ? this.world.getWorld().getHighestBlockAt(x, z).getRelative(0, -1, 0) : this.world.getWorld().getBlockAt(x, 0, z);
+        org.bukkit.block.Block oneUp = y < 256 ? this.world.getWorld().getBlockAt(x, y + 1, z) : highest;
+        int sky = oneUp.getLocation().getBlockY() < highest.getLocation().getBlockY() ? highest.getLightFromSky() : oneUp.getLightFromSky();
+        //TODO: make it respect transparency
+        return sky;
     }
 
     private int getLight(Material type) {
         switch (type) {
             case BEACON: case ENDER_PORTAL: case FIRE: case GLOWSTONE: case JACK_O_LANTERN: case LAVA: case STATIONARY_LAVA:
-            case REDSTONE_LAMP_ON: case SEA_LANTERN: case WATER: case STATIONARY_WATER:
+            case REDSTONE_LAMP_ON: case SEA_LANTERN:// case WATER: case STATIONARY_WATER:
                 return 15;
             case TORCH:// case END_ROD:
                 return 14;
