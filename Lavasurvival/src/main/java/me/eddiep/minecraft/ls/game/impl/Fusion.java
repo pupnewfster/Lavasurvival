@@ -16,10 +16,10 @@ import org.bukkit.scoreboard.Score;
 import java.util.List;
 
 public class Fusion extends Gamemode {
-    private int lastMinute, bonus, lvl = 1, sched = 0, dist = 0;
+    private int lastMinute, bonus, lvl = 1, sched = 0;
     private long lastEvent, duration, timeOut;
     private Score bonusScore, layersLeft;
-    private boolean doubleReward, curType = true;
+    private boolean doubleReward;
     private Objective objective;
 
     @Override
@@ -118,11 +118,11 @@ public class Fusion extends Gamemode {
 
                 List<Location> locations = getCurrentMap().getFusionOptions().getSpawnLocation(0, lvl - getCurrentMap().getHeight(), 0);
                 getCurrentWorld().strikeLightningEffect(locations.get(RANDOM.nextInt(locations.size()))); //Changed to just effect not to kill unknowing player nearby
-                globalMessage("The " + (curType ? "lava" : "water") + " will rise in " + ChatColor.DARK_RED + TimeUtils.toFriendlyTime(duration - since));
+                globalMessage("The lava and water will rise in " + ChatColor.DARK_RED + TimeUtils.toFriendlyTime(duration - since));
             }
         } else if (!super.poured) {
             super.poured = true;
-            globalMessage(ChatColor.DARK_RED + "Here comes the " + (curType ? "lava" : "water") + "!");
+            globalMessage(ChatColor.DARK_RED + "Here comes the lava and water!");
 
             duration = timeOut; //The duration will not change
             objective.setDisplayName("Time Till Next Pour");
@@ -162,14 +162,10 @@ public class Fusion extends Gamemode {
             return;
         }
 
+        switchADoodle = RANDOM.nextInt();
+
         for (Location location : locs)
             Lavasurvival.INSTANCE.getPhysicsHandler().forcePlaceClassicBlockAt(location, getMat());
-
-        if (dist >= getCurrentMap().getFusionOptions().getAlternateDistance()) {
-            dist = 0;
-            curType = !curType;
-        } else
-            dist++;
 
         lastEvent = System.currentTimeMillis(); //Set the last event to now
         getCurrentWorld().strikeLightningEffect(locs.get(RANDOM.nextInt(locs.size()))); //Actions are better than words :3
@@ -192,8 +188,11 @@ public class Fusion extends Gamemode {
         return isEnding;
     }
 
+    private int switchADoodle;
     @Override
     public Material getMat() {
-        return curType ? Material.STATIONARY_LAVA : Material.STATIONARY_WATER;
+        Material mat = switchADoodle % 2 == 0 ? Material.STATIONARY_LAVA : Material.STATIONARY_WATER;
+        switchADoodle++;
+        return mat;
     }
 }

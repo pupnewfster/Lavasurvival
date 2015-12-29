@@ -9,6 +9,7 @@ import me.eddiep.handles.ClassicPhysicsHandler;
 import me.eddiep.minecraft.ls.commands.*;
 import me.eddiep.minecraft.ls.game.Gamemode;
 import me.eddiep.minecraft.ls.game.LavaMap;
+import me.eddiep.minecraft.ls.game.impl.Fusion;
 import me.eddiep.minecraft.ls.game.impl.Rise;
 import me.eddiep.minecraft.ls.game.shop.ShopFactory;
 import me.eddiep.minecraft.ls.game.shop.impl.*;
@@ -125,7 +126,7 @@ public class Lavasurvival extends JavaPlugin {
         setupShops();
         setRules();
         if (LavaMap.getPossibleMaps().length > 0) {//Should we make it random here which gamemode we start with and make it obey the allowed maps for that gamemode
-            Rise rise = new Rise();
+            Fusion rise = new Fusion();
             rise.prepare();
             rise.start();
             running = true;

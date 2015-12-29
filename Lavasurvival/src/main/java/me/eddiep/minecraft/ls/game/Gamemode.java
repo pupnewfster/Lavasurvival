@@ -634,7 +634,7 @@ public abstract class Gamemode {
         u.giveBoughtBlocks();
 
         boolean doubled = isRewardDoubled();//TODO: set properly
-        IChatBaseComponent titleJSON = IChatBaseComponent.ChatSerializer.a("{'text': '§6Gamemode: §c" + Gamemode.getCurrentGame().getClass().getSimpleName() + "'}");
+        IChatBaseComponent titleJSON = IChatBaseComponent.ChatSerializer.a("{'text': '§6Gamemode: §c" + this.getClass().getSimpleName() + "'}");
         IChatBaseComponent subtitleJSON = IChatBaseComponent.ChatSerializer.a("{'text': '§6Reward is " + (doubled ? "double" : "normal") + "'}");
         PacketPlayOutTitle titlePacket = new PacketPlayOutTitle(PacketPlayOutTitle.EnumTitleAction.TITLE, titleJSON, 0, 60, 0);
         PacketPlayOutTitle subtitlePacket = new PacketPlayOutTitle(PacketPlayOutTitle.EnumTitleAction.SUBTITLE, subtitleJSON);

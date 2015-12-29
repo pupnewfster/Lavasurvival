@@ -6,6 +6,7 @@ import org.bukkit.util.Vector;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 public class FloodOptions extends BaseOptions {
@@ -42,13 +43,13 @@ public class FloodOptions extends BaseOptions {
 
     public List<Vector> getSpawnPoints() {
         if (!isUsingMultiSpawn())
-            return Arrays.asList(new Vector(owner.getLavaX(), owner.getLavaY(), owner.getLavaZ()));
+            return Collections.singletonList(new Vector(owner.getLavaX(), owner.getLavaY(), owner.getLavaZ()));
         return spawnPoints;
     }
 
     public List<Location> getSpawnLocations() {
         if (!isUsingMultiSpawn())
-            return Arrays.asList(owner.getLavaSpawnAsLocation());
+            return Collections.singletonList(owner.getLavaSpawnAsLocation());
 
         List<Location> list = new ArrayList<>();
         for (Vector vector : spawnPoints) {
@@ -78,7 +79,7 @@ public class FloodOptions extends BaseOptions {
 
     public List<Location> getSpawnLocation(int xoffset, int yoffset, int zoffet) {
         if (!isUsingMultiSpawn())
-            return Arrays.asList(owner.getLavaSpawnAsLocation(xoffset, yoffset, zoffet));
+            return Collections.singletonList(owner.getLavaSpawnAsLocation(xoffset, yoffset, zoffet));
 
         List<Location> list = new ArrayList<>();
         for (Vector vector : spawnPoints) {
