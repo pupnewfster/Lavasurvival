@@ -26,6 +26,6 @@ public class FusionOptions extends FloodOptions {
 
     @Override
     public boolean isEnabled() {
-        return super.isEnabled() && super.getSpawnPoints().size() > 1;
+        return false;
     }
 }
