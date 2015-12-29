@@ -16,6 +16,10 @@ import me.eddiep.minecraft.ls.game.shop.impl.*;
 import me.eddiep.minecraft.ls.ranks.UserManager;
 import me.eddiep.minecraft.ls.system.PlayerListener;
 import me.eddiep.minecraft.ls.system.setup.SetupMap;
+import me.eddiep.minecraft.ls.system.ubot.UBotLogger;
+import me.eddiep.minecraft.ls.system.ubot.Updater;
+import me.eddiep.ubot.UBot;
+import me.eddiep.ubot.utils.CancelToken;
 import net.milkbowl.vault.economy.Economy;
 import net.njay.MenuFramework;
 import net.njay.MenuRegistry;
@@ -32,7 +36,10 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import java.io.ByteArrayOutputStream;
+import java.io.DataOutputStream;
 import java.io.File;
+import java.io.IOException;
 import java.util.*;
 
 public class Lavasurvival extends JavaPlugin {
@@ -61,6 +68,7 @@ public class Lavasurvival extends JavaPlugin {
     private RankManager rm;
     private boolean running = false;
     private ItemStack rules;
+    private CancelToken ubotCancelToken;
 
     public void updateMoneyView(Player player) {
         Inventory inv = player.getInventory();
@@ -126,7 +134,7 @@ public class Lavasurvival extends JavaPlugin {
         setupShops();
         setRules();
         if (LavaMap.getPossibleMaps().length > 0) {//Should we make it random here which gamemode we start with and make it obey the allowed maps for that gamemode
-            Fusion rise = new Fusion();
+            Rise rise = new Rise();
             rise.prepare();
             rise.start();
             running = true;
@@ -146,6 +154,7 @@ public class Lavasurvival extends JavaPlugin {
             log("Stopping game..");
             Gamemode.getCurrentGame().forceEnd();
             log("Cleaning up..");
+            ubotCancelToken.cancel();
             Gamemode.cleanup();
             ShopFactory.cleanup();
 
@@ -222,6 +231,10 @@ public class Lavasurvival extends JavaPlugin {
         uuiDs = new GetUUID();
         hide = new CmdHide();
         userManager.readUsers();
+
+        log("Starting UBot");
+        UBot ubot = new UBot(new File("/root/ubot/ls1/Lavasurvival"), new Updater(), new UBotLogger());
+        ubotCancelToken = ubot.startAsync();
     }
 
     private boolean setupEcon() {
@@ -300,5 +313,19 @@ public class Lavasurvival extends JavaPlugin {
 
     public ClassicPhysicsHandler getPhysicsHandler() {
         return physics.getPhysicsHandler();
+    }
+
+    public static void warn(String s) {
+        INSTANCE.getLogger().warning(s);
+    }
+
+    public void changeServer(Player p, String serverName) throws IOException {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        DataOutputStream dos = new DataOutputStream(baos);
+        dos.writeUTF("Connect");
+        dos.writeUTF(serverName);
+        p.sendPluginMessage(this, "BungeeCord", baos.toByteArray());
+        baos.close();
+        dos.close();
     }
 }

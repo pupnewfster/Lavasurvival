@@ -50,6 +50,9 @@ public abstract class Gamemode {
     };
 
     public static final int VOTE_COUNT;
+    private static boolean restart;
+    private static String restartServer;
+
     static {
         if (LavaMap.getPossibleMaps().length == 0)
             VOTE_COUNT = 0;
@@ -135,6 +138,25 @@ public abstract class Gamemode {
 
     private long lastMoneyCheck = System.currentTimeMillis();
     public void start() {
+        if (restart) {
+            for (Player p : Bukkit.getOnlinePlayers()) {
+                try {
+                    Lavasurvival.INSTANCE.changeServer(p, restartServer);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            Bukkit.getScheduler().scheduleSyncDelayedTask(Lavasurvival.INSTANCE, new Runnable() {
+                @Override
+                public void run() {
+                    Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "restart");
+                }
+            });
+
+            return;
+        }
+
         Lavasurvival.log("New game on " + getCurrentWorld().getName());
 
         isEnding = false;
@@ -187,6 +209,8 @@ public abstract class Gamemode {
             }
         };
         tickTask.runTaskTimer(Lavasurvival.INSTANCE, 0, 1);
+
+
     }
 
     private void restoreBackup(World world) {
@@ -731,4 +755,9 @@ public abstract class Gamemode {
     public abstract void addToBonus(double takeOut);
 
     public abstract boolean isRewardDoubled();
+
+    public static void restartNextGame(String serverToJoin) {
+        restart = true;
+        restartServer = serverToJoin;
+    }
 }

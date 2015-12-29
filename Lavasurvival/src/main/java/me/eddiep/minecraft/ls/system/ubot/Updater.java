@@ -1,5 +1,6 @@
 package me.eddiep.minecraft.ls.system.ubot;
 
+import me.eddiep.minecraft.ls.Lavasurvival;
 import me.eddiep.minecraft.ls.game.Gamemode;
 import me.eddiep.ubot.UBot;
 import me.eddiep.ubot.module.UpdateNotifier;
@@ -21,17 +22,13 @@ public class Updater implements UpdateNotifier {
 
     @Override
     public Schedule<UpdateType> shouldPatch(UpdateType updateType, UBot uBot) {
-        return Schedule.when(new Callable<Boolean>() {
-            @Override
-            public Boolean call() throws Exception {
-                return Gamemode.getCurrentGame().hasEnded();
-            }
-        });
+        return Schedule.now();
     }
 
     @Override
     public void patchComplete(UpdateType updateType, UBot uBot) {
-
+        Lavasurvival.log("Update downloaded, restart has been queued");
+        Gamemode.restartNextGame("lobby");
     }
 
     @Override
