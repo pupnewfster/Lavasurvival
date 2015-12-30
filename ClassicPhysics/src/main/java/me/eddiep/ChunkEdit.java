@@ -83,14 +83,21 @@ public class ChunkEdit {
         return y <= highest.getY() ? 0 : getDayLight();
     }
 
-    private int getDayLight() {//TODO: Get light based on time of day
-        return 15;
+    private int getDayLight() {//TODO: Get light more accurately based on time of day and weather
+        long time = this.world.getTime() % 24000;
+        //sunlight 15
+        //sunlight during rain/snow 12
+        //sunlight during thunderstorm 10
+        //moonlight 4
+        if (time > 12000)
+            return 4;
+        else//if (time > 0)
+            return this.world.getWorld().isThundering() ? 10 : 15;
     }
 
     private int getLight(Material type) {
         switch (type) {
-            case BEACON: case ENDER_PORTAL: case FIRE: case GLOWSTONE: case JACK_O_LANTERN: case LAVA: case STATIONARY_LAVA:
-            case REDSTONE_LAMP_ON: case SEA_LANTERN:// case WATER: case STATIONARY_WATER:
+            case BEACON: case ENDER_PORTAL: case FIRE: case GLOWSTONE: case JACK_O_LANTERN: case LAVA: case STATIONARY_LAVA: case REDSTONE_LAMP_ON: case SEA_LANTERN:
                 return 15;
             case TORCH:// case END_ROD:
                 return 14;
