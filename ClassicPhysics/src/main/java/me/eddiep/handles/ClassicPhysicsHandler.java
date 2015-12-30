@@ -206,7 +206,7 @@ public final class ClassicPhysicsHandler implements Listener {
             sendingPackets = true;
             ArrayList<Packet> packets = new ArrayList<>();
             ArrayList<Chunk> chunksToSend = new ArrayList<>();
-            ArrayList<Player> pInC = new ArrayList<>();
+            //ArrayList<Player> pInC = new ArrayList<>();
             for (long l : chunks.keySet()) {
                 if (!sendingPackets)
                     break;
@@ -222,12 +222,12 @@ public final class ClassicPhysicsHandler implements Listener {
                             chunksToSend.clear();
                         }
                         chunksToSend.add(c);
-                        for (org.bukkit.entity.Entity e : world.getChunkAt(x, z).getEntities())
+                        /*for (org.bukkit.entity.Entity e : world.getChunkAt(x, z).getEntities())
                             if (e instanceof Player) {
                                 Player p = (Player) e;
                                 if (!pInC.contains(p))
                                     pInC.add(p);
-                            }
+                            }*/
                     } else if (count.getCount() > 1)
                         packets.add(new PacketPlayOutMultiBlockChange(count.getCount(), count.getChanged(), c));
                     else
@@ -250,21 +250,14 @@ public final class ClassicPhysicsHandler implements Listener {
                     }
                 }
             }
-            if (!pInC.isEmpty()) {
-                for (Player p : Bukkit.getOnlinePlayers()) {
-                    if (p != null)
-                        for (Player x : pInC) {
-                            if (x != null && !p.equals(x) && p.canSee(x)) {
-                                p.hidePlayer(x);
-                                p.showPlayer(x);
-                            }
-                        }
-                }
+            /*if (!pInC.isEmpty()) {
+                for (Player p : pInC)
+                    if (p != null) {
+                        final EntityPlayer ep = ((CraftPlayer) p).getHandle();
+                        ((CraftServer) p.getServer()).getHandle().moveToWorld(ep, ((CraftWorld) p.getWorld()).getHandle().dimension, true, p.getLocation(), false);
+
+                    }
                 pInC.clear();
-            }
-            /*for (Player p : Bukkit.getOnlinePlayers()) {
-                final EntityPlayer ep = ((CraftPlayer) p).getHandle();
-                ((CraftServer) p.getServer()).getHandle().moveToWorld(ep, ((CraftWorld) p.getWorld()).getHandle().dimension, true, p.getLocation(), false);
             }*/
             if (removePrevious)
                 removePrevious = false;
