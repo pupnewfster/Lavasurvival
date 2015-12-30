@@ -15,7 +15,8 @@ import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.craftbukkit.v1_8_R3.CraftWorld;
 import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
-import org.bukkit.entity.*;
+import org.bukkit.entity.FallingBlock;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -205,6 +206,7 @@ public final class ClassicPhysicsHandler implements Listener {
             sendingPackets = true;
             ArrayList<Packet> packets = new ArrayList<>();
             ArrayList<Chunk> chunksToSend = new ArrayList<>();
+            ArrayList<Player> pInC = new ArrayList<>();
             for (long l : chunks.keySet()) {
                 if (!sendingPackets)
                     break;
@@ -220,6 +222,12 @@ public final class ClassicPhysicsHandler implements Listener {
                             chunksToSend.clear();
                         }
                         chunksToSend.add(c);
+                        for (org.bukkit.entity.Entity e : world.getChunkAt(x, z).getEntities())
+                            if (e instanceof Player) {
+                                Player p = (Player) e;
+                                if (!pInC.contains(p))
+                                    pInC.add(p);
+                            }
                     } else if (count.getCount() > 1)
                         packets.add(new PacketPlayOutMultiBlockChange(count.getCount(), count.getChanged(), c));
                     else
@@ -230,10 +238,6 @@ public final class ClassicPhysicsHandler implements Listener {
             if (!chunksToSend.isEmpty())
                 packets.add(new PacketPlayOutMapChunkBulk(chunksToSend));
             chunksToSend.clear();
-            /*for (Player p : Bukkit.getOnlinePlayers()) {
-                EntityPlayer ep = ((CraftPlayer) p).getHandle();
-                packets.add(new PacketPlayOutEntity(ep.getId()));
-            }*/
             for (Player p : Bukkit.getOnlinePlayers()) {
                 if (removePrevious)
                     break;
@@ -246,6 +250,22 @@ public final class ClassicPhysicsHandler implements Listener {
                     }
                 }
             }
+            if (!pInC.isEmpty()) {
+                for (Player p : Bukkit.getOnlinePlayers()) {
+                    if (p != null)
+                        for (Player x : pInC) {
+                            if (x != null && !p.equals(x) && p.canSee(x)) {
+                                p.hidePlayer(x);
+                                p.showPlayer(x);
+                            }
+                        }
+                }
+                pInC.clear();
+            }
+            /*for (Player p : Bukkit.getOnlinePlayers()) {
+                final EntityPlayer ep = ((CraftPlayer) p).getHandle();
+                ((CraftServer) p.getServer()).getHandle().moveToWorld(ep, ((CraftWorld) p.getWorld()).getHandle().dimension, true, p.getLocation(), false);
+            }*/
             if (removePrevious)
                 removePrevious = false;
             sendingPackets = false;

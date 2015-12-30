@@ -2,7 +2,6 @@ package me.eddiep;
 
 
 import net.minecraft.server.v1_8_R3.*;
-import net.minecraft.server.v1_8_R3.Block;
 import org.bukkit.Material;
 
 public class ChunkEdit {
@@ -10,7 +9,6 @@ public class ChunkEdit {
 
     public ChunkEdit(World w) {
         this.world = w;
-
     }
 
     public void setBlock(int x, int y, int z, Material type, byte data) {
@@ -75,11 +73,18 @@ public class ChunkEdit {
     }
 
     private int getSkyLight(int x, int y, int z) {
-        org.bukkit.block.Block highest = y > 0 ? this.world.getWorld().getHighestBlockAt(x, z).getRelative(0, -1, 0) : this.world.getWorld().getBlockAt(x, 0, z);
-        org.bukkit.block.Block oneUp = y < 256 ? this.world.getWorld().getBlockAt(x, y + 1, z) : highest;
-        int sky = oneUp.getLocation().getBlockY() < highest.getLocation().getBlockY() ? highest.getLightFromSky() : oneUp.getLightFromSky();
-        //TODO: make it respect transparency
-        return sky;
+        if (y >= 256)
+            return 15;
+        else if (y < 0)
+            return 0;
+        org.bukkit.block.Block highest = this.world.getWorld().getHighestBlockAt(x, z);
+        while (highest.getY() > 0 && highest.getType().isTransparent())
+            highest = highest.getRelative(0, -1, 0);
+        return y <= highest.getY() ? 0 : getDayLight();
+    }
+
+    private int getDayLight() {//TODO: Get light based on time of day
+        return 15;
     }
 
     private int getLight(Material type) {
