@@ -19,7 +19,8 @@ public abstract class Heal extends LavaItem {
 
         double health = owner.getHealth();
         double healAdd = owner.getMaxHealth() * getPercent();
-        owner.setHealth(health + healAdd);
+        double newHealth = Math.min(health + healAdd, owner.getMaxHealth());
+        owner.setHealth(newHealth);
 
         return true;
     }
