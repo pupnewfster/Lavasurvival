@@ -3,6 +3,7 @@ package me.eddiep;
 
 import net.minecraft.server.v1_8_R3.*;
 import org.bukkit.Material;
+import org.bukkit.block.BlockFace;
 
 public class ChunkEdit {
     public World world;
@@ -60,12 +61,13 @@ public class ChunkEdit {
             c.a(pos, d);
         else
             section.setType(blockX, blockY, blockZ, d);
-        blockLight.a(blockX, blockY, blockZ, getLight(type));//TODO: update light levels slightly around the block so no flickering if near a natural light source such as in cave
+        blockLight.a(blockX, blockY, blockZ, getLight(type));
         skyLight.a(blockX, blockY, blockZ, getSkyLight(x, y, z));
         section.a(blockLight);
         section.b(skyLight);
         sections[chunkY] = section;
         c.a(sections);
+        //lightAround(x, y, z, getLight(type));
     }
 
     public void setBlock(int x, int y, int z, Material type) {
@@ -95,6 +97,42 @@ public class ChunkEdit {
             return this.world.getWorld().isThundering() ? 10 : 15;
     }
 
+    private void lightAround(int x, int y, int z, int lvl) {
+        //TODO: update light levels slightly around the block so no flickering if near a natural light source such as in cave with a radius of more than one
+        for (int xAdd = -1; xAdd < 1; xAdd++) {
+            for (int zAdd = -1; zAdd < 1; zAdd++) {
+                setLight(x + xAdd, y, z + zAdd, light(getDir(xAdd, zAdd), lvl));
+            }
+        }
+    }
+
+    private BlockFace getDir(int x, int z) {
+        if (x == 0 && z == 0)
+            return BlockFace.SELF;
+        else if (x == -1 && z == 0)
+            return BlockFace.WEST;
+        else if (x == 1 && z == 0)
+            return BlockFace.EAST;
+        else if (x == 0 && z == -1)
+            return BlockFace.SOUTH;
+        else if (x == -1 && z == -1)
+            return BlockFace.SOUTH_WEST;
+        else if (x == 1 && z == -1)
+            return BlockFace.SOUTH_EAST;
+        else if (x == 0 && z == 1)
+            return BlockFace.NORTH;
+        else if (x == -1 && z == 1)
+            return BlockFace.NORTH_WEST;
+        else// if (x == 1 && z == 1)
+            return BlockFace.NORTH_EAST;
+    }
+
+    private int light(BlockFace dir, int cur) {
+        if (dir.equals(BlockFace.SELF))
+            return cur;
+         return cur - (dir.equals(BlockFace.NORTH) || dir.equals(BlockFace.EAST) || dir.equals(BlockFace.SOUTH) || dir.equals(BlockFace.WEST) ? 1 : 2);
+    }
+
     private int getLight(Material type) {
         switch (type) {
             case BEACON: case ENDER_PORTAL: case FIRE: case GLOWSTONE: case JACK_O_LANTERN: case LAVA: case STATIONARY_LAVA: case REDSTONE_LAMP_ON: case SEA_LANTERN:
@@ -114,5 +152,55 @@ public class ChunkEdit {
             default:
                 return 0;
         }
+    }
+
+    private void setLight(int x, int y, int z, int value) {
+        int columnX = x >> 4;
+        int columnZ = z >> 4;
+        int chunkY = y >> 4;
+        int blockX = x % 16;
+        int blockY = y % 16;
+        int blockZ = z % 16;
+        if (blockX < 0)
+            blockX += 16;
+        if (blockX > 15) {
+            blockX = blockX % 16;
+            columnX++;
+        }
+        if (blockY < 0)
+            blockY += 16;
+        if (blockY > 15) {
+            blockY = blockY % 16;
+            chunkY++;
+        }
+        if (blockZ < 0)
+            blockZ += 16;
+        if (blockZ > 15) {
+            blockZ = blockZ % 16;
+            columnZ++;
+        }
+        Chunk c = this.world.getChunkAt(columnX, columnZ);
+        ChunkSection[] sections = c.getSections();
+        ChunkSection section = sections[chunkY];
+        if (section == null)
+            section = new ChunkSection(chunkY, true);
+        NibbleArray blockLight;
+        NibbleArray skyLight;
+        try {
+            blockLight = section.getEmittedLightArray();
+        } catch (Exception e) {
+            blockLight = new NibbleArray();
+        }
+        try {
+            skyLight = section.getSkyLightArray();
+        } catch (Exception e) {
+            skyLight = new NibbleArray();
+        }
+        blockLight.a(blockX, blockY, blockZ, value);
+        skyLight.a(blockX, blockY, blockZ, getSkyLight(x, y, z));
+        section.a(blockLight);
+        section.b(skyLight);
+        sections[chunkY] = section;
+        c.a(sections);
     }
 }
