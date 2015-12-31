@@ -711,6 +711,8 @@ public abstract class Gamemode {
         Lavasurvival.INSTANCE.getNecessitiesUserManager().getUser(uuid).setStatus("dead");
         player.setGameMode(GameMode.SPECTATOR);
         Lavasurvival.log(player.getName() + " has joined the dead team.");
+        if (allDead())
+            getCurrentGame().endRound();
     }
 
     public boolean isAlive(Player player) {
@@ -746,6 +748,18 @@ public abstract class Gamemode {
 
     public boolean isInSpawn(Player player) {
         return player != null && (getCurrentMap().isInSafeZone(player.getLocation()) || getCurrentMap().isInSafeZone(player.getEyeLocation()));
+    }
+
+    public boolean allDead() {
+        CmdHide hide = Lavasurvival.INSTANCE.getHide();
+        boolean allDead = Bukkit.getOnlinePlayers().size() != 0;
+        for (Player p : Bukkit.getOnlinePlayers()) {
+            if (isAlive(p) && !hide.isHidden(p)) {
+                allDead = false;
+                break;
+            }
+        }
+        return allDead;
     }
 
     public boolean isEndGame() {
