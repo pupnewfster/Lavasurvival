@@ -8,7 +8,10 @@ import me.eddiep.minecraft.ls.game.items.LavaItem;
 import me.eddiep.minecraft.ls.game.status.PlayerStatusManager;
 import me.eddiep.minecraft.ls.ranks.UserInfo;
 import me.eddiep.minecraft.ls.ranks.UserManager;
+import net.minecraft.server.v1_8_R3.EntityPlayer;
+import net.minecraft.server.v1_8_R3.IChatBaseComponent;
 import net.minecraft.server.v1_8_R3.PacketPlayInClientCommand;
+import net.minecraft.server.v1_8_R3.PacketPlayOutTitle;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
@@ -35,6 +38,7 @@ import org.bukkit.metadata.FixedMetadataValue;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Random;
 
 public class PlayerListener implements Listener {
     public final ArrayList<Material> invalidBlocks = new ArrayList<>(Arrays.asList(new Material[]{
@@ -47,6 +51,7 @@ public class PlayerListener implements Listener {
             Material.BARRIER
     }));
     private final UserManager um = Lavasurvival.INSTANCE.getUserManager();
+    private Random rand = new Random();
     public boolean survival = false;
 
     @EventHandler(priority = EventPriority.LOWEST)
@@ -325,6 +330,8 @@ public class PlayerListener implements Listener {
             }
     }
 
+
+    private static String[] deathMessages = new String[]{"§c§lWasted!", "§a§lBetter luck next time!", "§c§lYou died!", "§c§lrip."};
     @EventHandler(priority = EventPriority.HIGHEST)
     public void playerDeath(PlayerDeathEvent event) {
         if (Gamemode.getCurrentGame() != null) {
@@ -337,7 +344,12 @@ public class PlayerListener implements Listener {
             Bukkit.getScheduler().scheduleSyncDelayedTask(Lavasurvival.INSTANCE, new Runnable() {
                 @Override
                 public void run() {
-                    ((CraftPlayer) p).getHandle().playerConnection.a(new PacketPlayInClientCommand(PacketPlayInClientCommand.EnumClientCommand.PERFORM_RESPAWN));
+                    EntityPlayer ep = ((CraftPlayer) p).getHandle();
+                    IChatBaseComponent titleJSON = IChatBaseComponent.ChatSerializer.a("{'text': '" + deathMessages[rand.nextInt(deathMessages.length)] + "'}");
+                    IChatBaseComponent subtitleJSON = IChatBaseComponent.ChatSerializer.a("{'text': '§6lease wait for the next round to start!'}");
+                    ep.playerConnection.a(new PacketPlayInClientCommand(PacketPlayInClientCommand.EnumClientCommand.PERFORM_RESPAWN));
+                    ep.playerConnection.sendPacket(new PacketPlayOutTitle(PacketPlayOutTitle.EnumTitleAction.TITLE, titleJSON, 0, 60, 0));
+                    ep.playerConnection.sendPacket(new PacketPlayOutTitle(PacketPlayOutTitle.EnumTitleAction.SUBTITLE, subtitleJSON));
                     p.teleport(Gamemode.getCurrentWorld().getSpawnLocation());
                 }
             }, 1);
