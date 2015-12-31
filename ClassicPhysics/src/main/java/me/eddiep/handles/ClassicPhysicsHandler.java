@@ -205,8 +205,7 @@ public final class ClassicPhysicsHandler implements Listener {
                 return;
             sendingPackets = true;
             ArrayList<Packet> packets = new ArrayList<>();
-            ArrayList<Chunk> chunksToSend = new ArrayList<>();
-            //ArrayList<Player> pInC = new ArrayList<>();
+            //ArrayList<Chunk> chunksToSend = new ArrayList<>();
             for (long l : chunks.keySet()) {
                 if (!sendingPackets)
                     break;
@@ -217,17 +216,12 @@ public final class ClassicPhysicsHandler implements Listener {
                     net.minecraft.server.v1_8_R3.World w = ((CraftWorld) world).getHandle();
                     Chunk c = w.getChunkAt(x, z);
                     if (count.getCount() >= 64) {
-                        if (chunksToSend.size() > 10) {
+                        world.refreshChunk(x, z);
+                        /*if (chunksToSend.size() > 10) {
                             packets.add(new PacketPlayOutMapChunkBulk(chunksToSend));
                             chunksToSend.clear();
                         }
-                        chunksToSend.add(c);
-                        /*for (org.bukkit.entity.Entity e : world.getChunkAt(x, z).getEntities())
-                            if (e instanceof Player) {
-                                Player p = (Player) e;
-                                if (!pInC.contains(p))
-                                    pInC.add(p);
-                            }*/
+                        chunksToSend.add(c);*/
                     } else if (count.getCount() > 1)
                         packets.add(new PacketPlayOutMultiBlockChange(count.getCount(), count.getChanged(), c));
                     else
@@ -235,9 +229,9 @@ public final class ClassicPhysicsHandler implements Listener {
                 }
                 chunks.remove(l);
             }
-            if (!chunksToSend.isEmpty())
+            /*if (!chunksToSend.isEmpty())
                 packets.add(new PacketPlayOutMapChunkBulk(chunksToSend));
-            chunksToSend.clear();
+            chunksToSend.clear();*/
             for (Player p : Bukkit.getOnlinePlayers()) {
                 if (removePrevious)
                     break;
@@ -250,15 +244,6 @@ public final class ClassicPhysicsHandler implements Listener {
                     }
                 }
             }
-            /*if (!pInC.isEmpty()) {
-                for (Player p : pInC)
-                    if (p != null) {
-                        final EntityPlayer ep = ((CraftPlayer) p).getHandle();
-                        ((CraftServer) p.getServer()).getHandle().moveToWorld(ep, ((CraftWorld) p.getWorld()).getHandle().dimension, true, p.getLocation(), false);
-
-                    }
-                pInC.clear();
-            }*/
             if (removePrevious)
                 removePrevious = false;
             sendingPackets = false;

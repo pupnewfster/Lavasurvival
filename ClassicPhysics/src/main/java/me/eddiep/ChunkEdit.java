@@ -57,10 +57,10 @@ public class ChunkEdit {
         BlockPosition pos = new BlockPosition(x, y, z);
         TileEntity tileEntity = this.world.getTileEntity(pos);
         if (tileEntity != null)
-            c.a(new BlockPosition(x, y, z), d);
+            c.a(pos, d);
         else
             section.setType(blockX, blockY, blockZ, d);
-        blockLight.a(blockX, blockY, blockZ, getLight(type));
+        blockLight.a(blockX, blockY, blockZ, getLight(type));//TODO: update light levels slightly around the block so no flickering if near a natural light source such as in cave
         skyLight.a(blockX, blockY, blockZ, getSkyLight(x, y, z));
         section.a(blockLight);
         section.b(skyLight);
