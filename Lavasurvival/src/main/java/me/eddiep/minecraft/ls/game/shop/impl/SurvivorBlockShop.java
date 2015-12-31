@@ -20,7 +20,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.Arrays;
 
-@MenuInventory(slots = 18, name = "Survivor Block Shop")
+@MenuInventory(slots = 36, name = "Survivor Block Shop")
 public class SurvivorBlockShop extends Menu {
     public SurvivorBlockShop(MenuManager manager, Inventory inv) {
         super(manager, inv);
@@ -133,6 +133,150 @@ public class SurvivorBlockShop extends Menu {
             getUser(player).buyBlock(Material.QUARTZ_BLOCK, price(Material.QUARTZ_BLOCK), (byte) 2);
     }
 
+    @MenuItem(
+            slot = 12,
+            item = @ItemStackAnnotation(material = Material.WOOL, durability = 0, name = "")
+    )
+    public void buyWhiteWool(MenuPlayer player) {
+        if (canBuy(player))
+            getUser(player).buyBlock(Material.WOOL, price(Material.WOOL), (byte) 0);
+    }
+
+    @MenuItem(
+            slot = 13,
+            item = @ItemStackAnnotation(material = Material.WOOL, durability = 1, name = "")
+    )
+    public void buyOrangeWool(MenuPlayer player) {
+        if (canBuy(player))
+            getUser(player).buyBlock(Material.WOOL, price(Material.WOOL), (byte) 1);
+    }
+
+    @MenuItem(
+            slot = 14,
+            item = @ItemStackAnnotation(material = Material.WOOL, durability = 2, name = "")
+    )
+    public void buyMagentaWool(MenuPlayer player) {
+        if (canBuy(player))
+            getUser(player).buyBlock(Material.WOOL, price(Material.WOOL), (byte) 2);
+    }
+
+    @MenuItem(
+            slot = 15,
+            item = @ItemStackAnnotation(material = Material.WOOL, durability = 3, name = "")
+    )
+    public void buyLightBlueWool(MenuPlayer player) {
+        if (canBuy(player))
+            getUser(player).buyBlock(Material.WOOL, price(Material.WOOL), (byte) 3);
+    }
+
+    @MenuItem(
+            slot = 16,
+            item = @ItemStackAnnotation(material = Material.WOOL, durability = 4, name = "")
+    )
+    public void buyYellowWool(MenuPlayer player) {
+        if (canBuy(player))
+            getUser(player).buyBlock(Material.WOOL, price(Material.WOOL), (byte) 4);
+    }
+
+    @MenuItem(
+            slot = 17,
+            item = @ItemStackAnnotation(material = Material.WOOL, durability = 5, name = "")
+    )
+    public void buyLimeWool(MenuPlayer player) {
+        if (canBuy(player))
+            getUser(player).buyBlock(Material.WOOL, price(Material.WOOL), (byte) 5);
+    }
+
+    @MenuItem(
+            slot = 18,
+            item = @ItemStackAnnotation(material = Material.WOOL, durability = 6, name = "")
+    )
+    public void buyPinkWool(MenuPlayer player) {
+        if (canBuy(player))
+            getUser(player).buyBlock(Material.WOOL, price(Material.WOOL), (byte) 6);
+    }
+
+    @MenuItem(
+            slot = 19,
+            item = @ItemStackAnnotation(material = Material.WOOL, durability = 7, name = "")
+    )
+    public void buyGrayWool(MenuPlayer player) {
+        if (canBuy(player))
+            getUser(player).buyBlock(Material.WOOL, price(Material.WOOL), (byte) 7);
+    }
+
+    @MenuItem(
+            slot = 20,
+            item = @ItemStackAnnotation(material = Material.WOOL, durability = 8, name = "")
+    )
+    public void buyLightGrayWool(MenuPlayer player) {
+        if (canBuy(player))
+            getUser(player).buyBlock(Material.WOOL, price(Material.WOOL), (byte) 8);
+    }
+
+    @MenuItem(
+            slot = 21,
+            item = @ItemStackAnnotation(material = Material.WOOL, durability = 9, name = "")
+    )
+    public void buyCyanWool(MenuPlayer player) {
+        if (canBuy(player))
+            getUser(player).buyBlock(Material.WOOL, price(Material.WOOL), (byte) 9);
+    }
+
+    @MenuItem(
+            slot = 22,
+            item = @ItemStackAnnotation(material = Material.WOOL, durability = 10, name = "")
+    )
+    public void buyPurpleWool(MenuPlayer player) {
+        if (canBuy(player))
+            getUser(player).buyBlock(Material.WOOL, price(Material.WOOL), (byte) 10);
+    }
+
+    @MenuItem(
+            slot = 23,
+            item = @ItemStackAnnotation(material = Material.WOOL, durability = 11, name = "")
+    )
+    public void buyBlueWool(MenuPlayer player) {
+        if (canBuy(player))
+            getUser(player).buyBlock(Material.WOOL, price(Material.WOOL), (byte) 11);
+    }
+
+    @MenuItem(
+            slot = 24,
+            item = @ItemStackAnnotation(material = Material.WOOL, durability = 12, name = "")
+    )
+    public void buyBrownWool(MenuPlayer player) {
+        if (canBuy(player))
+            getUser(player).buyBlock(Material.WOOL, price(Material.WOOL), (byte) 12);
+    }
+
+    @MenuItem(
+            slot = 25,
+            item = @ItemStackAnnotation(material = Material.WOOL, durability = 13, name = "")
+    )
+    public void buyGreenWool(MenuPlayer player) {
+        if (canBuy(player))
+            getUser(player).buyBlock(Material.WOOL, price(Material.WOOL), (byte) 13);
+    }
+
+    @MenuItem(
+            slot = 26,
+            item = @ItemStackAnnotation(material = Material.WOOL, durability = 14, name = "")
+    )
+    public void buyRedWool(MenuPlayer player) {
+        if (canBuy(player))
+            getUser(player).buyBlock(Material.WOOL, price(Material.WOOL), (byte) 14);
+    }
+
+    @MenuItem(
+            slot = 27,
+            item = @ItemStackAnnotation(material = Material.WOOL, durability = 15, name = "")
+    )
+    public void buyBlackWool(MenuPlayer player) {
+        if (canBuy(player))
+            getUser(player).buyBlock(Material.WOOL, price(Material.WOOL), (byte) 15);
+    }
+
     private UserInfo getUser(MenuPlayer player) {
         return Lavasurvival.INSTANCE.getUserManager().getUser(player.getBukkit().getUniqueId());
     }
@@ -189,6 +333,8 @@ public class SurvivorBlockShop extends Menu {
                 return 600;
             case QUARTZ_BLOCK:
                 return 1750;
+            case WOOL:
+                return 1500;
             default:
                 return 0;
         }

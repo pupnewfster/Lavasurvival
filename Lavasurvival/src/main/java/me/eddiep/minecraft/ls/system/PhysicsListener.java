@@ -112,9 +112,6 @@ public class PhysicsListener implements Listener {
         ticksToMelt.put(new MaterialData(Material.MOSSY_COBBLESTONE), 150 * 20);
         ticksToMelt.put(new MaterialData(Material.SMOOTH_BRICK, (byte) 2), 120 * 20);//Cracked stone brick
         ticksToMelt.put(new MaterialData(Material.GLASS), 150 * 20);
-        ticksToMelt.put(new MaterialData(Material.QUARTZ_BLOCK, (byte) 0), 150 * 20);
-        ticksToMelt.put(new MaterialData(Material.QUARTZ_BLOCK, (byte) 1), 150 * 20);
-        ticksToMelt.put(new MaterialData(Material.QUARTZ_BLOCK, (byte) 2), 150 * 20);
 
         //Survivor blocks
         ticksToMelt.put(new MaterialData(Material.PACKED_ICE), 30 * 20);
@@ -125,6 +122,25 @@ public class PhysicsListener implements Listener {
         ticksToMelt.put(new MaterialData(Material.IRON_BLOCK), 180 * 20);
         ticksToMelt.put(new MaterialData(Material.LADDER), 30 * 20);
         ticksToMelt.put(new MaterialData(Material.ICE), 10 * 20);
+        ticksToMelt.put(new MaterialData(Material.QUARTZ_BLOCK, (byte) 0), 150 * 20);
+        ticksToMelt.put(new MaterialData(Material.QUARTZ_BLOCK, (byte) 1), 150 * 20);
+        ticksToMelt.put(new MaterialData(Material.QUARTZ_BLOCK, (byte) 2), 150 * 20);
+        ticksToMelt.put(new MaterialData(Material.WOOL, (byte) 0), 20 * 20);//White wool
+        ticksToMelt.put(new MaterialData(Material.WOOL, (byte) 1), 20 * 20);//Orange wool
+        ticksToMelt.put(new MaterialData(Material.WOOL, (byte) 2), 20 * 20);//Magenta wool
+        ticksToMelt.put(new MaterialData(Material.WOOL, (byte) 3), 20 * 20);//Light blue wool
+        ticksToMelt.put(new MaterialData(Material.WOOL, (byte) 4), 20 * 20);//Yellow wool
+        ticksToMelt.put(new MaterialData(Material.WOOL, (byte) 5), 20 * 20);//Lime wool
+        ticksToMelt.put(new MaterialData(Material.WOOL, (byte) 6), 20 * 20);//Pink wool
+        ticksToMelt.put(new MaterialData(Material.WOOL, (byte) 7), 20 * 20);//Gray wool
+        ticksToMelt.put(new MaterialData(Material.WOOL, (byte) 8), 20 * 20);//Light gray wool
+        ticksToMelt.put(new MaterialData(Material.WOOL, (byte) 9), 20 * 20);//Cyan wool
+        ticksToMelt.put(new MaterialData(Material.WOOL, (byte) 10), 20 * 20);//Purple wool
+        ticksToMelt.put(new MaterialData(Material.WOOL, (byte) 11), 20 * 20);//Blue wool
+        ticksToMelt.put(new MaterialData(Material.WOOL, (byte) 12), 20 * 20);//Brown wool
+        ticksToMelt.put(new MaterialData(Material.WOOL, (byte) 13), 20 * 20);//Green wool
+        ticksToMelt.put(new MaterialData(Material.WOOL, (byte) 14), 20 * 20);//Red wool
+        ticksToMelt.put(new MaterialData(Material.WOOL, (byte) 15), 20 * 20);//Black wool
 
         //Trusted blocks
         ticksToMelt.put(new MaterialData(Material.WOOD_DOOR), 30 * 20);
