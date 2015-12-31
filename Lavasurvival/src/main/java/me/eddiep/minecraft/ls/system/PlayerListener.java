@@ -8,9 +8,11 @@ import me.eddiep.minecraft.ls.game.items.LavaItem;
 import me.eddiep.minecraft.ls.game.status.PlayerStatusManager;
 import me.eddiep.minecraft.ls.ranks.UserInfo;
 import me.eddiep.minecraft.ls.ranks.UserManager;
+import net.minecraft.server.v1_8_R3.PacketPlayInClientCommand;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
+import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -329,16 +331,17 @@ public class PlayerListener implements Listener {
             Gamemode.getCurrentGame().setDead(event.getEntity());
             UserInfo u = um.getUser(event.getEntity().getUniqueId());
             u.setInWater(false);
+            event.getDrops().clear();
+            event.setDroppedExp(0);
+            final Player p = event.getEntity();
+            Bukkit.getScheduler().scheduleSyncDelayedTask(Lavasurvival.INSTANCE, new Runnable() {
+                @Override
+                public void run() {
+                    ((CraftPlayer) p).getHandle().playerConnection.a(new PacketPlayInClientCommand(PacketPlayInClientCommand.EnumClientCommand.PERFORM_RESPAWN));
+                    p.teleport(Gamemode.getCurrentWorld().getSpawnLocation());
+                }
+            }, 1);
         }
-        event.getEntity().getInventory().clear();
-        event.getDrops().clear();
-        event.setDroppedExp(0);
-    }
-
-    @EventHandler(priority = EventPriority.HIGHEST)
-    public void onRespawn(PlayerRespawnEvent event) {
-        if (Gamemode.getCurrentGame() != null)
-            event.setRespawnLocation(Gamemode.getCurrentWorld().getSpawnLocation());
     }
 
     public void cleanup() {
