@@ -346,7 +346,7 @@ public class PlayerListener implements Listener {
                 public void run() {
                     EntityPlayer ep = ((CraftPlayer) p).getHandle();
                     IChatBaseComponent titleJSON = IChatBaseComponent.ChatSerializer.a("{'text': '" + deathMessages[rand.nextInt(deathMessages.length)] + "'}");
-                    IChatBaseComponent subtitleJSON = IChatBaseComponent.ChatSerializer.a("{'text': '§6lease wait for the next round to start!'}");
+                    IChatBaseComponent subtitleJSON = IChatBaseComponent.ChatSerializer.a("{'text': '§6please wait for the next round to start!'}");
                     ep.playerConnection.a(new PacketPlayInClientCommand(PacketPlayInClientCommand.EnumClientCommand.PERFORM_RESPAWN));
                     ep.playerConnection.sendPacket(new PacketPlayOutTitle(PacketPlayOutTitle.EnumTitleAction.TITLE, titleJSON, 0, 60, 0));
                     ep.playerConnection.sendPacket(new PacketPlayOutTitle(PacketPlayOutTitle.EnumTitleAction.SUBTITLE, subtitleJSON));
