@@ -200,6 +200,14 @@ public class PlayerListener implements Listener {
             event.setCancelled(true);
     }
 
+    @EventHandler(priority = EventPriority.HIGHEST)
+    public void pickupItem(PlayerPickupItemEvent event) {//Stops items from being picked up if they somehow drop
+        if (!survival) {
+            event.getItem().remove();//Remove the dropped item
+            event.setCancelled(true);
+        }
+    }
+
     @EventHandler(priority = EventPriority.MONITOR)
     public void itemConsumed(PlayerItemConsumeEvent event) {
         ItemStack itemStack = event.getItem();
@@ -346,7 +354,7 @@ public class PlayerListener implements Listener {
                 public void run() {
                     EntityPlayer ep = ((CraftPlayer) p).getHandle();
                     IChatBaseComponent titleJSON = IChatBaseComponent.ChatSerializer.a("{'text': '" + deathMessages[rand.nextInt(deathMessages.length)] + "'}");
-                    IChatBaseComponent subtitleJSON = IChatBaseComponent.ChatSerializer.a("{'text': '§6please wait for the next round to start!'}");
+                    IChatBaseComponent subtitleJSON = IChatBaseComponent.ChatSerializer.a("{'text': '§6Please wait for the next round to start!'}");
                     ep.playerConnection.a(new PacketPlayInClientCommand(PacketPlayInClientCommand.EnumClientCommand.PERFORM_RESPAWN));
                     ep.playerConnection.sendPacket(new PacketPlayOutTitle(PacketPlayOutTitle.EnumTitleAction.TITLE, titleJSON, 0, 60, 0));
                     ep.playerConnection.sendPacket(new PacketPlayOutTitle(PacketPlayOutTitle.EnumTitleAction.SUBTITLE, subtitleJSON));
