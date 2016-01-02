@@ -87,7 +87,7 @@ public class Necessities extends JavaPlugin {
     }
 
     public void removePlayer(Player p) {
-        if (this.protocolManager != null)
+        if (isProtocolLibLoaded())
             try {
                 PacketContainer tabList = this.protocolManager.createPacket(PacketType.Play.Server.PLAYER_INFO, true);
                 StructureModifier<List<PlayerInfoData>> infoData = tabList.getPlayerInfoDataLists();
@@ -105,7 +105,7 @@ public class Necessities extends JavaPlugin {
     }
 
     public void addPlayer(Player p) {
-        if (this.protocolManager != null)
+        if (isProtocolLibLoaded())
             try {
                 PacketContainer tabList = this.protocolManager.createPacket(PacketType.Play.Server.PLAYER_INFO, true);
                 StructureModifier<List<PlayerInfoData>> infoData = tabList.getPlayerInfoDataLists();
@@ -126,7 +126,7 @@ public class Necessities extends JavaPlugin {
     }
 
     public void updateName(Player p) {
-        if (this.protocolManager != null)
+        if (isProtocolLibLoaded())
             try {
                 PacketContainer tabList = this.protocolManager.createPacket(PacketType.Play.Server.PLAYER_INFO, true);
                 StructureModifier<List<PlayerInfoData>> infoData = tabList.getPlayerInfoDataLists();
@@ -145,7 +145,7 @@ public class Necessities extends JavaPlugin {
     }
 
     public void updateAll(Player x) {
-        if (this.protocolManager != null)
+        if (isProtocolLibLoaded())
             try {
                 PacketContainer tabList = this.protocolManager.createPacket(PacketType.Play.Server.PLAYER_INFO, true);
                 StructureModifier<List<PlayerInfoData>> infoData = tabList.getPlayerInfoDataLists();
@@ -165,7 +165,7 @@ public class Necessities extends JavaPlugin {
     }
 
     public void addJanet(Player p) {
-        if (this.protocolManager != null)
+        if (isProtocolLibLoaded())
             try {
                 PacketContainer tabList = this.protocolManager.createPacket(PacketType.Play.Server.PLAYER_INFO, true);
                 StructureModifier<List<PlayerInfoData>> infoData = tabList.getPlayerInfoDataLists();
@@ -187,7 +187,7 @@ public class Necessities extends JavaPlugin {
     }
 
     public void refreshJanet(Player p) {
-        if (this.protocolManager != null)
+        if (isProtocolLibLoaded())
             try {
                 PacketContainer tabList = this.protocolManager.createPacket(PacketType.Play.Server.PLAYER_INFO, true);
                 StructureModifier<List<PlayerInfoData>> infoData = tabList.getPlayerInfoDataLists();
@@ -209,7 +209,7 @@ public class Necessities extends JavaPlugin {
     }
 
     public void addHeader(Player p) {
-        if (this.protocolManager != null)
+        if (isProtocolLibLoaded())
             try {
                 PacketContainer tabList = this.protocolManager.createPacket(PacketType.Play.Server.PLAYER_LIST_HEADER_FOOTER);
                 StructureModifier<WrappedChatComponent> chatStuff = tabList.getChatComponents();

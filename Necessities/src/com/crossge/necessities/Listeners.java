@@ -209,16 +209,13 @@ public class Listeners implements Listener {
             Bukkit.getConsoleSender().sendMessage(status + e.getFormat().replaceAll("\\{MESSAGE\\}", "") + e.getMessage());
         }
         e.setCancelled(true);
-        if (config.contains("Necessities.AI") && config.getBoolean("Necessities.AI") && !isop)
-            try {
-                Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(Necessities.getInstance(), new Runnable() {
-                    @Override
-                    public void run() {
-                        ai.parseMessage(uuid, message);
-                    }
-                });
-            } catch (Exception er) {
-            }
+        if (config.contains("Necessities.AI") && config.getBoolean("Necessities.AI") && (!isop || message.startsWith("!")))
+            Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(Necessities.getInstance(), new Runnable() {
+                @Override
+                public void run() {
+                    ai.parseMessage(uuid, message);
+                }
+            });
     }
 
     @EventHandler
@@ -239,7 +236,10 @@ public class Listeners implements Listener {
             e.setMessage(message);
             YamlConfiguration config = YamlConfiguration.loadConfiguration(configFile);
             if (config.contains("Necessities.customDeny") && config.getBoolean("Necessities.customDeny")) {
-                PluginCommand pc = Bukkit.getPluginCommand(e.getMessage().split(" ")[0].replaceFirst("/", ""));
+                PluginCommand pc = null;
+                try {
+                    pc = Bukkit.getPluginCommand(e.getMessage().split(" ")[0].replaceFirst("/", ""));
+                } catch (Exception er) {}//Invalid command
                 if (pc != null && !pc.testPermissionSilent(player)) {
                     player.sendMessage(var.getEr() + "Error: " + var.getErMsg() + "You do not have permission to perform this command.");
                     e.setCancelled(true);

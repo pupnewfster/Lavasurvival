@@ -95,7 +95,7 @@ public class PlayerListener implements Listener {
     public void blockBreak(BlockBreakEvent event) {
         if (Lavasurvival.INSTANCE.getSetups().containsKey(event.getPlayer().getUniqueId()))
             return;
-        if(!event.getPlayer().getGameMode().equals(GameMode.CREATIVE))//Allows players in creative to edit maps
+        if (!event.getPlayer().getGameMode().equals(GameMode.CREATIVE))//Allows players in creative to edit maps
             event.setCancelled(true);
         Material material = event.getBlock().getType();
         if (invalidBlocks.contains(material) || (Gamemode.getCurrentGame() != null && Gamemode.getCurrentGame().isAlive(event.getPlayer())))
@@ -110,14 +110,13 @@ public class PlayerListener implements Listener {
             event.setCancelled(true);
             return;
         }
-
-        if(event.getEntity() instanceof Player && !survival && Gamemode.getCurrentGame() != null &&
-                Gamemode.getCurrentGame().isAlive((Player) event.getEntity()) && (event.getCause().equals(EntityDamageEvent.DamageCause.FIRE_TICK) ||
-                event.getCause().equals(EntityDamageEvent.DamageCause.FIRE) || event.getCause().equals(EntityDamageEvent.DamageCause.FALL) ||
-                event.getCause().equals(EntityDamageEvent.DamageCause.ENTITY_ATTACK) || event.getCause().equals(EntityDamageEvent.DamageCause.FALLING_BLOCK) ||
-                event.getCause().equals(EntityDamageEvent.DamageCause.CONTACT)))
+        //Should we just cancel all damage instead? Because we damage them ourselves anyways to keep damage amount consistent
+        if (!survival && event.getEntity() instanceof Player && Gamemode.getCurrentGame() != null && Gamemode.getCurrentGame().isAlive((Player) event.getEntity()) &&
+                (event.getCause().equals(EntityDamageEvent.DamageCause.FIRE_TICK) || event.getCause().equals(EntityDamageEvent.DamageCause.FIRE) ||
+                        event.getCause().equals(EntityDamageEvent.DamageCause.FALL) || event.getCause().equals(EntityDamageEvent.DamageCause.ENTITY_ATTACK) ||
+                        event.getCause().equals(EntityDamageEvent.DamageCause.FALLING_BLOCK) || event.getCause().equals(EntityDamageEvent.DamageCause.CONTACT)))
             event.setCancelled(true);
-        else if (event.getEntity() instanceof Player && !survival && Gamemode.getCurrentGame() != null && Gamemode.getCurrentGame().isAlive((Player) event.getEntity()) &&
+        else if (!survival && event.getEntity() instanceof Player && Gamemode.getCurrentGame() != null && Gamemode.getCurrentGame().isAlive((Player) event.getEntity()) &&
                 event.getCause().equals(EntityDamageEvent.DamageCause.LAVA)) {
             ((Player) event.getEntity()).damage(Gamemode.DAMAGE);
             event.setCancelled(true);
@@ -130,6 +129,8 @@ public class PlayerListener implements Listener {
             return;
         if ((event.getAction().equals(Action.RIGHT_CLICK_BLOCK) || event.getAction().equals(Action.RIGHT_CLICK_AIR)) && event.getItem() != null && event.getItem().getType().equals(Material.WRITTEN_BOOK))
             return;//Allow players to read the rule book
+        if (event.getPlayer().getGameMode().equals(GameMode.CREATIVE))//Allows players in creative to edit maps without being warned if they are too high
+            return;
         if (Gamemode.getCurrentGame() != null && Gamemode.getCurrentGame().isDead(event.getPlayer()))
             event.setCancelled(true);
         else if (Gamemode.getCurrentGame() != null && Gamemode.getCurrentGame().isAlive(event.getPlayer())) {
@@ -138,7 +139,7 @@ public class PlayerListener implements Listener {
                 if (invalidBlocks.contains(block.getType()))
                     return;
                 if (block.getLocation().getBlockY() >= Gamemode.getCurrentMap().getLavaY()) {
-                    event.getPlayer().sendMessage(ChatColor.RED + "" + ChatColor.BOLD + "You are building to high!");
+                    event.getPlayer().sendMessage(ChatColor.RED + "" + ChatColor.BOLD + "You are building too high!");
                     return;
                 }
                 if (Gamemode.getCurrentMap().isInSafeZone(block.getLocation())) {
@@ -196,7 +197,7 @@ public class PlayerListener implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void dropItem(PlayerDropItemEvent event) {
-        if(!survival)
+        if (!survival)
             event.setCancelled(true);
     }
 
@@ -227,14 +228,14 @@ public class PlayerListener implements Listener {
     public void blockPlace(BlockPlaceEvent event) {
         if (event.getPlayer() == null || Lavasurvival.INSTANCE.getSetups().containsKey(event.getPlayer().getUniqueId()))
             return;
-        if(event.getPlayer().getGameMode().equals(GameMode.CREATIVE))//Allows players in creative to edit maps
+        if (event.getPlayer().getGameMode().equals(GameMode.CREATIVE))//Allows players in creative to edit maps
             return;
         if (Gamemode.getCurrentGame() != null && Gamemode.getCurrentGame().isAlive(event.getPlayer()) &&
                 ((event.getBlock().getType().equals(Material.WOODEN_DOOR) && event.getPlayer().getInventory().contains(Material.WOOD_DOOR)) ||
                 event.getPlayer().getInventory().contains(event.getBlock().getType()) || event.getPlayer().getInventory().contains(Material.getMaterial(event.getBlock().getType().toString() + "_ITEM")) ||
                         event.getPlayer().getInventory().contains(Material.getMaterial(event.getBlock().getType().toString().replaceAll("DOOR_BLOCK", "DOOR"))))) {
             if (event.getBlock().getLocation().getBlockY() >= Gamemode.getCurrentMap().getLavaY()) {
-                event.getPlayer().sendMessage(ChatColor.RED + "" + ChatColor.BOLD + "You are building to high!");
+                event.getPlayer().sendMessage(ChatColor.RED + "" + ChatColor.BOLD + "You are building too high!");
                 event.setBuild(false);
                 return;
             }
@@ -298,7 +299,7 @@ public class PlayerListener implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void healthRegen(EntityRegainHealthEvent event) {
-        if (event.getEntity() instanceof Player && !survival)
+        if (!survival && event.getEntity() instanceof Player)
             event.setCancelled(true);
     }
 
@@ -308,7 +309,7 @@ public class PlayerListener implements Listener {
         boolean locationChanged = Math.abs(from.getX() - to.getX()) > 0.1 || Math.abs(from.getY() - to.getY()) > 0.1 || Math.abs(from.getZ() - to.getZ()) > 0.1;
         if (locationChanged && Gamemode.getCurrentGame() != null && Gamemode.DAMAGE != 0 && Gamemode.getCurrentGame().isAlive(event.getPlayer())) {
             UserInfo u = um.getUser(event.getPlayer().getUniqueId());
-            if(((to.getBlock().getType().equals(Material.WATER) || to.getBlock().getType().equals(Material.STATIONARY_WATER)) && to.getBlock().hasMetadata("classic_block")) ||
+            if (((to.getBlock().getType().equals(Material.WATER) || to.getBlock().getType().equals(Material.STATIONARY_WATER)) && to.getBlock().hasMetadata("classic_block")) ||
                 ((to.getBlock().getRelative(BlockFace.UP).getType().equals(Material.WATER) || to.getBlock().getRelative(BlockFace.UP).getType().equals(Material.STATIONARY_WATER)) &&
                 to.getBlock().getRelative(BlockFace.UP).hasMetadata("classic_block"))) {
                 if (!u.isInWater()) {
@@ -340,6 +341,7 @@ public class PlayerListener implements Listener {
 
 
     private static String[] deathMessages = new String[]{"§c§lWasted!", "§a§lBetter luck next time!", "§c§lYou died!", "§c§lrip."};
+    private static final IChatBaseComponent subtitleJSON = IChatBaseComponent.ChatSerializer.a("{'text': '§6Please wait for the next round to start!'}");
     @EventHandler(priority = EventPriority.HIGHEST)
     public void playerDeath(PlayerDeathEvent event) {
         if (Gamemode.getCurrentGame() != null) {
@@ -349,12 +351,11 @@ public class PlayerListener implements Listener {
             event.getDrops().clear();
             event.setDroppedExp(0);
             final Player p = event.getEntity();
+            final IChatBaseComponent titleJSON = IChatBaseComponent.ChatSerializer.a("{'text': '" + deathMessages[rand.nextInt(deathMessages.length)] + "'}");
             Bukkit.getScheduler().scheduleSyncDelayedTask(Lavasurvival.INSTANCE, new Runnable() {
                 @Override
                 public void run() {
                     EntityPlayer ep = ((CraftPlayer) p).getHandle();
-                    IChatBaseComponent titleJSON = IChatBaseComponent.ChatSerializer.a("{'text': '" + deathMessages[rand.nextInt(deathMessages.length)] + "'}");
-                    IChatBaseComponent subtitleJSON = IChatBaseComponent.ChatSerializer.a("{'text': '§6Please wait for the next round to start!'}");
                     ep.playerConnection.a(new PacketPlayInClientCommand(PacketPlayInClientCommand.EnumClientCommand.PERFORM_RESPAWN));
                     ep.playerConnection.sendPacket(new PacketPlayOutTitle(PacketPlayOutTitle.EnumTitleAction.TITLE, titleJSON, 0, 60, 0));
                     ep.playerConnection.sendPacket(new PacketPlayOutTitle(PacketPlayOutTitle.EnumTitleAction.SUBTITLE, subtitleJSON));
