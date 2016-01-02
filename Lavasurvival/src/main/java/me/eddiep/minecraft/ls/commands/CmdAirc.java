@@ -17,7 +17,7 @@ public class CmdAirc extends Cmd {
                 return true;
             }
 
-            int count = game.countAirBlocksAround(player, 20);
+            int count = game.countAirBlocksAround(player, 10);
             player.sendMessage("You have " + count + " air blocks around you!");
         } else
             sender.sendMessage(ChatColor.DARK_RED + "This command can only be used in game..");

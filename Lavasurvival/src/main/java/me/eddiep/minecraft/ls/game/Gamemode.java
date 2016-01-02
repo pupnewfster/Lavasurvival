@@ -21,6 +21,7 @@ import net.minecraft.server.v1_8_R3.IChatBaseComponent;
 import net.minecraft.server.v1_8_R3.PacketPlayOutTitle;
 import org.bukkit.*;
 import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
 import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
@@ -248,10 +249,74 @@ public abstract class Gamemode {
     protected abstract double calculateReward(Player player, int blockCount);
 
     public int countAirBlocksAround(Player player, int limit) {
-        return airBlocksAround(player.getLocation(), player.getLocation(), limit, new ArrayList<Block>());
+        return airBlocksAround(player.getLocation(), limit);
     }
 
-    protected int airBlocksAround(Location original, Location location, int limit, List<Block> alreadyChecked) {
+    protected int airBlocksAround(Location original, int limit) {
+        Block starting = original.getBlock();
+        Stack<Block> blocks = new Stack<>();
+        ArrayList<Block> counted = new ArrayList<>();
+        int count = 0;
+        blocks.push(starting);
+
+        while (!blocks.isEmpty()) {
+            Block b = blocks.pop();
+
+            if (b.getLocation().distance(original) >= limit || getCurrentMap().isInSafeZone(b.getLocation())) {
+                continue;
+            }
+
+            Block north = b.getRelative(BlockFace.NORTH);
+            Block south = b.getRelative(BlockFace.SOUTH);
+            Block east = b.getRelative(BlockFace.EAST);
+            Block west = b.getRelative(BlockFace.WEST);
+            Block up = b.getRelative(BlockFace.UP);
+            Block down = b.getRelative(BlockFace.DOWN);
+
+            if (!north.getType().isSolid() && !north.isLiquid() && !counted.contains(north) && !getCurrentMap().isInSafeZone(north.getLocation())) {
+                count++;
+                blocks.push(north);
+                counted.add(north);
+            }
+
+            if (!south.getType().isSolid() && !south.isLiquid() && !counted.contains(south) && !getCurrentMap().isInSafeZone(south.getLocation())) {
+                count++;
+                blocks.push(south);
+                counted.add(south);
+            }
+
+            if (!east.getType().isSolid() && !east.isLiquid() && !counted.contains(east) && !getCurrentMap().isInSafeZone(east.getLocation())) {
+                count++;
+                blocks.push(east);
+                counted.add(east);
+            }
+
+            if (!west.getType().isSolid() && !west.isLiquid() && !counted.contains(west) && !getCurrentMap().isInSafeZone(west.getLocation())) {
+                count++;
+                blocks.push(west);
+                counted.add(west);
+            }
+
+            if (!up.getType().isSolid() && !up.isLiquid() && !counted.contains(up) && !getCurrentMap().isInSafeZone(up.getLocation())) {
+                count++;
+                blocks.push(up);
+                counted.add(up);
+            }
+
+            if (!down.getType().isSolid() && !down.isLiquid() && !counted.contains(down) && !getCurrentMap().isInSafeZone(down.getLocation())) {
+                count++;
+                blocks.push(down);
+                counted.add(down);
+            }
+        }
+
+        counted.clear(); //Clear memory
+
+        return count;
+    }
+
+    @Deprecated
+    protected int __INVALID_airBlocksAround(Location original, Location location, int limit, List<Block> alreadyChecked) {
         if (original.toVector().distance(location.toVector()) >= limit)
             return 1;
 
@@ -265,7 +330,7 @@ public abstract class Gamemode {
                     if (!check.getType().isSolid() && !check.isLiquid()) {
                         alreadyChecked.add(check);
                         if (!getCurrentMap().isInSafeZone(check.getLocation()))
-                            total += airBlocksAround(original, check.getLocation(), limit, alreadyChecked);
+                            total += __INVALID_airBlocksAround(original, check.getLocation(), limit, alreadyChecked) + 1;
                     }
                 }
             }
@@ -327,7 +392,7 @@ public abstract class Gamemode {
             if (id == null || player == null || hide.isHidden(player) || isInSpawn(Bukkit.getPlayer(id)))
                 continue;
 
-            int blockCount = countAirBlocksAround(player, 20);
+            int blockCount = countAirBlocksAround(player, 10);
             double reward = calculateReward(player, blockCount);
 
             winners.put(player, blockCount);
