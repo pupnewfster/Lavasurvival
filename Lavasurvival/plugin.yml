@@ -30,6 +30,11 @@ commands:
     usage: /<command>
     permission: lavasurvival.rules
     permission-message: You don't have <permission>
+  airc:
+    description: Check number of air blocks around you (20 radius)
+    usage: /<command>
+    permission: lavasurvival.airc
+    permission-message: You don't have <permission>
   spawn:
     description: Go back to map spawn
     usage: /<command>

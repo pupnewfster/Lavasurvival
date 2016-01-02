@@ -247,12 +247,12 @@ public abstract class Gamemode {
 
     protected abstract double calculateReward(Player player, int blockCount);
 
-    protected int countAirBlocksAround(Player player, int limit) {
+    public int countAirBlocksAround(Player player, int limit) {
         return airBlocksAround(player.getLocation(), player.getLocation(), limit, new ArrayList<Block>());
     }
 
     protected int airBlocksAround(Location original, Location location, int limit, List<Block> alreadyChecked) {
-        if (original.toVector().distanceSquared(location.toVector()) >= limit)
+        if (original.toVector().distance(location.toVector()) >= limit)
             return 1;
 
         int total = 0;
@@ -265,7 +265,7 @@ public abstract class Gamemode {
                     if (!check.getType().isSolid() && !check.isLiquid()) {
                         alreadyChecked.add(check);
                         if (!getCurrentMap().isInSafeZone(check.getLocation()))
-                            total += airBlocksAround(original, check.getLocation(), limit, alreadyChecked) + 1;
+                            total += airBlocksAround(original, check.getLocation(), limit, alreadyChecked);
                     }
                 }
             }
