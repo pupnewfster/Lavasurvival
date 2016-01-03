@@ -177,8 +177,6 @@ public class Listeners implements Listener {
             status = ChatColor.RED + "[Dead] " + ChatColor.RESET;
         else if (status.equals("alive"))
             status = ChatColor.GREEN + "[Alive] " + ChatColor.RESET;
-        if (hide.isHidden(player))
-            status = "";
         String m = e.getMessage();
         if(m.endsWith(">") && ! m.equals(">")) {
             String appended = u.getAppended() + " " + m.substring(0, m.length() - 1);
@@ -202,6 +200,8 @@ public class Listeners implements Listener {
             e.setFormat(e.getFormat().replaceAll("\\{TITLE\\} ", ""));
             e.setMessage(e.getMessage().replaceFirst("#", ""));
         }
+        if (hide.isHidden(player) || isop)
+            status = "";
         String fullTitle = "";
         if (configTitles.contains(player.getUniqueId() + ".title")) {
             ChatColor brackets = ChatColor.getByChar(configTitles.getString(player.getUniqueId() + ".color"));

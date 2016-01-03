@@ -107,6 +107,7 @@ public class Initialization {
         addYML(configFileSpying);
         addYML(configFileHiding);
         addYML(configFileWarps);
+        addYML(configFileLogOut);
         addYML(configFileLogIn);
         addYML(configFileUsers);
         addYML(configFileWM);
@@ -141,6 +142,8 @@ public class Initialization {
                 config.set("Console.AliveStatus", "Alive");
                 config.set("Necessities.DonationPass", "password");
                 config.set("Necessities.SlackToken", "token");
+                config.set("Necessities.SlackChanel", "channel");
+                config.set("Necessities.ChannelID", "channelID");
                 config.save(configFile);
             } catch (Exception e) {
                 e.printStackTrace();
@@ -177,6 +180,10 @@ public class Initialization {
                 config.set("Necessities.DonationPass", "password");
             if (!config.contains("Necessities.SlackToken"))
                 config.set("Necessities.SlackToken", "token");
+            if (!config.contains("Necessities.SlackChanel"))
+                config.set("Necessities.SlackChanel", "channel");
+            if (!config.contains("Necessities.ChannelID"))
+                config.set("Necessities.ChannelID", "channelID");
             try {
                 config.save(configFile);
             } catch (Exception e) {
