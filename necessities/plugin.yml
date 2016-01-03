@@ -41,6 +41,16 @@ commands:
       usage: /<command> <player> <reason>
       permission: Necessities.warn
       aliases: [nwarn, nreport, report]
+   loginmessage:
+      description: Changes your login message to <message>.
+      usage: /<command> <message>
+      permission: Necessities.loginmessage
+      aliases: [loginmsg, setloginmessage, setloginmsg, nloginmsg, nsetloginmsg, nsetloginmessage, nloginmessage]
+   logoutmessage:
+      description: Changes your logout message to <message>.
+      usage: /<command> <message>
+      permission: Necessities.logoutmessage
+      aliases: [setlogoutmessage, logoutmsg, setlogoutmsg, nsetlogoutmessage, nlogoutmsg, nlogoutmessage, nsetlogoutmsg]
    slap:
       description: Slaps <name> sky high.
       usage: /<command> <name>
@@ -395,6 +405,8 @@ permissions:
     Necessities.*:
         description: The Mainframe of Necessities' command structure
         children:
+            Necessities.logoutmessage: true
+            Necessities.loginmessage: true
             Necessities.bracketOthers: true
             Necessities.unignoreable: true
             Necessities.spamcommands: true
@@ -640,6 +652,12 @@ permissions:
         default: op
     Necessities.spamcommands:
         description: Allows you to spam commands.
+        default: op
+    Necessities.loginmessage:
+        description: Allows you to set your login message.
+        default: op
+    Necessities.logoutmessage:
+        description: Allows you to set your logout message.
         default: op
     Necessities.advertise:
         description: Allows you to advertise.

@@ -30,8 +30,8 @@ import java.util.ArrayList;
 import java.util.UUID;
 
 public class Listeners implements Listener {
-    private File configFileTitles = new File("plugins/Necessities", "titles.yml");
-    private File configFile = new File("plugins/Necessities", "config.yml");
+    private File configFileLogOut = new File("plugins/Necessities", "logoutmessages.yml"), configFileLogIn = new File("plugins/Necessities", "loginmessages.yml"),
+            configFileTitles = new File("plugins/Necessities", "titles.yml"), configFile = new File("plugins/Necessities", "config.yml");
     CmdCommandSpy spy = new CmdCommandSpy();
     PortalManager pm = new PortalManager();
     UserManager um = new UserManager();
@@ -51,12 +51,34 @@ public class Listeners implements Listener {
         if (u.getNick() != null)
             p.setDisplayName(u.getNick());
         UUID uuid = p.getUniqueId();
-        e.setJoinMessage(null);
+        YamlConfiguration configLogIn = YamlConfiguration.loadConfiguration(configFileLogIn);
+        if (!configLogIn.contains(uuid.toString())) {
+            configLogIn.set(uuid.toString(), "{RANK} {NAME}&r joined the game.");
+            try {
+                configLogIn.save(configFileLogIn);
+            } catch (Exception er) {
+                er.printStackTrace();
+            }
+        }
+        YamlConfiguration configLogOut = YamlConfiguration.loadConfiguration(configFileLogOut);
+        if (!configLogOut.contains(uuid.toString())) {
+            configLogOut.set(uuid.toString(), "{RANK} {NAME}&r Disconnected.");
+            try {
+                configLogOut.save(configFileLogOut);
+            } catch (Exception er) {
+                er.printStackTrace();
+            }
+        }
+        e.setJoinMessage((ChatColor.GREEN + " + " + ChatColor.YELLOW + ChatColor.translateAlternateColorCodes('&',
+                configLogIn.getString(uuid.toString()).replaceAll("\\{NAME\\}", p.getDisplayName()).replaceAll("\\{RANK\\}",
+                        um.getUser(p.getUniqueId()).getRank().getTitle()))).replaceAll(ChatColor.RESET + "", ChatColor.YELLOW + ""));
         bot.logIn(uuid);
-
         hide.playerJoined(p);
-        if (hide.isHidden(e.getPlayer()))
+        if (hide.isHidden(e.getPlayer())) {
+            Bukkit.broadcast(var.getMessages() + "To Ops -" + e.getJoinMessage(), "Necessities.opBroadcast");
+            e.setJoinMessage(null);
             hide.hidePlayer(e.getPlayer());
+        }
         if (!Necessities.getInstance().isProtocolLibLoaded())
             for (User m : um.getUsers().values())
                 m.updateListName();
@@ -87,7 +109,14 @@ public class Listeners implements Listener {
     @EventHandler
     public void onPlayerQuit(PlayerQuitEvent e) {
         UUID uuid = e.getPlayer().getUniqueId();
-        e.setQuitMessage(null);
+        YamlConfiguration configLogOut = YamlConfiguration.loadConfiguration(configFileLogOut);
+        e.setQuitMessage((ChatColor.RED + " - " + ChatColor.YELLOW + ChatColor.translateAlternateColorCodes('&',
+                configLogOut.getString(uuid.toString()).replaceAll("\\{NAME\\}", e.getPlayer().getDisplayName()).replaceAll("\\{RANK\\}",
+                        um.getUser(e.getPlayer().getUniqueId()).getRank().getTitle()))).replaceAll(ChatColor.RESET + "", ChatColor.YELLOW + ""));
+        if (hide.isHidden(e.getPlayer())) {
+            Bukkit.broadcast(var.getMessages() + "To Ops -" + e.getQuitMessage(), "Necessities.opBroadcast");
+            e.setQuitMessage(null);
+        }
         User u = um.getUser(e.getPlayer().getUniqueId());
         u.logOut();
         bot.logOut(uuid);
