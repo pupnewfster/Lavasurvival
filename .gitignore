@@ -1,5 +1,5 @@
-classicphysics2/target/*
-lavasurvival2/target/*
+classicphysics/target/*
+lavasurvival/target/*
 
 *.class
 .idea/*
