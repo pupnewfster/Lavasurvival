@@ -702,7 +702,6 @@ public abstract class Gamemode {
         player.setMaxHealth(getHealth(Lavasurvival.INSTANCE.getNecessitiesUserManager().getUser(player.getUniqueId()).getRank()));
 
         player.setHealth(player.getMaxHealth());
-        globalMessageNoPrefix(ChatColor.GREEN + "+ " + player.getDisplayName() + ChatColor.RESET + " has joined the game!");
         UserManager um = Lavasurvival.INSTANCE.getUserManager();
         UserInfo u = um.getUser(player.getUniqueId());
         u.resetGenerosity();
