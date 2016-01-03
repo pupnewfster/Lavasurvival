@@ -231,11 +231,11 @@ public class Lavasurvival extends JavaPlugin {
         rm = new RankManager();
         uuiDs = new GetUUID();
         hide = new CmdHide();
-        userManager.readUsers();/*
+        userManager.readUsers();
 
         log("Starting UBot");
         UBot ubot = new UBot(new File("/root/ubot/ls1/Lavasurvival"), new Updater(), new UBotLogger());
-        ubotCancelToken = ubot.startAsync();*/
+        ubotCancelToken = ubot.startAsync();
     }
 
     private boolean setupEcon() {

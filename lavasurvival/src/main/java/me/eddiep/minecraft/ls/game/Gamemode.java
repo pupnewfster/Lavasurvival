@@ -776,8 +776,14 @@ public abstract class Gamemode {
         Lavasurvival.INSTANCE.getNecessitiesUserManager().getUser(uuid).setStatus("dead");
         player.setGameMode(GameMode.SPECTATOR);
         Lavasurvival.log(player.getName() + " has joined the dead team.");
-        if (allDead())
-            getCurrentGame().endRound();
+        if (allDead()) {
+            Bukkit.getScheduler().scheduleSyncDelayedTask(Lavasurvival.INSTANCE, new Runnable() {
+                @Override
+                public void run() {
+                    getCurrentGame().endRound();
+                }
+            }, 20 * 3);
+        }
     }
 
     public boolean isAlive(Player player) {
