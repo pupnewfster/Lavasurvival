@@ -30,6 +30,7 @@ public class CmdRequestMod extends Cmd {
                 slack.sendMessage(ChatColor.stripColor(p.getName() + " requested a mod."));
                 Bukkit.broadcast(var.getMessages() + "To Slack - " + ChatColor.WHITE + ChatColor.translateAlternateColorCodes('&', p.getName() + " requested a mod."), "Necessities.slack");
             }
+            p.sendMessage(var.getMessages() + "Request successfully sent.");
             u.setLastRequest(System.currentTimeMillis());
         } else
             sender.sendMessage(var.getEr() + "Error: " + var.getErMsg() + "You do not need a moderator.");
