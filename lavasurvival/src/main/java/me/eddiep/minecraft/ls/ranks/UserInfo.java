@@ -216,7 +216,7 @@ public class UserInfo implements Rankable {
     private ItemStack getItem(MaterialData dat) {
         ItemStack i = dat.toItemStack(1);
         ItemMeta im = i.getItemMeta();
-        im.setLore(Arrays.asList("Melt time: " + PhysicsListener.getMeltTimeAsString(dat)));
+        im.setLore(Arrays.asList("Lava MeltTime: " + PhysicsListener.getLavaMeltTimeAsString(dat), "Water MeltTime: " + PhysicsListener.getWaterMeltTimeAsString(dat)));
         i.setItemMeta(im);
         return i;
     }

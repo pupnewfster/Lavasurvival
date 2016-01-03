@@ -153,7 +153,7 @@ public abstract class Gamemode {
                 public void run() {
                     Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "restart");
                 }
-            });
+            }, 20);
 
             return;
         }

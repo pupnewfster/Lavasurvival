@@ -260,7 +260,7 @@ public class PlayerListener implements Listener {
     @EventHandler(priority = EventPriority.HIGHEST)
     public void playerQuit(PlayerQuitEvent event) {
         um.getUser(event.getPlayer().getUniqueId()).logOut();
-        if (Gamemode.getCurrentGame().allDead())
+        if (Gamemode.getCurrentGame().allDead() && !Gamemode.getCurrentGame().hasEnded())
             Gamemode.getCurrentGame().endRound();
     }
 
