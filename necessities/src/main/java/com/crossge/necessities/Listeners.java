@@ -5,6 +5,7 @@ import com.crossge.necessities.Commands.CmdHide;
 import com.crossge.necessities.Hats.Hat;
 import com.crossge.necessities.Janet.Janet;
 import com.crossge.necessities.Janet.JanetAI;
+import com.crossge.necessities.Janet.JanetSlack;
 import com.crossge.necessities.RankManager.User;
 import com.crossge.necessities.RankManager.UserManager;
 import com.crossge.necessities.WorldManager.PortalManager;
@@ -34,6 +35,7 @@ public class Listeners implements Listener {
             configFileTitles = new File("plugins/Necessities", "titles.yml"), configFile = new File("plugins/Necessities", "config.yml");
     CmdCommandSpy spy = new CmdCommandSpy();
     PortalManager pm = new PortalManager();
+    JanetSlack slack = new JanetSlack();
     UserManager um = new UserManager();
     Console console = new Console();
     Variables var = new Variables();
@@ -199,8 +201,11 @@ public class Listeners implements Listener {
             e.setFormat(var.getMessages() + "To Ops - " + ChatColor.WHITE + e.getFormat());
             e.setFormat(e.getFormat().replaceAll("\\{TITLE\\} ", ""));
             e.setMessage(e.getMessage().replaceFirst("#", ""));
+        } else if (u.slackChat()) {
+            e.setFormat(var.getMessages() + "To Slack - " + ChatColor.WHITE + e.getFormat());
+            e.setFormat(e.getFormat().replaceAll("\\{TITLE\\} ", ""));
         }
-        if (hide.isHidden(player) || isop)
+        if (hide.isHidden(player) || isop || u.slackChat())
             status = "";
         String fullTitle = "";
         if (configTitles.contains(player.getUniqueId() + ".title")) {
@@ -227,7 +232,8 @@ public class Listeners implements Listener {
             if (!e.getRecipients().isEmpty()) {
                 ArrayList<Player> toRem = new ArrayList<>();
                 for (Player recip : e.getRecipients())
-                    if (um.getUser(recip.getUniqueId()).isIgnoring(player.getUniqueId()) || (isop && !recip.hasPermission("Necessities.opBroadcast")))
+                    if (um.getUser(recip.getUniqueId()).isIgnoring(player.getUniqueId()) || (isop && !recip.hasPermission("Necessities.opBroadcast")) ||
+                        (u.slackChat() && !recip.hasPermission("Necessities.slack")))
                         toRem.add(recip);
                 for (Player recip : toRem)
                     e.getRecipients().remove(recip);
@@ -236,6 +242,8 @@ public class Listeners implements Listener {
                 for (Player recip : e.getRecipients())
                     recip.sendMessage(status + e.getFormat().replaceAll("\\{MESSAGE\\}", "") + e.getMessage());
             Bukkit.getConsoleSender().sendMessage(status + e.getFormat().replaceAll("\\{MESSAGE\\}", "") + e.getMessage());
+            if (u.slackChat())
+                slack.sendMessage(ChatColor.stripColor(status + e.getFormat().replaceAll("\\{MESSAGE\\}", "") + e.getMessage()));
         }
         e.setCancelled(true);
         if (config.contains("Necessities.AI") && config.getBoolean("Necessities.AI") && (!isop || message.startsWith("!")))

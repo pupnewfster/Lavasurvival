@@ -22,11 +22,11 @@ public class User {
     private File configFileSubranks = new File("plugins/Necessities/RankManager", "subranks.yml"), configFileUsers = new File("plugins/Necessities/RankManager", "users.yml");
     private ArrayList<String> permissions = new ArrayList<>(), subranks = new ArrayList<>();
     private ArrayList<UUID> ignored = new ArrayList<>();
-    private boolean opChat = false, muted = false;
+    private boolean opChat = false, muted = false, slackChat = false;
     private PermissionAttachment attachment;
     private String appended = "", nick = null, lastContact, status = "dead";
     private int pastTotal = 0;
-    private long login = 0;
+    private long login = 0, lastRequest = 0;
     private Player bukkitPlayer;
     private Location right, left;
     private Hat hat = null;
@@ -185,6 +185,14 @@ public class User {
 
     public String getDispName() {
         return this.bukkitPlayer == null ? Bukkit.getOfflinePlayer(this.userUUID).getName() : ChatColor.translateAlternateColorCodes('&', getRank().getTitle() + this.bukkitPlayer.getDisplayName());
+    }
+
+    public long getLastRequest() {
+        return this.lastRequest == 0 ? System.currentTimeMillis() : this.lastRequest;
+    }
+
+    public void setLastRequest(long time) {
+        this.lastRequest = time;
     }
 
     public Rank getRank() {
@@ -404,6 +412,14 @@ public class User {
 
     public void toggleOpChat() {
         this.opChat = !this.opChat;
+    }
+
+    public boolean slackChat() {
+        return this.slackChat;
+    }
+
+    public void toggleSlackChat() {
+        this.slackChat = !this.slackChat;
     }
 
     public String getTimePlayed() {

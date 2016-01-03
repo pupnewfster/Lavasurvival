@@ -71,7 +71,7 @@ public class JanetSlack {
                         String text = (String) message.get("text");
                         while (text.contains("<") && text.contains(">"))
                             text = text.split("<@")[0] + "@" + getUserInfo(text.split("<@")[1].split(">:")[0]) + ":" + text.split("<@")[1].split(">:")[1];
-                        sendOps(name + ": " + text);
+                        sendSlackChat(name + ": " + text);
                     }
                 }
                 if (i == 0)
@@ -81,8 +81,8 @@ public class JanetSlack {
         justLoaded = false;
     }
 
-    private void sendOps(String message) {
-        Bukkit.broadcast(var.getMessages() + "To Ops - " + ChatColor.WHITE + message, "Necessities.opBroadcast");
+    private void sendSlackChat(String message) {
+        Bukkit.broadcast(var.getMessages() + "To Slack - " + ChatColor.WHITE + message, "Necessities.slack");
     }
 
     private String getUserInfo(String id) {

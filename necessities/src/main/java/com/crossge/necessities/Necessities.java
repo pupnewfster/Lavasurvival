@@ -346,6 +346,10 @@ public class Necessities extends JavaPlugin {
             com = new CmdFaq();
         else if (isEqual(name, "opbroadcast"))
             com = new CmdOpChat();
+        else if (isEqual(name, "slack"))
+            com = new CmdSlack();
+        else if (isEqual(name, "requestmod"))
+            com = new CmdRequestMod();
             //RankManager
         else if (isEqual(name, "promote"))
             com = new CmdPromote();

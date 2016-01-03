@@ -36,6 +36,16 @@ commands:
       usage: /<command>
       permission: Necessities.devs
       aliases: [ndevs]
+   requestmod:
+      description: Requests a mod to get on.
+      usage: /<command> <reason>
+      permission: Necessities.requestmod
+      aliases: [nrequestmod, requestop, nrequestop, requestadmin, nrequestadmin, requestmanager, nrequestmanager, requestdirector, nrequestdirector, modrequest, nmodrequest, oprequest, noprequest, adminrequest, nadminrequest, managerrequest, nmanagerrequest, directorrequest, ndirectorrequest]
+   slack:
+      description: Toggles slackchat.
+      usage: /<command> <message>
+      permission: Necessities.slack
+      aliases: [nslack, sc, nsc]
    warn:
       description: Warns <player> for <reason>.
       usage: /<command> <player> <reason>
@@ -414,6 +424,7 @@ permissions:
             Necessities.opBroadcast: true
             Necessities.togglechat: true
             Necessities.nickOthers: true
+            Necessities.requestmod: true
             Necessities.colorchat: true
             Necessities.magicchat: true
             Necessities.advertise: true
@@ -435,6 +446,7 @@ permissions:
             Necessities.tempban: true
             Necessities.ignore: true
             Necessities.tphere: true
+            Necessities.slack: true
             Necessities.tppos: true
             Necessities.unban: true
             Necessities.banip: true
@@ -548,6 +560,9 @@ permissions:
     Necessities.worldmanager.warp:
         description: Allows you to teleport to a specified warp.
         default: true
+    Necessities.requestmod:
+        description: Allows you to request a mod to get on.
+        default: true
     Necessities.who:
         description: Allows you to view player list.
         default: true
@@ -640,6 +655,9 @@ permissions:
         default: op
     Necessities.language:
         description: Allows you to use bad language.
+        default: op
+    Necessities.slack:
+        description: Allows you to enter slack chat.
         default: op
     Necessities.title:
         description: Allows you to give players titles.
