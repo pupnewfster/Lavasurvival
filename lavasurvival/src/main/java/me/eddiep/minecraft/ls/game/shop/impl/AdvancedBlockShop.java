@@ -208,7 +208,7 @@ public class AdvancedBlockShop extends Menu {
             if (is == null)
                 continue;
             ItemMeta m = is.getItemMeta();
-            m.setLore(Arrays.asList("Lava MeltTime: " + PhysicsListener.getLavaMeltTimeAsString(is.getData()), "Water MeltTime: " + PhysicsListener.getWaterMeltTimeAsString(is.getData())));
+            m.setLore(Arrays.asList(price(is.getType()) + " ggs", "Lava MeltTime: " + PhysicsListener.getLavaMeltTimeAsString(is.getData()), "Water MeltTime: " + PhysicsListener.getWaterMeltTimeAsString(is.getData())));
             is.setItemMeta(m);
             inv.setItem(i, is);
         }

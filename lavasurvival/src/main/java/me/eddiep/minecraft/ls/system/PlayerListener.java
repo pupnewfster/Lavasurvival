@@ -110,7 +110,6 @@ public class PlayerListener implements Listener {
             event.setCancelled(true);
             return;
         }
-        //Should we just cancel all damage instead? Because we damage them ourselves anyways to keep damage amount consistent
         if (!survival && event.getEntity() instanceof Player && Gamemode.getCurrentGame() != null && Gamemode.getCurrentGame().isAlive((Player) event.getEntity())) {
             event.setCancelled(true);
             if (event.getCause().equals(EntityDamageEvent.DamageCause.LAVA))

@@ -278,9 +278,11 @@ public class PhysicsListener implements Listener {
 
 
         for (Material m : Material.values())
-            if (m.isSolid() && !lavaTicksToMelt.containsKey(new MaterialData(m))) {
-                lavaTicksToMelt.put(new MaterialData(m), 30 * 20);
-                waterTicksToMelt.put(new MaterialData(m), 30 * 20);
+            if (m.isSolid()) {
+                if (!lavaTicksToMelt.containsKey(new MaterialData(m)))
+                    lavaTicksToMelt.put(new MaterialData(m), 30 * 20);
+                if (!waterTicksToMelt.containsKey(new MaterialData(m)))
+                    waterTicksToMelt.put(new MaterialData(m), lavaTicksToMelt.get(new MaterialData(m)));
             }
     }
 
