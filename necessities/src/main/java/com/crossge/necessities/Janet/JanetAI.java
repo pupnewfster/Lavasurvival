@@ -10,13 +10,13 @@ import java.util.Calendar;
 import java.util.UUID;
 
 public class JanetAI {//TODO: Upgrade
-    private static ArrayList<String> heyMessages = new ArrayList<String>();
+    private static ArrayList<String> heyMessages = new ArrayList<>();
     private static String[] janetNamed = new String[16];
     private static String[] feelingMessages = new String[20];
     private static String[] stalkerMessages = new String[4];
     private static String[] drunkMessages = new String[10];
     private static String JanetName = "";
-    JanetRandom r = new JanetRandom();
+    private static JanetRandom r = new JanetRandom();
 
     public void parseMessage(UUID uuid, String message) {
         Player p = Bukkit.getPlayer(uuid);
@@ -26,7 +26,17 @@ public class JanetAI {//TODO: Upgrade
         else if (message.toLowerCase().contains("what day is it") || message.toLowerCase().contains("what is the date") ||
                 message.toLowerCase().contains("whats the date") || message.toLowerCase().contains("what's the date"))
             Bukkit.broadcastMessage(JanetName + "The date is: " + date());
-        else if (message.toLowerCase().contains("can i be op") || message.toLowerCase().contains("may i be op") ||
+        else if (message.toLowerCase().startsWith("!") && p.hasPermission("Necessities.janetai")) {
+            if (message.toLowerCase().startsWith("!meme ") || message.toLowerCase().startsWith("!memes ") || message.toLowerCase().startsWith("!memenumber ")) {
+                int applePie = 0;
+                try {
+                    applePie = Integer.parseInt(message.split(" ")[1]);
+                } catch (Exception e) {
+                }
+                Bukkit.broadcastMessage(JanetName + r.memeRandom(applePie));
+            } else if (message.toLowerCase().startsWith("!say "))
+                Bukkit.broadcastMessage(JanetName + message.replaceFirst("!say ", ""));
+        } else if (message.toLowerCase().contains("can i be op") || message.toLowerCase().contains("may i be op") ||
                 message.toLowerCase().contains("can i have op") || message.toLowerCase().contains("may i have op") ||
                 message.toLowerCase().contains("can i get op") || message.toLowerCase().contains("may i get op") ||
                 message.toLowerCase().contains("can i be admin") || message.toLowerCase().contains("may i be admin") ||
@@ -43,10 +53,10 @@ public class JanetAI {//TODO: Upgrade
             if (message.toLowerCase().contains("how are you") || message.toLowerCase().contains("what is up") ||
                     message.toLowerCase().contains("sup") || message.toLowerCase().contains("whats up") ||
                     message.toLowerCase().contains("how was your day"))
-                Bukkit.broadcastMessage(JanetName + feelingMessages[r.rInt(feelingMessages.length)]);
+                Bukkit.broadcastMessage(JanetName + feelingMessages[r.memeRandom(feelingMessages.length)]);
             else if (message.toLowerCase().startsWith("hello") || message.toLowerCase().startsWith("hey") ||
                     message.toLowerCase().startsWith("hi") || message.toLowerCase().startsWith("hai"))
-                Bukkit.broadcastMessage(JanetName + heyMessages.get(r.rInt(heyMessages.size())));
+                Bukkit.broadcastMessage(JanetName + heyMessages.get(r.memeRandom(heyMessages.size())));
             else if (message.toLowerCase().contains("i love you") || message.toLowerCase().contains("do you love me") ||
                     message.toLowerCase().contains("i wub you") || message.toLowerCase().contains("do you wub me") ||
                     message.toLowerCase().contains("love me")) {
@@ -72,12 +82,12 @@ public class JanetAI {//TODO: Upgrade
                 else
                     Bukkit.broadcastMessage(JanetName + "No, *slaps " + p.getName() + "*.");
             } else if (message.toLowerCase().contains("i see you") || message.toLowerCase().contains("i am following you"))
-                Bukkit.broadcastMessage(JanetName + stalkerMessages[r.rInt(stalkerMessages.length)]);
+                Bukkit.broadcastMessage(JanetName + stalkerMessages[r.memeRandom(stalkerMessages.length)]);
             else if (message.toLowerCase().contains("your drunk") || message.toLowerCase().contains("you are drunk") ||
                     message.toLowerCase().contains("you're drunk") || message.toLowerCase().contains("is drunk"))
-                Bukkit.broadcastMessage(JanetName + drunkMessages[r.rInt(drunkMessages.length)]);
+                Bukkit.broadcastMessage(JanetName + drunkMessages[r.memeRandom(drunkMessages.length)]);
             else
-                Bukkit.broadcastMessage(JanetName + janetNamed[r.rInt(janetNamed.length)]);
+                Bukkit.broadcastMessage(JanetName + janetNamed[r.memeRandom(janetNamed.length)]);
         }
     }
 

@@ -26,9 +26,9 @@ public class CmdNick extends Cmd {
                 return true;
             } else if (args.length == 1) {
                 UUID uuid = get.getID(args[0]);
-                if (ChatColor.stripColor(ChatColor.translateAlternateColorCodes('&', args[0] + "&r")).trim().length() > 24 ||
+                if (ChatColor.stripColor(ChatColor.translateAlternateColorCodes('&', args[0] + "&r")).trim().length() > 16 ||
                         ChatColor.stripColor(ChatColor.translateAlternateColorCodes('&', args[0] + "&r")).trim().length() < 1) {
-                    p.sendMessage(var.getEr() + "Error: " + var.getErMsg() + "Nicks have a maximum of 24 characters.");
+                    p.sendMessage(var.getEr() + "Error: " + var.getErMsg() + "Nicks have a maximum of 16 characters.");
                     return true;
                 }
                 if (uuid == null) {
@@ -73,9 +73,9 @@ public class CmdNick extends Cmd {
             sender.sendMessage(var.getMessages() + "Nickname for " + var.getObj() + target.getName() + var.getMessages() + " removed");
         } else {
             User u = um.getUser(target.getUniqueId());
-            if (ChatColor.stripColor(ChatColor.translateAlternateColorCodes('&', args[1] + "&r")).trim().length() > 24 ||
+            if (ChatColor.stripColor(ChatColor.translateAlternateColorCodes('&', args[1] + "&r")).trim().length() > 16 ||
                     ChatColor.stripColor(ChatColor.translateAlternateColorCodes('&', args[1] + "&r")).trim().length() < 1) {
-                sender.sendMessage(var.getEr() + "Error: " + var.getErMsg() + "Nicks have a maximum of 24 characters.");
+                sender.sendMessage(var.getEr() + "Error: " + var.getErMsg() + "Nicks have a maximum of 16 characters.");
                 return true;
             }
             u.setNick("~" + args[1].trim() + "&r");
