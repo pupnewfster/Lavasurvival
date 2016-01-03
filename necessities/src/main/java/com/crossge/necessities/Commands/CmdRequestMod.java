@@ -25,10 +25,10 @@ public class CmdRequestMod extends Cmd {
             }
             if (args.length > 0) {
                 slack.sendMessage(ChatColor.stripColor(p.getName() + " requested a mod. With the reason " + reason));
-                Bukkit.broadcast(var.getMessages() + "To Slack - " + ChatColor.translateAlternateColorCodes('&', p.getName() + " requested a mod. With the reason " + reason), "Necessities.slack");
+                Bukkit.broadcast(var.getMessages() + "To Slack - " + ChatColor.WHITE + ChatColor.translateAlternateColorCodes('&', p.getName() + " requested a mod. With the reason " + reason), "Necessities.slack");
             } else {
                 slack.sendMessage(ChatColor.stripColor(p.getName() + " requested a mod."));
-                Bukkit.broadcast(var.getMessages() + "To Slack - " + ChatColor.translateAlternateColorCodes('&', p.getName() + " requested a mod."), "Necessities.slack");
+                Bukkit.broadcast(var.getMessages() + "To Slack - " + ChatColor.WHITE + ChatColor.translateAlternateColorCodes('&', p.getName() + " requested a mod."), "Necessities.slack");
             }
             u.setLastRequest(System.currentTimeMillis());
         } else
