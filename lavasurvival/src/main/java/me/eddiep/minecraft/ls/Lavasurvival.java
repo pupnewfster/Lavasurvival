@@ -217,6 +217,8 @@ public class Lavasurvival extends JavaPlugin {
                 new CmdAirc()
         };
 
+        getServer().getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
+
         getDataFolder().mkdir();
         new File(getDataFolder() + "/maps").mkdir();
         File configFileUsers = new File(getDataFolder(), "userinfo.yml");
@@ -328,5 +330,9 @@ public class Lavasurvival extends JavaPlugin {
         p.sendPluginMessage(this, "BungeeCord", baos.toByteArray());
         baos.close();
         dos.close();
+    }
+
+    public void stopUbot() {
+        ubotCancelToken.cancel();
     }
 }

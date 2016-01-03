@@ -29,6 +29,7 @@ public class Updater implements UpdateNotifier {
     public void patchComplete(UpdateType updateType, UBot uBot) {
         Lavasurvival.log("Update downloaded, restart has been queued");
         Gamemode.restartNextGame("lobby");
+        Lavasurvival.INSTANCE.stopUbot();
     }
 
     @Override
