@@ -15,18 +15,14 @@ public class JanetAI {//TODO: Upgrade
     private static String[] feelingMessages = new String[20];
     private static String[] stalkerMessages = new String[4];
     private static String[] drunkMessages = new String[10];
-    private static String JanetName = "";
     private static JanetRandom r = new JanetRandom();
+    private static String JanetName = "";
+    private JanetSlack slack = new JanetSlack();
 
     public void parseMessage(UUID uuid, String message) {
         Player p = Bukkit.getPlayer(uuid);
         message = ChatColor.stripColor(message);
-        if (message.toLowerCase().contains("what time is it") || message.toLowerCase().contains("what is the time"))
-            Bukkit.broadcastMessage(JanetName + "The time is " + time());
-        else if (message.toLowerCase().contains("what day is it") || message.toLowerCase().contains("what is the date") ||
-                message.toLowerCase().contains("whats the date") || message.toLowerCase().contains("what's the date"))
-            Bukkit.broadcastMessage(JanetName + "The date is: " + date());
-        else if (message.toLowerCase().startsWith("!") && p.hasPermission("Necessities.janetai")) {
+        if (message.toLowerCase().startsWith("!") && p.hasPermission("Necessities.janetai")) {
             if (message.toLowerCase().startsWith("!meme ") || message.toLowerCase().startsWith("!memes ") || message.toLowerCase().startsWith("!memenumber ")) {
                 int applePie = 0;
                 try {
@@ -36,7 +32,14 @@ public class JanetAI {//TODO: Upgrade
                 Bukkit.broadcastMessage(JanetName + r.memeRandom(applePie));
             } else if (message.toLowerCase().startsWith("!say "))
                 Bukkit.broadcastMessage(JanetName + message.replaceFirst("!say ", ""));
-        } else if (message.toLowerCase().contains("can i be op") || message.toLowerCase().contains("may i be op") ||
+            else if (message.toLowerCase().startsWith("!slack "))
+                slack.sendMessage(ChatColor.stripColor(p.getName() + ": " + message.replaceFirst("!slack ", "")));
+        } else if (message.toLowerCase().contains("what time is it") || message.toLowerCase().contains("what is the time"))
+            Bukkit.broadcastMessage(JanetName + "The time is " + time());
+        else if (message.toLowerCase().contains("what day is it") || message.toLowerCase().contains("what is the date") ||
+                message.toLowerCase().contains("whats the date") || message.toLowerCase().contains("what's the date"))
+            Bukkit.broadcastMessage(JanetName + "The date is: " + date());
+        else if (message.toLowerCase().contains("can i be op") || message.toLowerCase().contains("may i be op") ||
                 message.toLowerCase().contains("can i have op") || message.toLowerCase().contains("may i have op") ||
                 message.toLowerCase().contains("can i get op") || message.toLowerCase().contains("may i get op") ||
                 message.toLowerCase().contains("can i be admin") || message.toLowerCase().contains("may i be admin") ||

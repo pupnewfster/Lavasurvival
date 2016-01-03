@@ -111,15 +111,10 @@ public class PlayerListener implements Listener {
             return;
         }
         //Should we just cancel all damage instead? Because we damage them ourselves anyways to keep damage amount consistent
-        if (!survival && event.getEntity() instanceof Player && Gamemode.getCurrentGame() != null && Gamemode.getCurrentGame().isAlive((Player) event.getEntity()) &&
-                (event.getCause().equals(EntityDamageEvent.DamageCause.FIRE_TICK) || event.getCause().equals(EntityDamageEvent.DamageCause.FIRE) ||
-                        event.getCause().equals(EntityDamageEvent.DamageCause.FALL) || event.getCause().equals(EntityDamageEvent.DamageCause.ENTITY_ATTACK) ||
-                        event.getCause().equals(EntityDamageEvent.DamageCause.FALLING_BLOCK) || event.getCause().equals(EntityDamageEvent.DamageCause.CONTACT)))
+        if (!survival && event.getEntity() instanceof Player && Gamemode.getCurrentGame() != null && Gamemode.getCurrentGame().isAlive((Player) event.getEntity())) {
             event.setCancelled(true);
-        else if (!survival && event.getEntity() instanceof Player && Gamemode.getCurrentGame() != null && Gamemode.getCurrentGame().isAlive((Player) event.getEntity()) &&
-                event.getCause().equals(EntityDamageEvent.DamageCause.LAVA)) {
-            ((Player) event.getEntity()).damage(Gamemode.DAMAGE);
-            event.setCancelled(true);
+            if (event.getCause().equals(EntityDamageEvent.DamageCause.LAVA))
+                ((Player) event.getEntity()).damage(Gamemode.DAMAGE);
         }
     }
 

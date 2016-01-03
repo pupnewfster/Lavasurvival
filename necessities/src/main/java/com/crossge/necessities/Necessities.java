@@ -12,6 +12,7 @@ import com.crossge.necessities.Commands.*;
 import com.crossge.necessities.Commands.RankManager.*;
 import com.crossge.necessities.Commands.WorldManager.*;
 import com.crossge.necessities.Janet.Janet;
+import com.crossge.necessities.Janet.JanetSlack;
 import com.crossge.necessities.RankManager.RankManager;
 import com.crossge.necessities.RankManager.User;
 import com.crossge.necessities.RankManager.UserManager;
@@ -431,11 +432,13 @@ public class Necessities extends JavaPlugin {
     @Override
     public void onDisable() {
         CmdCommandSpy cs = new CmdCommandSpy();
+        JanetSlack slack = new JanetSlack();
         CmdHide hide = new CmdHide();
         Janet bot = new Janet();
         um.unload();
         cs.unload();
         hide.unload();
+        slack.disable();
         bot.unload();
         dr.disconnect();
         getLogger().info("Necessities disabled.");

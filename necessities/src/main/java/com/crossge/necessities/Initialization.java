@@ -5,6 +5,7 @@ import com.crossge.necessities.Commands.CmdHide;
 import com.crossge.necessities.Hats.HatType;
 import com.crossge.necessities.Janet.Janet;
 import com.crossge.necessities.Janet.JanetAI;
+import com.crossge.necessities.Janet.JanetSlack;
 import com.crossge.necessities.Janet.JanetWarn;
 import com.crossge.necessities.RankManager.RankManager;
 import com.crossge.necessities.WorldManager.PortalManager;
@@ -20,6 +21,8 @@ public class Initialization {
     private File configFilePM = new File("plugins/Necessities/WorldManager", "portals.yml");
     private File configFileUsers = new File("plugins/Necessities/RankManager", "users.yml");
     private File configFileWM = new File("plugins/Necessities/WorldManager", "worlds.yml");
+    private File configFileLogOut = new File("plugins/Necessities", "logoutmessages.yml");
+    private File configFileLogIn = new File("plugins/Necessities", "loginmessages.yml");
     private File configFileCensors = new File("plugins/Necessities", "censors.yml");
     private File configFileSpying = new File("plugins/Necessities", "spying.yml");
     private File configFileHiding = new File("plugins/Necessities", "hiding.yml");
@@ -29,6 +32,7 @@ public class Initialization {
     PortalManager pm = new PortalManager();
     WarpManager warps = new WarpManager();
     WorldManager wm = new WorldManager();
+    JanetSlack slack = new JanetSlack();
     ScoreBoards sb = new ScoreBoards();
     RankManager rm = new RankManager();
     JanetWarn warns = new JanetWarn();
@@ -69,6 +73,7 @@ public class Initialization {
         cs.init();
         hide.init();
         warns.initiate();
+        slack.init();
         ai.initiate();
     }
 
@@ -102,6 +107,7 @@ public class Initialization {
         addYML(configFileSpying);
         addYML(configFileHiding);
         addYML(configFileWarps);
+        addYML(configFileLogIn);
         addYML(configFileUsers);
         addYML(configFileWM);
         addYML(configFilePM);
@@ -134,6 +140,7 @@ public class Initialization {
                 config.set("Necessities.firstTime", "Welcome {NAME}!");
                 config.set("Console.AliveStatus", "Alive");
                 config.set("Necessities.DonationPass", "password");
+                config.set("Necessities.SlackToken", "token");
                 config.save(configFile);
             } catch (Exception e) {
                 e.printStackTrace();
@@ -168,6 +175,8 @@ public class Initialization {
                 config.set("Necessities.customDeny", false);
             if (!config.contains("Necessities.DonationPass"))
                 config.set("Necessities.DonationPass", "password");
+            if (!config.contains("Necessities.SlackToken"))
+                config.set("Necessities.SlackToken", "token");
             try {
                 config.save(configFile);
             } catch (Exception e) {
