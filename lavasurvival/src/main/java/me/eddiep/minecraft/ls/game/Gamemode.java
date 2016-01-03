@@ -711,7 +711,7 @@ public abstract class Gamemode {
             if (BukkitUtils.hasItem(player.getInventory(), toGive) || u.isInBank(new MaterialData(DEFAULT_BLOCK)))
                 continue;
             ItemMeta im = toGive.getItemMeta();
-            im.setLore(Collections.singletonList("Melt time: " + PhysicsListener.getMeltTimeAsString(new MaterialData(toGive.getType()))));
+            im.setLore(Arrays.asList("Lava MeltTime: " + PhysicsListener.getLavaMeltTimeAsString(toGive.getData()), "Water MeltTime: " + PhysicsListener.getWaterMeltTimeAsString(toGive.getData())));
             toGive.setItemMeta(im);
             player.getInventory().addItem(toGive);
         }

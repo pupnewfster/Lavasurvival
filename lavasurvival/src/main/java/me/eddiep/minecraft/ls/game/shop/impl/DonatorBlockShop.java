@@ -505,7 +505,7 @@ public class DonatorBlockShop extends Menu {
             if (is == null)
                 continue;
             ItemMeta m = is.getItemMeta();
-            m.setLore(Arrays.asList(price(is.getType()) + " ggs", "Melt time: " + PhysicsListener.getMeltTimeAsString(is.getData())));
+            m.setLore(Arrays.asList("Lava MeltTime: " + PhysicsListener.getLavaMeltTimeAsString(is.getData()), "Water MeltTime: " + PhysicsListener.getWaterMeltTimeAsString(is.getData())));
             is.setItemMeta(m);
             inv.setItem(i, is);
         }
