@@ -405,7 +405,7 @@ public final class ClassicPhysicsHandler implements Listener {
     }
 
     public void forcePlaceClassicBlockAt(Location location, Material type) {//Force place block
-        if (location.getWorld() == null || !location.getChunk().isLoaded() || location.getBlock() == null)//World isn't loaded
+        if (location == null || location.getWorld() == null || location.getChunk() == null || !location.getChunk().isLoaded() || location.getBlock() == null)//World isn't loaded
             return;
         if (type.equals(Material.WATER))
             type = Material.STATIONARY_WATER;
@@ -436,7 +436,7 @@ public final class ClassicPhysicsHandler implements Listener {
     }
 
     public void placeClassicBlockAt(Location location, Material type, Location from) {
-        if (location.getWorld() == null || !location.getChunk().isLoaded() || location.getBlock() == null)//World isn't loaded
+        if (location == null || location.getWorld() == null || location.getChunk() == null || !location.getChunk().isLoaded() || location.getBlock() == null)//World isn't loaded
             return;
         if (type.equals(Material.WATER))
             type = Material.STATIONARY_WATER;

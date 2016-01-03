@@ -1,6 +1,5 @@
 package me.eddiep.handles.logic;
 
-
 import me.eddiep.ClassicPhysics;
 import me.eddiep.handles.ClassicBlockPlaceEvent;
 import me.eddiep.handles.ClassicPhysicsEvent;
@@ -8,7 +7,6 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.metadata.FixedMetadataValue;
-
 
 public class LavaLogic extends AbstractLogicContainer {
     @Override
@@ -21,10 +19,9 @@ public class LavaLogic extends AbstractLogicContainer {
     }
 
     protected void checkLocation(Location location, Location from) {
-        if (location.getWorld() == null || !location.getChunk().isLoaded() || location.getBlock() == null)//World isn't loaded
-            return;
-
         synchronized (ClassicPhysics.Sync) {
+            if (location == null || location.getWorld() == null || location.getChunk() == null || !location.getChunk().isLoaded() || location.getBlock() == null)//World isn't loaded
+                return;
             Block block = location.getBlock();
             if (block.hasMetadata("classic_block") && block.isLiquid())
                 return;
