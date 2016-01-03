@@ -21,7 +21,7 @@
             <id>sinndev-repo</id>
             <url>http://repo.sinndev.com/content/repositories/snapshots</url>
         </repository>
-		<repository>
+        <repository>
             <id>libs</id>
             <name>libs</name>
             <releases>
@@ -36,7 +36,8 @@
         <dependency>
             <groupId>net.milkbowl.vault</groupId>
             <artifactId>VaultAPI</artifactId>
-            <version>1.4</version>
+            <version>1.5</version>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>com.google.code.gson</groupId>
@@ -60,33 +61,44 @@
             <version>1.8.8-R0.1-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
-		<dependency>
+        <dependency>
             <groupId>org.bukkit</groupId>
             <artifactId>craftbukkit</artifactId>
             <version>1.8.8</version>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>mkremins</groupId>
             <artifactId>fanciful</artifactId>
             <version>0.3.3-SNAPSHOT</version>
         </dependency>
-		<dependency>
+        <dependency>
             <groupId>me.eddiep.minecraft</groupId>
             <artifactId>necessities</artifactId>
             <version>1.0</version>
+            <scope>provided</scope>
         </dependency>
-		<dependency>
+        <dependency>
             <groupId>me.eddiep.minecraft</groupId>
             <artifactId>classicphysics</artifactId>
             <version>1.0</version>
+            <scope>provided</scope>
         </dependency>
-		<dependency>
-            <groupId>me.eddiep</groupId>
+        <dependency>
+            <groupId>me.eddiep.ubot</groupId>
             <artifactId>ubot</artifactId>
-            <version>1.0.1</version>
+            <version>1.0-SNAPSHOT</version>
         </dependency>
     </dependencies>
-	<build>
+    <build>
+        <resources>
+            <resource>
+                <directory>${project.basedir}</directory>
+                <includes>
+                    <include>plugin.yml</include>
+                </includes>
+            </resource>
+        </resources>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -96,6 +108,35 @@
                     <source>1.7</source>
                     <target>1.7</target>
                 </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <!-- nothing here -->
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-shade-plugin</artifactId>
+                <version>1.4</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>shade</goal>
+                        </goals>
+                        <configuration>
+                            <filters>
+                                <filter>
+                                    <artifact>*:*</artifact>
+                                    <excludes>
+                                        <exclude>META-INF/*.SF</exclude>
+                                        <exclude>META-INF/*.DSA</exclude>
+                                        <exclude>META-INF/*.RSA</exclude>
+                                    </excludes>
+                                </filter>
+                            </filters>
+                        </configuration>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>
