@@ -34,9 +34,8 @@ public class CmdBan extends Cmd {
             }
             name = p.getName();
         }
-        String reason = null;
+        String reason = "";
         if (args.length > 1) {
-            reason = "";
             for (int i = 1; i < args.length; i++)
                 reason += args[i] + " ";
             reason = ChatColor.translateAlternateColorCodes('&', reason.trim());
@@ -46,10 +45,7 @@ public class CmdBan extends Cmd {
         if (target.getPlayer() != null)
             target.getPlayer().kickPlayer(reason);
         bans.addBan(theirName, reason, null, "Console");
-        if (reason != null)
-            Bukkit.broadcastMessage(var.getMessages() + name + " banned " + var.getObj() + theirName + var.getMessages() + " for " + var.getObj() + reason);
-        else
-            Bukkit.broadcastMessage(var.getMessages() + name + " banned " + var.getObj() + theirName + var.getMessages() + ".");
+        Bukkit.broadcastMessage(var.getMessages() + name + " banned " + var.getObj() + theirName + var.getMessages() + (reason.equals("") ? "." : " for " + var.getObj() + reason + var.getMessages() + "."));
         return true;
     }
 

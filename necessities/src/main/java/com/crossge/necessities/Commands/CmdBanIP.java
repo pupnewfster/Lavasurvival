@@ -14,7 +14,7 @@ import java.util.regex.Pattern;
 public class CmdBanIP extends Cmd {
     public boolean commandUse(CommandSender sender, String[] args) {
         if (args.length == 0) {
-            sender.sendMessage(var.getEr() + "Error: " + var.getErMsg() + "You must enter a player to ban.");
+            sender.sendMessage(var.getEr() + "Error: " + var.getErMsg() + "You must enter an player to ban.");
             return true;
         }
         String name = console.getName().replaceAll(":", "");
@@ -29,9 +29,8 @@ public class CmdBanIP extends Cmd {
                 }
                 name = p.getName();
             }
-            String reason = null;
+            String reason = "";
             if (args.length > 1) {
-                reason = "";
                 for (int i = 1; i < args.length; i++)
                     reason += args[i] + " ";
                 reason = ChatColor.translateAlternateColorCodes('&', reason.trim());
@@ -41,10 +40,7 @@ public class CmdBanIP extends Cmd {
             String theirIP = target.getAddress().toString().split("/")[1].split(":")[0];
             target.kickPlayer(reason);
             bans.addBan(theirIP, reason, null, "Console");
-            if (reason != null)
-                Bukkit.broadcastMessage(var.getMessages() + name + " banned " + var.getObj() + theirName + var.getMessages() + " for " + var.getObj() + reason);
-            else
-                Bukkit.broadcastMessage(var.getMessages() + name + " banned " + var.getObj() + theirName + var.getMessages() + ".");
+            Bukkit.broadcastMessage(var.getMessages() + name + " banned " + var.getObj() + theirName + var.getMessages() + (reason.equals("") ? "." : " for " + var.getObj() + reason + var.getMessages() + "."));
             return true;
         }
         boolean validIp = false;
@@ -52,18 +48,15 @@ public class CmdBanIP extends Cmd {
             final Pattern ipAdd = Pattern.compile("^([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\." + "([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\." +
                     "([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\." + "([01]?\\d\\d?|2[0-4]\\d|25[0-5])$");
             validIp = ipAdd.matcher(args[0]).matches();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        } catch (Exception e) {}
         if (!validIp) {
             sender.sendMessage(var.getEr() + "Error: " + var.getErMsg() + "Invalid ip.");
             return true;
         }
         if (sender instanceof Player)
             name = sender.getName();
-        String reason = null;
+        String reason = "";
         if (args.length > 1) {
-            reason = "";
             for (int i = 1; i < args.length; i++)
                 reason += args[i] + " ";
             reason = ChatColor.translateAlternateColorCodes('&', reason.trim());
@@ -76,10 +69,7 @@ public class CmdBanIP extends Cmd {
                 break;
             }
         bans.addBan(theirIP, reason, null, "Console");
-        if (reason != null)
-            Bukkit.broadcastMessage(var.getMessages() + name + " banned " + var.getObj() + theirIP + var.getMessages() + " for " + var.getObj() + reason);
-        else
-            Bukkit.broadcastMessage(var.getMessages() + name + " banned " + var.getObj() + theirIP + var.getMessages() + ".");
+        Bukkit.broadcastMessage(var.getMessages() + name + " banned " + var.getObj() + theirIP + var.getMessages() + (reason.equals("") ? "." : " for " + var.getObj() + reason + var.getMessages() + "."));
         return true;
     }
 

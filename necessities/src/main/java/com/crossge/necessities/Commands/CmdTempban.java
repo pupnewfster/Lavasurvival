@@ -1,6 +1,5 @@
 package com.crossge.necessities.Commands;
 
-import com.crossge.necessities.Formatter;
 import org.bukkit.BanList;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -12,8 +11,6 @@ import java.util.Date;
 import java.util.UUID;
 
 public class CmdTempban extends Cmd {
-    Formatter form = new Formatter();
-
     public boolean commandUse(CommandSender sender, String[] args) {
         if (args.length <= 1) {
             sender.sendMessage(var.getEr() + "Error: " + var.getErMsg() + "You must enter a player to ban and a duration in minutes.");
@@ -47,9 +44,8 @@ public class CmdTempban extends Cmd {
             sender.sendMessage(var.getEr() + "Error: " + var.getErMsg() + "Invalid time, please enter a time in minutes.");
             return true;
         }
-        String reason = null;
+        String reason = "";
         if (args.length > 2) {
-            reason = "";
             for (int i = 2; i < args.length; i++)
                 reason += args[i] + " ";
             reason = ChatColor.translateAlternateColorCodes('&', reason.trim());
@@ -60,11 +56,8 @@ public class CmdTempban extends Cmd {
             target.getPlayer().kickPlayer(reason);
         Date date = new Date(System.currentTimeMillis() + minutes * 60 * 1000);
         bans.addBan(theirName, reason, date, "Console");
-        if (reason != null)
-            Bukkit.broadcastMessage(var.getMessages() + name + " banned " + var.getObj() + theirName + var.getMessages() + " for " + var.getObj() + minutes + var.getMessages() +
-                    " " + plural(minutes) + " and the reason: " + var.getObj() + reason);
-        else
-            Bukkit.broadcastMessage(var.getMessages() + name + " banned " + var.getObj() + theirName + var.getMessages() + " for " + var.getObj() + minutes + var.getMessages() + " " + plural(minutes) + ".");
+        Bukkit.broadcastMessage(var.getMessages() + name + " banned " + var.getObj() + theirName + var.getMessages() + " for " + var.getObj() + minutes + var.getMessages() +
+                " " + plural(minutes) + (reason.equals("") ? "." : " for the reason " + var.getObj() + reason + var.getMessages() + "."));
         return true;
     }
 
