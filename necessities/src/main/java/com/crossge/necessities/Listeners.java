@@ -243,7 +243,7 @@ public class Listeners implements Listener {
                     recip.sendMessage(status + e.getFormat().replaceAll("\\{MESSAGE\\}", "") + e.getMessage());
             Bukkit.getConsoleSender().sendMessage(status + e.getFormat().replaceAll("\\{MESSAGE\\}", "") + e.getMessage());
             if (u.slackChat())
-                slack.sendMessage(ChatColor.stripColor(status + e.getFormat().replaceAll("\\{MESSAGE\\}", "") + e.getMessage()));
+                slack.sendMessage(status + e.getFormat().replaceAll("\\{MESSAGE\\}", "") + e.getMessage());
         }
         e.setCancelled(true);
         if (config.contains("Necessities.AI") && config.getBoolean("Necessities.AI") && (!isop || message.startsWith("!")))

@@ -33,7 +33,7 @@ public class JanetAI {//TODO: Upgrade
             } else if (message.toLowerCase().startsWith("!say "))
                 Bukkit.broadcastMessage(JanetName + message.replaceFirst("!say ", ""));
             else if (message.toLowerCase().startsWith("!slack "))
-                slack.sendMessage(ChatColor.stripColor(p.getName() + ": " + message.replaceFirst("!slack ", "")));
+                slack.sendMessage(p.getName() + ": " + message.replaceFirst("!slack ", ""));
         } else if (message.toLowerCase().contains("what time is it") || message.toLowerCase().contains("what is the time"))
             Bukkit.broadcastMessage(JanetName + "The time is " + time());
         else if (message.toLowerCase().contains("what day is it") || message.toLowerCase().contains("what is the date") ||

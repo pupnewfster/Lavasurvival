@@ -8,7 +8,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 public class CmdRequestMod extends Cmd {
-    private JanetSlack slack = new JanetSlack();
+    JanetSlack slack = new JanetSlack();
 
     public boolean commandUse(CommandSender sender, String[] args) {
         String reason = "";
@@ -24,10 +24,10 @@ public class CmdRequestMod extends Cmd {
                 return true;
             }
             if (args.length > 0) {
-                slack.sendMessage(ChatColor.stripColor(p.getName() + " requested a mod. With the reason " + reason));
+                slack.sendMessage(p.getName() + " requested a mod. With the reason " + reason);
                 Bukkit.broadcast(var.getMessages() + "To Slack - " + ChatColor.WHITE + ChatColor.translateAlternateColorCodes('&', p.getName() + " requested a mod. With the reason " + reason), "Necessities.slack");
             } else {
-                slack.sendMessage(ChatColor.stripColor(p.getName() + " requested a mod."));
+                slack.sendMessage(p.getName() + " requested a mod.");
                 Bukkit.broadcast(var.getMessages() + "To Slack - " + ChatColor.WHITE + ChatColor.translateAlternateColorCodes('&', p.getName() + " requested a mod."), "Necessities.slack");
             }
             p.sendMessage(var.getMessages() + "Request successfully sent.");
