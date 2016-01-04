@@ -13,7 +13,7 @@ import java.util.UUID;
 
 public class CmdSlack extends Cmd {
     private File configFile = new File("plugins/Necessities", "config.yml");
-    private JanetSlack slack = new JanetSlack();
+    JanetSlack slack = new JanetSlack();
 
     public boolean commandUse(CommandSender sender, String[] args) {
         String message = "";
@@ -47,6 +47,8 @@ public class CmdSlack extends Cmd {
         Player player = Bukkit.getPlayer(uuid);
         String send = ChatColor.translateAlternateColorCodes('&', config.getString("Necessities.ChatFormat"));
         send = var.getMessages() + "To Slack - " + ChatColor.WHITE + send;
+        send = send.replaceAll("\\{WORLD\\} ", "");
+        send = send.replaceAll("\\{GUILD\\} ", "");
         send = send.replaceAll("\\{TITLE\\} ", "");
         send = send.replaceAll("\\{RANK\\}", ChatColor.translateAlternateColorCodes('&', um.getUser(uuid).getRank().getTitle()));
         send = send.replaceAll("\\{NAME\\}", player.getDisplayName());
@@ -58,12 +60,12 @@ public class CmdSlack extends Cmd {
                 message = ChatColor.translateAlternateColorCodes('&', message.replaceAll("&k", ""));
         }
         Bukkit.broadcast(send + message, "Necessities.slack");
-        slack.sendMessage(ChatColor.stripColor(send + message));
+        slack.sendMessage(send + message);
     }
 
     private void consoleToSlack(String message) {
         String send = var.getMessages() + "To Slack - " + console.getName() + ChatColor.WHITE + " " + ChatColor.translateAlternateColorCodes('&', message.trim());
         Bukkit.broadcast(send, "Necessities.slack");
-        slack.sendMessage(ChatColor.stripColor(send));
+        slack.sendMessage(send);
     }
 }

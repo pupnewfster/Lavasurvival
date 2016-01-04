@@ -10,7 +10,7 @@ import java.util.regex.Pattern;
 public class CmdUnbanIP extends Cmd {
     public boolean commandUse(CommandSender sender, String[] args) {
         if (args.length == 0) {
-            sender.sendMessage(var.getEr() + "Error: " + var.getErMsg() + "You must enter a player to ban.");
+            sender.sendMessage(var.getEr() + "Error: " + var.getErMsg() + "You must enter an ip to unban.");
             return true;
         }
         boolean validIp = false;
@@ -18,9 +18,7 @@ public class CmdUnbanIP extends Cmd {
             final Pattern ipAdd = Pattern.compile("^([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\." + "([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\." +
                     "([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\." + "([01]?\\d\\d?|2[0-4]\\d|25[0-5])$");
             validIp = ipAdd.matcher(args[0]).matches();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        } catch (Exception e) {}
         if (!validIp) {
             sender.sendMessage(var.getEr() + "Error: " + var.getErMsg() + "Invalid ip.");
             return true;

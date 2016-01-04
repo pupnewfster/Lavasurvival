@@ -22,13 +22,8 @@ public class CmdMute extends Cmd {
         String name = "The console";
         if (sender instanceof Player)
             name = ((Player) sender).getDisplayName();
-        if (!u.isMuted()) {
-            Bukkit.broadcastMessage(var.getObj() + name + var.getMessages() + " muted " + var.getObj() + u.getPlayer().getDisplayName() + var.getMessages() + ".");
-            u.getPlayer().sendMessage(var.getDemote() + "You have been " + var.getObj() + "muted" + var.getMessages() + ".");
-        } else {
-            Bukkit.broadcastMessage(var.getObj() + name + var.getMessages() + " unmuted " + var.getObj() + u.getPlayer().getDisplayName() + var.getMessages() + ".");
-            u.getPlayer().sendMessage(var.getPromote() + "You have been " + var.getObj() + "unmuted" + var.getMessages() + ".");
-        }
+        Bukkit.broadcastMessage(var.getObj() + name + var.getMessages() + (!u.isMuted() ? " muted " : " unmuted ") + var.getObj() + u.getPlayer().getDisplayName() + var.getMessages() + ".");
+        u.getPlayer().sendMessage(var.getDemote() + "You have been " + var.getObj() + (!u.isMuted() ? "muted" : "unmuted") + var.getMessages() + ".");
         u.setMuted(!u.isMuted());
         return true;
     }
