@@ -106,7 +106,7 @@ public abstract class Gamemode {
             physicsListener.cleanup();
     }
 
-    public void prepare() {
+    public final void prepare() {
         if (scoreboard == null)
             scoreboard = Bukkit.getScoreboardManager().getMainScoreboard();
         if (listener == null) {
@@ -137,9 +137,10 @@ public abstract class Gamemode {
         currentMap.prepare();
     }
 
-    private long lastMoneyCheck = System.currentTimeMillis();
-    public void start() {
+    public final void start() {
         if (restart) {
+            Lavasurvival.INSTANCE.updating = true;
+
             for (Player p : Bukkit.getOnlinePlayers()) {
                 try {
                     Lavasurvival.INSTANCE.changeServer(p, restartServer);
@@ -148,6 +149,23 @@ public abstract class Gamemode {
                 }
             }
 
+            //Unloading world
+            if (lastMap != null) {
+                Lavasurvival.log("Unloading " + lastMap.getWorld().getName() + "..");
+                boolean success = Bukkit.unloadWorld(lastMap.getWorld(), false);
+                if (!success)
+                    Lavasurvival.log("Failed to unload last map! A manual unload may be required..");
+                else {
+                    new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            restoreBackup(lastMap.getWorld());
+                        }
+                    }).start();
+                }
+            }
+
+            //Restart
             Bukkit.getScheduler().scheduleSyncDelayedTask(Lavasurvival.INSTANCE, new Runnable() {
                 @Override
                 public void run() {
@@ -158,6 +176,11 @@ public abstract class Gamemode {
             return;
         }
 
+        onStart();
+    }
+
+    private long lastMoneyCheck = System.currentTimeMillis();
+    protected void onStart() {
         Lavasurvival.log("New game on " + getCurrentWorld().getName());
 
         isEnding = false;
@@ -358,84 +381,112 @@ public abstract class Gamemode {
     }
 
     public void endRound() {
+        endRound(false, true);
+    }
+
+    public void endRound(boolean skipVote, boolean giveRewards) {
         if (hasEnded)
             return;
 
         end();
+
         final UserManager um = Lavasurvival.INSTANCE.getUserManager();
-        CmdHide hide = Lavasurvival.INSTANCE.getHide();
-        int amount = 0;
-        for (UUID id : alive)
-            if (id != null && Bukkit.getPlayer(id) != null && !hide.isHidden(Bukkit.getPlayer(id)) && !isInSpawn(Bukkit.getPlayer(id)))
-                amount++;
-        if (amount == 0) {
-            globalMessage("No one survived..");
-        } else if (amount <= 45) {
-            globalMessage("Congratulations to the survivors!");
-            String survivors = "";
+        if (giveRewards) {
+            CmdHide hide = Lavasurvival.INSTANCE.getHide();
+            int amount = 0;
+            for (UUID id : alive)
+                if (id != null && Bukkit.getPlayer(id) != null && !hide.isHidden(Bukkit.getPlayer(id)) && !isInSpawn(Bukkit.getPlayer(id)))
+                    amount++;
+            if (amount == 0) {
+                globalMessage("No one survived..");
+            } else if (amount <= 45) {
+                globalMessage("Congratulations to the survivors!");
+                String survivors = "";
+                for (UUID id : alive) {
+                    if (id == null || Bukkit.getPlayer(id) == null || hide.isHidden(Bukkit.getPlayer(id)) || isInSpawn(Bukkit.getPlayer(id)))
+                        continue;
+                    if (survivors.equals(""))
+                        survivors += Bukkit.getPlayer(id).getName();
+                    else
+                        survivors += ", " + Bukkit.getPlayer(id).getName();
+                }
+                globalMessage(survivors);
+            } else
+                globalMessage("Congratulations to all " + amount + " survivors!");
+
+            final HashMap<Player, Integer> winners = new HashMap<>();
+
             for (UUID id : alive) {
-                if (id == null || Bukkit.getPlayer(id) == null || hide.isHidden(Bukkit.getPlayer(id)) || isInSpawn(Bukkit.getPlayer(id)))
+                Player player = Bukkit.getPlayer(id);
+                if (id == null || player == null || hide.isHidden(player) || isInSpawn(Bukkit.getPlayer(id)))
                     continue;
-                if (survivors.equals(""))
-                    survivors += Bukkit.getPlayer(id).getName();
-                else
-                    survivors += ", " + Bukkit.getPlayer(id).getName();
+
+                int blockCount = countAirBlocksAround(player, 10);
+                double reward = calculateReward(player, blockCount);
+
+                winners.put(player, blockCount);
+
+                Lavasurvival.INSTANCE.getEconomy().depositPlayer(player, reward);
+                player.getPlayer().sendMessage(ChatColor.GREEN + "+ " + ChatColor.GOLD + "You won " + ChatColor.BOLD + reward + ChatColor.RESET + "" + ChatColor.GOLD + " GGs!");
+                IChatBaseComponent titleJSON = IChatBaseComponent.ChatSerializer.a("{'text': 'You won!'}");
+                IChatBaseComponent subtitleJSON = IChatBaseComponent.ChatSerializer.a("{'text': '§6§l" + reward + "§6 GGs!'}");
+                PacketPlayOutTitle titlePacket = new PacketPlayOutTitle(PacketPlayOutTitle.EnumTitleAction.TITLE, titleJSON, 0, 60, 0);
+                PacketPlayOutTitle subtitlePacket = new PacketPlayOutTitle(PacketPlayOutTitle.EnumTitleAction.SUBTITLE, subtitleJSON);
+                ((CraftPlayer) player).getHandle().playerConnection.sendPacket(titlePacket);
+                ((CraftPlayer) player).getHandle().playerConnection.sendPacket(subtitlePacket);
             }
-            globalMessage(survivors);
-        } else
-            globalMessage("Congratulations to all " + amount + " survivors!");
 
-        final HashMap<Player, Integer> winners = new HashMap<>();
-
-        for (UUID id : alive) {
-            Player player = Bukkit.getPlayer(id);
-            if (id == null || player == null || hide.isHidden(player) || isInSpawn(Bukkit.getPlayer(id)))
-                continue;
-
-            int blockCount = countAirBlocksAround(player, 10);
-            double reward = calculateReward(player, blockCount);
-
-            winners.put(player, blockCount);
-
-            Lavasurvival.INSTANCE.getEconomy().depositPlayer(player, reward);
-            player.getPlayer().sendMessage(ChatColor.GREEN + "+ " + ChatColor.GOLD + "You won " + ChatColor.BOLD + reward + ChatColor.RESET + "" + ChatColor.GOLD + " GGs!");
-            IChatBaseComponent titleJSON = IChatBaseComponent.ChatSerializer.a("{'text': 'You won!'}");
-            IChatBaseComponent subtitleJSON = IChatBaseComponent.ChatSerializer.a("{'text': '§6§l" + reward + "§6 GGs!'}");
-            PacketPlayOutTitle titlePacket = new PacketPlayOutTitle(PacketPlayOutTitle.EnumTitleAction.TITLE, titleJSON, 0, 60, 0);
-            PacketPlayOutTitle subtitlePacket = new PacketPlayOutTitle(PacketPlayOutTitle.EnumTitleAction.SUBTITLE, subtitleJSON);
-            ((CraftPlayer)player).getHandle().playerConnection.sendPacket(titlePacket);
-            ((CraftPlayer)player).getHandle().playerConnection.sendPacket(subtitlePacket);
+            calculateGlicko(winners, um);
         }
-
-        calculateGlicko(winners, um);
 
         Lavasurvival.INSTANCE.MONEY_VIEWER.run();
         lastMoneyCheck = System.currentTimeMillis();
 
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                startVoting();
-            }
-        }).start();
-
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                System.out.println("Updating ratings..");
-                int count = 0;
-                long start = System.currentTimeMillis();
-                for (Player p : Bukkit.getOnlinePlayers()) {
-                    UserInfo info = um.getUser(p.getUniqueId());
-
-                    if (info.getRanking().shouldUpdate()) {
-                        info.getRanking().update();
-                        count++;
-                    }
+        if (!skipVote) {
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    startVoting();
                 }
-                System.out.println("Updated " + count + " in " + (System.currentTimeMillis() - start) + "ms !");
+            }).start();
+        } else {
+            try {
+                String[] files = LavaMap.getPossibleMaps();
+                if (nextGame == null)
+                    nextGame = pickRandomGame(null);
+                nextGame.map = LavaMap.load(files[RANDOM.nextInt(files.length)]);
+
+                Bukkit.getScheduler().scheduleSyncDelayedTask(Lavasurvival.INSTANCE, new Runnable() {
+                    @Override
+                    public void run() {
+                        lastMap = getCurrentMap();
+                        tryNextGame();
+                    }
+                }, 20);
+            } catch (IOException e) {
+                e.printStackTrace();
             }
-        }).start();
+        }
+
+        if (giveRewards) {
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    System.out.println("Updating ratings..");
+                    int count = 0;
+                    long start = System.currentTimeMillis();
+                    for (Player p : Bukkit.getOnlinePlayers()) {
+                        UserInfo info = um.getUser(p.getUniqueId());
+
+                        if (info.getRanking().shouldUpdate()) {
+                            info.getRanking().update();
+                            count++;
+                        }
+                    }
+                    System.out.println("Updated " + count + " in " + (System.currentTimeMillis() - start) + "ms !");
+                }
+            }).start();
+        }
     }
 
     private void calculateGlicko(HashMap<Player, Integer> winners, UserManager um) {
@@ -602,7 +653,7 @@ public abstract class Gamemode {
             try {
                 if (nextGame == null)
                     nextGame = pickRandomGame(null);
-                nextGame.map = LavaMap.load(files[0]);
+                nextGame.map = LavaMap.load(files[RANDOM.nextInt(files.length)]);
             } catch (IOException e) {
                 e.printStackTrace();
             }

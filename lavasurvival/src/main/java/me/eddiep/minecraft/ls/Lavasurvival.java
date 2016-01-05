@@ -9,7 +9,6 @@ import me.eddiep.handles.ClassicPhysicsHandler;
 import me.eddiep.minecraft.ls.commands.*;
 import me.eddiep.minecraft.ls.game.Gamemode;
 import me.eddiep.minecraft.ls.game.LavaMap;
-import me.eddiep.minecraft.ls.game.impl.Fusion;
 import me.eddiep.minecraft.ls.game.impl.Rise;
 import me.eddiep.minecraft.ls.game.shop.ShopFactory;
 import me.eddiep.minecraft.ls.game.shop.impl.*;
@@ -69,6 +68,7 @@ public class Lavasurvival extends JavaPlugin {
     private boolean running = false;
     private ItemStack rules;
     private CancelToken ubotCancelToken;
+    public boolean updating;
 
     public void updateMoneyView(Player player) {
         Inventory inv = player.getInventory();
