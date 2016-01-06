@@ -314,15 +314,15 @@ public class BasicBlockShop extends Menu {
     }
 
     protected int price(Material type) {
-        switch (type) {
+        /*switch (type) {
             case GRAVEL:
                 return 1000;
             case STONE:
                 return 1000;
             case LOG:
-                return 600;
+                return 1000;
             case LOG_2:
-                return 600;
+                return 1000;
             case SANDSTONE:
                 return 1000;
             case RED_SANDSTONE:
@@ -333,6 +333,8 @@ public class BasicBlockShop extends Menu {
                 return 1000;
             default:
                 return 0;
-        }
+        }*/
+
+        return 1000;
     }
 }
