@@ -16,14 +16,7 @@ public class CmdDelPermission extends RankCmd {
         }
         String node = args[1];
         rm.updateRankPerms(r, node, true);
-        sender.sendMessage(var.getMessages() + "Removed " + var.getObj() + node + var.getMessages() + " from " + var.getObj() + plural(r.getName()) + var.getMessages()
-                + " permissions.");
+        sender.sendMessage(var.getMessages() + "Removed " + var.getObj() + node + var.getMessages() + " from " + var.getObj() + form.ownerShip(r.getName()) + var.getMessages() + " permissions.");
         return true;
-    }
-
-    private String plural(String name) {
-        if (name.endsWith("s"))
-            return name + "'";
-        return name + "'s";
     }
 }

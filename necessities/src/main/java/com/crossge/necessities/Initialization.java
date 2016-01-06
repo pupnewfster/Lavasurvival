@@ -17,17 +17,11 @@ import java.io.File;
 import java.util.Arrays;
 
 public class Initialization {
-    private File configFileWarps = new File("plugins/Necessities/WorldManager", "warps.yml");
-    private File configFilePM = new File("plugins/Necessities/WorldManager", "portals.yml");
-    private File configFileUsers = new File("plugins/Necessities/RankManager", "users.yml");
-    private File configFileWM = new File("plugins/Necessities/WorldManager", "worlds.yml");
-    private File configFileLogOut = new File("plugins/Necessities", "logoutmessages.yml");
-    private File configFileLogIn = new File("plugins/Necessities", "loginmessages.yml");
-    private File configFileCensors = new File("plugins/Necessities", "censors.yml");
-    private File configFileSpying = new File("plugins/Necessities", "spying.yml");
-    private File configFileHiding = new File("plugins/Necessities", "hiding.yml");
-    private File configFileTitles = new File("plugins/Necessities", "titles.yml");
-    private File configFile = new File("plugins/Necessities", "config.yml");
+    private File configFileWarps = new File("plugins/Necessities/WorldManager", "warps.yml"), configFilePM = new File("plugins/Necessities/WorldManager", "portals.yml"),
+            configFileUsers = new File("plugins/Necessities/RankManager", "users.yml"), configFileWM = new File("plugins/Necessities/WorldManager", "worlds.yml"),
+            configFileLogOut = new File("plugins/Necessities", "logoutmessages.yml"), configFileLogIn = new File("plugins/Necessities", "loginmessages.yml"),
+            configFileCensors = new File("plugins/Necessities", "censors.yml"), configFileSpying = new File("plugins/Necessities", "spying.yml"),
+            configFileHiding = new File("plugins/Necessities", "hiding.yml"), configFileTitles = new File("plugins/Necessities", "titles.yml"), configFile = new File("plugins/Necessities", "config.yml");
     CmdCommandSpy cs = new CmdCommandSpy();
     PortalManager pm = new PortalManager();
     WarpManager warps = new WarpManager();
@@ -58,7 +52,7 @@ public class Initialization {
         rm.setSubranks();
         rm.readRanks();
         sb.createScoreboard();
-        
+
         YamlConfiguration config = YamlConfiguration.loadConfiguration(configFile);
         //WorldManager
         if (config.contains("Necessities.WorldManager") && config.getBoolean("Necessities.WorldManager")) {
@@ -89,7 +83,6 @@ public class Initialization {
             try {
                 f.createNewFile();
             } catch (Exception e) {
-                e.printStackTrace();
             }
     }
 
@@ -98,7 +91,6 @@ public class Initialization {
             try {
                 file.createNewFile();
             } catch (Exception e) {
-                e.printStackTrace();
             }
     }
 
@@ -121,7 +113,6 @@ public class Initialization {
                 config.set("ips", Arrays.asList(""));
                 config.save(configFileCensors);
             } catch (Exception e) {
-                e.printStackTrace();
             }
         if (!configFile.exists())
             try {
@@ -147,7 +138,6 @@ public class Initialization {
                 config.set("Necessities.WebHook", "webHook");
                 config.save(configFile);
             } catch (Exception e) {
-                e.printStackTrace();
             }
         else {
             YamlConfiguration config = YamlConfiguration.loadConfiguration(configFile);
@@ -190,7 +180,6 @@ public class Initialization {
             try {
                 config.save(configFile);
             } catch (Exception e) {
-                e.printStackTrace();
             }
         }
     }

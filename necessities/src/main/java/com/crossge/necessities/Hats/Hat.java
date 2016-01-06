@@ -46,7 +46,7 @@ public abstract class Hat {
 
     protected void spawn(int num, Location loc) {
         World w = loc.getWorld();
-        for (int i = 0; i < num; i ++) {
+        for (int i = 0; i < num; i++) {
             ArmorStand a = (ArmorStand) w.spawnEntity(new Location(w, loc.getX(), loc.getY(), loc.getZ()), EntityType.ARMOR_STAND);
             a.setVisible(false);
             a.setGravity(false);
@@ -57,7 +57,7 @@ public abstract class Hat {
 
     protected void spawnYaw(int num, Location loc) {
         World w = loc.getWorld();
-        for (int i = 0; i < num; i ++) {
+        for (int i = 0; i < num; i++) {
             ArmorStand a = (ArmorStand) w.spawnEntity(new Location(w, loc.getX(), loc.getY(), loc.getZ(), loc.getYaw(), 0), EntityType.ARMOR_STAND);
             a.setVisible(false);
             a.setGravity(false);
@@ -89,6 +89,7 @@ public abstract class Hat {
     public void setType(HatType type) {
         this.type = type;
     }
+
     public HatType getType() {
         return this.type;
     }

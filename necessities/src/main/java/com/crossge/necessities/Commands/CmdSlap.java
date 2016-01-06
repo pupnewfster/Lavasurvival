@@ -18,14 +18,10 @@ public class CmdSlap extends Cmd {
             sender.sendMessage(var.getEr() + "Error: " + var.getErMsg() + "Invalid player.");
             return true;
         }
-        Player target = sender.getServer().getPlayer(uuid);
+        Player target = Bukkit.getPlayer(uuid);
         Location loc = target.getLocation().clone().add(0, 2500, 0);
         target.teleport(loc);
-        if (sender instanceof Player) {
-            Player player = (Player) sender;
-            Bukkit.broadcastMessage(var.getMessages() + target.getName() + " was slapped sky high by " + player.getName());
-        } else
-            Bukkit.broadcastMessage(var.getMessages() + target.getName() + " was slapped sky high by " + console.getName().replaceAll(":", ""));
+        Bukkit.broadcastMessage(var.getMessages() + target.getName() + " was slapped sky high by " + (sender instanceof Player ? sender.getName() : console.getName().replaceAll(":", "")));
         return true;
     }
 }

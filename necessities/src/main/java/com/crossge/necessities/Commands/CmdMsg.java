@@ -26,12 +26,8 @@ public class CmdMsg extends Cmd {
                 for (int i = 1; i < args.length; i++)
                     message += args[i] + " ";
                 message = ChatColor.WHITE + message.trim();
-                if (p.hasPermission("Necessities.colorchat")) {
-                    if (p.hasPermission("Necessities.magicchat"))
-                        message = ChatColor.translateAlternateColorCodes('&', message);
-                    else
-                        message = ChatColor.translateAlternateColorCodes('&', message.replaceAll("&k", ""));
-                }
+                if (p.hasPermission("Necessities.colorchat"))
+                    message = ChatColor.translateAlternateColorCodes('&', (p.hasPermission("Necessities.magicchat") ? message : message.replaceAll("&k", "")));
                 self.setLastC("Console");
                 console.setLastContact(self.getUUID());
                 p.sendMessage(var.getMessages() + "[me -> " + console.getName().replaceAll(":", "") + "] " + message);
@@ -57,12 +53,8 @@ public class CmdMsg extends Cmd {
             for (int i = 1; i < args.length; i++)
                 message += args[i] + " ";
             message = ChatColor.WHITE + message.trim();
-            if (p.hasPermission("Necessities.colorchat")) {
-                if (p.hasPermission("Necessities.magicchat"))
-                    message = ChatColor.translateAlternateColorCodes('&', message);
-                else
-                    message = ChatColor.translateAlternateColorCodes('&', message.replaceAll("&k", ""));
-            }
+            if (p.hasPermission("Necessities.colorchat"))
+                message = ChatColor.translateAlternateColorCodes('&', (p.hasPermission("Necessities.magicchat") ? message : message.replaceAll("&k", "")));
             u.setLastC(self.getUUID().toString());
             self.setLastC(u.getUUID().toString());
             p.sendMessage(var.getMessages() + "[me -> " + t.getDisplayName() + var.getMessages() + "] " + message);

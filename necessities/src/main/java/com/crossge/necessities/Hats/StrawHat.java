@@ -19,11 +19,11 @@ public class StrawHat extends Hat {
             this.armorStands.get(i).setRightArmPose(new EulerAngle(0, Math.toRadians(90), Math.toRadians(90)));
             this.armorStands.get(i).setSmall(true);
         }
-        spawn(360/turnV, loc.clone().add(0, 0.7, 0));
+        spawn(360 / turnV, loc.clone().add(0, 0.7, 0));
         for (int i = 0; i < 360 / turnV; i++) {
-            this.armorStands.get(360/turn + i).setHelmet(new ItemStack(Material.HAY_BLOCK, 1));
-            this.armorStands.get(360/turn + i).setSmall(true);
-            this.armorStands.get(360/turn + i).setHeadPose(new EulerAngle(Math.toRadians(45), Math.toRadians(i * turnV), 0));
+            this.armorStands.get(360 / turn + i).setHelmet(new ItemStack(Material.HAY_BLOCK, 1));
+            this.armorStands.get(360 / turn + i).setSmall(true);
+            this.armorStands.get(360 / turn + i).setHeadPose(new EulerAngle(Math.toRadians(45), Math.toRadians(i * turnV), 0));
         }
     }
 }

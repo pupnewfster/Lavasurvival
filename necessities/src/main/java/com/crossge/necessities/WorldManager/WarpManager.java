@@ -50,7 +50,6 @@ public class WarpManager {
         try {
             configWarps.save(configFileWarps);
         } catch (Exception e) {
-            e.printStackTrace();
         }
         warps.remove(name);
         lowerNames.remove(name.toLowerCase());
@@ -67,7 +66,6 @@ public class WarpManager {
         try {
             configWarps.save(configFileWarps);
         } catch (Exception e) {
-            e.printStackTrace();
         }
         warps.put(name, new Warp(name));
         lowerNames.put(name.toLowerCase(), name);

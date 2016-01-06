@@ -10,7 +10,7 @@ import java.util.ArrayList;
 public class CmdWorlds extends WorldCmd {
     public boolean commandUse(CommandSender sender, String[] args) {
         String levels = "";
-        ArrayList<String> worlds = new ArrayList<String>();
+        ArrayList<String> worlds = new ArrayList<>();
         for (World world : Bukkit.getWorlds())
             worlds.add(world.getName());
         for (int i = 0; i < worlds.size() - 1; i++)

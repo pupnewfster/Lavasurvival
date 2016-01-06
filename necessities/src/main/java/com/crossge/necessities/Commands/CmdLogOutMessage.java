@@ -17,7 +17,7 @@ public class CmdLogOutMessage extends Cmd {
             if (args.length != 0) {
                 logoutmessage = "";
                 for (String arg : args) logoutmessage = logoutmessage + arg + " ";
-                if (!logoutmessage.contains("\\{NAME\\}"))
+                if (!logoutmessage.contains("{NAME}"))
                     logoutmessage = "{RANK} {NAME}&r " + logoutmessage;
                 logoutmessage = logoutmessage.trim();
             }
@@ -26,7 +26,6 @@ public class CmdLogOutMessage extends Cmd {
             try {
                 configLogOut.save(configFileLogOut);
             } catch (Exception e) {
-                e.printStackTrace();
             }
             p.sendMessage("Logout message set to: " + ChatColor.YELLOW + ChatColor.translateAlternateColorCodes('&',
                     logoutmessage.replaceAll("\\{NAME\\}", p.getDisplayName()).replaceAll("\\{RANK\\}",

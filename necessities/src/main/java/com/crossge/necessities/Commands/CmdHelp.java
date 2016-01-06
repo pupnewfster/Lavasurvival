@@ -1,6 +1,5 @@
 package com.crossge.necessities.Commands;
 
-import com.crossge.necessities.Formatter;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
@@ -12,12 +11,10 @@ import java.util.ArrayList;
 import java.util.Map;
 
 public class CmdHelp extends Cmd {
-    Formatter form = new Formatter();
-
     public boolean commandUse(CommandSender sender, String[] args) {
         if (sender instanceof Player) {
             Player player = (Player) sender;
-            ArrayList<String> helpList = new ArrayList<String>();
+            ArrayList<String> helpList = new ArrayList<>();
             int page = 0;
             String search = "";
             if (args.length == 1) {
@@ -37,8 +34,7 @@ public class CmdHelp extends Cmd {
             if (args.length == 0 || page == 0)
                 page = 1;
             int time = 0;
-            ArrayList<String> plugins = new ArrayList<String>();
-            ArrayList<String> commands = new ArrayList<String>();
+            ArrayList<String> plugins = new ArrayList<>(), commands = new ArrayList<>();
             for (Plugin p : Bukkit.getPluginManager().getPlugins()) {
                 if (search.equals("") || p.getName().equalsIgnoreCase(search)) {
                     if (p.getName().equalsIgnoreCase(search))
@@ -52,7 +48,8 @@ public class CmdHelp extends Cmd {
                                     plugins.add(var.getPlugCol() + p.getName() + ChatColor.WHITE + ": Plugin Help: /help " + p.getName().toLowerCase());
                             }
                         }
-                    } catch (Exception e) { }
+                    } catch (Exception e) {
+                    }
                 } else if (Bukkit.getPluginManager().getPlugin(search) == null) {
                     if (p.getName().contains(search))
                         plugins.add(var.getPlugCol() + p.getName() + ChatColor.WHITE + ": Plugin Help: /help " + p.getName().toLowerCase());
@@ -66,7 +63,8 @@ public class CmdHelp extends Cmd {
                                     commands.add(var.getMessages() + "Usage" + ChatColor.WHITE + ": " + pc.getUsage().replaceFirst("<command>", pc.getName()));
                             }
                         }
-                    } catch (Exception e) { }
+                    } catch (Exception e) {
+                    }
                 }
             }
             for (String plug : plugins)
@@ -98,7 +96,7 @@ public class CmdHelp extends Cmd {
                 sender.sendMessage(var.getMessages() + "Type " + ChatColor.RED + "/help " + Integer.toString(page + 2) + var.getMessages() + " to read the next page.");
             return true;
         }
-        ArrayList<String> helpList = new ArrayList<String>();
+        ArrayList<String> helpList = new ArrayList<>();
         int page = 0;
         String search = "";
         if (args.length == 1) {
@@ -118,8 +116,8 @@ public class CmdHelp extends Cmd {
         if (args.length == 0 || page == 0)
             page = 1;
         int time = 0;
-        ArrayList<String> plugins = new ArrayList<String>();
-        ArrayList<String> commands = new ArrayList<String>();
+        ArrayList<String> plugins = new ArrayList<>();
+        ArrayList<String> commands = new ArrayList<>();
         for (Plugin p : Bukkit.getPluginManager().getPlugins()) {
             if (search.equals("") || p.getName().equalsIgnoreCase(search)) {
                 if (p.getName().equalsIgnoreCase(search))
@@ -133,7 +131,8 @@ public class CmdHelp extends Cmd {
                                 plugins.add(var.getPlugCol() + p.getName() + ChatColor.WHITE + ": Plugin Help: /help " + p.getName().toLowerCase());
                         }
                     }
-                } catch (Exception e) { }
+                } catch (Exception e) {
+                }
             } else if (Bukkit.getPluginManager().getPlugin(search) == null) {
                 if (p.getName().contains(search))
                     plugins.add(var.getPlugCol() + p.getName() + ChatColor.WHITE + ": Plugin Help: /help " + p.getName().toLowerCase());
@@ -147,7 +146,8 @@ public class CmdHelp extends Cmd {
                                 commands.add(var.getMessages() + "Usage" + ChatColor.WHITE + ": " + pc.getUsage().replaceFirst("<command>", pc.getName()));
                         }
                     }
-                } catch (Exception e) { }
+                } catch (Exception e) {
+                }
             }
         }
         for (String plug : plugins)

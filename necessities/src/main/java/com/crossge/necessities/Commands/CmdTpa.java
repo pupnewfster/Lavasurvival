@@ -26,7 +26,7 @@ public class CmdTpa extends Cmd {
             Player target = sender.getServer().getPlayer(uuid);
             if (p.getLocation().getBlock().hasMetadata("classic_block") || p.getEyeLocation().getBlock().hasMetadata("classic_block") ||
                     target.getLocation().getBlock().hasMetadata("classic_block") || target.getEyeLocation().getBlock().hasMetadata("classic_block")) {
-                sender.sendMessage(var.getEr() + "Error: " + var.getErMsg() +  "You or the target are in the lava.");
+                sender.sendMessage(var.getEr() + "Error: " + var.getErMsg() + "You or the target are in the lava.");
                 return true;
             }
             String tPrefix = um.getUser(uuid).getStatus(), pPrefix = um.getUser(p.getUniqueId()).getStatus();

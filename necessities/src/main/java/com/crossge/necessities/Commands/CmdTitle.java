@@ -1,5 +1,6 @@
 package com.crossge.necessities.Commands;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -9,7 +10,7 @@ import java.io.File;
 import java.util.UUID;
 
 public class CmdTitle extends Cmd {
-    private File configFileTitles = new File("plugins/Necessities", "titles.yml");
+    private File configFileTitles = new File("plugins/Necessities", "titles.yml"), configFile = new File("plugins/Necessities", "config.yml");
 
     public boolean commandUse(CommandSender sender, String[] args) {
         if (args.length == 0) {
@@ -21,11 +22,13 @@ public class CmdTitle extends Cmd {
             sender.sendMessage(var.getEr() + "Error: " + var.getErMsg() + "Invalid player.");
             return true;
         }
-        Player target = sender.getServer().getPlayer(uuid);
+        Player target = Bukkit.getPlayer(uuid);
+        boolean free = !(sender instanceof Player);
         if (sender instanceof Player) {
             Player p = (Player) sender;
             if (target != p && !p.hasPermission("Necessities.bracketOthers"))
                 target = p;
+            free = p.hasPermission("Necessities.freeCommand");
         }
         YamlConfiguration configTitles = YamlConfiguration.loadConfiguration(configFileTitles);
         if (args.length == 1) {
@@ -33,7 +36,6 @@ public class CmdTitle extends Cmd {
             try {
                 configTitles.save(configFileTitles);
             } catch (Exception e) {
-                e.printStackTrace();
             }
             sender.sendMessage(var.getMessages() + "Title removed for player " + var.getObj() + target.getName());
             return true;
@@ -41,6 +43,7 @@ public class CmdTitle extends Cmd {
         String title = "";
         for (String arg : args)
             title += arg + " ";
+        YamlConfiguration config = YamlConfiguration.loadConfiguration(configFile);
         title = title.replaceFirst(args[0], "").trim();
         if (ChatColor.stripColor(ChatColor.translateAlternateColorCodes('&', title + "&r")).length() > 24) {
             sender.sendMessage(var.getEr() + "Error: " + var.getErMsg() + "Titles have a maximum of 24 characters.");
@@ -52,7 +55,6 @@ public class CmdTitle extends Cmd {
         try {
             configTitles.save(configFileTitles);
         } catch (Exception e) {
-            e.printStackTrace();
         }
         sender.sendMessage(var.getMessages() + "Title set to " + title + var.getMessages() + " for player " + var.getObj() + target.getName());
         return true;

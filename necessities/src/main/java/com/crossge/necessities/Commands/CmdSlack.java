@@ -26,19 +26,14 @@ public class CmdSlack extends Cmd {
             User u = um.getUser(p.getUniqueId());
             if (args.length > 0)
                 sendSlack(p.getUniqueId(), message);
-            else if (!u.slackChat()) {
-                p.sendMessage(var.getMessages() + "You are now sending messages only to slack.");
-                u.toggleSlackChat();
-            } else {
-                p.sendMessage(var.getMessages() + "You are no longer sending messages to slack.");
+            else {
+                p.sendMessage(var.getMessages() + "You are " + (!u.slackChat() ? "now" : "no longer") + " sending messages to slack.");
                 u.toggleSlackChat();
             }
-        } else {
-            if (args.length == 0)
-                sender.sendMessage(var.getEr() + "Error: " + var.getErMsg() + "The console cannot toggle slack chat.");
-            else
-                consoleToSlack(message);
-        }
+        } else if (args.length == 0)
+            sender.sendMessage(var.getEr() + "Error: " + var.getErMsg() + "The console cannot toggle slack chat.");
+        else
+            consoleToSlack(message);
         return true;
     }
 
@@ -53,19 +48,15 @@ public class CmdSlack extends Cmd {
         send = send.replaceAll("\\{RANK\\}", ChatColor.translateAlternateColorCodes('&', um.getUser(uuid).getRank().getTitle()));
         send = send.replaceAll("\\{NAME\\}", player.getDisplayName());
         send = send.replaceAll("\\{MESSAGE\\}", "");
-        if (player.hasPermission("Necessities.colorchat")) {
-            if (player.hasPermission("Necessities.magicchat"))
-                message = ChatColor.translateAlternateColorCodes('&', message);
-            else
-                message = ChatColor.translateAlternateColorCodes('&', message.replaceAll("&k", ""));
-        }
+        if (player.hasPermission("Necessities.colorchat"))
+            message = ChatColor.translateAlternateColorCodes('&', (player.hasPermission("Necessities.magicchat") ? message : message.replaceAll("&k", "")));
         Bukkit.broadcast(send + message, "Necessities.slack");
-        slack.sendMessage(send + message);
+        slack.sendMessage(send.replaceFirst("To Slack - ", "") + message);
     }
 
     private void consoleToSlack(String message) {
         String send = var.getMessages() + "To Slack - " + console.getName() + ChatColor.WHITE + " " + ChatColor.translateAlternateColorCodes('&', message.trim());
         Bukkit.broadcast(send, "Necessities.slack");
-        slack.sendMessage(send);
+        slack.sendMessage(console.getName() + " " + ChatColor.translateAlternateColorCodes('&', message.trim()));
     }
 }

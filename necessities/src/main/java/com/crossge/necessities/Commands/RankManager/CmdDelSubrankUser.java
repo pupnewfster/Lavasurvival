@@ -11,12 +11,11 @@ public class CmdDelSubrankUser extends RankCmd {
             return true;
         }
         UUID uuid = get.getID(args[0]);
-        if (uuid == null) {
+        if (uuid == null)
             uuid = get.getOfflineID(args[0]);
-            if (uuid == null) {
-                sender.sendMessage(var.getEr() + "Error: " + var.getErMsg() + "That player has not joined the server. If the player is offline, please use the full and most recent name.");
-                return true;
-            }
+        if (uuid == null) {
+            sender.sendMessage(var.getEr() + "Error: " + var.getErMsg() + "That player has not joined the server. If the player is offline, please use the full and most recent name.");
+            return true;
         }
         String subrank = args[1];
         if (rm.validSubrank(subrank)) {
@@ -25,14 +24,7 @@ public class CmdDelSubrankUser extends RankCmd {
         }
         subrank = rm.getSub(subrank);
         um.updateUserSubrank(uuid, subrank, true);
-        sender.sendMessage(var.getMessages() + "Removed " + var.getObj() + subrank + var.getMessages() + " from " + var.getObj() +
-                plural(get.nameFromString(uuid.toString())) + var.getMessages() + " subranks.");
+        sender.sendMessage(var.getMessages() + "Removed " + var.getObj() + subrank + var.getMessages() + " from " + var.getObj() + form.ownerShip(get.nameFromString(uuid.toString())) + var.getMessages() + " subranks.");
         return true;
-    }
-
-    private String plural(String name) {
-        if (name.endsWith("s"))
-            return name + "'";
-        return name + "'s";
     }
 }

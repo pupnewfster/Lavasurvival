@@ -13,17 +13,12 @@ import java.util.UUID;
 public class JanetWarn {
     private static HashMap<UUID, Integer> warnCount = new HashMap<>();
     private static String JanetName = "";
+    private int warns = YamlConfiguration.loadConfiguration(new File("plugins/Necessities", "config.yml")).getInt("Necessities.warns");
     JanetLog log = new JanetLog();
-    private File configFile = new File("plugins/Necessities", "config.yml");
-    private YamlConfiguration config = YamlConfiguration.loadConfiguration(configFile);
-    private int warns = config.getInt("Necessities.warns");
 
     public void initiate() {
         RankManager rm = new RankManager();
-        String rank = "";
-        if (!rm.getOrder().isEmpty())
-            rank = ChatColor.translateAlternateColorCodes('&', rm.getRank(rm.getOrder().size() - 1).getTitle() + " ");
-        JanetName = rank + "Janet" + ChatColor.DARK_RED + ": " + ChatColor.WHITE;
+        JanetName = (!rm.getOrder().isEmpty() ? ChatColor.translateAlternateColorCodes('&', rm.getRank(rm.getOrder().size() - 1).getTitle() + " ") : "") + "Janet" + ChatColor.DARK_RED + ": " + ChatColor.WHITE;
     }
 
     public void removePlayer(UUID uuid) {
@@ -37,27 +32,41 @@ public class JanetWarn {
             warnCount.put(uuid, warnCount.get(uuid) + 1);
         String warning;
         if (warnCount.get(uuid) == warns) {
-            if (reason.equals("Language"))
-                warning = language(uuid);
-            else if (reason.equals("ChatSpam"))
-                warning = chatSpam(uuid);
-            else if (reason.equals("CmdSpam"))
-                warning = cmdSpam(uuid);
-            else if (reason.equals("Adds"))
-                warning = advertising(uuid);
-            else
-                warning = other(uuid, reason);
+            switch (reason) {
+                case "Language":
+                    warning = language(uuid);
+                    break;
+                case "ChatSpam":
+                    warning = chatSpam(uuid);
+                    break;
+                case "CmdSpam":
+                    warning = cmdSpam(uuid);
+                    break;
+                case "Adds":
+                    warning = advertising(uuid);
+                    break;
+                default:
+                    warning = other(uuid, reason);
+                    break;
+            }
         } else {
-            if (reason.equals("Language"))
-                warning = langMsg(uuid);
-            else if (reason.equals("ChatSpam"))
-                warning = chatMsg(uuid);
-            else if (reason.equals("CmdSpam"))
-                warning = cmdMsg(uuid);
-            else if (reason.equals("Adds"))
-                warning = addsMsg(uuid);
-            else
-                warning = warnMessage(uuid, reason, warner);
+            switch (reason) {
+                case "Language":
+                    warning = langMsg(uuid);
+                    break;
+                case "ChatSpam":
+                    warning = chatMsg(uuid);
+                    break;
+                case "CmdSpam":
+                    warning = cmdMsg(uuid);
+                    break;
+                case "Adds":
+                    warning = addsMsg(uuid);
+                    break;
+                default:
+                    warning = warnMessage(uuid, reason, warner);
+                    break;
+            }
             timesLeft(uuid);
         }
         log.log("Janet: " + warning);

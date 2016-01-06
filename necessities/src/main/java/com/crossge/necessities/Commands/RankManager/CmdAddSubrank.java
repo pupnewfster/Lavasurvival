@@ -21,14 +21,7 @@ public class CmdAddSubrank extends RankCmd {
         }
         subrank = rm.getSub(subrank);
         rm.updateRankSubrank(r, subrank, false);
-        sender.sendMessage(var.getMessages() + "Added " + var.getObj() + subrank + var.getMessages() + " to " + var.getObj() + plural(r.getName()) + var.getMessages()
-                + " subranks.");
+        sender.sendMessage(var.getMessages() + "Added " + var.getObj() + subrank + var.getMessages() + " to " + var.getObj() + form.ownerShip(r.getName()) + var.getMessages() + " subranks.");
         return true;
-    }
-
-    private String plural(String name) {
-        if (name.endsWith("s"))
-            return name + "'";
-        return name + "'s";
     }
 }

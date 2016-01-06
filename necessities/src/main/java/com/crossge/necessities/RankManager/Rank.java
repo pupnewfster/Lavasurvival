@@ -11,8 +11,8 @@ import java.util.ArrayList;
 public class Rank {
     private File configFileRanks = new File("plugins/Necessities/RankManager", "ranks.yml"), configFileSubranks = new File("plugins/Necessities/RankManager", "subranks.yml");
     private ArrayList<String> permissions = new ArrayList<>();
-    private Rank previous, next;
     private String title = "", name = "";
+    private Rank previous, next;
 
     public Rank(String name) {
         this.name = name;

@@ -3,14 +3,8 @@ package com.crossge.necessities;
 import org.bukkit.ChatColor;
 
 public class Variables {
-    private ChatColor messages = ChatColor.GOLD;
-    private ChatColor me = ChatColor.DARK_PURPLE;
-    private ChatColor error = ChatColor.RED;
-    private ChatColor errorMsg = ChatColor.DARK_RED;
-    private ChatColor plugincolor = ChatColor.DARK_RED;
-    private ChatColor promoteMsg = ChatColor.GREEN;
-    private ChatColor demoteMsg = ChatColor.RED;
-    private ChatColor objectMsg = ChatColor.RED;
+    private ChatColor messages = ChatColor.GOLD, me = ChatColor.DARK_PURPLE, error = ChatColor.RED, errorMsg = ChatColor.DARK_RED, plugincolor = ChatColor.DARK_RED, promoteMsg = ChatColor.GREEN,
+            demoteMsg = ChatColor.RED, objectMsg = ChatColor.RED;
 
     public ChatColor getMe() {
         return me;

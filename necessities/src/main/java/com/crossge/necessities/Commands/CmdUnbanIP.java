@@ -15,17 +15,15 @@ public class CmdUnbanIP extends Cmd {
         }
         boolean validIp = false;
         try {
-            final Pattern ipAdd = Pattern.compile("^([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\." + "([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\." +
-                    "([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\." + "([01]?\\d\\d?|2[0-4]\\d|25[0-5])$");
+            Pattern ipAdd = Pattern.compile("^([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\." + "([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\." + "([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\." + "([01]?\\d\\d?|2[0-4]\\d|25[0-5])$");
             validIp = ipAdd.matcher(args[0]).matches();
-        } catch (Exception e) {}
+        } catch (Exception e) {
+        }
         if (!validIp) {
             sender.sendMessage(var.getEr() + "Error: " + var.getErMsg() + "Invalid ip.");
             return true;
         }
-        String name = console.getName().replaceAll(":", "");
-        if (sender instanceof Player)
-            name = sender.getName();
+        String name = (sender instanceof Player ? sender.getName() : console.getName().replaceAll(":", ""));
         BanList bans = Bukkit.getBanList(BanList.Type.IP);
         String theirIP = args[0];
         if (!bans.isBanned(theirIP)) {

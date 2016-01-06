@@ -1,5 +1,6 @@
 package com.crossge.necessities.Commands;
 
+import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -34,7 +35,7 @@ public class CmdFly extends Cmd {
             if (!p.hasPermission("Necessities.flyOthers"))
                 uuid = p.getUniqueId();
         }
-        Player target = sender.getServer().getPlayer(uuid);
+        Player target = Bukkit.getPlayer(uuid);
         if (target.getAllowFlight()) {
             target.setAllowFlight(false);
             target.setFlying(false);

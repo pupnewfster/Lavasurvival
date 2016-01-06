@@ -18,7 +18,7 @@ public class CmdLogInMessage extends Cmd {
                 loginmessage = "";
                 for (String arg : args)
                     loginmessage = loginmessage + arg + " ";
-                if (!loginmessage.contains("\\{NAME\\}"))
+                if (!loginmessage.contains("{NAME}"))
                     loginmessage = "{RANK} {NAME}&r " + loginmessage;
                 loginmessage = loginmessage.trim();
             }
@@ -27,7 +27,6 @@ public class CmdLogInMessage extends Cmd {
             try {
                 configLogIn.save(configFileLogIn);
             } catch (Exception e) {
-                e.printStackTrace();
             }
             p.sendMessage("Login message set to: " + ChatColor.YELLOW + ChatColor.translateAlternateColorCodes('&',
                     loginmessage.replaceAll("\\{NAME\\}", p.getDisplayName()).replaceAll("\\{RANK\\}",
