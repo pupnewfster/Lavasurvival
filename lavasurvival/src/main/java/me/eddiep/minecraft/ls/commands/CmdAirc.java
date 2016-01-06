@@ -26,7 +26,7 @@ public class CmdAirc extends Cmd {
 
             ArrayList<Rank> ranks = Lavasurvival.INSTANCE.getRankManager().getOrder();
             for (Rank rank : ranks) {
-                double bonusAdd = (1 + ranks.indexOf(rank)) / 2.0;
+                double bonusAdd = (5 + ranks.indexOf(rank)) / 2.0;
 
                 double reward = 100 + (bonusAdd * count);
                 player.sendMessage(rank.getColor() + rank.getName() + ChatColor.RESET + " - " + reward);
