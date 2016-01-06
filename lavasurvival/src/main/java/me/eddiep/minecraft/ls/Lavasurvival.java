@@ -2,6 +2,7 @@ package me.eddiep.minecraft.ls;
 
 import com.crossge.necessities.Commands.CmdHide;
 import com.crossge.necessities.GetUUID;
+import com.crossge.necessities.Necessities;
 import com.crossge.necessities.RankManager.RankManager;
 import com.google.gson.Gson;
 import me.eddiep.ClassicPhysics;
@@ -98,6 +99,10 @@ public class Lavasurvival extends JavaPlugin {
     public void withdrawAndUpdate(Player player, double price) {
         econ.withdrawPlayer(player, price);
         updateMoneyView(player);
+
+        if (Necessities.isTracking()) {
+            Necessities.trackActionWithValue(player, "Economy", -price, -price);
+        }
     }
 
     public static void log(String message) {
@@ -334,5 +339,12 @@ public class Lavasurvival extends JavaPlugin {
 
     public void stopUbot() {
         ubotCancelToken.cancel();
+    }
+
+    public void depositPlayer(Player player, double reward) {
+        econ.depositPlayer(player, reward);
+        if (Necessities.isTracking()) {
+            Necessities.trackActionWithValue(player, "Economy", reward, reward);
+        }
     }
 }

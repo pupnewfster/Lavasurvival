@@ -449,6 +449,20 @@ public class Necessities extends JavaPlugin {
         getLogger().info("Necessities disabled.");
     }
 
+    public static void trackAction(String clientId, String action, Object label) {
+        String clientVersion = instance.getServer().getVersion().substring("git-Bukkit".length());
+        String clientName = "Minecraft " + clientVersion.substring(0, clientVersion.indexOf("-"));
+
+        getInstance().googleAnalyticsTracker.TrackAction(clientName, clientId, "127.0.0.1", clientId, action, label.toString());
+    }
+
+    public static void trackActionWithValue(String clientId, String action, Object label, Object value) {
+        String clientVersion = instance.getServer().getVersion().substring("git-Bukkit".length());
+        String clientName = "Minecraft " + clientVersion.substring(0, clientVersion.indexOf("-"));
+
+        getInstance().googleAnalyticsTracker.TrackActionWithValue(clientName, clientId, "127.0.0.1", clientId, action, label.toString(), value.toString());
+    }
+
     public static void trackAction(UUID uuid, String action, Object label) {
         boolean usesPluginChannel = false;
         String clientId, ip;

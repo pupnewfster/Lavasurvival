@@ -15,9 +15,7 @@ public class BankShopManager implements ShopManager {
 
         UserInfo user = um.getUser(owner.getUniqueId());
 
-        Inventory bankInventory = user.createBankInventory();
-
-        owner.openInventory(bankInventory);
+        user.createBankInventory(owner);
     }
 
     @Override
@@ -36,6 +34,6 @@ public class BankShopManager implements ShopManager {
 
         UserInfo user = um.getUser(owner.getUniqueId());
 
-        user.saveBank(inventory);
+        user.saveBank(owner);
     }
 }
