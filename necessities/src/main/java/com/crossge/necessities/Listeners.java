@@ -9,9 +9,7 @@ import com.crossge.necessities.Janet.JanetSlack;
 import com.crossge.necessities.RankManager.User;
 import com.crossge.necessities.RankManager.UserManager;
 import com.crossge.necessities.WorldManager.PortalManager;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.Location;
+import org.bukkit.*;
 import org.bukkit.block.CommandBlock;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -28,6 +26,8 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.UUID;
 
 public class Listeners implements Listener {
@@ -44,6 +44,42 @@ public class Listeners implements Listener {
     JanetAI ai = new JanetAI();
     Janet bot = new Janet();
 
+    private String corTime(String time) {
+        return time.length() == 1 ? "0" + time : time;
+    }
+
+    private String getDateAndTime(Date d) {
+        Calendar c = Calendar.getInstance();
+        c.setTime(d);
+        String second = Integer.toString(c.get(Calendar.SECOND));
+        String minute = Integer.toString(c.get(Calendar.MINUTE));
+        String hour = Integer.toString(c.get(Calendar.HOUR_OF_DAY));
+        String day = Integer.toString(c.get(Calendar.DATE));
+        String month = Integer.toString(c.get(Calendar.MONTH) + 1);
+        String year = Integer.toString(c.get(Calendar.YEAR));
+        hour = corTime(hour);
+        minute = corTime(minute);
+        second = corTime(second);
+        return month + "/" + day + "/" + year + " at " + hour + ":" + minute + ":" + second;
+    }
+
+    @EventHandler
+    public void onLogin(PlayerLoginEvent e) {
+        if (e.getResult().equals(PlayerLoginEvent.Result.KICK_BANNED)) {
+            BanEntry banEntry = null;
+            if (Bukkit.getBanList(BanList.Type.NAME).isBanned(e.getPlayer().getName()))
+                banEntry = Bukkit.getBanList(BanList.Type.NAME).getBanEntry(e.getPlayer().getName());
+            else if (Bukkit.getBanList(BanList.Type.IP).isBanned(e.getAddress().toString().split("/")[1].split(":")[0]))
+                banEntry = Bukkit.getBanList(BanList.Type.IP).getBanEntry(e.getAddress().toString().split("/")[1].split(":")[0]);
+            if (banEntry == null)
+                return;
+            e.setKickMessage("You were " + ChatColor.DARK_RED + "" + ChatColor.BOLD + "BANNED" + ChatColor.RESET + " on " + getDateAndTime(banEntry.getCreated()) + " by " +
+                    banEntry.getSource() + ChatColor.RESET + ".\n" + (banEntry.getExpiration() == null ? "" : "Your ban will expire on " + getDateAndTime(banEntry.getExpiration()) + ".\n") +
+                    ChatColor.RESET + "Reason: " + banEntry.getReason() + ChatColor.RESET + "\nAppeal at smp.gamezgalaxy.com/ban");
+            e.setResult(PlayerLoginEvent.Result.KICK_OTHER);
+        }
+    }
+
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent e) {
         final Player p = e.getPlayer();
@@ -59,7 +95,6 @@ public class Listeners implements Listener {
             try {
                 configLogIn.save(configFileLogIn);
             } catch (Exception er) {
-                er.printStackTrace();
             }
         }
         YamlConfiguration configLogOut = YamlConfiguration.loadConfiguration(configFileLogOut);
@@ -68,7 +103,6 @@ public class Listeners implements Listener {
             try {
                 configLogOut.save(configFileLogOut);
             } catch (Exception er) {
-                er.printStackTrace();
             }
         }
         e.setJoinMessage((ChatColor.GREEN + " + " + ChatColor.YELLOW + ChatColor.translateAlternateColorCodes('&',
@@ -102,7 +136,6 @@ public class Listeners implements Listener {
                                 p.sendMessage(ChatColor.translateAlternateColorCodes('&', line));
                         read.close();
                     } catch (Exception er) {
-                        er.printStackTrace();
                     }
             }
         });
@@ -159,11 +192,11 @@ public class Listeners implements Listener {
 
     @EventHandler
     public void onRedstone(BlockRedstoneEvent e) {
-    	if (e.getBlock().getState() instanceof CommandBlock) {
-    		CommandBlock b = (CommandBlock) e.getBlock().getState();
-    		b.setCommand(ChatColor.translateAlternateColorCodes('&', b.getCommand()));
-    		b.update(true);
-    	}
+        if (e.getBlock().getState() instanceof CommandBlock) {
+            CommandBlock b = (CommandBlock) e.getBlock().getState();
+            b.setCommand(ChatColor.translateAlternateColorCodes('&', b.getCommand()));
+            b.update(true);
+        }
     }
 
     @EventHandler
@@ -180,7 +213,7 @@ public class Listeners implements Listener {
         else if (status.equals("alive"))
             status = ChatColor.GREEN + "[Alive] " + ChatColor.RESET;
         String m = e.getMessage();
-        if(m.endsWith(">") && ! m.equals(">")) {
+        if (m.endsWith(">") && !m.equals(">")) {
             String appended = u.getAppended() + " " + m.substring(0, m.length() - 1);
             u.setAppended(appended.trim());
             player.sendMessage(ChatColor.GREEN + "Message appended.");
@@ -192,8 +225,11 @@ public class Listeners implements Listener {
         }
         YamlConfiguration configTitles = YamlConfiguration.loadConfiguration(configFileTitles);
         e.setFormat(ChatColor.translateAlternateColorCodes('&', config.getString("Necessities.ChatFormat")));
-        boolean isop = u.opChat();
-        if (isop) {
+        boolean isop = false;
+        if (u.slackChat()) {
+            e.setFormat(var.getMessages() + "To Slack - " + ChatColor.WHITE + e.getFormat());
+            e.setFormat(e.getFormat().replaceAll("\\{TITLE\\} ", ""));
+        } else if (u.opChat()) {
             e.setFormat(var.getMessages() + "To Ops - " + ChatColor.WHITE + e.getFormat());
             e.setFormat(e.getFormat().replaceAll("\\{TITLE\\} ", ""));
         } else if (player.hasPermission("Necessities.opBroadcast") && e.getMessage().startsWith("#")) {
@@ -201,9 +237,6 @@ public class Listeners implements Listener {
             e.setFormat(var.getMessages() + "To Ops - " + ChatColor.WHITE + e.getFormat());
             e.setFormat(e.getFormat().replaceAll("\\{TITLE\\} ", ""));
             e.setMessage(e.getMessage().replaceFirst("#", ""));
-        } else if (u.slackChat()) {
-            e.setFormat(var.getMessages() + "To Slack - " + ChatColor.WHITE + e.getFormat());
-            e.setFormat(e.getFormat().replaceAll("\\{TITLE\\} ", ""));
         }
         if (hide.isHidden(player) || isop || u.slackChat())
             status = "";
@@ -220,12 +253,8 @@ public class Listeners implements Listener {
         e.setFormat(e.getFormat().replaceAll("\\{RANK\\}", rank));
         final String message = bot.logChat(uuid, e.getMessage());
         e.setMessage(message);//Why did it not previously setMessage?
-        if (player.hasPermission("Necessities.colorchat")) {
-            if (player.hasPermission("Necessities.magicchat"))
-                e.setMessage(ChatColor.translateAlternateColorCodes('&', message));
-            else
-                e.setMessage(ChatColor.translateAlternateColorCodes('&', message.replaceAll("&k", "")));
-        }
+        if (player.hasPermission("Necessities.colorchat"))
+            e.setMessage(ChatColor.translateAlternateColorCodes('&', (player.hasPermission("Necessities.magicchat") ? message : message.replaceAll("&k", ""))));
         if (u.isMuted())
             player.sendMessage(var.getEr() + "Error: " + var.getErMsg() + "You are muted.");
         else {
@@ -233,7 +262,7 @@ public class Listeners implements Listener {
                 ArrayList<Player> toRem = new ArrayList<>();
                 for (Player recip : e.getRecipients())
                     if (um.getUser(recip.getUniqueId()).isIgnoring(player.getUniqueId()) || (isop && !recip.hasPermission("Necessities.opBroadcast")) ||
-                        (u.slackChat() && !recip.hasPermission("Necessities.slack")))
+                            (u.slackChat() && !recip.hasPermission("Necessities.slack")))
                         toRem.add(recip);
                 for (Player recip : toRem)
                     e.getRecipients().remove(recip);
@@ -243,7 +272,7 @@ public class Listeners implements Listener {
                     recip.sendMessage(status + e.getFormat().replaceAll("\\{MESSAGE\\}", "") + e.getMessage());
             Bukkit.getConsoleSender().sendMessage(status + e.getFormat().replaceAll("\\{MESSAGE\\}", "") + e.getMessage());
             if (u.slackChat())
-                slack.sendMessage(status + e.getFormat().replaceAll("\\{MESSAGE\\}", "") + e.getMessage());
+                slack.sendMessage((status + e.getFormat().replaceAll("\\{MESSAGE\\}", "") + e.getMessage()).replaceFirst("To Slack - ", ""));
         }
         e.setCancelled(true);
         if (config.contains("Necessities.AI") && config.getBoolean("Necessities.AI") && (!isop || message.startsWith("!")))
@@ -276,7 +305,8 @@ public class Listeners implements Listener {
                 PluginCommand pc = null;
                 try {
                     pc = Bukkit.getPluginCommand(e.getMessage().split(" ")[0].replaceFirst("/", ""));
-                } catch (Exception er) {}//Invalid command
+                } catch (Exception er) {
+                }//Invalid command
                 if (pc != null && !pc.testPermissionSilent(player)) {
                     player.sendMessage(var.getEr() + "Error: " + var.getErMsg() + "You do not have permission to perform this command.");
                     e.setCancelled(true);
@@ -334,7 +364,7 @@ public class Listeners implements Listener {
     }
 
     @EventHandler
-     public void onPickupItem(PlayerPickupItemEvent e) {
+    public void onPickupItem(PlayerPickupItemEvent e) {
         if (hide.isHidden(e.getPlayer()))
             e.setCancelled(true);
     }

@@ -14,7 +14,7 @@ import java.util.ArrayList;
 import java.util.UUID;
 
 public class CmdHide extends Cmd {
-    private static ArrayList<UUID> hidden = new ArrayList<UUID>();
+    private static ArrayList<UUID> hidden = new ArrayList<>();
     private File configFileHiding = new File("plugins/Necessities", "hiding.yml");
     private File configFileLogOut = new File("plugins/Necessities", "logoutmessages.yml");
     private File configFileLogIn = new File("plugins/Necessities", "loginmessages.yml");
@@ -31,8 +31,8 @@ public class CmdHide extends Cmd {
                                 um.getUser(p.getUniqueId()).getRank().getTitle()))).replaceAll(ChatColor.RESET + "", ChatColor.YELLOW + ""));
                 hidden.remove(p.getUniqueId());
                 p.sendMessage(var.getMessages() + "You are now visible.");
-                Bukkit.broadcast(var.getMessages() + "To Ops - " + var.getObj() + p.getDisplayName() + var.getMessages() + " - is now " + ChatColor.DARK_GRAY +
-                        "visible" + var.getMessages() + ".", "Necessities.opBroadcast");
+                Bukkit.broadcast(var.getMessages() + "To Ops - " + var.getObj() + p.getDisplayName() + var.getMessages() + " - is now " + ChatColor.DARK_GRAY + "visible" + var.getMessages() + ".",
+                        "Necessities.opBroadcast");
                 RankManager rm = new RankManager();
                 String rank = "";
                 if (!rm.getOrder().isEmpty())
@@ -50,8 +50,8 @@ public class CmdHide extends Cmd {
                                 um.getUser(p.getUniqueId()).getRank().getTitle()))).replaceAll(ChatColor.RESET + "", ChatColor.YELLOW + ""));
                 hidden.add(p.getUniqueId());
                 p.sendMessage(var.getMessages() + "You are now hidden.");
-                Bukkit.broadcast(var.getMessages() + "To Ops - " + var.getObj() + p.getDisplayName() + var.getMessages() + " - is now " + ChatColor.WHITE +
-                        "invisible" + var.getMessages() + ".", "Necessities.opBroadcast");
+                Bukkit.broadcast(var.getMessages() + "To Ops - " + var.getObj() + p.getDisplayName() + var.getMessages() + " - is now " + ChatColor.WHITE + "invisible" + var.getMessages() + ".",
+                        "Necessities.opBroadcast");
                 if (!u.opChat()) {
                     u.toggleOpChat();
                     p.sendMessage(var.getMessages() + "You are now sending messages only to ops.");
@@ -69,8 +69,8 @@ public class CmdHide extends Cmd {
     public void playerJoined(Player p) {
         if (!p.hasPermission("Necessities.seehidden"))
             for (UUID uuid : hidden)
-            if (Bukkit.getPlayer(uuid) != null)
-                p.hidePlayer(Bukkit.getPlayer(uuid));
+                if (Bukkit.getPlayer(uuid) != null)
+                    p.hidePlayer(Bukkit.getPlayer(uuid));
     }
 
     public void playerLeft(Player p) {
@@ -102,7 +102,6 @@ public class CmdHide extends Cmd {
         try {
             configHiding.save(configFileHiding);
         } catch (Exception e) {
-            e.printStackTrace();
         }
     }
 

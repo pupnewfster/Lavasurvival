@@ -21,14 +21,14 @@ import java.util.UUID;
 public class User {
     private File configFileSubranks = new File("plugins/Necessities/RankManager", "subranks.yml"), configFileUsers = new File("plugins/Necessities/RankManager", "users.yml");
     private ArrayList<String> permissions = new ArrayList<>(), subranks = new ArrayList<>();
-    private ArrayList<UUID> ignored = new ArrayList<>();
-    private boolean opChat = false, muted = false, slackChat = false;
-    private PermissionAttachment attachment;
     private String appended = "", nick = null, lastContact, status = "dead";
-    private int pastTotal = 0;
+    private boolean opChat = false, muted = false, slackChat = false;
+    private ArrayList<UUID> ignored = new ArrayList<>();
     private long login = 0, lastRequest = 0;
-    private Player bukkitPlayer;
+    private PermissionAttachment attachment;
     private Location right, left;
+    private Player bukkitPlayer;
+    private int pastTotal = 0;
     private Hat hat = null;
     private UUID userUUID;
     private Rank rank;
@@ -91,7 +91,6 @@ public class User {
             try {
                 configUsers.save(configFileUsers);
             } catch (Exception e) {
-                e.printStackTrace();
             }
         }
         this.pastTotal = 0;
@@ -120,7 +119,6 @@ public class User {
             try {
                 configUsers.save(configFileUsers);
             } catch (Exception e) {
-                e.printStackTrace();
             }
         }
     }
@@ -143,7 +141,6 @@ public class User {
             try {
                 configUsers.save(configFileUsers);
             } catch (Exception e) {
-                e.printStackTrace();
             }
         }
     }
@@ -162,7 +159,6 @@ public class User {
             try {
                 configUsers.save(configFileUsers);
             } catch (Exception e) {
-                e.printStackTrace();
             }
         }
     }
@@ -208,7 +204,6 @@ public class User {
         try {
             configUsers.save(configFileUsers);
         } catch (Exception e) {
-            e.printStackTrace();
         }
         refreshPerms();
     }
@@ -227,7 +222,6 @@ public class User {
         try {
             configUsers.save(configFileUsers);
         } catch (Exception e) {
-            e.printStackTrace();
         }
     }
 
@@ -261,7 +255,6 @@ public class User {
         try {
             configUsers.save(configFileUsers);
         } catch (Exception e) {
-            e.printStackTrace();
         }
     }
 
@@ -296,7 +289,6 @@ public class User {
         try {
             configUsers.save(configFileUsers);
         } catch (Exception e) {
-            e.printStackTrace();
         }
     }
 

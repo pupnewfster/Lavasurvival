@@ -44,13 +44,13 @@ public class CmdBan extends Cmd {
         String theirName = target.getName();
         if (target.getPlayer() != null)
             target.getPlayer().kickPlayer(reason);
-        bans.addBan(theirName, reason, null, "Console");
+        bans.addBan(theirName, reason, null, name);
         Bukkit.broadcastMessage(var.getMessages() + name + " banned " + var.getObj() + theirName + var.getMessages() + (reason.equals("") ? "." : " for " + var.getObj() + reason + var.getMessages() + "."));
         return true;
     }
 
     public List<String> tabComplete(CommandSender sender, String[] args) {
-        List<String> complete = new ArrayList<String>();
+        List<String> complete = new ArrayList<>();
         String search = "";
         if (args.length > 0)
             search = args[args.length - 1];

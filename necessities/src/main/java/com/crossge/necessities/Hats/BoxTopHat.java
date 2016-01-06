@@ -42,7 +42,6 @@ public class BoxTopHat extends Hat {
                 }
             }, 1);//Wait a tick and reposition orientation
         } catch (Exception er) {
-            er.printStackTrace();
         }
     }
 

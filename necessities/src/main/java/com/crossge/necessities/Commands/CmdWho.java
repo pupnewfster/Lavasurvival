@@ -16,22 +16,19 @@ public class CmdWho extends Cmd {
 
     public boolean commandUse(CommandSender sender, String[] args) {
         if (sender instanceof Player && !sender.hasPermission("Necessities.seehidden")) {
-            HashMap<Rank, String> online = new HashMap<Rank, String>();
+            HashMap<Rank, String> online = new HashMap<>();
             int numbOnline = 1;
             if (!rm.getOrder().isEmpty())
                 online.put(rm.getRank(rm.getOrder().size() - 1), rm.getRank(rm.getOrder().size() - 1).getColor() + "Janet, ");
             if (!um.getUsers().isEmpty()) {
                 for (User u : um.getUsers().values())
                     if (!hide.isHidden(u.getPlayer())) {
-                        if (online.containsKey(u.getRank()))
-                            online.put(u.getRank(), online.get(u.getRank()) + u.getPlayer().getDisplayName() + ", ");
-                        else
-                            online.put(u.getRank(), u.getPlayer().getDisplayName() + ", ");
+                        online.put(u.getRank(), online.containsKey(u.getRank()) ? online.get(u.getRank()) + u.getPlayer().getDisplayName() + ", " : u.getPlayer().getDisplayName() + ", ");
                         numbOnline++;
                     }
             }
-            sender.sendMessage(var.getMessages() + "There " + amount(numbOnline) + " " + var.getObj() + numbOnline + var.getMessages() + " out of a maximum " +
-                    var.getObj() + Bukkit.getMaxPlayers() + var.getMessages() + " players online.");
+            sender.sendMessage(var.getMessages() + "There " + amount(numbOnline) + " " + var.getObj() + numbOnline + var.getMessages() + " out of a maximum " + var.getObj() + Bukkit.getMaxPlayers() +
+                    var.getMessages() + " players online.");
             for (int i = rm.getOrder().size() - 1; i >= 0; i--) {
                 Rank r = rm.getRank(i);
                 if (online.containsKey(r))
@@ -42,22 +39,15 @@ public class CmdWho extends Cmd {
         int numbOnline = Bukkit.getOnlinePlayers().size() + 1;
         sender.sendMessage(var.getMessages() + "There " + amount(numbOnline) + " " + var.getObj() + numbOnline + var.getMessages() + " out of a maximum " +
                 var.getObj() + Bukkit.getMaxPlayers() + var.getMessages() + " players online.");
-        HashMap<Rank, String> online = new HashMap<Rank, String>();
+        HashMap<Rank, String> online = new HashMap<>();
         if (!rm.getOrder().isEmpty())
             online.put(rm.getRank(rm.getOrder().size() - 1), rm.getRank(rm.getOrder().size() - 1).getColor() + "Janet, ");
         if (!um.getUsers().isEmpty())
             for (User u : um.getUsers().values())
-                if (hide.isHidden(u.getPlayer())) {
-                    if (online.containsKey(u.getRank()))
-                        online.put(u.getRank(), online.get(u.getRank()) + "[HIDDEN]" + u.getPlayer().getDisplayName() + ", ");
-                    else
-                        online.put(u.getRank(), "[HIDDEN]" + u.getPlayer().getDisplayName() + ", ");
-                } else {
-                    if (online.containsKey(u.getRank()))
-                        online.put(u.getRank(), online.get(u.getRank()) + u.getPlayer().getDisplayName() + ", ");
-                    else
-                        online.put(u.getRank(), u.getPlayer().getDisplayName() + ", ");
-                }
+                if (hide.isHidden(u.getPlayer()))
+                    online.put(u.getRank(), online.containsKey(u.getRank()) ? online.get(u.getRank()) + "[HIDDEN]" + u.getPlayer().getDisplayName() + ", " : "[HIDDEN]" + u.getPlayer().getDisplayName() + ", ");
+                else
+                    online.put(u.getRank(), online.containsKey(u.getRank()) ? online.get(u.getRank()) + u.getPlayer().getDisplayName() + ", " : u.getPlayer().getDisplayName() + ", ");
         for (int i = rm.getOrder().size() - 1; i >= 0; i--) {
             Rank r = rm.getRank(i);
             if (online.containsKey(r))
@@ -67,8 +57,6 @@ public class CmdWho extends Cmd {
     }
 
     private String amount(int a) {
-        if (a == 1)
-            return "is";
-        return "are";
+        return a == 1 ? "is" : "are";
     }
 }

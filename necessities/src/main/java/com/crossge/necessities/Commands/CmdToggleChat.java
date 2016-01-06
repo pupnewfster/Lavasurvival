@@ -8,10 +8,7 @@ public class CmdToggleChat extends Cmd {
         if (sender instanceof Player)
             sender.sendMessage(var.getEr() + "Error: " + var.getErMsg() + "You cannot use this command, it is console specific.");
         else {
-            if (console.chatToggled())
-                sender.sendMessage(var.getMessages() + "Toggled back to command mode.");
-            else
-                sender.sendMessage(var.getMessages() + "Toggled to chat mode.");
+            sender.sendMessage(var.getMessages() + (console.chatToggled() ? "Toggled back to command mode." : "Toggled to chat mode."));
             console.chatToggle();
         }
         return true;

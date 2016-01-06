@@ -11,11 +11,11 @@ import java.util.ArrayList;
 import java.util.UUID;
 
 public class CmdCommandSpy extends Cmd {
-    private static ArrayList<UUID> spying = new ArrayList<UUID>();
+    private static ArrayList<UUID> spying = new ArrayList<>();
     private File configFileSpying = new File("plugins/Necessities", "spying.yml");
 
     public void broadcast(String sender, String command) {
-        ArrayList<UUID> temp = new ArrayList<UUID>();
+        ArrayList<UUID> temp = new ArrayList<>();
         for (UUID uuid : spying)
             if (Bukkit.getPlayer(uuid) != null) {
                 if (Bukkit.getPlayer(uuid).hasPermission("Necessities.spy"))
@@ -51,7 +51,6 @@ public class CmdCommandSpy extends Cmd {
         try {
             configSpying.save(configFileSpying);
         } catch (Exception e) {
-            e.printStackTrace();
         }
     }
 

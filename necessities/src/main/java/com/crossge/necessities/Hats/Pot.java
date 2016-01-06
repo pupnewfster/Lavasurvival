@@ -20,8 +20,8 @@ public class Pot extends Hat {
             this.armorStands.get(i).setSmall(true);
         }
         spawn(1, loc.clone().add(0, 0.75, 0));
-        this.armorStands.get(360/turn).setItemInHand(new ItemStack(Material.STICK, 1));
-        this.armorStands.get(360/turn).setRightArmPose(new EulerAngle(Math.toRadians(90), Math.toRadians(90), Math.toRadians(90)));
+        this.armorStands.get(360 / turn).setItemInHand(new ItemStack(Material.STICK, 1));
+        this.armorStands.get(360 / turn).setRightArmPose(new EulerAngle(Math.toRadians(90), Math.toRadians(90), Math.toRadians(90)));
         this.armorStands.get(360 / turn).setSmall(true);
     }
 }

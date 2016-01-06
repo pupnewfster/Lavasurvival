@@ -10,11 +10,11 @@ import java.io.File;
 import java.util.*;
 
 public class RankManager {
-    private File configFileRanks = new File("plugins/Necessities/RankManager", "ranks.yml"), configFileSubranks = new File("plugins/Necessities/RankManager", "subranks.yml");
     private static HashMap<String, String> subranks = new HashMap<>();
     private static HashMap<String, Rank> ranks = new HashMap<>();
-    private static ArrayList<Rank> order = new ArrayList<>();
     private static ArrayList<String> names = new ArrayList<>();
+    private static ArrayList<Rank> order = new ArrayList<>();
+    private File configFileRanks = new File("plugins/Necessities/RankManager", "ranks.yml"), configFileSubranks = new File("plugins/Necessities/RankManager", "subranks.yml");
 
     public void readRanks() {
         YamlConfiguration configRanks = YamlConfiguration.loadConfiguration(configFileRanks), configSubranks = YamlConfiguration.loadConfiguration(configFileSubranks);
@@ -128,7 +128,6 @@ public class RankManager {
         try {
             configRanks.save(configFileRanks);
         } catch (Exception e) {
-            e.printStackTrace();
         }
     }
 
@@ -153,7 +152,6 @@ public class RankManager {
         try {
             configSubranks.save(configFileSubranks);
         } catch (Exception e) {
-            e.printStackTrace();
         }
         for (Rank r : order)
             if (configRanks.contains(r.getName()) && configRanks.getStringList(r.getName() + ".subranks").contains(subrank)) {
@@ -180,7 +178,6 @@ public class RankManager {
         try {
             configRanks.save(configFileRanks);
         } catch (Exception e) {
-            e.printStackTrace();
         }
         r.refreshPerms();
         um.refreshRankPerm(r);
@@ -199,7 +196,6 @@ public class RankManager {
         try {
             configRanks.save(configFileRanks);
         } catch (Exception e) {
-            e.printStackTrace();
         }
         if (previous == null) {
             ranks.put(name, new Rank(name));
@@ -240,7 +236,6 @@ public class RankManager {
         try {
             configRanks.save(configFileRanks);
         } catch (Exception e) {
-            e.printStackTrace();
         }
         if (next != null)
             um.refreshRankPerm(next);
@@ -257,7 +252,6 @@ public class RankManager {
         try {
             configSubranks.save(configFileSubranks);
         } catch (Exception e) {
-            e.printStackTrace();
         }
     }
 
@@ -275,7 +269,6 @@ public class RankManager {
         try {
             configSubranks.save(configFileSubranks);
         } catch (Exception e) {
-            e.printStackTrace();
         }
     }
 
@@ -284,10 +277,10 @@ public class RankManager {
             try {
                 configFileSubranks.createNewFile();
                 YamlConfiguration configSubranks = YamlConfiguration.loadConfiguration(configFileSubranks);
-                configSubranks.set("Necessities.Donator", Arrays.asList("Necessities.colorchat", "lavasurvival.donator"));;
+                configSubranks.set("Necessities.Donator", Arrays.asList("Necessities.colorchat", "lavasurvival.donator"));
+                ;
                 configSubranks.save(configFileSubranks);
             } catch (Exception e) {
-                e.printStackTrace();
             }
     }
 
@@ -320,7 +313,7 @@ public class RankManager {
                 configRanks.set("Elder.rankTitle", "&4[&l&fElder&4]&d");
                 configRanks.set("Elder.previousRank", "Trusted");
                 configRanks.set("Moderator.permissions", Arrays.asList("lavasurvival.setup", "lavasurvival.voteSpeak", "Necessities.warn", "Necessities.hide", "Necessities.opchat", "Necessities.kick",
-                        "Necessities.gamemode", "Necessities.teleport"));
+                        "Necessities.gamemode", "Necessities.teleport", "Necessities.slack"));
                 configRanks.set("Moderator.subranks", Arrays.asList(""));
                 configRanks.set("Moderator.rankTitle", "&4[&2Mod&4]&a");
                 configRanks.set("Moderator.previousRank", "Elder");
@@ -341,7 +334,6 @@ public class RankManager {
                 configRanks.set("Director.previousRank", "Manager");
                 configRanks.save(configFileRanks);
             } catch (Exception e) {
-                e.printStackTrace();
             }
     }
 }

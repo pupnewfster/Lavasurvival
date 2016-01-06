@@ -7,7 +7,8 @@ public class Formatter {
         try {
             Double.parseDouble(input);
             return true;
-        } catch (Exception ignored) { }
+        } catch (Exception ignored) {
+        }
         return false;
     }
 
@@ -43,5 +44,9 @@ public class Formatter {
         if (word.length() > 1)
             firstCapitalized += word.substring(1);
         return firstCapitalized;
+    }
+
+    public String ownerShip(String name) {
+        return (name.endsWith("s") || name.endsWith("S")) ? name + "'" : name + "'s";
     }
 }

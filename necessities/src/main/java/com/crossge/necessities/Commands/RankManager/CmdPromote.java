@@ -23,7 +23,7 @@ public class CmdPromote extends RankCmd {
             }
             target = Bukkit.getOfflinePlayer(uuid).getPlayer();
         } else
-            target = sender.getServer().getPlayer(uuid);
+            target = Bukkit.getPlayer(uuid);
         User u = um.getUser(uuid);
         if (u.getRank().getNext() == null) {
             sender.sendMessage(var.getEr() + "Error: " + var.getErMsg() + target.getName() + " is already the highest rank.");

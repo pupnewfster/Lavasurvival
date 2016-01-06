@@ -18,7 +18,6 @@ import com.crossge.necessities.RankManager.User;
 import com.crossge.necessities.RankManager.UserManager;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.OfflinePlayer;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -29,62 +28,71 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.InputStreamReader;
 import java.net.URL;
+import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
 public class Necessities extends JavaPlugin {
-    private ProtocolManager protocolManager;
+    private static Necessities INSTANCE;
+    private final List<String> devs = Arrays.asList("pupnewfster", "Mod_Chris", "hypereddie10");
+    private File configFile = new File("plugins/Necessities", "config.yml");
+    private ProtocolManager protocolManager = null;
     private Tracker googleAnalyticsTracker;
     private WrappedSignedProperty skin;
-    private static Necessities instance;
     private UUID janetID;
-    private File configFile = new File("plugins/Necessities", "config.yml");
+    DonationReader dr = new DonationReader();
     UserManager um = new UserManager();
     RankManager rm = new RankManager();
-    DonationReader dr = new DonationReader();
 
     public static Necessities getInstance() {
-        return instance;
+        return INSTANCE;
     }
 
     public boolean isProtocolLibLoaded() {
-        return this.protocolManager != null;
+        return getServer().getPluginManager().getPlugin("ProtocolLib") != null && this.protocolManager != null;
     }
 
     @Override
     public void onEnable() {
         getLogger().info("Enabling Necessities...");
-        instance = this;
-
+        INSTANCE = this;
         if (!hookGoogle())
             getLogger().warning("Could not hook into Google Analytics!");
-
         janetID = UUID.randomUUID();
-        try {
-            this.protocolManager = ProtocolLibrary.getProtocolManager();
-        } catch (Exception e) {}//Not using protocollib
+        if (getServer().getPluginManager().getPlugin("ProtocolLib") != null)
+            try {
+                this.protocolManager = ProtocolLibrary.getProtocolManager();
+            } catch (Exception e) {
+            }//Not using protocollib
         Initialization init = new Initialization();
         init.initiateFiles();
         getServer().getPluginManager().registerEvents(new Listeners(), this);
-
         dr.init();
         getLogger().info("Necessities enabled.");
     }
 
     private boolean hookGoogle() {
         GoogleAnalyticsPlugin plugin;
-        if ((plugin = (GoogleAnalyticsPlugin)getServer().getPluginManager().getPlugin("GoogleAnalyticsPlugin")) == null)
+        if ((plugin = (GoogleAnalyticsPlugin) getServer().getPluginManager().getPlugin("GoogleAnalyticsPlugin")) == null)
             return false;
         googleAnalyticsTracker = plugin.getTracker();
         return true;
     }
 
     public static boolean isTracking() {
-        return getInstance().googleAnalyticsTracker != null;
+        return getTracker() != null;
     }
 
     public static Tracker getTracker() {
         return getInstance().googleAnalyticsTracker;
+    }
+
+    public boolean isDev(String name) {
+        return devs.contains(name);
+    }
+
+    public List<String> getDevs() {
+        return this.devs;
     }
 
     public void removePlayer(Player p) {
@@ -101,7 +109,6 @@ public class Necessities extends JavaPlugin {
                     if (!x.canSee(p) && !x.equals(p))
                         this.protocolManager.sendServerPacket(x, tabList);
             } catch (Exception e) {
-                e.printStackTrace();
             }
     }
 
@@ -122,7 +129,6 @@ public class Necessities extends JavaPlugin {
                     if (!x.hasPermission("Necessities.seehidden") && x.canSee(p) && !x.equals(p))
                         this.protocolManager.sendServerPacket(x, tabList);
             } catch (Exception e) {
-                e.printStackTrace();
             }
     }
 
@@ -141,7 +147,6 @@ public class Necessities extends JavaPlugin {
                 for (Player x : Bukkit.getOnlinePlayers())
                     this.protocolManager.sendServerPacket(x, tabList);
             } catch (Exception e) {
-                e.printStackTrace();
             }
     }
 
@@ -161,7 +166,6 @@ public class Necessities extends JavaPlugin {
                 infoAction.write(0, EnumWrappers.PlayerInfoAction.UPDATE_DISPLAY_NAME);
                 this.protocolManager.sendServerPacket(x, tabList);
             } catch (Exception e) {
-                e.printStackTrace();
             }
     }
 
@@ -183,7 +187,6 @@ public class Necessities extends JavaPlugin {
                 infoAction.write(0, EnumWrappers.PlayerInfoAction.ADD_PLAYER);
                 this.protocolManager.sendServerPacket(p, tabList);
             } catch (Exception e) {
-                e.printStackTrace();
             }
     }
 
@@ -205,7 +208,6 @@ public class Necessities extends JavaPlugin {
                 infoAction.write(0, EnumWrappers.PlayerInfoAction.UPDATE_DISPLAY_NAME);
                 this.protocolManager.sendServerPacket(p, tabList);
             } catch (Exception e) {
-                e.printStackTrace();
             }
     }
 
@@ -218,14 +220,12 @@ public class Necessities extends JavaPlugin {
                 chatStuff.write(1, WrappedChatComponent.fromText(ChatColor.BLUE + "http://gamezgalaxy.com"));
                 this.protocolManager.sendServerPacket(p, tabList);
             } catch (Exception e) {
-                e.printStackTrace();
             }
     }
 
     private WrappedSignedProperty getSkin() {
         try {
-            BufferedReader in = new BufferedReader(new InputStreamReader(new URL("https://sessionserver.mojang.com/session/minecraft/profile/" +
-                    UUID.fromString("136f2ba6-2be3-444c-a296-8ec597edb57e").toString().replaceAll("-", "") + "?unsigned=false").openConnection().getInputStream()));
+            BufferedReader in = new BufferedReader(new InputStreamReader(new URL("https://sessionserver.mojang.com/session/minecraft/profile/136f2ba62be3444ca2968ec597edb57e?unsigned=false").openConnection().getInputStream()));
             String value = "";
             String signature = "";
             int count = 0;
@@ -241,7 +241,8 @@ public class Necessities extends JavaPlugin {
             }
             in.close();
             return new WrappedSignedProperty("textures", value, signature);
-        } catch (Exception ignored) { }
+        } catch (Exception ignored) {
+        }
         return null;
     }
 
@@ -442,7 +443,7 @@ public class Necessities extends JavaPlugin {
         um.unload();
         cs.unload();
         hide.unload();
-        slack.disable();
+        slack.disconnect();
         bot.unload();
         dr.disconnect();
         getLogger().info("Necessities disabled.");
@@ -463,94 +464,52 @@ public class Necessities extends JavaPlugin {
     }
 
     public static void trackAction(UUID uuid, String action, Object label) {
-        String clientId;
-        String ip;
         boolean usesPluginChannel = false;
-
-        Player p = instance.getServer().getPlayer(uuid);
+        String clientId, ip;
+        Player p = Bukkit.getPlayer(uuid);
         if (p == null) {
-            OfflinePlayer offlinep = instance.getServer().getOfflinePlayer(uuid);
-            clientId = offlinep.getName();
+            clientId = Bukkit.getOfflinePlayer(uuid).getName();
             ip = "0.0.0.0";
         } else {
             clientId = p.getName();
-            if (p.getAddress() != null) {
-                ip = p.getAddress().toString().substring(1);
-            } else {
-                ip = "0.0.0.0";
-            }
-
+            ip = (p.getAddress() != null ? p.getAddress().toString().substring(1) : "0.0.0.0");
             usesPluginChannel = p.getListeningPluginChannels().size() != 0;
         }
-
-        String clientVersion = instance.getServer().getVersion().substring("git-Bukkit".length());
+        String clientVersion = Bukkit.getVersion().substring("git-Bukkit".length());
         String clientName = "Minecraft " + clientVersion.substring(0, clientVersion.indexOf("-")) + (usesPluginChannel ? " [Supports Plugin Channels]" : "");
-
-        getInstance().googleAnalyticsTracker.TrackAction(clientName, clientId, ip, clientId, action, label.toString());
+        getTracker().TrackAction(clientName, clientId, ip, clientId, action, label.toString());
     }
 
     public static void trackAction(Player p, String action, Object label) {
-        String clientId;
-        String ip;
-        boolean usesPluginChannel;
-
-        clientId = p.getName();
-        if (p.getAddress() != null) {
-            ip = p.getAddress().toString().substring(1);
-        } else {
-            ip = "0.0.0.0";
-        }
-
-        usesPluginChannel = p.getListeningPluginChannels().size() != 0;
-        String clientVersion = instance.getServer().getVersion().substring("git-Bukkit".length());
+        String clientId = p.getName(), ip = (p.getAddress() != null ? p.getAddress().toString().substring(1) : "0.0.0.0");
+        boolean usesPluginChannel = p.getListeningPluginChannels().size() != 0;
+        String clientVersion = Bukkit.getVersion().substring("git-Bukkit".length());
         String clientName = "Minecraft " + clientVersion.substring(0, clientVersion.indexOf("-")) + (usesPluginChannel ? " [Supports Plugin Channels]" : "");
-
-        getInstance().googleAnalyticsTracker.TrackAction(clientName, clientId, ip, clientId, action, label.toString());
+        getTracker().TrackAction(clientName, clientId, ip, clientId, action, label.toString());
     }
 
     public static void trackActionWithValue(UUID uuid, String action, Object label, Object value) {
-        String clientId;
-        String ip;
         boolean usesPluginChannel = false;
-
-        Player p = instance.getServer().getPlayer(uuid);
+        String clientId, ip;
+        Player p = Bukkit.getPlayer(uuid);
         if (p == null) {
-            OfflinePlayer offlinep = instance.getServer().getOfflinePlayer(uuid);
-            clientId = offlinep.getName();
+            clientId = Bukkit.getOfflinePlayer(uuid).getName();
             ip = "0.0.0.0";
         } else {
             clientId = p.getName();
-            if (p.getAddress() != null) {
-                ip = p.getAddress().toString().substring(1);
-            } else {
-                ip = "0.0.0.0";
-            }
-
+            ip = (p.getAddress() != null ? p.getAddress().toString().substring(1) : "0.0.0.0");
             usesPluginChannel = p.getListeningPluginChannels().size() != 0;
         }
-
-        String clientVersion = instance.getServer().getVersion().substring("git-Bukkit".length());
+        String clientVersion = Bukkit.getVersion().substring("git-Bukkit".length());
         String clientName = "Minecraft " + clientVersion.substring(0, clientVersion.indexOf("-")) + (usesPluginChannel ? " [Supports Plugin Channels]" : "");
-
-        getInstance().googleAnalyticsTracker.TrackActionWithValue(clientName, clientId, ip, clientId, action, label.toString(), value.toString());
+        getTracker().TrackActionWithValue(clientName, clientId, ip, clientId, action, label.toString(), value.toString());
     }
 
     public static void trackActionWithValue(Player p, String action, Object label, Object value) {
-        String clientId;
-        String ip;
-        boolean usesPluginChannel;
-
-        clientId = p.getName();
-        if (p.getAddress() != null) {
-            ip = p.getAddress().toString().substring(1);
-        } else {
-            ip = "0.0.0.0";
-        }
-
-        usesPluginChannel = p.getListeningPluginChannels().size() != 0;
-        String clientVersion = instance.getServer().getVersion().substring("git-Bukkit".length());
+        String clientId = p.getName(), ip = (p.getAddress() != null ? p.getAddress().toString().substring(1) : "0.0.0.0");
+        boolean usesPluginChannel = p.getListeningPluginChannels().size() != 0;
+        String clientVersion = Bukkit.getVersion().substring("git-Bukkit".length());
         String clientName = "Minecraft " + clientVersion.substring(0, clientVersion.indexOf("-")) + (usesPluginChannel ? " [Supports Plugin Channels]" : "");
-
-        getInstance().googleAnalyticsTracker.TrackActionWithValue(clientName, clientId, ip, clientId, action, label.toString(), value.toString());
+        getTracker().TrackActionWithValue(clientName, clientId, ip, clientId, action, label.toString(), value.toString());
     }
 }

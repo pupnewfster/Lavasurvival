@@ -27,9 +27,7 @@ public class Teleports {
     }
 
     public UUID lastRequest(UUID uuid) {
-        if (!teleportRequests.containsKey(uuid))
-            return null;
-        return UUID.fromString(teleportRequests.get(uuid).get(teleportRequests.get(uuid).size() - 1).split(" ")[0]);
+        return !teleportRequests.containsKey(uuid) ? null : UUID.fromString(teleportRequests.get(uuid).get(teleportRequests.get(uuid).size() - 1).split(" ")[0]);
     }
 
     public String getRequestType(UUID uuid, UUID from) {
