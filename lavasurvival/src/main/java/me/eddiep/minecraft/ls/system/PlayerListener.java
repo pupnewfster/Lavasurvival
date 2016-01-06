@@ -8,6 +8,7 @@ import me.eddiep.minecraft.ls.game.items.LavaItem;
 import me.eddiep.minecraft.ls.game.status.PlayerStatusManager;
 import me.eddiep.minecraft.ls.ranks.UserInfo;
 import me.eddiep.minecraft.ls.ranks.UserManager;
+import me.eddiep.minecraft.ls.system.bank.BankInventory;
 import net.minecraft.server.v1_8_R3.EntityPlayer;
 import net.minecraft.server.v1_8_R3.IChatBaseComponent;
 import net.minecraft.server.v1_8_R3.PacketPlayInClientCommand;
@@ -29,6 +30,8 @@ import org.bukkit.event.entity.EntityRegainHealthEvent;
 import org.bukkit.event.entity.FoodLevelChangeEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.inventory.CraftItemEvent;
+import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.player.*;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
@@ -214,6 +217,36 @@ public class PlayerListener implements Listener {
                     event.getPlayer().getInventory().clear(index);
                 }
                 break;
+            }
+        }
+    }
+
+    @EventHandler(priority = EventPriority.LOW)
+    public void inventoryClosed(InventoryCloseEvent e) {
+        final Player p = (Player)e.getPlayer();
+
+        BankInventory view = BankInventory.from(p);
+        if (view != null) {
+            view.end(p);
+        }
+    }
+
+    @EventHandler(priority = EventPriority.LOW)
+    public void inventoryClicked(InventoryClickEvent e) {
+        final Player p = (Player)e.getWhoClicked();
+        int clickedSlot = e.getView().convertSlot(e.getRawSlot());
+
+        BankInventory view = BankInventory.from(p);
+        if (view != null) {
+            e.setCancelled(true);
+            if (e.getCurrentItem() == null)
+                return;
+
+            ItemStack currentItem = e.getCurrentItem();
+            if (view.isNextPageButton(currentItem)) {
+                view.nextPage();
+            } else if (view.isPreviousPageButton(currentItem)) {
+                view.previousPage();
             }
         }
     }

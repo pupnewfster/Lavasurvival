@@ -22,6 +22,7 @@ public class Flood extends Gamemode {
 
     @Override
     public void onStart() {
+        doubleReward = Math.random() < 0.25;
         if (getScoreboard().getObjective("game") == null)
             objective = getScoreboard().registerNewObjective("game", "dummy");
         else
@@ -43,7 +44,6 @@ public class Flood extends Gamemode {
         bonusScore.setScore(bonus);
 
         Gamemode.getPlayerListener().survival = false;
-        doubleReward = Math.random() < 0.25;
 
 
         if (doubleReward) {

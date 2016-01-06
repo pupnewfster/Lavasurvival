@@ -22,12 +22,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class LavaMap {
-    public static final int CONFIG_VERSION = 5;
+    public static final int CONFIG_VERSION = 6;
 
     private String name, worldName, filePath;
     private int lavax, lavay, lavaz, mapHeight;
     private Vector minSafeZone, maxSafeZone, mapSpawn;
     private int configVersion = 1; //Default version
+    private String creator = "";
 
     private RiseOptions riseOptions = RiseOptions.defaults(this);
     private FloodOptions floodOptions = FloodOptions.defaults(this);
@@ -254,5 +255,9 @@ public class LavaMap {
 
     public FusionOptions getFusionOptions() {
         return fusionOptions;
+    }
+
+    public String getCreator() {
+        return creator;
     }
 }

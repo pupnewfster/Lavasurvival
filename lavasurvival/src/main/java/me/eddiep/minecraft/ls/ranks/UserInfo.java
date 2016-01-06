@@ -8,6 +8,7 @@ import me.eddiep.minecraft.ls.glicko.GlickoRank;
 import me.eddiep.minecraft.ls.glicko.Rankable;
 import me.eddiep.minecraft.ls.system.BukkitUtils;
 import me.eddiep.minecraft.ls.system.PhysicsListener;
+import me.eddiep.minecraft.ls.system.bank.BankInventory;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -34,7 +35,7 @@ public class UserInfo implements Rankable {
     private Player bukkitPlayer;
     private int taskID = 0;
     private UUID userUUID;
-    private ItemStack[] BANK = new ItemStack[54];
+    private List<ItemStack> BANK = new ArrayList<ItemStack>();
     private GlickoRank rank;
     private boolean generosity;
 
@@ -65,10 +66,7 @@ public class UserInfo implements Rankable {
             return;
 
         if (configUsers.contains(getUUID() + ".bank")) {
-            List<ItemStack> temp = (List<ItemStack>) configUsers.getList(getUUID() + ".bank");
-            if (temp != null) {
-                BANK = temp.toArray(new ItemStack[temp.size()]);
-            }
+            BANK = (List<ItemStack>) configUsers.getList(getUUID() + ".bank");
         }
 
         rank.load(getUUID().toString(), configUsers);
@@ -90,22 +88,14 @@ public class UserInfo implements Rankable {
         }
     }
 
-    public Inventory createBankInventory() {
-        Inventory view = Bukkit.createInventory(null, 54, "Bank");
-        for (int i = 0; i < BANK.length; i++) {
-            ItemStack item = BANK[i];
-            if (item == null)
-                continue;
-
-            view.setItem(i, item);
-        }
-
-        return view;
+    public Inventory createBankInventory(Player p) {
+        return BankInventory.create(p, BANK).openFor(p);
     }
 
-    public void saveBank(Inventory inventory) {
-        for (int i = 0; i < inventory.getSize(); i++) {
-            BANK[i] = inventory.getItem(i);
+    public void saveBank(Player owner) {
+        BankInventory bank = BankInventory.from(owner);
+        if (bank != null) {
+            BANK = bank.getItems();
         }
     }
 

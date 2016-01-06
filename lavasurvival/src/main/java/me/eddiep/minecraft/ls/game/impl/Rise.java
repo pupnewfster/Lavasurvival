@@ -23,6 +23,7 @@ public class Rise extends Gamemode {
 
     @Override
     public void onStart() {
+        doubleReward = Math.random() < 0.25;
         if (getScoreboard().getObjective("game") == null)
             objective = getScoreboard().registerNewObjective("game", "dummy");
         else
@@ -45,9 +46,11 @@ public class Rise extends Gamemode {
         bonusScore.setScore(bonus);
         layersLeft.setScore(getCurrentMap().getHeight());
 
-        Gamemode.getPlayerListener().survival = false;
-        doubleReward = Math.random() < 0.25;
+        if (doubleReward) {
+            objective.getScore(ChatColor.GOLD + "" + ChatColor.BOLD + "Double Reward!");
+        }
 
+        Gamemode.getPlayerListener().survival = false;
 
         if (doubleReward) {
             globalMessage("" + ChatColor.GREEN + ChatColor.BOLD + "All rewards this round are doubled!");

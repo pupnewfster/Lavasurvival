@@ -24,6 +24,7 @@ public class Fusion extends Gamemode {
 
     @Override
     public void onStart() {
+        doubleReward = Math.random() < 0.25;
         if (getScoreboard().getObjective("game") == null)
             objective = getScoreboard().registerNewObjective("game", "dummy");
         else
@@ -47,7 +48,6 @@ public class Fusion extends Gamemode {
         layersLeft.setScore(getCurrentMap().getHeight());
 
         Gamemode.getPlayerListener().survival = false;
-        doubleReward = Math.random() < 0.25;
 
 
         if (doubleReward) {

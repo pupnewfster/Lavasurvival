@@ -183,6 +183,13 @@ public abstract class Gamemode {
     protected void onStart() {
         Lavasurvival.log("New game on " + getCurrentWorld().getName());
 
+        if (Necessities.isTracking()) {
+            if (isRewardDoubled()) {
+                Necessities.trackAction("LS", "DoubleRound", getCurrentMap().getName());
+            }
+            Necessities.trackAction("LS", "RoundStart", getCurrentMap().getName());
+        }
+
         isEnding = false;
         hasEnded = false;
 
@@ -233,8 +240,6 @@ public abstract class Gamemode {
             }
         };
         tickTask.runTaskTimer(Lavasurvival.INSTANCE, 0, 1);
-
-
     }
 
     private void restoreBackup(World world) {
@@ -416,17 +421,36 @@ public abstract class Gamemode {
 
             final HashMap<Player, Integer> winners = new HashMap<>();
 
+            HashMap<Rank, Double[]> avgs = new HashMap<>();
+            /*double count = 0;
+            int avgAir = 0;
+            double avgReward = 0;*/
             for (UUID id : alive) {
                 Player player = Bukkit.getPlayer(id);
                 if (id == null || player == null || hide.isHidden(player) || isInSpawn(Bukkit.getPlayer(id)))
                     continue;
 
+                Rank rank = Lavasurvival.INSTANCE.getNecessitiesUserManager().getUser(player.getUniqueId()).getRank();
+                Double[] array;
+                if (!avgs.containsKey(rank)) {
+                    array = new Double[] { 0.0,0.0,0.0 };
+                } else {
+                    array = avgs.get(rank);
+                }
+
                 int blockCount = countAirBlocksAround(player, 10);
+                //avgAir += blockCount;
+                array[0] += blockCount;
                 double reward = calculateReward(player, blockCount);
+                //avgReward += reward;
+                array[1] += reward;
+                array[2]++;
+
+                avgs.put(rank, array);
 
                 winners.put(player, blockCount);
 
-                Lavasurvival.INSTANCE.getEconomy().depositPlayer(player, reward);
+                Lavasurvival.INSTANCE.depositPlayer(player, reward);
                 player.getPlayer().sendMessage(ChatColor.GREEN + "+ " + ChatColor.GOLD + "You won " + ChatColor.BOLD + reward + ChatColor.RESET + "" + ChatColor.GOLD + " GGs!");
                 IChatBaseComponent titleJSON = IChatBaseComponent.ChatSerializer.a("{'text': 'You won!'}");
                 IChatBaseComponent subtitleJSON = IChatBaseComponent.ChatSerializer.a("{'text': '§6§l" + reward + "§6 GGs!'}");
@@ -435,6 +459,17 @@ public abstract class Gamemode {
                 ((CraftPlayer) player).getHandle().playerConnection.sendPacket(titlePacket);
                 ((CraftPlayer) player).getHandle().playerConnection.sendPacket(subtitlePacket);
             }
+
+            if (Necessities.isTracking()) {
+                for (Rank rank : avgs.keySet()) {
+                    Double[] array = avgs.get(rank);
+                    array[0] = array[0] / array[3];
+                    array[1] = array[1] / array[3];
+                    Necessities.trackActionWithValue("LS", "AverageReward", rank.getName(), array[1]);
+                    Necessities.trackActionWithValue("LS", "AverageAir", rank.getName(), array[0]);
+                }
+            }
+            avgs.clear();
 
             calculateGlicko(winners, um);
         }
@@ -771,10 +806,16 @@ public abstract class Gamemode {
         ShopFactory.validateInventory(inv);
 
         u.giveBoughtBlocks();
-
         boolean doubled = isRewardDoubled();//TODO: set properly
+
+        String lowerText;
+        if (map.getCreator().equals("")) {
+            lowerText = "§6Map created by " + map.getCreator();
+        } else {
+            lowerText = "§6Reward is " + (doubled ? "double" : "normal");
+        }
         IChatBaseComponent titleJSON = IChatBaseComponent.ChatSerializer.a("{'text': '§6Gamemode: §c" + this.getClass().getSimpleName() + "'}");
-        IChatBaseComponent subtitleJSON = IChatBaseComponent.ChatSerializer.a("{'text': '§6Reward is " + (doubled ? "double" : "normal") + "'}");
+        IChatBaseComponent subtitleJSON = IChatBaseComponent.ChatSerializer.a("{'text': '" + lowerText + "'}");
         PacketPlayOutTitle titlePacket = new PacketPlayOutTitle(PacketPlayOutTitle.EnumTitleAction.TITLE, titleJSON, 0, 60, 0);
         PacketPlayOutTitle subtitlePacket = new PacketPlayOutTitle(PacketPlayOutTitle.EnumTitleAction.SUBTITLE, subtitleJSON);
         ((CraftPlayer)player).getHandle().playerConnection.sendPacket(titlePacket);
