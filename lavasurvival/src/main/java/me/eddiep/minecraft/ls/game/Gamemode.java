@@ -728,7 +728,7 @@ public abstract class Gamemode {
 
         double base = 100.0;
         Rank rank = Lavasurvival.INSTANCE.getNecessitiesUserManager().getUser(player.getUniqueId()).getRank();
-        double bonusAdd = (5 + Lavasurvival.INSTANCE.getRankManager().getOrder().indexOf(rank)) / 2.0;
+        double bonusAdd = (3 + Lavasurvival.INSTANCE.getRankManager().getOrder().indexOf(rank)) / 2.0;
 
         //int blockCount = countAirBlocksAround(onlinePlayer, 20);
         //System.out.println(onlinePlayer.getName() + " had " + blockCount + " blocks around them!");
