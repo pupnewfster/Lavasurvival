@@ -78,6 +78,7 @@ public abstract class Gamemode {
     private Gamemode nextGame;
     private LavaMap map;
     private boolean endGame;
+    private List<Block> spongeLocations = new ArrayList<>();
 
     public static PlayerListener getPlayerListener() {
         return listener;

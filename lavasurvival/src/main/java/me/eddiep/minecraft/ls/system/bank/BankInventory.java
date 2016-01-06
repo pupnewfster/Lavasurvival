@@ -101,12 +101,14 @@ public class BankInventory {
             inventory.setItem(53, item);
         }
 
-        ItemStack item = new ItemStack(Material.EMERALD_BLOCK, 1);
-        ItemMeta meta = item.getItemMeta();
-        meta.setLore(Collections.singletonList(ChatColor.GREEN + "<- Previous Page"));
-        item.setItemMeta(meta);
+        if (offset != 0) {
+            ItemStack item = new ItemStack(Material.EMERALD_BLOCK, 1);
+            ItemMeta meta = item.getItemMeta();
+            meta.setLore(Collections.singletonList(ChatColor.GREEN + "<- Previous Page"));
+            item.setItemMeta(meta);
 
-        inventory.setItem(45, item);
+            inventory.setItem(45, item);
+        }
 
         for (HumanEntity p : inventory.getViewers()) {
             if (p instanceof Player) {
