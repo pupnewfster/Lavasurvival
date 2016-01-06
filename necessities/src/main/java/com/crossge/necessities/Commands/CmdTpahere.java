@@ -1,7 +1,6 @@
 package com.crossge.necessities.Commands;
 
 import com.crossge.necessities.RankManager.User;
-import com.crossge.necessities.ScoreBoards;
 import com.crossge.necessities.Teleports;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -9,7 +8,6 @@ import org.bukkit.entity.Player;
 import java.util.UUID;
 
 public class CmdTpahere extends Cmd {
-    ScoreBoards sb = new ScoreBoards();
     Teleports tps = new Teleports();
     CmdHide hide = new CmdHide();
 
@@ -28,7 +26,7 @@ public class CmdTpahere extends Cmd {
             Player p = (Player) sender;
             if (p.getLocation().getBlock().hasMetadata("classic_block") || p.getEyeLocation().getBlock().hasMetadata("classic_block") ||
                     target.getLocation().getBlock().hasMetadata("classic_block") || target.getEyeLocation().getBlock().hasMetadata("classic_block")) {
-                sender.sendMessage(var.getEr() + "Error: " + var.getErMsg() +  "You or the target are in the lava.");
+                sender.sendMessage(var.getEr() + "Error: " + var.getErMsg() + "You or the target are in the lava.");
                 return true;
             }
             String tPrefix = um.getUser(uuid).getStatus(), pPrefix = um.getUser(p.getUniqueId()).getStatus();

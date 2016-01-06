@@ -19,7 +19,7 @@ public class CmdMute extends Cmd {
             return true;
         }
         User u = um.getUser(uuid);
-        String name = "The console";
+        String name = console.getName().replaceAll(":", "");
         if (sender instanceof Player)
             name = ((Player) sender).getDisplayName();
         Bukkit.broadcastMessage(var.getObj() + name + var.getMessages() + (!u.isMuted() ? " muted " : " unmuted ") + var.getObj() + u.getPlayer().getDisplayName() + var.getMessages() + ".");

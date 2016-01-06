@@ -261,6 +261,12 @@ public class PlayerListener implements Listener {
     @EventHandler(priority = EventPriority.HIGHEST)
     public void playerJoin(final PlayerJoinEvent event) {
         Player player = event.getPlayer();
+
+        if (Lavasurvival.INSTANCE.updating) {
+            player.kickPlayer("This server is updating!");
+            return;
+        }
+
         um.addUser(player);
         um.forceParseUser(player);
         player.setLevel(0);

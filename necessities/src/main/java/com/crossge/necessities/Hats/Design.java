@@ -13,7 +13,7 @@ public class Design extends Hat {
         double a, r = 0.5;
         for (int i = 0; i < 360 / turn; i++) {
             a = Math.toRadians(i * turn);
-            spawn(1, loc.clone().add(r*Math.cos(a), 0.85, r*Math.sin(a)));
+            spawn(1, loc.clone().add(r * Math.cos(a), 0.85, r * Math.sin(a)));
         }
         for (int i = 0; i < 360 / turn; i++) {
             this.armorStands.get(i).setHelmet(new ItemStack(Material.HAY_BLOCK, 1));

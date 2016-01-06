@@ -20,7 +20,7 @@ public class CmdBanIP extends Cmd {
         String name = console.getName().replaceAll(":", "");
         UUID uuid = get.getID(args[0]);
         if (uuid != null) {
-            Player target = sender.getServer().getPlayer(uuid);
+            Player target = Bukkit.getPlayer(uuid);
             if (sender instanceof Player) {
                 Player p = (Player) sender;
                 if (target.hasPermission("Necessities.antiBan")) {
@@ -39,16 +39,16 @@ public class CmdBanIP extends Cmd {
             String theirName = target.getName();
             String theirIP = target.getAddress().toString().split("/")[1].split(":")[0];
             target.kickPlayer(reason);
-            bans.addBan(theirIP, reason, null, "Console");
+            bans.addBan(theirIP, reason, null, name);
             Bukkit.broadcastMessage(var.getMessages() + name + " banned " + var.getObj() + theirName + var.getMessages() + (reason.equals("") ? "." : " for " + var.getObj() + reason + var.getMessages() + "."));
             return true;
         }
         boolean validIp = false;
         try {
-            final Pattern ipAdd = Pattern.compile("^([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\." + "([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\." +
-                    "([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\." + "([01]?\\d\\d?|2[0-4]\\d|25[0-5])$");
+            Pattern ipAdd = Pattern.compile("^([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\." + "([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\." + "([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\." + "([01]?\\d\\d?|2[0-4]\\d|25[0-5])$");
             validIp = ipAdd.matcher(args[0]).matches();
-        } catch (Exception e) {}
+        } catch (Exception e) {
+        }
         if (!validIp) {
             sender.sendMessage(var.getEr() + "Error: " + var.getErMsg() + "Invalid ip.");
             return true;
@@ -68,13 +68,13 @@ public class CmdBanIP extends Cmd {
                 t.kickPlayer(reason);
                 break;
             }
-        bans.addBan(theirIP, reason, null, "Console");
+        bans.addBan(theirIP, reason, null, name);
         Bukkit.broadcastMessage(var.getMessages() + name + " banned " + var.getObj() + theirIP + var.getMessages() + (reason.equals("") ? "." : " for " + var.getObj() + reason + var.getMessages() + "."));
         return true;
     }
 
     public List<String> tabComplete(CommandSender sender, String[] args) {
-        List<String> complete = new ArrayList<String>();
+        List<String> complete = new ArrayList<>();
         String search = "";
         if (args.length > 0)
             search = args[args.length - 1];

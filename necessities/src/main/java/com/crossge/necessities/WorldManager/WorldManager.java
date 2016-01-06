@@ -28,7 +28,7 @@ public class WorldManager {
         }
         Bukkit.getConsoleSender().sendMessage(ChatColor.AQUA + "All worlds loaded.");
     }
-    
+
     public GameMode getGameMode(String world) {
         YamlConfiguration configWM = YamlConfiguration.loadConfiguration(configFileWM);
         if (configWM.contains(world + ".gamemode")) {
@@ -37,6 +37,8 @@ public class WorldManager {
                 return GameMode.ADVENTURE;
             if (gamemode.equalsIgnoreCase("creative"))
                 return GameMode.CREATIVE;
+            if (gamemode.equalsIgnoreCase("spectator"))
+                return GameMode.SPECTATOR;
         }
         return GameMode.SURVIVAL;
     }
@@ -129,7 +131,6 @@ public class WorldManager {
         try {
             configWM.save(configFileWM);
         } catch (Exception e) {
-            e.printStackTrace();
         }
         l.getWorld().setSpawnLocation(l.getBlockX(), l.getBlockY(), l.getBlockZ());
     }
@@ -140,7 +141,6 @@ public class WorldManager {
         try {
             configWM.save(configFileWM);
         } catch (Exception e) {
-            e.printStackTrace();
         }
     }
 
@@ -150,7 +150,6 @@ public class WorldManager {
         try {
             configWM.save(configFileWM);
         } catch (Exception e) {
-            e.printStackTrace();
         }
     }
 
@@ -174,7 +173,6 @@ public class WorldManager {
         try {
             configWM.save(configFileWM);
         } catch (Exception e) {
-            e.printStackTrace();
         }
         WorldCreator creator = new WorldCreator(name);
         creator.environment(enviro);
@@ -191,7 +189,6 @@ public class WorldManager {
         try {
             configWM.save(configFileWM);
         } catch (Exception e) {
-            e.printStackTrace();
         }
     }
 

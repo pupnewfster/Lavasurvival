@@ -1,5 +1,6 @@
 package com.crossge.necessities.Commands;
 
+import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -23,7 +24,7 @@ public class CmdGamemode extends Cmd {
             sender.sendMessage(var.getEr() + "Error: " + var.getErMsg() + "Invalid player.");
             return true;
         }
-        Player p = sender.getServer().getPlayer(uuid);
+        Player p = Bukkit.getPlayer(uuid);
         GameMode gamemode = getGM(args[1]);
         p.setGameMode(gamemode);
         sender.sendMessage(var.getMessages() + "Set gamemode for " + var.getObj() + p.getDisplayName() + var.getMessages() + " to " + var.getObj() +

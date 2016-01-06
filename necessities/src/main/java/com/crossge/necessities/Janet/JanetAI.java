@@ -96,10 +96,7 @@ public class JanetAI {//TODO: Upgrade
 
     public void initiate() {
         RankManager rm = new RankManager();
-        String rank = "";
-        if (!rm.getOrder().isEmpty())
-            rank = ChatColor.translateAlternateColorCodes('&', rm.getRank(rm.getOrder().size() - 1).getTitle() + " ");
-        JanetName = rank + "Janet" + ChatColor.DARK_RED + ": " + ChatColor.WHITE;
+        JanetName = (!rm.getOrder().isEmpty() ? ChatColor.translateAlternateColorCodes('&', rm.getRank(rm.getOrder().size() - 1).getTitle() + " ") : "") + "Janet" + ChatColor.DARK_RED + ": " + ChatColor.WHITE;
 
         String[] foods = new String[6];
         String[] drinks = new String[8];
@@ -109,7 +106,7 @@ public class JanetAI {//TODO: Upgrade
         foods[1] = "chocolate";
         foods[2] = "cake";
         foods[3] = "pie";
-        foods[4] = "icecream";
+        foods[4] = "ice cream";
         foods[5] = "cookie";
 
         drinks[0] = "soda";

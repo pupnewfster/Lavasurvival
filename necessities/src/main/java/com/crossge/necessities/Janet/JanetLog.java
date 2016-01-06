@@ -29,7 +29,6 @@ public class JanetLog {
             bw.newLine();
             bw.close();
         } catch (Exception e) {
-            e.printStackTrace();
         }
     }
 
@@ -46,7 +45,6 @@ public class JanetLog {
             bw.newLine();
             bw.close();
         } catch (Exception e) {
-            e.printStackTrace();
         }
     }
 }

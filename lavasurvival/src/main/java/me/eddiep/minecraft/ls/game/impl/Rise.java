@@ -22,7 +22,7 @@ public class Rise extends Gamemode {
     private Objective objective;
 
     @Override
-    public void start() {
+    public void onStart() {
         if (getScoreboard().getObjective("game") == null)
             objective = getScoreboard().registerNewObjective("game", "dummy");
         else
@@ -32,7 +32,7 @@ public class Rise extends Gamemode {
         bonusScore = objective.getScore(ChatColor.GOLD + "" + ChatColor.BOLD + "Reward Bonus");
         layersLeft = objective.getScore(ChatColor.RED + "" + ChatColor.BOLD + "Layers Left");
 
-        super.start();
+        super.onStart();
 
         duration = getCurrentMap().getRiseOptions().generateRandomPrepareTime();
         timeOut = getCurrentMap().getRiseOptions().generateRandomRiseTime();

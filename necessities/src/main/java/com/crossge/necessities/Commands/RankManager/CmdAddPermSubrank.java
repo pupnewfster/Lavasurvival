@@ -15,14 +15,7 @@ public class CmdAddPermSubrank extends RankCmd {
         String subrank = rm.getSub(args[0]);
         String node = args[1];
         rm.updateSubPerms(subrank, node, false);
-        sender.sendMessage(var.getMessages() + "Added " + var.getObj() + node + var.getMessages() + " to " + var.getObj() + plural(form.capFirst(subrank)) +
-                var.getMessages() + " permissions.");
+        sender.sendMessage(var.getMessages() + "Added " + var.getObj() + node + var.getMessages() + " to " + var.getObj() + form.ownerShip(form.capFirst(subrank)) + var.getMessages() + " permissions.");
         return true;
-    }
-
-    private String plural(String name) {
-        if (name.endsWith("s"))
-            return name + "'";
-        return name + "'s";
     }
 }

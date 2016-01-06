@@ -8,17 +8,11 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import java.io.File;
 
 public class Portal {
+    private double x1 = 0, y1 = 0, z1 = 0, x2 = 0, y2 = 0, z2 = 0;
     private boolean validPortal = false;
-    private World from;
-    private World to;
     private Warp destination;
+    private World from, to;
     private String name;
-    private double x1 = 0;
-    private double y1 = 0;
-    private double z1 = 0;
-    private double x2 = 0;
-    private double y2 = 0;
-    private double z2 = 0;
 
     public Portal(String portalname) {
         File configFilePM = new File("plugins/Necessities/WorldManager", "portals.yml");

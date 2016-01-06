@@ -1,6 +1,6 @@
 name: Necessities
 main: com.crossge.necessities.Necessities
-version: 2.2.0
+version: 2.6.0
 description: Adds the necessities a server needs
 authors: [Cross Gaming Development Team]
 softdepend: [ProtocolLib, GoogleAnalyticsPlugin]

@@ -15,12 +15,11 @@ public class CmdUnban extends Cmd {
             return true;
         }
         UUID uuid = get.getID(args[0]);
-        if (uuid == null) {
+        if (uuid == null)
             uuid = get.getOfflineID(args[0]);
-            if (uuid == null) {
-                sender.sendMessage(var.getEr() + "Error: " + var.getErMsg() + "Invalid player.");
-                return true;
-            }
+        if (uuid == null) {
+            sender.sendMessage(var.getEr() + "Error: " + var.getErMsg() + "Invalid player.");
+            return true;
         }
         User u = um.getUser(uuid);
         String name = console.getName().replaceAll(":", "");

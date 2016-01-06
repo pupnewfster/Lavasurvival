@@ -20,7 +20,7 @@ public class CmdWarp extends WorldCmd {
             Warp w = warps.getWarp(args[0]);
             if (!w.hasDestination())
                 return true;
-            u.getPlayer().teleport(w.getDestination());
+            ((Player) sender).teleport(w.getDestination());
             sender.sendMessage(var.getMessages() + "Teleporting to " + var.getObj() + args[0] + var.getMessages() + ".");
         } else
             sender.sendMessage(var.getEr() + "Error: " + var.getErMsg() + "You must be a player to teleport warps.");

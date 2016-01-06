@@ -26,13 +26,12 @@ public class UserManager {
         Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(Necessities.getInstance(), new Runnable() {
             @Override
             public void run() {
-                players.put(p.getUniqueId(), new User(p));
-                players.get(p.getUniqueId()).givePerms();
+                forceParseUser(p);
             }
         });
     }
 
-    public void forceParseUser(final Player p) {
+    public void forceParseUser(Player p) {
         players.put(p.getUniqueId(), new User(p));
         players.get(p.getUniqueId()).givePerms();
     }
@@ -94,7 +93,6 @@ public class UserManager {
         try {
             configUsers.save(configFileUsers);
         } catch (Exception e) {
-            e.printStackTrace();
         }
     }
 
@@ -106,7 +104,6 @@ public class UserManager {
         try {
             configUsers.save(configFileUsers);
         } catch (Exception e) {
-            e.printStackTrace();
         }
         u.updateRank(r);
     }
@@ -135,7 +132,6 @@ public class UserManager {
         try {
             configUsers.save(configFileUsers);
         } catch (Exception e) {
-            e.printStackTrace();
         }
     }
 
@@ -156,7 +152,6 @@ public class UserManager {
         try {
             configUsers.save(configFileUsers);
         } catch (Exception e) {
-            e.printStackTrace();
         }
         if (players.containsKey(uuid))
             getUser(uuid).refreshPerms();

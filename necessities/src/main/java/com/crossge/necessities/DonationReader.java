@@ -13,12 +13,12 @@ import java.sql.*;
 import java.util.UUID;
 
 public class DonationReader {
+    private BukkitRunnable current;
+    private String pass;
     RankManager rm = new RankManager();
     UserManager um = new UserManager();
     Variables var = new Variables();
     GetUUID get = new GetUUID();
-    private String pass;
-    private BukkitRunnable current;
 
     private void check() {
         try {
@@ -56,7 +56,8 @@ public class DonationReader {
             stmt.close();
             stmt2.close();
             conn.close();
-        } catch (Exception e) { }
+        } catch (Exception e) {
+        }
     }
 
     public void init() {

@@ -14,7 +14,7 @@ public enum HatType {
     Trippy("TRIPPY"),
     Pot("POT");
 
-    private static HashMap<String,HatType> nameMap = new HashMap<>();
+    private static HashMap<String, HatType> nameMap = new HashMap<>();
     private String name;
 
     HatType(String name) {
@@ -30,7 +30,7 @@ public enum HatType {
     }
 
     public static void mapHats() {
-        for(HatType h : values())
+        for (HatType h : values())
             nameMap.put(h.getName().replaceAll("_", ""), h);
     }
 

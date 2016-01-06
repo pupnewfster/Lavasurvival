@@ -21,7 +21,7 @@ public class Flood extends Gamemode {
     private List<Location> lavaPoints;
 
     @Override
-    public void start() {
+    public void onStart() {
         if (getScoreboard().getObjective("game") == null)
             objective = getScoreboard().registerNewObjective("game", "dummy");
         else
@@ -30,7 +30,7 @@ public class Flood extends Gamemode {
         objective.setDisplayName((LAVA ? "Lava" : "Water") + "Pour");
         bonusScore = objective.getScore(ChatColor.GOLD + "" + ChatColor.BOLD + "Reward Bonus");
 
-        super.start();
+        super.onStart();
 
         duration = getCurrentMap().getFloodOptions().generateRandomPrepareTime();
         lavaPoints = getCurrentMap().getFloodOptions().getSpawnLocations();

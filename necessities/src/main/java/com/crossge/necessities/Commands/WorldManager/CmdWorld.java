@@ -28,8 +28,7 @@ public class CmdWorld extends WorldCmd {
                     return true;
                 }
                 Bukkit.getPlayer(uuid).teleport(dim.getSpawnLocation());
-                sender.sendMessage(var.getMessages() + "Teleported " + var.getObj() + Bukkit.getPlayer(uuid).getName() + var.getMessages() + " to " + var.getObj() +
-                        dim.getName() + var.getMessages() + ".");
+                sender.sendMessage(var.getMessages() + "Teleported " + var.getObj() + Bukkit.getPlayer(uuid).getName() + var.getMessages() + " to " + var.getObj() + dim.getName() + var.getMessages() + ".");
                 return true;
             }
             ((Player) sender).teleport(dim.getSpawnLocation());
@@ -43,8 +42,7 @@ public class CmdWorld extends WorldCmd {
                     return true;
                 }
                 Bukkit.getPlayer(uuid).teleport(dim.getSpawnLocation());
-                sender.sendMessage(var.getMessages() + "Teleported " + var.getObj() + Bukkit.getPlayer(uuid).getName() + var.getMessages() + " to " + var.getObj() +
-                        dim.getName() + var.getMessages() + ".");
+                sender.sendMessage(var.getMessages() + "Teleported " + var.getObj() + Bukkit.getPlayer(uuid).getName() + var.getMessages() + " to " + var.getObj() + dim.getName() + var.getMessages() + ".");
                 return true;
             }
             sender.sendMessage(var.getEr() + "Error: " + var.getErMsg() + "You can not teleport to other worlds because you are not a player.");

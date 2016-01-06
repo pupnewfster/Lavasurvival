@@ -14,10 +14,11 @@ public class CmdSay extends Cmd {
         String message = "";
         for (String arg : args)
             message += arg + " ";
-        if (sender instanceof Player)
-            Bukkit.broadcastMessage(ChatColor.translateAlternateColorCodes('&', message.trim()));
-        else
-            Bukkit.broadcastMessage(console.getName() + ChatColor.WHITE + " " + ChatColor.translateAlternateColorCodes('&', message.trim()));
+        if (ChatColor.stripColor(ChatColor.translateAlternateColorCodes('&', message.trim())).equals("")) {
+            sender.sendMessage(var.getEr() + "Error: " + var.getErMsg() + "Must enter a message to send.");
+            return true;
+        }
+        Bukkit.broadcastMessage((sender instanceof Player ? "" : console.getName() + ChatColor.WHITE + " ") + ChatColor.translateAlternateColorCodes('&', message.trim()));
         return true;
     }
 }
