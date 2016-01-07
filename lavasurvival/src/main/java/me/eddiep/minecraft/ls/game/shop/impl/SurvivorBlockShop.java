@@ -314,7 +314,7 @@ public class SurvivorBlockShop extends Menu {
     }
 
     protected int price(Material type) {
-        switch (type) {
+        /*switch (type) {
             case ICE:
                 return 600;
             case PACKED_ICE:
@@ -337,6 +337,7 @@ public class SurvivorBlockShop extends Menu {
                 return 1500;
             default:
                 return 0;
-        }
+        }*/
+        return 2000;
     }
 }

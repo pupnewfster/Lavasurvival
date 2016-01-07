@@ -238,15 +238,16 @@ public class PlayerListener implements Listener {
 
         BankInventory view = BankInventory.from(p);
         if (view != null) {
-            e.setCancelled(true);
             if (e.getCurrentItem() == null)
                 return;
 
             ItemStack currentItem = e.getCurrentItem();
             if (view.isNextPageButton(currentItem)) {
                 view.nextPage();
+                e.setCancelled(true);
             } else if (view.isPreviousPageButton(currentItem)) {
                 view.previousPage();
+                e.setCancelled(true);
             }
         }
     }

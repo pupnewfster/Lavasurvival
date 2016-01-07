@@ -512,7 +512,11 @@ public class DonatorBlockShop extends Menu {
     }
 
     protected int price(Material type) {
-        switch (type) {
+        if (type == Material.YELLOW_FLOWER || type == Material.RED_ROSE)
+            return 600;
+        return 1500;
+
+        /*switch (type) {
             case WOOD:
                 return 1500;
             case SAND:
@@ -563,6 +567,6 @@ public class DonatorBlockShop extends Menu {
                 return 1500;
             default:
                 return 0;
-        }
+        }*/
     }
 }

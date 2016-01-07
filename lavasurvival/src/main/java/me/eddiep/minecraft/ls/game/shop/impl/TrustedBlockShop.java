@@ -530,7 +530,7 @@ public class TrustedBlockShop extends Menu {
     }
 
     protected int price(Material type) {
-        switch (type) {
+        /*switch (type) {
             case WOOD_DOOR:
                 return 2100;
             case FENCE:
@@ -569,6 +569,8 @@ public class TrustedBlockShop extends Menu {
                 return 2500;
             default:
                 return 0;
-        }
+        }*/
+
+        return 2500;
     }
 }

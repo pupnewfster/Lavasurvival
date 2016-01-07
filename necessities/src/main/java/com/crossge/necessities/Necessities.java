@@ -450,17 +450,15 @@ public class Necessities extends JavaPlugin {
     }
 
     public static void trackAction(String clientId, String action, Object label) {
-        String clientVersion = Bukkit.getServer().getVersion().substring("git-Bukkit".length());
+        String clientVersion = Bukkit.getVersion().substring("git-Bukkit".length());
         String clientName = "Minecraft " + clientVersion.substring(0, clientVersion.indexOf("-"));
-
-        getInstance().googleAnalyticsTracker.TrackAction(clientName, clientId, "127.0.0.1", clientId, action, label.toString());
+        getTracker().TrackAction(clientName, clientId, "127.0.0.1", clientId, action, label.toString());
     }
 
     public static void trackActionWithValue(String clientId, String action, Object label, Object value) {
-        String clientVersion = Bukkit.getServer().getVersion().substring("git-Bukkit".length());
+        String clientVersion = Bukkit.getVersion().substring("git-Bukkit".length());
         String clientName = "Minecraft " + clientVersion.substring(0, clientVersion.indexOf("-"));
-
-        getInstance().googleAnalyticsTracker.TrackActionWithValue(clientName, clientId, "127.0.0.1", clientId, action, label.toString(), value.toString());
+        getTracker().TrackActionWithValue(clientName, clientId, "127.0.0.1", clientId, action, label.toString(), value.toString());
     }
 
     public static void trackAction(UUID uuid, String action, Object label) {

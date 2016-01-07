@@ -215,7 +215,7 @@ public class AdvancedBlockShop extends Menu {
     }
 
     protected int price(Material type) {
-        switch (type) {
+        /*switch (type) {
             case STEP:
                 return 1500;
             case STONE_SLAB2:
@@ -230,6 +230,8 @@ public class AdvancedBlockShop extends Menu {
                 return 1200;
             default:
                 return 0;
-        }
+        }*/
+
+        return 1500;
     }
 }
