@@ -38,7 +38,7 @@ public class BankInventory {
                 continue;
 
             ItemStack item = items.get(i);
-            if (item.getType() == Material.EMERALD_BLOCK)
+            if (item != null && item.getType() == Material.EMERALD_BLOCK)
                 continue;
             inventory.setItem(i, item);
         }
@@ -107,7 +107,7 @@ public class BankInventory {
             if (i >= items.size())
                 break;
             ItemStack item = items.get(i);
-            if (item.getType() == Material.EMERALD_BLOCK)
+            if (item != null && item.getType() == Material.EMERALD_BLOCK)
                 continue;
             inventory.setItem(i % 54, item);
         }
