@@ -65,21 +65,21 @@ public class BankInventory {
     }
 
     public void nextPage() {
-        if (offset + 45 >= items.size())
+        if (offset + 54 >= items.size())
             return;
 
         saveItems();
-        offset += 45;
+        offset += 54;
 
         updateView();
     }
 
     public void previousPage() {
-        if (offset - 45 < 0)
+        if (offset - 54 < 0)
             return;
 
         saveItems();
-        offset -= 45;
+        offset -= 54;
 
         updateView();
     }
@@ -101,14 +101,14 @@ public class BankInventory {
     public void updateView() {
         inventory.clear();
 
-        for (int i = offset; i < offset + 45; i++) {
+        for (int i = offset; i < offset + 54; i++) {
             if (i >= items.size())
                 break;
             ItemStack item = items.get(i);
             inventory.setItem(i % 54, item);
         }
 
-        if (offset + 45 < items.size()) {
+        if (offset + 54 < items.size()) {
             ItemStack item = new ItemStack(Material.EMERALD_BLOCK, 1);
             ItemMeta meta = item.getItemMeta();
             meta.setLore(Collections.singletonList(ChatColor.GREEN + "Next Page ->"));
