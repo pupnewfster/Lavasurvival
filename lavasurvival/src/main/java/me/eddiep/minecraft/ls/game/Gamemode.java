@@ -433,11 +433,10 @@ public abstract class Gamemode {
 
                 Rank rank = Lavasurvival.INSTANCE.getNecessitiesUserManager().getUser(player.getUniqueId()).getRank();
                 Double[] array;
-                if (!avgs.containsKey(rank)) {
+                if (!avgs.containsKey(rank))
                     array = new Double[] { 0.0,0.0,0.0 };
-                } else {
+                else
                     array = avgs.get(rank);
-                }
 
                 int blockCount = countAirBlocksAround(player, 10);
                 //avgAir += blockCount;
@@ -464,8 +463,8 @@ public abstract class Gamemode {
             if (Necessities.isTracking()) {
                 for (Rank rank : avgs.keySet()) {
                     Double[] array = avgs.get(rank);
-                    array[0] = array[0] / array[3];
-                    array[1] = array[1] / array[3];
+                    array[0] = array[0] / array[2];
+                    array[1] = array[1] / array[2];
                     Necessities.trackActionWithValue("LS", "AverageReward", rank.getName(), array[1]);
                     Necessities.trackActionWithValue("LS", "AverageAir", rank.getName(), array[0]);
                 }

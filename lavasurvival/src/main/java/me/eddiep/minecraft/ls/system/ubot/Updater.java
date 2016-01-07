@@ -71,9 +71,8 @@ public class Updater implements UpdateNotifier {
                 @Override
                 public void run() {
                     Gamemode.restartNextGame("lobby");
-                    if (!Gamemode.getCurrentGame().hasEnded()) {
+                    if (!Gamemode.getCurrentGame().hasEnded())
                         Gamemode.getCurrentGame().endRound(true, false);
-                    }
                 }
             }, 20 * 20);
             Lavasurvival.INSTANCE.stopUbot();
