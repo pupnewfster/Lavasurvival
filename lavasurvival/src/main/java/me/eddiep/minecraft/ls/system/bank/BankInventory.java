@@ -68,6 +68,7 @@ public class BankInventory {
         if (offset + 45 >= items.size())
             return;
 
+        saveItems();
         offset += 45;
 
         updateView();
@@ -77,6 +78,7 @@ public class BankInventory {
         if (offset - 45 < 0)
             return;
 
+        saveItems();
         offset -= 45;
 
         updateView();
@@ -92,7 +94,6 @@ public class BankInventory {
     }
 
     public void updateView() {
-        saveItems();
         inventory.clear();
 
         for (int i = offset; i < offset + 45; i++) {
