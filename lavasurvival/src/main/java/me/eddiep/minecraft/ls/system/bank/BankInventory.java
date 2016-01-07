@@ -82,7 +82,17 @@ public class BankInventory {
         updateView();
     }
 
+    private void saveItems() {
+        for (int i = offset; i < offset + inventory.getSize(); i++) {
+            if (i == 45 || i == 53)
+                continue;
+
+            this.items.set(i, inventory.getItem(i));
+        }
+    }
+
     public void updateView() {
+        saveItems();
         inventory.clear();
 
         for (int i = offset; i < offset + 45; i++) {
@@ -156,10 +166,6 @@ public class BankInventory {
 
     public void end(Player p) {
         INSTANCERS.remove(p);
-        inventory.clear();
-        inventory = null;
-
-        items = null;
     }
 
     public List<ItemStack> getItems() {
