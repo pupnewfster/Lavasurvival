@@ -93,11 +93,7 @@ public class BankInventory {
                     this.items.add(inventory.getItem(i % 54));
                 }
             } else {
-                if (inventory.getItem(i % 54) == null) {
-                    this.items.remove(i);
-                } else {
-                    this.items.set(i, inventory.getItem(i % 54));
-                }
+                this.items.set(i, inventory.getItem(i % 54));
             }
         }
     }
