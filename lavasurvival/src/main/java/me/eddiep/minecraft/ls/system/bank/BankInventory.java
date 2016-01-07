@@ -88,8 +88,17 @@ public class BankInventory {
         for (int i = offset; i < offset + inventory.getSize(); i++) {
             if (i == 45 || i == 53)
                 continue;
-
-            this.items.set(i, inventory.getItem(i % 54));
+            if (i >= items.size()) {
+                if (inventory.getItem(i % 54) != null) {
+                    this.items.add(inventory.getItem(i % 54));
+                }
+            } else {
+                if (inventory.getItem(i % 54) == null) {
+                    this.items.remove(i);
+                } else {
+                    this.items.set(i, inventory.getItem(i % 54));
+                }
+            }
         }
     }
 
