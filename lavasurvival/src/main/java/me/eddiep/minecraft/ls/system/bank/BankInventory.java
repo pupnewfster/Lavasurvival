@@ -106,7 +106,7 @@ public class BankInventory {
             inventory.setItem(i % 54, item);
         }
 
-        if (offset + 54 < items.size()) {
+        if (offset + 45 < items.size()) {
             ItemStack item = new ItemStack(Material.EMERALD_BLOCK, 1);
             ItemMeta meta = item.getItemMeta();
             meta.setLore(Collections.singletonList(ChatColor.GREEN + "Next Page ->"));
