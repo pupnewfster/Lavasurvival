@@ -150,29 +150,29 @@ public abstract class Gamemode {
                 }
             }
 
-            //Unloading world
-            if (lastMap != null) {
-                Lavasurvival.log("Unloading " + lastMap.getWorld().getName() + "..");
-                boolean success = Bukkit.unloadWorld(lastMap.getWorld(), false);
-                if (!success)
-                    Lavasurvival.log("Failed to unload last map! A manual unload may be required..");
-                else {
-                    new Thread(new Runnable() {
-                        @Override
-                        public void run() {
-                            restoreBackup(lastMap.getWorld());
-                        }
-                    }).start();
-                }
-            }
-
-            //Restart
             Bukkit.getScheduler().scheduleSyncDelayedTask(Lavasurvival.INSTANCE, new Runnable() {
                 @Override
                 public void run() {
-                    Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "restart");
+                    //Unloading world
+                    if (lastMap != null) {
+                        Lavasurvival.log("Unloading " + lastMap.getWorld().getName() + "..");
+                        boolean success = Bukkit.unloadWorld(lastMap.getWorld(), false);
+                        if (!success)
+                            Lavasurvival.log("Failed to unload last map! A manual unload may be required..");
+                        else {
+                            restoreBackup(lastMap.getWorld());
+                        }
+                    }
+
+                    //Restart
+                    Bukkit.getScheduler().scheduleSyncDelayedTask(Lavasurvival.INSTANCE, new Runnable() {
+                        @Override
+                        public void run() {
+                            Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "restart");
+                        }
+                    }, 20);
                 }
-            }, 20);
+            }, 20 * 2);
 
             return;
         }
