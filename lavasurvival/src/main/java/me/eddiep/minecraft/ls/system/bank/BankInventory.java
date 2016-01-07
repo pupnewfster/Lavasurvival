@@ -38,6 +38,8 @@ public class BankInventory {
                 continue;
 
             ItemStack item = items.get(i);
+            if (item.getType() == Material.EMERALD_BLOCK)
+                continue;
             inventory.setItem(i, item);
         }
 
@@ -86,6 +88,8 @@ public class BankInventory {
 
     private void saveItems() {
         for (int i = offset; i < offset + inventory.getSize(); i++) {
+            if (inventory.getItem(i % 54).getType() == Material.EMERALD_BLOCK)
+                continue;
             if (i >= items.size()) {
                 if (inventory.getItem(i % 54) != null) {
                     this.items.add(inventory.getItem(i % 54));
@@ -103,6 +107,8 @@ public class BankInventory {
             if (i >= items.size())
                 break;
             ItemStack item = items.get(i);
+            if (item.getType() == Material.EMERALD_BLOCK)
+                continue;
             inventory.setItem(i % 54, item);
         }
 
