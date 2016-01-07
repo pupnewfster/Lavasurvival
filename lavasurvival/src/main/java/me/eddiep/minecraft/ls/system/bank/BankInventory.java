@@ -88,7 +88,7 @@ public class BankInventory {
 
     private void saveItems() {
         for (int i = offset; i < offset + inventory.getSize(); i++) {
-            if (inventory.getItem(i % 54).getType() == Material.EMERALD_BLOCK)
+            if (inventory.getItem(i % 54) != null && inventory.getItem(i % 54).getType() == Material.EMERALD_BLOCK)
                 continue;
             if (i >= items.size()) {
                 if (inventory.getItem(i % 54) != null) {
