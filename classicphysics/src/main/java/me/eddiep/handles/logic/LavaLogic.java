@@ -20,8 +20,12 @@ public class LavaLogic extends AbstractLogicContainer {
 
     protected void checkLocation(Location location, Location from) {
         synchronized (ClassicPhysics.Sync) {
-            if (location == null || location.getWorld() == null || location.getChunk() == null || !location.getChunk().isLoaded() || location.getBlock() == null)//World isn't loaded
+            try {
+                if (location == null || location.getWorld() == null || location.getChunk() == null || !location.getChunk().isLoaded() || location.getBlock() == null)//World isn't loaded
+                    return;
+            } catch (Exception e) {
                 return;
+            }
             Block block = location.getBlock();
             if (block.hasMetadata("classic_block") && block.isLiquid())
                 return;

@@ -206,44 +206,51 @@ public final class ClassicPhysicsHandler implements Listener {
             sendingPackets = true;
             ArrayList<Packet> packets = new ArrayList<>();
             //ArrayList<Chunk> chunksToSend = new ArrayList<>();
-            for (long l : chunks.keySet()) {
-                if (!sendingPackets)
-                    break;
-                WorldCount count = chunks.get(l);
-                World world = count.getWorld();
-                if (world != null) {
-                    int x = (int) (l >> 32), z = (int) l;
-                    net.minecraft.server.v1_8_R3.World w = ((CraftWorld) world).getHandle();
-                    Chunk c = w.getChunkAt(x, z);
-                    if (count.getCount() >= 64) {
-                        world.refreshChunk(x, z);
-                        /*if (chunksToSend.size() > 10) {
-                            packets.add(new PacketPlayOutMapChunkBulk(chunksToSend));
-                            chunksToSend.clear();
-                        }
-                        chunksToSend.add(c);*/
-                    } else if (count.getCount() > 1)
-                        packets.add(new PacketPlayOutMultiBlockChange(count.getCount(), count.getChanged(), c));
-                    else
-                        packets.add(new PacketPlayOutBlockChange(w, new BlockPosition(count.getX(), count.getY(), count.getZ())));
+            if (!Bukkit.getOnlinePlayers().isEmpty())
+                for (long l : chunks.keySet()) {
+                    if (!sendingPackets)
+                        break;
+                    WorldCount count = chunks.get(l);
+                    World world = count.getWorld();
+                    if (world != null) {
+                        int x = (int) (l >> 32), z = (int) l;
+                        net.minecraft.server.v1_8_R3.World w = ((CraftWorld) world).getHandle();
+                        Chunk c = w.getChunkAt(x, z);
+                        if (count.getCount() >= 64) {
+                            world.refreshChunk(x, z);
+                            /*if (chunksToSend.size() > 10) {
+                                packets.add(new PacketPlayOutMapChunkBulk(chunksToSend));
+                                chunksToSend.clear();
+                            }
+                            chunksToSend.add(c);*/
+                        } else if (count.getCount() > 1)
+                            packets.add(new PacketPlayOutMultiBlockChange(count.getCount(), count.getChanged(), c));
+                        else
+                            packets.add(new PacketPlayOutBlockChange(w, new BlockPosition(count.getX(), count.getY(), count.getZ())));
+                    }
+                    chunks.remove(l);
                 }
-                chunks.remove(l);
-            }
+            else
+                chunks.clear();
             /*if (!chunksToSend.isEmpty())
                 packets.add(new PacketPlayOutMapChunkBulk(chunksToSend));
             chunksToSend.clear();*/
-            for (Player p : Bukkit.getOnlinePlayers()) {
-                if (removePrevious)
-                    break;
-                if (p != null) {
-                    EntityPlayer ep = ((CraftPlayer) p).getHandle();
-                    for (Packet packet : packets) {
-                        if (removePrevious)//Check again incase on player is mid getting sent
-                            break;
-                        ep.playerConnection.sendPacket(packet);
+            if (!packets.isEmpty())
+                for (Player p : Bukkit.getOnlinePlayers()) {
+                    if (removePrevious)
+                        break;
+                    if (p != null) {
+                        final EntityPlayer ep = ((CraftPlayer) p).getHandle();
+                        for (Packet packet : packets) {
+                            if (removePrevious)//Check again incase on player is mid getting sent
+                                break;
+                            ep.playerConnection.sendPacket(packet);
+                        }
+                        //WorldServer s = ((CraftWorld)p.getWorld()).getHandle();
+                        //PlayerChunkMap m = s.getPlayerChunkMap();
+
                     }
                 }
-            }
             if (removePrevious)
                 removePrevious = false;
             sendingPackets = false;
@@ -405,8 +412,12 @@ public final class ClassicPhysicsHandler implements Listener {
     }
 
     public void forcePlaceClassicBlockAt(Location location, Material type) {//Force place block
-        if (location == null || location.getWorld() == null || location.getChunk() == null || !location.getChunk().isLoaded() || location.getBlock() == null)//World isn't loaded
+        try {
+            if (location == null || location.getWorld() == null || location.getChunk() == null || !location.getChunk().isLoaded() || location.getBlock() == null)//World isn't loaded
+                return;
+        } catch (Exception e) {
             return;
+        }
         if (type.equals(Material.WATER))
             type = Material.STATIONARY_WATER;
         else if (type.equals(Material.LAVA))
@@ -436,8 +447,12 @@ public final class ClassicPhysicsHandler implements Listener {
     }
 
     public void placeClassicBlockAt(Location location, Material type, Location from) {
-        if (location == null || location.getWorld() == null || location.getChunk() == null || !location.getChunk().isLoaded() || location.getBlock() == null)//World isn't loaded
+        try {
+            if (location == null || location.getWorld() == null || location.getChunk() == null || !location.getChunk().isLoaded() || location.getBlock() == null)//World isn't loaded
+                return;
+        } catch (Exception e) {
             return;
+        }
         if (type.equals(Material.WATER))
             type = Material.STATIONARY_WATER;
         else if (type.equals(Material.LAVA))
