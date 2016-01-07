@@ -175,6 +175,7 @@ public class BankInventory {
     }
 
     public void end(Player p) {
+        saveItems();
         INSTANCERS.remove(p);
     }
 
