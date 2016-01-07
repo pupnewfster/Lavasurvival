@@ -89,7 +89,7 @@ public class BankInventory {
             if (i == 45 || i == 53)
                 continue;
 
-            this.items.set(i, inventory.getItem(i));
+            this.items.set(i, inventory.getItem(i % 54));
         }
     }
 
@@ -100,7 +100,7 @@ public class BankInventory {
             if (i >= items.size())
                 break;
             ItemStack item = items.get(i);
-            inventory.setItem(i % 45, item);
+            inventory.setItem(i % 54, item);
         }
 
         if (offset + 45 < items.size()) {
