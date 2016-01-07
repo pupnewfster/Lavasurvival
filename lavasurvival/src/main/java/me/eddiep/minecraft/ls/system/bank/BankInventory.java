@@ -65,7 +65,7 @@ public class BankInventory {
     }
 
     public void nextPage() {
-        if (offset + 54 >= items.size())
+        if (offset + 45 >= items.size())
             return;
 
         saveItems();
@@ -75,7 +75,7 @@ public class BankInventory {
     }
 
     public void previousPage() {
-        if (offset - 54 < 0)
+        if (offset - 45 < 0)
             return;
 
         saveItems();
@@ -86,8 +86,6 @@ public class BankInventory {
 
     private void saveItems() {
         for (int i = offset; i < offset + inventory.getSize(); i++) {
-            if (i == 45 || i == 53)
-                continue;
             if (i >= items.size()) {
                 if (inventory.getItem(i % 54) != null) {
                     this.items.add(inventory.getItem(i % 54));
