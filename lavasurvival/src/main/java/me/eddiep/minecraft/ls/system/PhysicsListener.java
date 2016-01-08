@@ -124,6 +124,7 @@ public class PhysicsListener implements Listener {
         addMeltTime(new MaterialData(Material.IRON_FENCE), 150 * 20);//Iron bars
         addMeltTime(new MaterialData(Material.IRON_BLOCK), 180 * 20);
         addMeltTime(new MaterialData(Material.LADDER), 10 * 20);
+        addMeltTime(new MaterialData(Material.TRAP_DOOR), 10 * 20);
         addMeltTime(new MaterialData(Material.ICE), 10 * 20, 120 * 20);
         addMeltTime(new MaterialData(Material.QUARTZ_BLOCK, (byte) 0), 150 * 20);
         addMeltTime(new MaterialData(Material.QUARTZ_BLOCK, (byte) 1), 150 * 20);

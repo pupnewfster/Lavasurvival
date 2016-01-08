@@ -27,10 +27,10 @@ public class JanetSlack {
     private static File configFile = new File("plugins/Necessities", "config.yml");
     private static HashMap<String, SlackUser> userMap = new HashMap<>();
     private static HashMap<Integer, ArrayList<String>> helpLists = new HashMap<>();
-    private static boolean justLoaded = true, isConnected = false;
-    private static String token, channel, channelID, hook, latest;
+    private static boolean justLoaded = true, isConnected = false, stopping = false;
+    private static String token, channel, channelID, hook, latestInChanel;
     private static JanetRandom r = new JanetRandom();
-    private static BukkitRunnable historyReader;
+    private static BukkitRunnable historyReader, keepAlive;
     private static URL hookURL;
     RankManager rm = new RankManager();
     UserManager um = new UserManager();
@@ -59,12 +59,27 @@ public class JanetSlack {
     public void disconnect() {
         if (!isConnected)
             return;
+        stopping = true;
         historyReader.cancel();
         userMap.clear();
         helpLists.clear();
+        keepAlive.cancel();
         sendMessage("Disconnected.");
         sendPost("https://slack.com/api/users.setPresence?token=" + token + "&presence=away&pretty=1");
         isConnected = false;
+    }
+
+    public void handleIngameChat(String message) {
+        for (SlackUser u : userMap.values())
+            if (u.viewingChat())
+                u.sendPrivateMessage(message);
+    }
+
+    public void sendMessage(String message, boolean isPM, SlackUser u) {
+        if (isPM)
+            u.sendPrivateMessage(message);
+        else
+            sendMessage(message);
     }
 
     public void sendMessage(String message) {
@@ -92,12 +107,53 @@ public class JanetSlack {
             con.disconnect();
         } catch (Exception e) {
         }
+    }
 
+    public void getPms() {
+        if (stopping)
+            return;
+        for (SlackUser u : userMap.values()) {
+            if (stopping)
+                return;
+            try {
+                URL url = new URL("https://slack.com/api/im.history?token=" + token + "&channel=" + u.getChannel() + "&oldest=" + u.getLatest() + "&pretty=1");
+                HttpsURLConnection con = (HttpsURLConnection) url.openConnection();
+                con.setRequestMethod("POST");
+                BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
+                String inputLine;
+                StringBuilder response = new StringBuilder();
+                while ((inputLine = in.readLine()) != null)
+                    response.append(inputLine);
+                in.close();
+                JSONParser jsonParser = new JSONParser();
+                JSONObject json = (JSONObject) jsonParser.parse(response.toString());
+                JSONArray messages = (JSONArray) json.get("messages");
+                if (messages != null)//If no messages from someone ignore them
+                    for (int i = messages.size() - 1; i >= 0; i--) {
+                        JSONObject message = (JSONObject) messages.get(i);
+                        if (!message.containsKey("subtype") && !u.getJustLoaded()) {
+                            SlackUser info = getUserInfo((String) message.get("user"));
+                            if (!info.getName().contains("janet")) {
+                                String text = (String) message.get("text");
+                                while (text.contains("<") && text.contains(">"))
+                                    text = text.split("<@")[0] + "@" + getUserInfo(text.split("<@")[1].split(">:")[0]).getName() + ":" + text.split("<@")[1].split(">:")[1];
+                                sendSlackChat(u, text, true);
+                            }
+                        }
+                        if (i == 0)
+                            u.setLatest((String) message.get("ts"));
+                    }
+            } catch (Exception e) {
+            }
+            u.setJustLoaded(false);
+            if (stopping)
+                return;
+        }
     }
 
     public void getHistory() {
         try {
-            URL url = new URL("https://slack.com/api/channels.history?token=" + token + "&channel=" + channelID + "&oldest=" + latest + "&pretty=1");
+            URL url = new URL("https://slack.com/api/channels.history?token=" + token + "&channel=" + channelID + "&oldest=" + latestInChanel + "&pretty=1");
             HttpsURLConnection con = (HttpsURLConnection) url.openConnection();
             con.setRequestMethod("POST");
             BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
@@ -117,11 +173,11 @@ public class JanetSlack {
                         String text = (String) message.get("text");
                         while (text.contains("<") && text.contains(">"))
                             text = text.split("<@")[0] + "@" + getUserInfo(text.split("<@")[1].split(">:")[0]).getName() + ":" + text.split("<@")[1].split(">:")[1];
-                        sendSlackChat(info, text);
+                        sendSlackChat(info, text, false);
                     }
                 }
                 if (i == 0)
-                    latest = (String) message.get("ts");
+                    latestInChanel = (String) message.get("ts");
             }
         } catch (Exception e) {
         }
@@ -132,12 +188,10 @@ public class JanetSlack {
         if (userMap.containsKey(id))
             return userMap.get(id);
         //Almost never should get past this point as it maps the users when it connects unless a new user gets invited
-        String output = "";
         try {
             URL url = new URL("https://slack.com/api/users.info?token=" + token + "&user=" + id + "&pretty=1");
             HttpsURLConnection con = (HttpsURLConnection) url.openConnection();
             con.setRequestMethod("POST");
-
             BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
             String inputLine;
             StringBuilder response = new StringBuilder();
@@ -181,7 +235,7 @@ public class JanetSlack {
             JSONParser jsonParser = new JSONParser();
             JSONObject json = (JSONObject) jsonParser.parse(response.toString());
             //Get a more recent timestamp than zero so first history pass is more efficient
-            latest = (String) json.get("latest_event_ts");
+            latestInChanel = (String) json.get("latest_event_ts");
             //Map users
             JSONArray users = (JSONArray) json.get("users");
             for (int i = users.size() - 1; i >= 0; i--) {
@@ -192,17 +246,51 @@ public class JanetSlack {
             }
         } catch (Exception e) {
         }
-        sendPost("https://slack.com/api/users.setPresence?token=" + token + "&presence=auto&pretty=1");
+        setUserChannels();
         historyReader = new BukkitRunnable() {
             @Override
             public void run() {
                 getHistory();
+                getPms();
             }
         };
         historyReader.runTaskTimerAsynchronously(Necessities.getInstance(), 0, 20);
+        keepAlive = new BukkitRunnable() {
+            @Override
+            public void run() {
+                sendPost("https://slack.com/api/users.setPresence?token=" + token + "&presence=auto&pretty=1");
+            }
+        };
+        keepAlive.runTaskTimerAsynchronously(Necessities.getInstance(), 0, 30 * 60 * 20);//Every thirty minutes force it to show that janet is still alive
         setHelp();
         sendMessage("Connected.");
         isConnected = true;
+    }
+
+    private void setUserChannels() {
+        try {
+            URL url = new URL("https://slack.com/api/im.list?token=" + token + "&pretty=1");
+            HttpsURLConnection con = (HttpsURLConnection) url.openConnection();
+            con.setRequestMethod("POST");
+            BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
+            String inputLine;
+            StringBuilder response = new StringBuilder();
+            while ((inputLine = in.readLine()) != null)
+                response.append(inputLine);
+            in.close();
+
+            JSONParser jsonParser = new JSONParser();
+            JSONObject json = (JSONObject) jsonParser.parse(response.toString());
+            //Map user channels
+            JSONArray ims = (JSONArray) json.get("ims");
+            for (int i = ims.size() - 1; i >= 0; i--) {
+                JSONObject im = (JSONObject) ims.get(i);
+                String userID = (String) im.get("user");
+                if (userMap.containsKey(userID))
+                    userMap.get(userID).setChannel((String) im.get("id"));
+            }
+        } catch (Exception e) {
+        }
     }
 
     private String corTime(String time) {
@@ -220,6 +308,7 @@ public class JanetSlack {
         ArrayList<String> temp = new ArrayList<>();
         temp.add("!help <page> ~ View the help messages on <page>.");
         temp.add("!rank ~ Shows you what rank you have.");
+        temp.add("!bans ~ Shows you the banlist.");
         temp.add("!whois <name> ~ View information about <name>.");
         temp.add("!who ~ View the online players.");
         temp.add("!devs ~ View the devs.");
@@ -236,15 +325,16 @@ public class JanetSlack {
         temp.add("!unbanip <ip> ~ Unbans <ip>.");
         temp.add("!slap <name> ~ Slaps <name> sky high.");
         temp.add("!mute <name> ~ Mutes and unmutes <name>.");
+        temp.add("!showchat ~ Toggles showing the in game chat. (Only available in private messages)");
         helpLists.put(1, (ArrayList<String>) temp.clone());//Admin
         helpLists.put(2, (ArrayList<String>) temp.clone());//Owner
         helpLists.put(3, (ArrayList<String>) temp.clone());//Primary owner
         temp.clear();
     }
 
-    private void sendSlackChat(SlackUser info, String message) {
+    private void sendSlackChat(SlackUser info, String message, boolean isPM) {
         if (!info.isMember()) {
-            sendMessage("Error: You are restricted or ultra restricted");
+            sendMessage("Error: You are restricted or ultra restricted", isPM, info);
             return;
         }
         final String name = info.getName();
@@ -253,7 +343,7 @@ public class JanetSlack {
             if (message.startsWith("!help")) {
                 int page = 0;
                 if (message.split(" ").length > 1 && !form.isLegal(message.split(" ")[1])) {
-                    sendMessage("Error: You must enter a valid help page.");
+                    sendMessage("Error: You must enter a valid help page.", isPM, info);
                     return;
                 }
                 if (message.split(" ").length > 1)
@@ -267,7 +357,7 @@ public class JanetSlack {
                     rounder = 1;
                 int totalpages = (helpList.size() / 10) + rounder;
                 if (page > totalpages) {
-                    sendMessage("Error: Input a number from 1 to " + Integer.toString(totalpages));
+                    sendMessage("Error: Input a number from 1 to " + Integer.toString(totalpages), isPM, info);
                     return;
                 }
                 m += " ---- Help -- Page " + Integer.toString(page) + "/" + Integer.toString(totalpages) + " ---- \n";
@@ -282,9 +372,22 @@ public class JanetSlack {
                     m += "Type !help " + Integer.toString(page + 2) + " to read the next page.\n";
             } else if (message.startsWith("!rank")) {
                 m += info.getRankName() + "\n";
+            } else if (message.startsWith("!bans") || message.startsWith("!banlist") || message.startsWith("!bannedplayers") || message.startsWith("!bannedips")) {
+                BanList bans = Bukkit.getBanList(BanList.Type.NAME);
+                m += "Banned players: ";
+                for (BanEntry e : bans.getBanEntries())
+                    m += e.getTarget() + ", ";
+                if (m.endsWith(", "))
+                    m = m.substring(0, m.length() - 2).trim();
+                m += "\nBanned ips: ";
+                bans = Bukkit.getBanList(BanList.Type.IP);
+                for (BanEntry e : bans.getBanEntries())
+                    m += e.getTarget() + ", ";
+                if (m.endsWith(", "))
+                    m = m.substring(0, m.length() - 2).trim();
             } else if (message.startsWith("!whois ")) {
                 if (message.split(" ").length == 1) {
-                    sendMessage("Error: You must enter a player to view info of.");
+                    sendMessage("Error: You must enter a player to view info of.", isPM, info);
                     return;
                 }
                 String target = message.split(" ")[1];
@@ -292,7 +395,7 @@ public class JanetSlack {
                 if (uuid == null) {
                     uuid = get.getOfflineID(target);
                     if (uuid == null) {
-                        sendMessage("Error: That player has not joined the server. If the player is offline, please use the full and most recent name.");
+                        sendMessage("Error: That player has not joined the server. If the player is offline, please use the full and most recent name.", isPM, info);
                         return;
                     }
                 }
@@ -370,17 +473,17 @@ public class JanetSlack {
             } else if (message.startsWith("!warn ")) {
                 message = message.replaceFirst("!warn ", "");
                 if (message.split(" ").length < 2) {
-                    sendMessage("Error: You must enter a player to warn and a reason.");
+                    sendMessage("Error: You must enter a player to warn and a reason.", isPM, info);
                     return;
                 }
                 UUID uuid = get.getID(message.split(" ")[0]);
                 if (uuid == null) {
-                    sendMessage("Error: Invalid player.");
+                    sendMessage("Error: Invalid player.", isPM, info);
                     return;
                 }
                 final Player target = Bukkit.getPlayer(uuid);
                 if (target.hasPermission("Necessities.antiPWarn")) {
-                    sendMessage("Error: You may not warn someone who has Necessities.antiPWarn.");
+                    sendMessage("Error: You may not warn someone who has Necessities.antiPWarn.", isPM, info);
                     return;
                 }
                 final String reason = message.replaceFirst(message.split(" ")[0], "").trim();
@@ -413,12 +516,12 @@ public class JanetSlack {
             } else if (message.startsWith("!kick ") && info.isAdmin()) {
                 message = message.replaceFirst("!kick ", "");
                 if (message.split(" ").length == 0) {
-                    sendMessage("Error: You must enter a player to kick and a reason.");
+                    sendMessage("Error: You must enter a player to kick and a reason.", isPM, info);
                     return;
                 }
                 UUID uuid = get.getID(message.split(" ")[0]);
                 if (uuid == null) {
-                    sendMessage("Error: Invalid player.");
+                    sendMessage("Error: Invalid player.", isPM, info);
                     return;
                 }
                 final Player target = Bukkit.getPlayer(uuid);
@@ -434,19 +537,19 @@ public class JanetSlack {
             } else if (message.startsWith("!ban ") && info.isAdmin()) {
                 message = message.replaceFirst("!ban ", "");
                 if (message.split(" ").length == 0) {
-                    sendMessage("Error: You must enter a player to ban.");
+                    sendMessage("Error: You must enter a player to ban.", isPM, info);
                     return;
                 }
                 UUID uuid = get.getID(message.split(" ")[0]);
                 if (uuid == null)
                     uuid = get.getOfflineID(message.split(" ")[0]);
                 if (uuid == null) {
-                    sendMessage("Error: Invalid player.");
+                    sendMessage("Error: Invalid player.", isPM, info);
                     return;
                 }
                 final OfflinePlayer target = Bukkit.getOfflinePlayer(uuid);
                 if (target.getPlayer() != null && target.getPlayer().hasPermission("Necessities.antiBan") && !info.isOwner()) {
-                    sendMessage("Error: You may not ban someone who has Necessities.antiBan.");
+                    sendMessage("Error: You may not ban someone who has Necessities.antiBan.", isPM, info);
                     return;
                 }
                 final String reason = (message.split(" ").length > 1) ? message.replaceFirst(message.split(" ")[0], "").trim() : "";
@@ -466,21 +569,21 @@ public class JanetSlack {
             } else if (message.startsWith("!unban ") && info.isAdmin()) {
                 message = message.replaceFirst("!unban ", "");
                 if (message.split(" ").length == 0) {
-                    sendMessage("Error: You must enter a player to unban.");
+                    sendMessage("Error: You must enter a player to unban.", isPM, info);
                     return;
                 }
                 UUID uuid = get.getID(message.split(" ")[0]);
                 if (uuid == null)
                     uuid = get.getOfflineID(message.split(" ")[0]);
                 if (uuid == null) {
-                    sendMessage("Error: Invalid player.");
+                    sendMessage("Error: Invalid player.", isPM, info);
                     return;
                 }
                 OfflinePlayer target = Bukkit.getOfflinePlayer(uuid);
                 BanList bans = Bukkit.getBanList(BanList.Type.NAME);
                 String theirName = target.getName();
                 if (!bans.isBanned(theirName)) {
-                    sendMessage("Error: That player is not banned.");
+                    sendMessage("Error: That player is not banned.", isPM, info);
                     return;
                 }
                 bans.pardon(theirName);
@@ -489,12 +592,12 @@ public class JanetSlack {
             } else if (message.startsWith("!mute ") && info.isAdmin()) {
                 message = message.replaceFirst("!mute ", "");
                 if (message.split(" ").length == 0) {
-                    sendMessage("Error: You must enter a player to mute.");
+                    sendMessage("Error: You must enter a player to mute.", isPM, info);
                     return;
                 }
                 UUID uuid = get.getID(message.split(" ")[0]);
                 if (uuid == null) {
-                    sendMessage("Error: Invalid player.");
+                    sendMessage("Error: Invalid player.", isPM, info);
                     return;
                 }
                 User u = um.getUser(uuid);
@@ -505,12 +608,12 @@ public class JanetSlack {
             } else if (message.startsWith("!slap ") && info.isAdmin()) {
                 message = message.replaceFirst("!slap ", "");
                 if (message.split(" ").length == 0) {
-                    sendMessage("Error: You must enter a player to slap.");
+                    sendMessage("Error: You must enter a player to slap.", isPM, info);
                     return;
                 }
                 UUID uuid = get.getID(message.split(" ")[0]);
                 if (uuid == null) {
-                    sendMessage("Error: Invalid player.");
+                    sendMessage("Error: Invalid player.", isPM, info);
                     return;
                 }
                 Player target = Bukkit.getPlayer(uuid);
@@ -521,30 +624,30 @@ public class JanetSlack {
             } else if (message.startsWith("!tempban ") && info.isAdmin()) {
                 message = message.replaceFirst("!tempban ", "");
                 if (message.split(" ").length < 2) {
-                    sendMessage("Error: You must enter a player to ban and a duration in minutes.");
+                    sendMessage("Error: You must enter a player to ban and a duration in minutes.", isPM, info);
                     return;
                 }
                 UUID uuid = get.getID(message.split(" ")[0]);
                 if (uuid == null)
                     uuid = get.getOfflineID(message.split(" ")[0]);
                 if (uuid == null) {
-                    sendMessage("Error: Invalid player.");
+                    sendMessage("Error: Invalid player.", isPM, info);
                     return;
                 }
                 final OfflinePlayer target = Bukkit.getOfflinePlayer(uuid);
                 if (target.getPlayer() != null && target.getPlayer().hasPermission("Necessities.antiBan") && !info.isOwner()) {
-                    sendMessage("Error: You may not ban someone who has Necessities.antiBan.");
+                    sendMessage("Error: You may not ban someone who has Necessities.antiBan.", isPM, info);
                     return;
                 }
                 int minutes;
                 try {
                     minutes = Integer.parseInt(message.split(" ")[1]);
                 } catch (Exception e) {
-                    sendMessage("Error: Invalid time, please enter a time in minutes.");
+                    sendMessage("Error: Invalid time, please enter a time in minutes.", isPM, info);
                     return;
                 }
                 if (minutes < 0) {
-                    sendMessage("Error: Invalid time, please enter a time in minutes.");
+                    sendMessage("Error: Invalid time, please enter a time in minutes.", isPM, info);
                     return;
                 }
                 final String reason = (message.split(" ").length > 2) ? message.replaceFirst(message.split(" ")[0], "").trim() : "";
@@ -563,17 +666,17 @@ public class JanetSlack {
                 Bukkit.broadcastMessage(var.getMessages() + name + " banned " + var.getObj() + theirName + var.getMessages() + " for " + var.getObj() + minutes + var.getMessages() +
                         " " + (minutes == 1 ? "minute" : "minutes") + (reason.equals("") ? "." : " for the reason " + var.getObj() + reason + var.getMessages() + "."));
                 m += name + " banned " + theirName + " for " + minutes + " " + (minutes == 1 ? "minute" : "minutes") + (reason.equals("") ? "." : " for the reason " + reason + ".") + "\n";
-            } else if (message.startsWith("!banip ") && info.isAdmin()) {//TODO
+            } else if (message.startsWith("!banip ") && info.isAdmin()) {
                 message = message.replaceFirst("!banip ", "");
                 if (message.split(" ").length == 0) {
-                    sendMessage("Error: You must enter an ip to ban.");
+                    sendMessage("Error: You must enter an ip to ban.", isPM, info);
                     return;
                 }
                 UUID uuid = get.getID(message.split(" ")[0]);
                 if (uuid != null) {
                     final Player target = Bukkit.getPlayer(uuid);
                     if (target.hasPermission("Necessities.antiBan") && !info.isOwner()) {
-                        sendMessage("Error: You may not ban someone who has Necessities.antiBan.");
+                        sendMessage("Error: You may not ban someone who has Necessities.antiBan.", isPM, info);
                         return;
                     }
                     final String reason = (message.split(" ").length > 1) ? message.replaceFirst(message.split(" ")[0], "").trim() : "";
@@ -597,7 +700,7 @@ public class JanetSlack {
                     } catch (Exception e) {
                     }
                     if (!validIp) {
-                        sendMessage("Error: Invalid ip.");
+                        sendMessage("Error: Invalid ip.", isPM, info);
                         return;
                     }
                     final String reason = (message.split(" ").length > 1) ? message.replaceFirst(message.split(" ")[0], "").trim() : "";
@@ -620,7 +723,7 @@ public class JanetSlack {
             } else if (message.startsWith("!unbanip ") && info.isAdmin()) {
                 message = message.replaceFirst("!unbanip ", "");
                 if (message.split(" ").length == 0) {
-                    sendMessage("Error: You must enter an ip to unban.");
+                    sendMessage("Error: You must enter an ip to unban.", isPM, info);
                     return;
                 }
                 boolean validIp = false;
@@ -630,34 +733,43 @@ public class JanetSlack {
                 } catch (Exception e) {
                 }
                 if (!validIp) {
-                    sendMessage("Error: Invalid ip.");
+                    sendMessage("Error: Invalid ip.", isPM, info);
                     return;
                 }
                 BanList bans = Bukkit.getBanList(BanList.Type.IP);
                 String theirIP = message.split(" ")[0];
                 if (!bans.isBanned(theirIP)) {
-                    sendMessage("Error: That ip is not banned.");
+                    sendMessage("Error: That ip is not banned.", isPM, info);
                     return;
                 }
                 bans.pardon(theirIP);
                 Bukkit.broadcastMessage(var.getMessages() + name + " unbanned " + theirIP + ".");
                 m += name + " unbanned " + theirIP + ".\n";
-            } else {
+            } else if ((message.startsWith("!showchat") || message.startsWith("!togglechat") || message.startsWith("!showingamechat") || message.startsWith("!ingamechat")) && info.isAdmin()) {
+                if (!isPM)
+                    m += "Error: You must pm me to be able to view in game chat.\n";
+                else {
+                    m += (info.viewingChat() ? "No longer" : "You are now") + " viewing the in game chat.\n";
+                    info.toggleViewingChat();
+                }
+            } else if (!isPM) {
                 Bukkit.broadcast(var.getMessages() + "From Slack - " + ChatColor.WHITE + name + ": " + message, "Necessities.slack");
                 return;
             }
-            sendMessage(m);
-        } else
+            sendMessage(m, isPM, info);
+        } else if (!isPM)
             Bukkit.broadcast(var.getMessages() + "From Slack - " + ChatColor.WHITE + name + ": " + message, "Necessities.slack");
     }
 
     private class SlackUser {
-        private String id, name;
+        private boolean justLoaded = true, viewingChat = false;
+        private String id, name, latest, channel;
         private int rank = 0;
 
         public SlackUser(JSONObject json) {
             this.id = (String) json.get("id");
             this.name = (String) json.get("name");
+            this.latest = latestInChanel;
             if ((boolean) json.get("is_primary_owner"))
                 this.rank = 3;
             else if ((boolean) json.get("is_owner"))
@@ -675,7 +787,7 @@ public class JanetSlack {
             return this.name;
         }
 
-        public String getId() {
+        public String getID() {
             return this.id;
         }
 
@@ -721,6 +833,61 @@ public class JanetSlack {
             else if (isUltraRestricted())
                 return "Ultra Restricted";
             return "Error";
+        }
+
+        public boolean viewingChat() {
+            return this.viewingChat;
+        }
+
+        public void toggleViewingChat() {
+            this.viewingChat = !this.viewingChat;
+        }
+
+        public void setJustLoaded(boolean loaded) {
+            this.justLoaded = loaded;
+        }
+
+        public boolean getJustLoaded() {
+            return this.justLoaded;
+        }
+
+        public String getLatest() {
+            return this.latest;
+        }
+
+        public void setLatest(String latest) {
+            this.latest = latest;
+        }
+
+        public String getChannel() {
+            return this.channel;
+        }
+
+        public void setChannel(String channel) {
+            this.channel = channel;
+        }
+
+        public void sendPrivateMessage(String message) {
+            message = ChatColor.stripColor(message);
+            if (message.endsWith("\n"))
+                message = message.substring(0, message.length() - 1);
+            JSONObject json = new JSONObject();
+            json.put("text", message);
+            json.put("channel", this.channel);
+            try {
+                HttpsURLConnection con = (HttpsURLConnection) hookURL.openConnection();
+                con.setDoOutput(true);
+                con.setRequestProperty("Content-Type", "application/json;");
+                con.setRequestProperty("Accept", "application/json,text/plain");
+                con.setRequestMethod("POST");
+                OutputStream os = con.getOutputStream();
+                os.write(json.toString().getBytes("UTF-8"));
+                os.close();
+                InputStream is = con.getInputStream();
+                is.close();
+                con.disconnect();
+            } catch (Exception e) {
+            }
         }
     }
 }

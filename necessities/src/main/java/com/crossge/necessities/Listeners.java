@@ -273,6 +273,8 @@ public class Listeners implements Listener {
             Bukkit.getConsoleSender().sendMessage(status + e.getFormat().replaceAll("\\{MESSAGE\\}", "") + e.getMessage());
             if (u.slackChat())
                 slack.sendMessage((status + e.getFormat().replaceAll("\\{MESSAGE\\}", "") + e.getMessage()).replaceFirst("To Slack - ", ""));
+            else
+                slack.handleIngameChat(status + e.getFormat().replaceAll("\\{MESSAGE\\}", "") + e.getMessage());
         }
         e.setCancelled(true);
         if (config.contains("Necessities.AI") && config.getBoolean("Necessities.AI") && (!isop || message.startsWith("!")))
