@@ -38,6 +38,8 @@ public class BankInventory {
                 continue;
 
             ItemStack item = items.get(i);
+            if (item != null && item.getType() == Material.EMERALD_BLOCK)
+                continue;
             inventory.setItem(i, item);
         }
 
@@ -68,7 +70,8 @@ public class BankInventory {
         if (offset + 45 >= items.size())
             return;
 
-        offset += 45;
+        saveItems();
+        offset += 54;
 
         updateView();
     }
@@ -77,19 +80,36 @@ public class BankInventory {
         if (offset - 45 < 0)
             return;
 
-        offset -= 45;
+        saveItems();
+        offset -= 54;
 
         updateView();
+    }
+
+    private void saveItems() {
+        for (int i = offset; i < offset + inventory.getSize(); i++) {
+            if (inventory.getItem(i % 54) != null && inventory.getItem(i % 54).getType() == Material.EMERALD_BLOCK)
+                continue;
+            if (i >= items.size()) {
+                if (inventory.getItem(i % 54) != null) {
+                    this.items.add(inventory.getItem(i % 54));
+                }
+            } else {
+                this.items.set(i, inventory.getItem(i % 54));
+            }
+        }
     }
 
     public void updateView() {
         inventory.clear();
 
-        for (int i = offset; i < offset + 45; i++) {
+        for (int i = offset; i < offset + 54; i++) {
             if (i >= items.size())
                 break;
             ItemStack item = items.get(i);
-            inventory.setItem(i % 45, item);
+            if (item != null && item.getType() == Material.EMERALD_BLOCK)
+                continue;
+            inventory.setItem(i % 54, item);
         }
 
         if (offset + 45 < items.size()) {
@@ -155,11 +175,8 @@ public class BankInventory {
     }
 
     public void end(Player p) {
+        saveItems();
         INSTANCERS.remove(p);
-        inventory.clear();
-        inventory = null;
-
-        items = null;
     }
 
     public List<ItemStack> getItems() {

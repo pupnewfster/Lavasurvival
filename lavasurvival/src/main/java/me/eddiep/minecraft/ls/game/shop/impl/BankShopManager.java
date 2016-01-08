@@ -20,7 +20,7 @@ public class BankShopManager implements ShopManager {
 
     @Override
     public boolean isShopInventory(Inventory inventory, Player owner) {
-        return inventory.getTitle().equals("Bank");
+        return inventory.getTitle().contains("Bank");
     }
 
     @Override
