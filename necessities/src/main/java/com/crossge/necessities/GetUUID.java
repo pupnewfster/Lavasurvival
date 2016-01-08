@@ -6,6 +6,7 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.UUID;
 
@@ -42,9 +43,25 @@ public class GetUUID {
     public void initiate() {
         Bukkit.getConsoleSender().sendMessage(ChatColor.AQUA + "Retrieving all stored UUIDs.");
         YamlConfiguration configUUIDs = YamlConfiguration.loadConfiguration(configFileUUIDs);
+        ArrayList<String> invalidKeys = new ArrayList<>();
         for (String key : configUUIDs.getKeys(false))
-            if (nameFromString(key) != null)
-                uuids.put(nameFromString(key).toLowerCase(), UUID.fromString(key));
+            if (nameFromString(key) != null) {
+                UUID uuid = null;
+                try {
+                    uuid = UUID.fromString(key);
+                } catch (Exception e) {
+                    invalidKeys.add(key);
+                }
+                if (uuid != null)
+                    uuids.put(nameFromString(key).toLowerCase(), UUID.fromString(key));
+            }
+        for (String key : invalidKeys)
+            configUUIDs.set(key, null);
+        if (!invalidKeys.isEmpty())
+            try {
+                configUUIDs.save(configFileUUIDs);
+            } catch (Exception e) {
+            }
         Bukkit.getConsoleSender().sendMessage(ChatColor.AQUA + "All stored UUIDs retrieved.");
     }
 
