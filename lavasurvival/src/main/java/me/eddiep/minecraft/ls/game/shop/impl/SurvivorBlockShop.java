@@ -277,6 +277,15 @@ public class SurvivorBlockShop extends Menu {
             getUser(player).buyBlock(Material.WOOL, price(Material.WOOL), (byte) 15);
     }
 
+    @MenuItem(
+            slot = 28,
+            item = @ItemStackAnnotation(material = Material.TRAP_DOOR, name = "")
+    )
+    public void buyTrapdoor(MenuPlayer player) {
+        if (canBuy(player))
+            getUser(player).buyBlock(Material.TRAP_DOOR, price(Material.TRAP_DOOR));
+    }
+
     private UserInfo getUser(MenuPlayer player) {
         return Lavasurvival.INSTANCE.getUserManager().getUser(player.getBukkit().getUniqueId());
     }
