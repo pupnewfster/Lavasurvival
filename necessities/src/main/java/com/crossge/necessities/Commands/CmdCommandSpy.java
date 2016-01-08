@@ -30,13 +30,11 @@ public class CmdCommandSpy extends Cmd {
     public boolean commandUse(CommandSender sender, String[] args) {
         if (sender instanceof Player) {
             Player p = (Player) sender;
-            if (spying.contains(p.getUniqueId())) {
-                p.sendMessage(var.getMessages() + "No longer spying on commands.");
+            p.sendMessage(var.getMessages() + (spying.contains(p.getUniqueId()) ? "No longer" : "You are now") + " spying on commands.");
+            if (spying.contains(p.getUniqueId()))
                 spying.remove(p.getUniqueId());
-            } else {
-                p.sendMessage(var.getMessages() + "You are now spying on commands.");
+            else
                 spying.add(p.getUniqueId());
-            }
         } else
             sender.sendMessage(var.getEr() + "Error: " + var.getErMsg() + "The console can already see all commands.");
         return true;
