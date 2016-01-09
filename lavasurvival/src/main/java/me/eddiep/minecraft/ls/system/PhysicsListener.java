@@ -326,7 +326,7 @@ public class PhysicsListener implements Listener {
                 if (meltTicks < 0) //It's unburnable
                     return;
                 if (!blockChecking.hasMetadata("player_placed"))
-                    meltTicks *= 0.5;
+                    meltTicks *= Gamemode.getCurrentMap().getMeltMultiplier();
                 ConcurrentLinkedQueue<BlockTaskInfo> temp = new ConcurrentLinkedQueue<>();
                 Location location = event.getLocation();
                 if (toTasks.containsKey(location) && toTasks.get(location) != null && toTasks.get(location).size() > 0)
