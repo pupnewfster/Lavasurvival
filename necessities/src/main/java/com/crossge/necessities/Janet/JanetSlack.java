@@ -247,6 +247,7 @@ public class JanetSlack {
         } catch (Exception e) {
         }
         setUserChannels();
+        sendPost("https://slack.com/api/users.setPresence?token=" + token + "&presence=auto&pretty=1");
         historyReader = new BukkitRunnable() {
             @Override
             public void run() {
@@ -258,7 +259,7 @@ public class JanetSlack {
         keepAlive = new BukkitRunnable() {
             @Override
             public void run() {
-                sendPost("https://slack.com/api/users.setPresence?token=" + token + "&presence=auto&pretty=1");
+                sendPost("https://slack.com/api/users.setActive?token=" + token + "&pretty=1");
             }
         };
         keepAlive.runTaskTimerAsynchronously(Necessities.getInstance(), 0, 30 * 60 * 20);//Every thirty minutes force it to show that janet is still alive
