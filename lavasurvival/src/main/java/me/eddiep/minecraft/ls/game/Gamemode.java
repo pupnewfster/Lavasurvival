@@ -266,8 +266,6 @@ public abstract class Gamemode {
                 long tick = (long) (timeTickCount * multiplier);
                 getCurrentWorld().setTime(currentMap.getTimeOptions().getStartTimeTick() + tick);
             }
-        } else {
-            currentMap.getWorld().setTime(currentMap.getTimeOptions().getStartTimeTick());
         }
 
         onTick();

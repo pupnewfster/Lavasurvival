@@ -38,7 +38,9 @@ public class ChunkEdit {
         }
         if (chunkY < 0 || chunkY > 15 || blockX < 0 || blockX > 15 || blockY < 0 || blockY > 15 || blockZ < 0 || blockZ > 15)
             return;//It is a bad location
-        Chunk c = this.world.getChunkAt(columnX, columnZ);
+        Chunk c = this.world.getChunkIfLoaded(columnX, columnZ);
+        if (c == null)
+            return;
         ChunkSection[] sections = c.getSections();
         ChunkSection section;
         try {

@@ -78,15 +78,15 @@ public class Updater implements UpdateNotifier {
             Lavasurvival.log("Urgent patch applied. Will restart in 20 seconds");
             Lavasurvival.globalMessage("An urgent update needs to be patched!");
             Lavasurvival.globalMessage("The server will restart in 20 seconds.");
-            Bukkit.getScheduler().scheduleSyncDelayedTask(Lavasurvival.INSTANCE, new Runnable() {
-                @Override
-                public void run() {
-                    Gamemode.restartNextGame("lobby");
-                    if (!Gamemode.getCurrentGame().hasEnded())
-                        Gamemode.getCurrentGame().endRound(true, false);
-                }
-            }, 20 * 20);
+            Gamemode.restartNextGame("lobby");
             Lavasurvival.INSTANCE.stopUbot();
+            try {
+                Thread.sleep(20000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            if (!Gamemode.getCurrentGame().hasEnded())
+                Gamemode.getCurrentGame().endRound(true, false);
             return;
         }
 
