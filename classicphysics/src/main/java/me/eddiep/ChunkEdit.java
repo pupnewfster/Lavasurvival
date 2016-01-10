@@ -36,9 +36,18 @@ public class ChunkEdit {
             blockZ = blockZ % 16;
             columnZ++;
         }
-        Chunk c = this.world.getChunkAt(columnX, columnZ);
+        if (chunkY < 0 || chunkY > 15 || blockX < 0 || blockX > 15 || blockY < 0 || blockY > 15 || blockZ < 0 || blockZ > 15)
+            return;//It is a bad location
+        Chunk c = this.world.getChunkIfLoaded(columnX, columnZ);
+        if (c == null)
+            return;
         ChunkSection[] sections = c.getSections();
-        ChunkSection section = sections[chunkY];
+        ChunkSection section;
+        try {
+            section = sections[chunkY];
+        } catch (Exception e) {
+            section = new ChunkSection(chunkY, true);
+        }
         if (section == null)
             section = new ChunkSection(chunkY, true);
         NibbleArray blockLight;
