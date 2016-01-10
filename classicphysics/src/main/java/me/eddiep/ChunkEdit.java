@@ -44,8 +44,6 @@ public class ChunkEdit {
         } catch (Exception e) {
             section = new ChunkSection(chunkY, true);
         }
-        if (section == null)
-            section = new ChunkSection(chunkY, true);
         NibbleArray blockLight;
         NibbleArray skyLight;
         try {
