@@ -38,9 +38,12 @@ public class ChunkEdit {
         }
         Chunk c = this.world.getChunkAt(columnX, columnZ);
         ChunkSection[] sections = c.getSections();
-        ChunkSection section = sections[chunkY];
-        if (section == null)
+        ChunkSection section;
+        try {
+            section = sections[chunkY];
+        } catch (Exception e) {
             section = new ChunkSection(chunkY, true);
+        }
         NibbleArray blockLight;
         NibbleArray skyLight;
         try {

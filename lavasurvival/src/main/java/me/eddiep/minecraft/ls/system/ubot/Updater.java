@@ -9,6 +9,7 @@ import me.eddiep.ubot.utils.UpdateType;
 import org.bukkit.Bukkit;
 
 import java.util.Calendar;
+import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.concurrent.Callable;
 
@@ -46,7 +47,17 @@ public class Updater implements UpdateNotifier {
             date.set(Calendar.MILLISECOND, 0);
             date.add(Calendar.DAY_OF_MONTH, 1);
 
-            return Schedule.combind(
+            final Date midnight = date.getTime();
+
+            return Schedule.when(new Callable<Boolean>() {
+                @Override
+                public Boolean call() throws Exception {
+                    Date today = new Date();
+                    return Bukkit.getOnlinePlayers().size() == 0 || today.after(midnight);
+                }
+            });
+
+            /*return Schedule.combind(
                     Schedule.when(new Callable<Boolean>() {
                         @Override
                         public Boolean call() throws Exception {
@@ -54,7 +65,7 @@ public class Updater implements UpdateNotifier {
                         }
                     }),
                     Schedule.at(date.getTime())
-            );
+            );*/
         } else {
             Lavasurvival.log(updateType.name() + " Patch detected! Will patch now");
             return Schedule.now();
