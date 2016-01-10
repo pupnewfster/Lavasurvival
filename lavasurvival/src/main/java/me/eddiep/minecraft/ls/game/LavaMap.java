@@ -22,12 +22,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class LavaMap {
-    public static final int CONFIG_VERSION = 7;
+    public static final int CONFIG_VERSION = 8;
 
     private String name, worldName, filePath;
     private int lavax, lavay, lavaz, mapHeight;
     private Vector minSafeZone, maxSafeZone, mapSpawn;
     private int configVersion = 1; //Default version
+    private boolean isThundering = false;
     private String creator = "";
     private double meltMultiplier = 0.5;
     private RiseOptions riseOptions = RiseOptions.defaults(this);
@@ -117,10 +118,18 @@ public class LavaMap {
         world.setAnimalSpawnLimit(0);
         world.setWaterAnimalSpawnLimit(0);
         world.setMonsterSpawnLimit(0);
+        world.setThundering(isThundering);
+        world.setThunderDuration(1);
+        world.setWeatherDuration(Integer.MAX_VALUE);
+        world.setGameRuleValue("randomTickSpeed", "0");
+        world.setGameRuleValue("mobGriefing", "false");
         world.setSpawnFlags(false, false);//Do not let mobs or animals spawn
         world.setSpawnLocation(mapSpawn.getBlockX(), mapSpawn.getBlockY(), mapSpawn.getBlockZ());
         world.setTime(time.getStartTimeTick());
         world.setKeepSpawnInMemory(true);
+
+        if (!time.isEnabled())
+            world.setGameRuleValue("doDaylightCycle", "false");
 
         for (Entity e : world.getEntities())
             e.remove();
