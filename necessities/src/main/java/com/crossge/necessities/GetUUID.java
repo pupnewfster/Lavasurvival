@@ -54,7 +54,8 @@ public class GetUUID {
                 }
                 if (uuid != null)
                     uuids.put(nameFromString(key).toLowerCase(), UUID.fromString(key));
-            }
+            } else
+                invalidKeys.add(key);
         for (String key : invalidKeys)
             configUUIDs.set(key, null);
         if (!invalidKeys.isEmpty())
@@ -70,7 +71,12 @@ public class GetUUID {
     }
 
     public String nameFromString(String message) {
-        UUID uuid = UUID.fromString(message);
+        UUID uuid;
+        try {
+            uuid = UUID.fromString(message);
+        } catch (Exception e) {
+            return null;
+        }
         if (Bukkit.getPlayer(uuid) == null) {
             if (Bukkit.getOfflinePlayer(uuid) == null)
                 return null; //What did you do this time
