@@ -807,7 +807,7 @@ public abstract class Gamemode {
         boolean doubled = isRewardDoubled();//TODO: set properly
 
         String lowerText;
-        if (getCurrentMap().getCreator().equals("")) {
+        if (!getCurrentMap().getCreator().equals("")) {
             lowerText = "§6Map created by " + getCurrentMap().getCreator();
         } else {
             lowerText = "§6Reward is " + (doubled ? "double" : "normal");
