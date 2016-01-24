@@ -115,15 +115,11 @@ public class Listeners implements Listener {
             e.setJoinMessage(null);
             hide.hidePlayer(e.getPlayer());
         }
-        if (!Necessities.getInstance().isProtocolLibLoaded())
-            for (User m : um.getUsers().values())
-                m.updateListName();
         Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(Necessities.getInstance(), new Runnable() {
             @Override
             public void run() {
                 Necessities.getInstance().addHeader(p);
                 Necessities.getInstance().addJanet(p);
-                Necessities.getInstance().refreshJanet(p);
                 Necessities.getInstance().updateAll(p);
                 u.updateListName();
                 File f = new File("plugins/Necessities/motd.txt");
@@ -302,6 +298,8 @@ public class Listeners implements Listener {
             spy.broadcast(player.getName(), e.getMessage());
             String message = bot.logCom(player.getUniqueId(), e.getMessage());
             e.setMessage(message);
+            if (e.getMessage().startsWith("/tps"))
+                e.setMessage(e.getMessage().replaceFirst("tps", "necessities:tps"));
             YamlConfiguration config = YamlConfiguration.loadConfiguration(configFile);
             if (config.contains("Necessities.customDeny") && config.getBoolean("Necessities.customDeny")) {
                 PluginCommand pc = null;
@@ -324,6 +322,8 @@ public class Listeners implements Listener {
         e.setCommand(ChatColor.translateAlternateColorCodes('&', e.getCommand()));
         spy.broadcast(console.getName().replaceAll(":", "") + ChatColor.AQUA, e.getCommand());
         bot.logConsole(e.getCommand());
+        if (e.getCommand().startsWith("tps"))
+            e.setCommand("necessities:" + e.getCommand());
     }
 
     @EventHandler

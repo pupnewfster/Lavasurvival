@@ -261,19 +261,8 @@ public class User {
     public void updateListName() {
         if (this.bukkitPlayer == null)
             return;
-        if (Necessities.getInstance().isProtocolLibLoaded()) {
-            this.bukkitPlayer.setDisplayName(getRank().getColor() + (this.nick == null ? this.bukkitPlayer.getName() : this.nick));
-            Necessities.getInstance().updateName(this.bukkitPlayer);
-            return;
-        }
-        if (this.nick == null) {
-            if (!this.bukkitPlayer.getPlayerListName().equals(this.bukkitPlayer.getName()))
-                this.bukkitPlayer.setPlayerListName(getRank().getColor() + this.bukkitPlayer.getName());
-            return;
-        }
-        String tempNick = getRank().getColor() + this.nick.substring(0, this.nick.length() - 2);
-        if (tempNick.length() <= 16)
-            this.bukkitPlayer.setPlayerListName(tempNick);
+        this.bukkitPlayer.setDisplayName(getRank().getColor() + (this.nick == null ? this.bukkitPlayer.getName() : this.nick));
+        Necessities.getInstance().updateName(this.bukkitPlayer);
     }
 
     public boolean isMuted() {

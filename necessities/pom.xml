@@ -56,12 +56,6 @@
 			<scope>provided</scope>
         </dependency>
 		<dependency>
-			<groupId>com.comphenix.protocol</groupId>
-			<artifactId>ProtocolLib</artifactId>
-			<version>3.6.4</version>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
             <groupId>net.milkbowl.vault</groupId>
             <artifactId>VaultAPI</artifactId>
             <version>1.5</version>
@@ -72,6 +66,11 @@
             <artifactId>googleanalytics</artifactId>
             <version>1.0.0</version>
 			<scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.bukkit</groupId>
+            <artifactId>craftbukkit</artifactId>
+            <version>1.8.8</version>
         </dependency>
     </dependencies>
 	<build>
