@@ -9,7 +9,6 @@ import me.eddiep.ubot.utils.UpdateType;
 import org.bukkit.Bukkit;
 
 import java.util.Calendar;
-import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.concurrent.Callable;
 
@@ -47,17 +46,7 @@ public class Updater implements UpdateNotifier {
             date.set(Calendar.MILLISECOND, 0);
             date.add(Calendar.DAY_OF_MONTH, 1);
 
-            final Date midnight = date.getTime();
-
-            return Schedule.when(new Callable<Boolean>() {
-                @Override
-                public Boolean call() throws Exception {
-                    Date today = new Date();
-                    return Bukkit.getOnlinePlayers().size() == 0 || today.after(midnight);
-                }
-            });
-
-            /*return Schedule.combind(
+            return Schedule.combind(
                     Schedule.when(new Callable<Boolean>() {
                         @Override
                         public Boolean call() throws Exception {
@@ -65,7 +54,7 @@ public class Updater implements UpdateNotifier {
                         }
                     }),
                     Schedule.at(date.getTime())
-            );*/
+            );
         } else {
             Lavasurvival.log(updateType.name() + " Patch detected! Will patch now");
             return Schedule.now();
@@ -78,15 +67,15 @@ public class Updater implements UpdateNotifier {
             Lavasurvival.log("Urgent patch applied. Will restart in 20 seconds");
             Lavasurvival.globalMessage("An urgent update needs to be patched!");
             Lavasurvival.globalMessage("The server will restart in 20 seconds.");
-            Gamemode.restartNextGame("lobby");
+            Bukkit.getScheduler().scheduleSyncDelayedTask(Lavasurvival.INSTANCE, new Runnable() {
+                @Override
+                public void run() {
+                    Gamemode.restartNextGame("lobby");
+                    if (!Gamemode.getCurrentGame().hasEnded())
+                        Gamemode.getCurrentGame().endRound(true, false);
+                }
+            }, 20 * 20);
             Lavasurvival.INSTANCE.stopUbot();
-            try {
-                Thread.sleep(20000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-            if (!Gamemode.getCurrentGame().hasEnded())
-                Gamemode.getCurrentGame().endRound(true, false);
             return;
         }
 

@@ -17,12 +17,12 @@ import me.eddiep.minecraft.ls.system.FileUtils;
 import me.eddiep.minecraft.ls.system.PhysicsListener;
 import me.eddiep.minecraft.ls.system.PlayerListener;
 import mkremins.fanciful.FancyMessage;
-import net.minecraft.server.v1_8_R3.IChatBaseComponent;
-import net.minecraft.server.v1_8_R3.PacketPlayOutTitle;
+import net.minecraft.server.v1_9_R1.IChatBaseComponent;
+import net.minecraft.server.v1_9_R1.PacketPlayOutTitle;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
-import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
+import org.bukkit.craftbukkit.v1_9_R1.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
@@ -266,6 +266,8 @@ public abstract class Gamemode {
                 long tick = (long) (timeTickCount * multiplier);
                 getCurrentWorld().setTime(currentMap.getTimeOptions().getStartTimeTick() + tick);
             }
+        } else {
+            currentMap.getWorld().setTime(currentMap.getTimeOptions().getStartTimeTick());
         }
 
         onTick();
@@ -807,7 +809,7 @@ public abstract class Gamemode {
         boolean doubled = isRewardDoubled();//TODO: set properly
 
         String lowerText;
-        if (!getCurrentMap().getCreator().equals("")) {
+        if (getCurrentMap().getCreator().equals("")) {
             lowerText = "§6Map created by " + getCurrentMap().getCreator();
         } else {
             lowerText = "§6Reward is " + (doubled ? "double" : "normal");
