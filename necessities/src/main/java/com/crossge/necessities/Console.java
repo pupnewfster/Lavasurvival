@@ -7,18 +7,15 @@ import java.io.File;
 import java.util.UUID;
 
 public class Console {
-    private static String aliveStatus = "Alive";
     private static boolean togglechat = false;
     private static UUID lastContact = null;
     private File configFile = new File("plugins/Necessities", "config.yml");
 
-    public void initiate() {
-        aliveStatus = ChatColor.translateAlternateColorCodes('&', YamlConfiguration.loadConfiguration(configFile).getString("Console.AliveStatus"));
-    }
-
     public String getName() {
         Variables var = new Variables();
-        return var.getMessages() + "Console [" + ChatColor.GREEN + aliveStatus + var.getMessages() + "]:" + ChatColor.RESET;
+        YamlConfiguration config = YamlConfiguration.loadConfiguration(configFile);
+        return var.getMessages() + "Console [" + ChatColor.GREEN + (config.contains("Console.AliveStatus") ? ChatColor.translateAlternateColorCodes('&', config.getString("Console.AliveStatus")) : "Alive") +
+                var.getMessages() + "]:" + ChatColor.RESET;
     }
 
     public void chatToggle() {

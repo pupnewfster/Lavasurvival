@@ -142,11 +142,11 @@ public class Necessities extends JavaPlugin {
     }
 
     public void addHeader(Player p) {
-        PacketPlayOutPlayerListHeaderFooter packet = new PacketPlayOutPlayerListHeaderFooter(formatMessage(ChatColor.GREEN + "GamezGalaxy"));
+        PacketPlayOutPlayerListHeaderFooter packet = new PacketPlayOutPlayerListHeaderFooter(formatMessage(ChatColor.GREEN + "Galaxy Gaming"));
         try {
             Field field = packet.getClass().getDeclaredField("b");
             field.setAccessible(true);
-            field.set(packet, formatMessage(ChatColor.BLUE + "http://gamezgalaxy.com"));
+            field.set(packet, formatMessage(ChatColor.BLUE + "http://galaxygaming.gg"));
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -280,7 +280,7 @@ public class Necessities extends JavaPlugin {
             com = new CmdSlack();
         else if (isEqual(name, "requestmod"))
             com = new CmdRequestMod();
-            //RankManager
+        //RankManager
         else if (isEqual(name, "promote"))
             com = new CmdPromote();
         else if (isEqual(name, "demote"))
@@ -325,7 +325,7 @@ public class Necessities extends JavaPlugin {
             com = new CmdRankCmds();
         else if (isEqual(name, "reloadpermissions"))
             com = new CmdReloadPermissions();
-            //WorldManager
+        //WorldManager
         else if (isEqual(name, "createworld"))
             com = new CmdCreateWorld();
         else if (isEqual(name, "worldspawn"))
@@ -359,7 +359,7 @@ public class Necessities extends JavaPlugin {
 
         YamlConfiguration config = YamlConfiguration.loadConfiguration(configFile);
         if (com instanceof WorldCmd && config.contains("Necessities.WorldManager") && !config.getBoolean("Necessities.WorldManager"))
-            com = new Cmd();
+            com = new DisabledCmd();
         return com;
     }
 

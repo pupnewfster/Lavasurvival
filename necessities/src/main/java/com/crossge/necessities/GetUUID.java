@@ -56,13 +56,14 @@ public class GetUUID {
                     uuids.put(nameFromString(key).toLowerCase(), UUID.fromString(key));
             } else
                 invalidKeys.add(key);
-        for (String key : invalidKeys)
-            configUUIDs.set(key, null);
-        if (!invalidKeys.isEmpty())
+        if (invalidKeys.size() < 3) {
+            for (String key : invalidKeys)
+                configUUIDs.set(key, null);
             try {
                 configUUIDs.save(configFileUUIDs);
             } catch (Exception e) {
             }
+        }
         Bukkit.getConsoleSender().sendMessage(ChatColor.AQUA + "All stored UUIDs retrieved.");
     }
 

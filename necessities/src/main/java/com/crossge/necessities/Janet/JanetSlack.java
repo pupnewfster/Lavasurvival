@@ -327,7 +327,7 @@ public class JanetSlack {
         temp.add("!slap <name> ~ Slaps <name> sky high.");
         temp.add("!mute <name> ~ Mutes and unmutes <name>.");
         temp.add("!showchat ~ Toggles showing the in game chat. (Only available in private messages)");
-        temp.add("!tps ~ Shows the ingame ticks per second, and memory usage.");
+        temp.add("!tps ~ Shows the in game ticks per second, and memory usage.");
         temp.add("!reload ~ Reloads the server.");
         temp.add("!restart ~ Restarts the server.");
         temp.add("!consolecmd <command> ~ Perform a command through the console.");

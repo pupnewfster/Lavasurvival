@@ -61,7 +61,6 @@ public class Initialization {
             pm.initiate();
         }
 
-        console.initiate();
         get.initiate();
         bot.initiate();
         cs.init();

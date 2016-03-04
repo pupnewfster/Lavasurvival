@@ -4,21 +4,14 @@ import com.crossge.necessities.RankManager.User;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
-import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 
-import java.io.File;
 import java.util.UUID;
 
 public class CmdNick extends Cmd {
-    private File configFile = new File("plugins/Necessities", "config.yml");
-
     public boolean commandUse(CommandSender sender, String[] args) {
-        YamlConfiguration config = YamlConfiguration.loadConfiguration(configFile);
-        boolean free = !(sender instanceof Player);
         if (sender instanceof Player) {
             Player p = (Player) sender;
-            free = p.hasPermission("Necessities.freeCommand");
             if (args.length == 0) {
                 User u = um.getUser(p.getUniqueId());
                 u.setNick(null);
