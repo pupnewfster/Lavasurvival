@@ -142,11 +142,11 @@ public class Necessities extends JavaPlugin {
     }
 
     public void addHeader(Player p) {
-        PacketPlayOutPlayerListHeaderFooter packet = new PacketPlayOutPlayerListHeaderFooter(formatMessage(ChatColor.GREEN + "Galaxy Gaming"));
+        PacketPlayOutPlayerListHeaderFooter packet = new PacketPlayOutPlayerListHeaderFooter(formatMessage(ChatColor.AQUA + "Galaxy Gaming"));
         try {
             Field field = packet.getClass().getDeclaredField("b");
             field.setAccessible(true);
-            field.set(packet, formatMessage(ChatColor.BLUE + "http://galaxygaming.gg"));
+            field.set(packet, formatMessage(ChatColor.GREEN + "http://galaxygaming.gg"));
         } catch (Exception e) {
             e.printStackTrace();
         }
