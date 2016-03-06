@@ -215,12 +215,12 @@ public final class ClassicPhysicsHandler implements Listener {
                         int x = (int) (l >> 32), z = (int) l;
                         net.minecraft.server.v1_9_R1.World w = ((CraftWorld) world).getHandle();
                         Chunk c = w.getChunkAt(x, z);
-                        if (count.getCount() >= 64) {
+                        /*if (count.getCount() >= 64) {
                             WorldServer s = w.getWorld().getHandle();
                             PlayerChunkMap m = s.getPlayerChunkMap();
                             PlayerChunk ch = m.b(x, z);
                             ch.d();
-                        } else if (count.getCount() > 1)
+                        } else*/ if (count.getCount() > 1)
                             packets.add(new PacketPlayOutMultiBlockChange(count.getCount(), count.getChanged(), c));
                         else
                             packets.add(new PacketPlayOutBlockChange(w, new BlockPosition(count.getX(), count.getY(), count.getZ())));
@@ -244,7 +244,7 @@ public final class ClassicPhysicsHandler implements Listener {
                 }
             if (removePrevious)
                 removePrevious = false;
-            sendingPackets = false;
+            sendingPackets = false;//*/
         }
     };
 

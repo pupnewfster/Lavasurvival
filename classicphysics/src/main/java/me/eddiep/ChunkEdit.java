@@ -78,7 +78,8 @@ public class ChunkEdit {
         section.b(skyLight);
         sections[chunkY] = section;
         c.a(sections);
-        this.playerChunkMap.flagDirty(pos);
+        //c.a(pos, d);
+        //this.playerChunkMap.flagDirty(pos);//Makes it not need to send packets
         //lightAround(x, y, z, getLight(type));
     }
 
