@@ -4,11 +4,10 @@ import me.eddiep.minecraft.ls.game.items.LavaItem;
 import me.eddiep.minecraft.ls.game.status.PlayerStatusManager;
 import net.minecraft.server.v1_9_R1.NBTTagCompound;
 import org.bukkit.ChatColor;
+import org.bukkit.Material;
 import org.bukkit.craftbukkit.v1_9_R1.inventory.CraftItemStack;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.potion.Potion;
-import org.bukkit.potion.PotionType;
 
 public abstract class Invincibility extends LavaItem {
     @Override
@@ -21,7 +20,7 @@ public abstract class Invincibility extends LavaItem {
 
     @Override
     protected ItemStack displayItem() {
-        net.minecraft.server.v1_9_R1.ItemStack nmsStack = CraftItemStack.asNMSCopy(new Potion(PotionType.INVISIBILITY).toItemStack(1));
+        net.minecraft.server.v1_9_R1.ItemStack nmsStack = CraftItemStack.asNMSCopy(new ItemStack(Material.POTION));
         NBTTagCompound tag = null;
         if (!nmsStack.hasTag()) {
             tag = new NBTTagCompound();
@@ -30,6 +29,7 @@ public abstract class Invincibility extends LavaItem {
         if (tag == null)
             tag = nmsStack.getTag();
         tag.setInt("HideFlags", 32);
+        tag.setString("Potion", "minecraft:invisibility");
         nmsStack.setTag(tag);
         return CraftItemStack.asCraftMirror(nmsStack);
     }
