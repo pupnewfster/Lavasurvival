@@ -16,9 +16,6 @@ import me.eddiep.minecraft.ls.game.shop.impl.*;
 import me.eddiep.minecraft.ls.ranks.UserManager;
 import me.eddiep.minecraft.ls.system.PlayerListener;
 import me.eddiep.minecraft.ls.system.setup.SetupMap;
-import me.eddiep.minecraft.ls.system.ubot.UBotLogger;
-import me.eddiep.minecraft.ls.system.ubot.Updater;
-import me.eddiep.ubot.UBot;
 import me.eddiep.ubot.utils.CancelToken;
 import net.milkbowl.vault.economy.Economy;
 import net.njay.MenuFramework;
@@ -159,7 +156,7 @@ public class Lavasurvival extends JavaPlugin {
             log("Stopping game..");
             Gamemode.getCurrentGame().forceEnd();
             log("Cleaning up..");
-            ubotCancelToken.cancel();
+            //ubotCancelToken.cancel();
             Gamemode.cleanup();
             ShopFactory.cleanup();
 
@@ -240,9 +237,9 @@ public class Lavasurvival extends JavaPlugin {
         hide = new CmdHide();
         userManager.readUsers();
 
-        log("Starting UBot");
-        UBot ubot = new UBot(new File("/root/ubot/ls1/Lavasurvival"), new Updater(), new UBotLogger());
-        ubotCancelToken = ubot.startAsync();
+        //log("Starting UBot");
+        //UBot ubot = new UBot(new File("/root/ubot/ls1/Lavasurvival"), new Updater(), new UBotLogger());
+        //ubotCancelToken = ubot.startAsync();
     }
 
     private boolean setupEcon() {

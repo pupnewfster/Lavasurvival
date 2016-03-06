@@ -1,6 +1,9 @@
 package com.crossge.necessities.Janet;
 
+import com.crossge.necessities.GetUUID;
+import com.crossge.necessities.Necessities;
 import com.crossge.necessities.RankManager.RankManager;
+import com.crossge.necessities.Variables;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -15,30 +18,37 @@ public class JanetAI {//TODO: Upgrade
     private static String[] feelingMessages = new String[20];
     private static String[] stalkerMessages = new String[4];
     private static String[] drunkMessages = new String[10];
+    private static String[] tiltMessages = new String[8];
     private static JanetRandom r = new JanetRandom();
     private static String JanetName = "";
     private JanetSlack slack = new JanetSlack();
+    private Variables var = new Variables();
+    private GetUUID get = new GetUUID();
 
-    public void parseMessage(UUID uuid, String message) {
-        Player p = Bukkit.getPlayer(uuid);
+    public void parseMessage(String name, String message, Source s, boolean isPM, JanetSlack.SlackUser user) {
+        UUID uuid = get.getID(name);
+        Player p = null;
+        if (uuid != null)
+            p = Bukkit.getPlayer(uuid);
         message = ChatColor.stripColor(message);
-        if (message.toLowerCase().startsWith("!") && p.hasPermission("Necessities.janetai")) {
+        String result = null;
+        if (message.toLowerCase().startsWith("!") && s.equals(Source.Server) && p != null && p.hasPermission("Necessities.janetai")) {
             if (message.toLowerCase().startsWith("!meme ") || message.toLowerCase().startsWith("!memes ") || message.toLowerCase().startsWith("!memenumber ")) {
                 int applePie = 0;
                 try {
                     applePie = Integer.parseInt(message.split(" ")[1]);
                 } catch (Exception e) {
                 }
-                Bukkit.broadcastMessage(JanetName + r.memeRandom(applePie));
+                result = JanetName + r.memeRandom(applePie);
             } else if (message.toLowerCase().startsWith("!say "))
-                Bukkit.broadcastMessage(JanetName + message.replaceFirst("!say ", ""));
+                result = JanetName + message.replaceFirst("!say ", "");
             else if (message.toLowerCase().startsWith("!slack "))
-                slack.sendMessage(p.getName() + ": " + message.replaceFirst("!slack ", ""));
+                slack.sendMessage(name + ": " + message.replaceFirst("!slack ", ""));
         } else if (message.toLowerCase().contains("what time is it") || message.toLowerCase().contains("what is the time"))
-            Bukkit.broadcastMessage(JanetName + "The time is " + time());
+            result = JanetName + "The time is " + time();
         else if (message.toLowerCase().contains("what day is it") || message.toLowerCase().contains("what is the date") ||
                 message.toLowerCase().contains("whats the date") || message.toLowerCase().contains("what's the date"))
-            Bukkit.broadcastMessage(JanetName + "The date is: " + date());
+            result = JanetName + "The date is: " + date();
         else if (message.toLowerCase().contains("can i be op") || message.toLowerCase().contains("may i be op") ||
                 message.toLowerCase().contains("can i have op") || message.toLowerCase().contains("may i have op") ||
                 message.toLowerCase().contains("can i get op") || message.toLowerCase().contains("may i get op") ||
@@ -51,46 +61,60 @@ public class JanetAI {//TODO: Upgrade
                 message.toLowerCase().contains("admin me") || message.toLowerCase().contains("make me mod") ||
                 message.toLowerCase().contains("make me admin") || message.toLowerCase().contains("make me op") ||
                 message.toLowerCase().contains("promote me"))
-            Bukkit.broadcastMessage(JanetName + "You may only earn the rank, no free promotions");
+            result = JanetName + "You may only earn the rank, no free promotions";
         else if (message.toLowerCase().contains("janet")) {
             if (message.toLowerCase().contains("how are you") || message.toLowerCase().contains("what is up") ||
                     message.toLowerCase().contains("sup") || message.toLowerCase().contains("whats up") ||
                     message.toLowerCase().contains("how was your day"))
-                Bukkit.broadcastMessage(JanetName + feelingMessages[r.memeRandom(feelingMessages.length)]);
+                result = JanetName + feelingMessages[r.memeRandom(feelingMessages.length)];
             else if (message.toLowerCase().startsWith("hello") || message.toLowerCase().startsWith("hey") ||
                     message.toLowerCase().startsWith("hi") || message.toLowerCase().startsWith("hai"))
-                Bukkit.broadcastMessage(JanetName + heyMessages.get(r.memeRandom(heyMessages.size())));
+                result = JanetName + heyMessages.get(r.memeRandom(heyMessages.size()));
             else if (message.toLowerCase().contains("i love you") || message.toLowerCase().contains("do you love me") ||
                     message.toLowerCase().contains("i wub you") || message.toLowerCase().contains("do you wub me") ||
                     message.toLowerCase().contains("love me")) {
-                if (p.hasPermission("Necessities.janetai"))
-                    Bukkit.broadcastMessage(JanetName + "I love you " + p.getName() + ".");
+                if (Necessities.getInstance().isDev(name))
+                    result = JanetName + "I love you " + name + ".";
                 else
-                    Bukkit.broadcastMessage(JanetName + "Well I can give you a hug... but I am rejecting your love.");
+                    result = JanetName + "Well I can give you a hug... but I am rejecting your love.";
             } else if (message.toLowerCase().contains("can i have a hug") || message.toLowerCase().contains("can you give me a hug") ||
                     message.toLowerCase().contains("can you hug me") || message.toLowerCase().contains("hug me") ||
                     message.toLowerCase().contains("give me a hug") || message.toLowerCase().contains("gimme a hug") ||
                     message.toLowerCase().contains("hug me") || message.toLowerCase().contains("i demand a hug") ||
                     message.toLowerCase().contains("can you gimme a hug")) {
-                if (p.hasPermission("Necessities.janetai"))
-                    Bukkit.broadcastMessage(JanetName + "Yey *hugs " + p.getName() + " while kissing them on the cheek*.");
+                if (Necessities.getInstance().isDev(name))
+                    result = JanetName + "Yey *hugs " + name + " while kissing them on the cheek*.";
                 else
-                    Bukkit.broadcastMessage(JanetName + "Sure *hugs " + p.getName() + "*.");
+                    result = JanetName + "Sure *hugs " + name + "*.";
             } else if (message.toLowerCase().contains("can i have a kiss") || message.toLowerCase().contains("can you give me a kiss") ||
                     message.toLowerCase().contains("can you kiss me") || message.toLowerCase().contains("kiss me") ||
                     message.toLowerCase().contains("give me a kiss") || message.toLowerCase().contains("gimme a kiss") ||
                     message.toLowerCase().contains("can you gimme a kiss")) {
-                if (p.hasPermission("Necessities.janetai"))
-                    Bukkit.broadcastMessage(JanetName + "Ok, *kisses " + p.getName() + "*.");
+                if (Necessities.getInstance().isDev(name))
+                    result = JanetName + "Ok, *kisses " + name + "*.";
                 else
-                    Bukkit.broadcastMessage(JanetName + "No, *slaps " + p.getName() + "*.");
+                    result = JanetName + "No, *slaps " + name + "*.";
             } else if (message.toLowerCase().contains("i see you") || message.toLowerCase().contains("i am following you"))
-                Bukkit.broadcastMessage(JanetName + stalkerMessages[r.memeRandom(stalkerMessages.length)]);
+                result = JanetName + stalkerMessages[r.memeRandom(stalkerMessages.length)];
             else if (message.toLowerCase().contains("your drunk") || message.toLowerCase().contains("you are drunk") ||
                     message.toLowerCase().contains("you're drunk") || message.toLowerCase().contains("is drunk"))
-                Bukkit.broadcastMessage(JanetName + drunkMessages[r.memeRandom(drunkMessages.length)]);
+                result = JanetName + drunkMessages[r.memeRandom(drunkMessages.length)];
+            else if (message.toLowerCase().contains("tilt"))
+                result = JanetName + tiltMessages[r.memeRandom(tiltMessages.length)];
             else
-                Bukkit.broadcastMessage(JanetName + janetNamed[r.memeRandom(janetNamed.length)]);
+                result = JanetName + janetNamed[r.memeRandom(janetNamed.length)];
+        }
+        if (result != null)
+            sendMessage(result, s, isPM, user);
+    }
+
+    public void sendMessage(String message, Source s, boolean isPM, JanetSlack.SlackUser user) {
+        if (s.equals(Source.Server))
+            Bukkit.broadcastMessage(message);
+        else if (s.equals(Source.Slack)) {
+            if (!isPM)
+                Bukkit.broadcast(var.getMessages() + "To Slack - " + ChatColor.WHITE + message, "Necessities.slack");
+            slack.sendMessage(ChatColor.stripColor(message), isPM, user);
         }
     }
 
@@ -143,8 +167,13 @@ public class JanetAI {//TODO: Upgrade
                 heyMessages.add(s + ", if your not giving me some " + food + " leave me alone.");
                 heyMessages.add(s + ", can I join you in eating that " + food + "?");
                 heyMessages.add(s + ", may I join you in eating that " + food + "?");
-                heyMessages.add(s + ", may I have a " + food + " as well?");
-                heyMessages.add(s + ", may I have a " + food + " too?");
+                if (food.startsWith("a") || food.startsWith("e") || food.startsWith("i") || food.startsWith("o") || food.startsWith("u")) {
+                    heyMessages.add(s + ", may I have an " + food + " as well?");
+                    heyMessages.add(s + ", may I have an " + food + " too?");
+                } else {
+                    heyMessages.add(s + ", may I have a " + food + " as well?");
+                    heyMessages.add(s + ", may I have a " + food + " too?");
+                }
             }
             for (String drink : drinks) {//add drinks
                 heyMessages.add(s + ", can I have a sip of that " + drink + "?");
@@ -209,6 +238,15 @@ public class JanetAI {//TODO: Upgrade
         drunkMessages[7] = "Yes I am.";
         drunkMessages[8] = "Lies.";
         drunkMessages[9] = "Sure am... want to have some fun? *wink*";
+
+        tiltMessages[0] = "Tilted.";
+        tiltMessages[1] = "Wow, you are tilted.";
+        tiltMessages[2] = "Wow, you're tilted.";
+        tiltMessages[3] = "Stop tilting.";
+        tiltMessages[4] = "Stop tilting me.";
+        tiltMessages[5] = "You are tilting me.";
+        tiltMessages[6] = "I'm tilted.";
+        tiltMessages[7] = "I am tilted.";
     }
 
     private String corTime(String time) {
@@ -249,5 +287,10 @@ public class JanetAI {//TODO: Upgrade
         String month = Integer.toString(c.get(Calendar.MONTH) + 1);
         String year = Integer.toString(c.get(Calendar.YEAR));
         return dayOfWeek(c.get(Calendar.DAY_OF_WEEK)) + " " + month + "/" + day + "/" + year;
+    }
+
+    public enum Source {
+        Server,
+        Slack;
     }
 }

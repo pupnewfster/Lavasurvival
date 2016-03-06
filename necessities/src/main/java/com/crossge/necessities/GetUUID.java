@@ -54,14 +54,18 @@ public class GetUUID {
                 }
                 if (uuid != null)
                     uuids.put(nameFromString(key).toLowerCase(), UUID.fromString(key));
-            }
-        for (String key : invalidKeys)
-            configUUIDs.set(key, null);
-        if (!invalidKeys.isEmpty())
-            try {
+            } else
+                invalidKeys.add(key);
+        if (!invalidKeys.isEmpty() && invalidKeys.size() < 3) {
+            Bukkit.broadcast("Invalid keys found.", "Necessities.opBroadcast");
+            for (String key : invalidKeys)
+                //configUUIDs.set(key, null);
+                Bukkit.broadcast("Invalid key: " + key, "Necessities.opBroadcast");
+            /*try {
                 configUUIDs.save(configFileUUIDs);
             } catch (Exception e) {
-            }
+            }*/
+        }
         Bukkit.getConsoleSender().sendMessage(ChatColor.AQUA + "All stored UUIDs retrieved.");
     }
 
@@ -70,7 +74,12 @@ public class GetUUID {
     }
 
     public String nameFromString(String message) {
-        UUID uuid = UUID.fromString(message);
+        UUID uuid;
+        try {
+            uuid = UUID.fromString(message);
+        } catch (Exception e) {
+            return null;
+        }
         if (Bukkit.getPlayer(uuid) == null) {
             if (Bukkit.getOfflinePlayer(uuid) == null)
                 return null; //What did you do this time

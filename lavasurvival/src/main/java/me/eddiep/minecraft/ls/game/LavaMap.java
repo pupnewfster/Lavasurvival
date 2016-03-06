@@ -123,6 +123,7 @@ public class LavaMap {
         world.setWeatherDuration(Integer.MAX_VALUE);
         world.setGameRuleValue("randomTickSpeed", "0");
         world.setGameRuleValue("mobGriefing", "false");
+        world.setGameRuleValue("spectatorsGenerateChunks", "false");
         world.setSpawnFlags(false, false);//Do not let mobs or animals spawn
         world.setSpawnLocation(mapSpawn.getBlockX(), mapSpawn.getBlockY(), mapSpawn.getBlockZ());
         world.setTime(time.getStartTimeTick());

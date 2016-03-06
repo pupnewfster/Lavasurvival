@@ -17,11 +17,12 @@ public class ScoreBoards {
     public void createScoreboard() {
         man = Bukkit.getScoreboardManager();
         b = man.getMainScoreboard();//Use main scoreboard instead of a new one for better compatability with other plugins
-        for (Rank r : rm.getOrder())
-            if (b.getTeam(fromInt(rm.getOrder().size() - rm.getOrder().indexOf(r))) == null) {
-                Team t = b.registerNewTeam(fromInt(rm.getOrder().size() - rm.getOrder().indexOf(r)));
-                t.setPrefix(r.getColor());
-            }
+        for (Rank r : rm.getOrder()) {
+            Team t = b.getTeam(fromInt(rm.getOrder().size() - rm.getOrder().indexOf(r)));
+            if (t == null)
+                t = b.registerNewTeam(fromInt(rm.getOrder().size() - rm.getOrder().indexOf(r)));
+            t.setPrefix(r.getColor());
+        }
     }
 
     public void addPlayer(User u) {

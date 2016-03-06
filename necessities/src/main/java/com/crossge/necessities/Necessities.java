@@ -2,12 +2,6 @@ package com.crossge.necessities;
 
 import com.TentacleLabs.GoogleAnalyticsPlugin.GoogleAnalyticsPlugin;
 import com.TentacleLabs.GoogleAnalyticsPlugin.Tracker;
-import com.comphenix.protocol.PacketType;
-import com.comphenix.protocol.ProtocolLibrary;
-import com.comphenix.protocol.ProtocolManager;
-import com.comphenix.protocol.events.PacketContainer;
-import com.comphenix.protocol.reflect.StructureModifier;
-import com.comphenix.protocol.wrappers.*;
 import com.crossge.necessities.Commands.*;
 import com.crossge.necessities.Commands.RankManager.*;
 import com.crossge.necessities.Commands.WorldManager.*;
@@ -16,18 +10,24 @@ import com.crossge.necessities.Janet.JanetSlack;
 import com.crossge.necessities.RankManager.RankManager;
 import com.crossge.necessities.RankManager.User;
 import com.crossge.necessities.RankManager.UserManager;
+import com.mojang.authlib.GameProfile;
+import com.mojang.authlib.properties.Property;
+import net.minecraft.server.v1_9_R1.*;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.craftbukkit.v1_9_R1.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.InputStreamReader;
+import java.lang.reflect.Field;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
@@ -36,9 +36,8 @@ public class Necessities extends JavaPlugin {
     private static Necessities INSTANCE;
     private final List<String> devs = Arrays.asList("pupnewfster", "Mod_Chris", "hypereddie10");
     private File configFile = new File("plugins/Necessities", "config.yml");
-    private ProtocolManager protocolManager = null;
     private Tracker googleAnalyticsTracker;
-    private WrappedSignedProperty skin;
+    private Property skin;
     private UUID janetID;
     DonationReader dr = new DonationReader();
     UserManager um = new UserManager();
@@ -48,10 +47,6 @@ public class Necessities extends JavaPlugin {
         return INSTANCE;
     }
 
-    public boolean isProtocolLibLoaded() {
-        return getServer().getPluginManager().getPlugin("ProtocolLib") != null && this.protocolManager != null;
-    }
-
     @Override
     public void onEnable() {
         getLogger().info("Enabling Necessities...");
@@ -59,11 +54,6 @@ public class Necessities extends JavaPlugin {
         if (!hookGoogle())
             getLogger().warning("Could not hook into Google Analytics!");
         janetID = UUID.randomUUID();
-        if (getServer().getPluginManager().getPlugin("ProtocolLib") != null)
-            try {
-                this.protocolManager = ProtocolLibrary.getProtocolManager();
-            } catch (Exception e) {
-            }//Not using protocollib
         Initialization init = new Initialization();
         init.initiateFiles();
         getServer().getPluginManager().registerEvents(new Listeners(), this);
@@ -95,139 +85,78 @@ public class Necessities extends JavaPlugin {
         return this.devs;
     }
 
+    private IChatBaseComponent formatMessage(String message) {
+        return IChatBaseComponent.ChatSerializer.a("{\"text\": \"" + message + "\"}");
+    }
+
     public void removePlayer(Player p) {
-        if (isProtocolLibLoaded())
-            try {
-                PacketContainer tabList = this.protocolManager.createPacket(PacketType.Play.Server.PLAYER_INFO, true);
-                StructureModifier<List<PlayerInfoData>> infoData = tabList.getPlayerInfoDataLists();
-                StructureModifier<EnumWrappers.PlayerInfoAction> infoAction = tabList.getPlayerInfoAction();
-                List<PlayerInfoData> playerInfo = infoData.read(0);
-                playerInfo.add(new PlayerInfoData(WrappedGameProfile.fromPlayer(p), 0, EnumWrappers.NativeGameMode.fromBukkit(p.getGameMode()), WrappedChatComponent.fromText(p.getName())));
-                infoData.write(0, playerInfo);
-                infoAction.write(0, EnumWrappers.PlayerInfoAction.REMOVE_PLAYER);
-                for (Player x : Bukkit.getOnlinePlayers())
-                    if (!x.canSee(p) && !x.equals(p))
-                        this.protocolManager.sendServerPacket(x, tabList);
-            } catch (Exception e) {
-            }
+        PacketPlayOutPlayerInfo info = new PacketPlayOutPlayerInfo(PacketPlayOutPlayerInfo.EnumPlayerInfoAction.REMOVE_PLAYER, ((CraftPlayer) p).getHandle());
+        for (Player x : Bukkit.getOnlinePlayers())
+            if (!x.canSee(p) && !x.equals(p))
+                ((CraftPlayer) x).getHandle().playerConnection.sendPacket(info);
     }
 
     public void addPlayer(Player p) {
-        if (isProtocolLibLoaded())
-            try {
-                PacketContainer tabList = this.protocolManager.createPacket(PacketType.Play.Server.PLAYER_INFO, true);
-                StructureModifier<List<PlayerInfoData>> infoData = tabList.getPlayerInfoDataLists();
-                StructureModifier<EnumWrappers.PlayerInfoAction> infoAction = tabList.getPlayerInfoAction();
-                List<PlayerInfoData> playerInfo = infoData.read(0);
-                User u = um.getUser(p.getUniqueId());
-                playerInfo.add(new PlayerInfoData(WrappedGameProfile.fromPlayer(p), 0, EnumWrappers.NativeGameMode.fromBukkit(p.getGameMode()),
-                        WrappedChatComponent.fromText((u.getRank() == null ? "" : ChatColor.translateAlternateColorCodes('&', u.getRank().getTitle() + " ")) + p.getDisplayName())));
-
-                infoData.write(0, playerInfo);
-                infoAction.write(0, EnumWrappers.PlayerInfoAction.ADD_PLAYER);
-                for (Player x : Bukkit.getOnlinePlayers())
-                    if (!x.hasPermission("Necessities.seehidden") && x.canSee(p) && !x.equals(p))
-                        this.protocolManager.sendServerPacket(x, tabList);
-            } catch (Exception e) {
-            }
+        EntityPlayer ep = ((CraftPlayer) p).getHandle();
+        User u = um.getUser(p.getUniqueId());
+        ep.listName = formatMessage(u.getRank() == null ? "" : ChatColor.translateAlternateColorCodes('&', u.getRank().getTitle() + " ") + p.getDisplayName());
+        PacketPlayOutPlayerInfo info = new PacketPlayOutPlayerInfo(PacketPlayOutPlayerInfo.EnumPlayerInfoAction.ADD_PLAYER, ep);
+        for (Player x : Bukkit.getOnlinePlayers())
+            if (!x.hasPermission("Necessities.seehidden") && x.canSee(p) && !x.equals(p))
+                ((CraftPlayer) x).getHandle().playerConnection.sendPacket(info);
     }
 
     public void updateName(Player p) {
-        if (isProtocolLibLoaded())
-            try {
-                PacketContainer tabList = this.protocolManager.createPacket(PacketType.Play.Server.PLAYER_INFO, true);
-                StructureModifier<List<PlayerInfoData>> infoData = tabList.getPlayerInfoDataLists();
-                StructureModifier<EnumWrappers.PlayerInfoAction> infoAction = tabList.getPlayerInfoAction();
-                List<PlayerInfoData> playerInfo = infoData.read(0);
-                User u = um.getUser(p.getUniqueId());
-                playerInfo.add(new PlayerInfoData(WrappedGameProfile.fromPlayer(p), 0, EnumWrappers.NativeGameMode.fromBukkit(p.getGameMode()),
-                        WrappedChatComponent.fromText((u.getRank() == null ? "" : ChatColor.translateAlternateColorCodes('&', u.getRank().getTitle() + " ")) + p.getDisplayName())));
-                infoData.write(0, playerInfo);
-                infoAction.write(0, EnumWrappers.PlayerInfoAction.UPDATE_DISPLAY_NAME);
-                for (Player x : Bukkit.getOnlinePlayers())
-                    this.protocolManager.sendServerPacket(x, tabList);
-            } catch (Exception e) {
-            }
+        EntityPlayer ep = ((CraftPlayer) p).getHandle();
+        User u = um.getUser(p.getUniqueId());
+        ep.listName = formatMessage(u.getRank() == null ? "" : ChatColor.translateAlternateColorCodes('&', u.getRank().getTitle() + " ") + p.getDisplayName());
+        PacketPlayOutPlayerInfo tabList = new PacketPlayOutPlayerInfo(PacketPlayOutPlayerInfo.EnumPlayerInfoAction.UPDATE_DISPLAY_NAME, ep);
+        for (Player x : Bukkit.getOnlinePlayers())
+            ((CraftPlayer)x).getHandle().playerConnection.sendPacket(tabList);
     }
 
     public void updateAll(Player x) {
-        if (isProtocolLibLoaded())
-            try {
-                PacketContainer tabList = this.protocolManager.createPacket(PacketType.Play.Server.PLAYER_INFO, true);
-                StructureModifier<List<PlayerInfoData>> infoData = tabList.getPlayerInfoDataLists();
-                StructureModifier<EnumWrappers.PlayerInfoAction> infoAction = tabList.getPlayerInfoAction();
-                List<PlayerInfoData> playerInfo = infoData.read(0);
-                for (Player p : Bukkit.getOnlinePlayers()) {
-                    User u = um.getUser(p.getUniqueId());
-                    playerInfo.add(new PlayerInfoData(WrappedGameProfile.fromPlayer(p), 0, EnumWrappers.NativeGameMode.fromBukkit(p.getGameMode()),
-                            WrappedChatComponent.fromText((u.getRank() == null ? "" : ChatColor.translateAlternateColorCodes('&', u.getRank().getTitle() + " ")) + p.getDisplayName())));
-                }
-                infoData.write(0, playerInfo);
-                infoAction.write(0, EnumWrappers.PlayerInfoAction.UPDATE_DISPLAY_NAME);
-                this.protocolManager.sendServerPacket(x, tabList);
-            } catch (Exception e) {
-            }
+        ArrayList<EntityPlayer> players = new ArrayList<>();
+        for (Player p : Bukkit.getOnlinePlayers()) {
+            EntityPlayer ep = ((CraftPlayer) p).getHandle();
+            User u = um.getUser(p.getUniqueId());
+            ep.listName = formatMessage(u.getRank() == null ? "" : ChatColor.translateAlternateColorCodes('&', u.getRank().getTitle() + " ") + p.getDisplayName());
+            players.add(ep);
+        }
+        ((CraftPlayer)x).getHandle().playerConnection.sendPacket(new PacketPlayOutPlayerInfo(PacketPlayOutPlayerInfo.EnumPlayerInfoAction.UPDATE_DISPLAY_NAME, players));
     }
 
     public void addJanet(Player p) {
-        if (isProtocolLibLoaded())
-            try {
-                PacketContainer tabList = this.protocolManager.createPacket(PacketType.Play.Server.PLAYER_INFO, true);
-                StructureModifier<List<PlayerInfoData>> infoData = tabList.getPlayerInfoDataLists();
-                StructureModifier<EnumWrappers.PlayerInfoAction> infoAction = tabList.getPlayerInfoAction();
-                List<PlayerInfoData> playerInfo = infoData.read(0);
-                WrappedGameProfile janetProfile = new WrappedGameProfile(janetID, "Janet");
-                if (this.skin == null)
-                    this.skin = getSkin();
-                if (this.skin != null)
-                    janetProfile.getProperties().put("textures", this.skin);
-                playerInfo.add(new PlayerInfoData(janetProfile, 0, EnumWrappers.NativeGameMode.CREATIVE,
-                        WrappedChatComponent.fromText(ChatColor.translateAlternateColorCodes('&', rm.getRank(rm.getOrder().size() - 1).getTitle() + " ") + "Janet")));
-                infoData.write(0, playerInfo);
-                infoAction.write(0, EnumWrappers.PlayerInfoAction.ADD_PLAYER);
-                this.protocolManager.sendServerPacket(p, tabList);
-            } catch (Exception e) {
-            }
-    }
-
-    public void refreshJanet(Player p) {
-        if (isProtocolLibLoaded())
-            try {
-                PacketContainer tabList = this.protocolManager.createPacket(PacketType.Play.Server.PLAYER_INFO, true);
-                StructureModifier<List<PlayerInfoData>> infoData = tabList.getPlayerInfoDataLists();
-                StructureModifier<EnumWrappers.PlayerInfoAction> infoAction = tabList.getPlayerInfoAction();
-                List<PlayerInfoData> playerInfo = infoData.read(0);
-                WrappedGameProfile janetProfile = new WrappedGameProfile(janetID, "Janet");
-                if (this.skin == null)
-                    this.skin = getSkin();
-                if (this.skin != null)
-                    janetProfile.getProperties().put("textures", this.skin);
-                playerInfo.add(new PlayerInfoData(janetProfile, 0, EnumWrappers.NativeGameMode.CREATIVE,
-                        WrappedChatComponent.fromText(ChatColor.translateAlternateColorCodes('&', rm.getRank(rm.getOrder().size() - 1).getTitle() + " ") + "Janet")));
-                infoData.write(0, playerInfo);
-                infoAction.write(0, EnumWrappers.PlayerInfoAction.UPDATE_DISPLAY_NAME);
-                this.protocolManager.sendServerPacket(p, tabList);
-            } catch (Exception e) {
-            }
+        GameProfile janetProfile = new GameProfile(janetID, "Janet");
+        if (this.skin == null)
+            this.skin = getSkin();
+        if (this.skin != null)
+            janetProfile.getProperties().put("textures", this.skin);
+        MinecraftServer server = MinecraftServer.getServer();
+        WorldServer world = server.getWorldServer(0);
+        PlayerInteractManager manager = new PlayerInteractManager(world);
+        EntityPlayer player = new EntityPlayer(server, world, janetProfile, manager);
+        player.listName = formatMessage(ChatColor.translateAlternateColorCodes('&', rm.getRank(rm.getOrder().size() - 1).getTitle() + " ") + "Janet");
+        PacketPlayOutPlayerInfo info = new PacketPlayOutPlayerInfo(PacketPlayOutPlayerInfo.EnumPlayerInfoAction.ADD_PLAYER, player);
+        ((CraftPlayer) p).getHandle().playerConnection.sendPacket(info);
     }
 
     public void addHeader(Player p) {
-        if (isProtocolLibLoaded())
-            try {
-                PacketContainer tabList = this.protocolManager.createPacket(PacketType.Play.Server.PLAYER_LIST_HEADER_FOOTER);
-                StructureModifier<WrappedChatComponent> chatStuff = tabList.getChatComponents();
-                chatStuff.write(0, WrappedChatComponent.fromText(ChatColor.GREEN + "GamezGalaxy"));
-                chatStuff.write(1, WrappedChatComponent.fromText(ChatColor.BLUE + "http://gamezgalaxy.com"));
-                this.protocolManager.sendServerPacket(p, tabList);
-            } catch (Exception e) {
-            }
+        PacketPlayOutPlayerListHeaderFooter packet = new PacketPlayOutPlayerListHeaderFooter(formatMessage(ChatColor.AQUA + "Galaxy Gaming"));
+        try {
+            Field field = packet.getClass().getDeclaredField("b");
+            field.setAccessible(true);
+            field.set(packet, formatMessage(ChatColor.GREEN + "http://galaxygaming.gg"));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        ((CraftPlayer)p).getHandle().playerConnection.sendPacket(packet);
     }
 
-    private WrappedSignedProperty getSkin() {
+    private Property getSkin() {
         try {
             BufferedReader in = new BufferedReader(new InputStreamReader(new URL("https://sessionserver.mojang.com/session/minecraft/profile/136f2ba62be3444ca2968ec597edb57e?unsigned=false").openConnection().getInputStream()));
-            String value = "";
-            String signature = "";
+            String value = "", signature = "";
             int count = 0;
             for (char c : in.readLine().toCharArray()) {
                 if (c == '"')
@@ -240,7 +169,7 @@ public class Necessities extends JavaPlugin {
                     break;
             }
             in.close();
-            return new WrappedSignedProperty("textures", value, signature);
+            return new Property("textures", value, signature);
         } catch (Exception ignored) {
         }
         return null;
@@ -317,8 +246,8 @@ public class Necessities extends JavaPlugin {
             com = new CmdHelp();
         else if (isEqual(name, "ignore"))
             com = new CmdIgnore();
-        else if (isEqual(name, "ignore"))
-            com = new CmdIgnore();
+        else if (isEqual(name, "tps"))
+            com = new CmdTps();
         else if (isEqual(name, "msg"))
             com = new CmdMsg();
         else if (isEqual(name, "reply"))
@@ -351,7 +280,7 @@ public class Necessities extends JavaPlugin {
             com = new CmdSlack();
         else if (isEqual(name, "requestmod"))
             com = new CmdRequestMod();
-            //RankManager
+        //RankManager
         else if (isEqual(name, "promote"))
             com = new CmdPromote();
         else if (isEqual(name, "demote"))
@@ -396,7 +325,7 @@ public class Necessities extends JavaPlugin {
             com = new CmdRankCmds();
         else if (isEqual(name, "reloadpermissions"))
             com = new CmdReloadPermissions();
-            //WorldManager
+        //WorldManager
         else if (isEqual(name, "createworld"))
             com = new CmdCreateWorld();
         else if (isEqual(name, "worldspawn"))
@@ -430,7 +359,7 @@ public class Necessities extends JavaPlugin {
 
         YamlConfiguration config = YamlConfiguration.loadConfiguration(configFile);
         if (com instanceof WorldCmd && config.contains("Necessities.WorldManager") && !config.getBoolean("Necessities.WorldManager"))
-            com = new Cmd();
+            com = new DisabledCmd();
         return com;
     }
 

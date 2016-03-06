@@ -61,7 +61,6 @@ public class Initialization {
             pm.initiate();
         }
 
-        console.initiate();
         get.initiate();
         bot.initiate();
         cs.init();
@@ -132,6 +131,7 @@ public class Initialization {
                 config.set("Necessities.firstTime", "Welcome {NAME}!");
                 config.set("Console.AliveStatus", "Alive");
                 config.set("Necessities.DonationPass", "password");
+                config.set("Necessities.DonationServer", 9);
                 config.set("Necessities.SlackToken", "token");
                 config.set("Necessities.SlackChanel", "channel");
                 config.set("Necessities.ChannelID", "channelID");
@@ -169,6 +169,8 @@ public class Initialization {
                 config.set("Necessities.customDeny", false);
             if (!config.contains("Necessities.DonationPass"))
                 config.set("Necessities.DonationPass", "password");
+            if (!config.contains("Necessities.DonationServer"))
+                config.set("Necessities.DonationServer", 9);
             if (!config.contains("Necessities.SlackToken"))
                 config.set("Necessities.SlackToken", "token");
             if (!config.contains("Necessities.SlackChanel"))

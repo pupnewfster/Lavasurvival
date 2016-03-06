@@ -15,6 +15,7 @@ import java.util.UUID;
 public class DonationReader {
     private BukkitRunnable current;
     private String pass;
+    private int server;
     RankManager rm = new RankManager();
     UserManager um = new UserManager();
     Variables var = new Variables();
@@ -29,7 +30,7 @@ public class DonationReader {
             ResultSet rs = stmt.executeQuery("SELECT * FROM actions");
             ResultSet rs2 = stmt2.executeQuery("SELECT * FROM players");
             while (rs.next()) {
-                if (Integer.parseInt(rs.getString("server").replaceAll("[^0-9]", "")) == 9 && rs.getInt("delivered") == 0) {
+                if (Integer.parseInt(rs.getString("server").replaceAll("[^0-9]", "")) == this.server && rs.getInt("delivered") == 0) {
                     long steamID = rs.getLong("uid");
                     UUID uuid = null;
                     while (rs2.next()) {
@@ -71,6 +72,7 @@ public class DonationReader {
         File configFile = new File("plugins/Necessities", "config.yml");
         YamlConfiguration config = YamlConfiguration.loadConfiguration(configFile);
         this.pass = config.getString("Necessities.DonationPass");
+        this.server = config.getInt("Necessities.DonationServer");
         this.current.runTaskTimerAsynchronously(Necessities.getInstance(), 0, 20 * 60);
         Bukkit.getConsoleSender().sendMessage(ChatColor.AQUA + "Connected to Donator Database.");
     }

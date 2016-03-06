@@ -17,12 +17,16 @@ import me.eddiep.minecraft.ls.system.FileUtils;
 import me.eddiep.minecraft.ls.system.PhysicsListener;
 import me.eddiep.minecraft.ls.system.PlayerListener;
 import mkremins.fanciful.FancyMessage;
-import net.minecraft.server.v1_8_R3.IChatBaseComponent;
-import net.minecraft.server.v1_8_R3.PacketPlayOutTitle;
+import net.minecraft.server.v1_9_R1.IChatBaseComponent;
+import net.minecraft.server.v1_9_R1.PacketPlayOutTitle;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
-import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
+import org.bukkit.boss.BarColor;
+import org.bukkit.boss.BarFlag;
+import org.bukkit.boss.BarStyle;
+import org.bukkit.craftbukkit.v1_9_R1.boss.CraftBossBar;
+import org.bukkit.craftbukkit.v1_9_R1.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
@@ -65,6 +69,7 @@ public abstract class Gamemode {
     public static double DAMAGE = 3, DAMAGE_FREQUENCY = 0.5;
     public static boolean LAVA = true, voting = false;
     private LavaMap[] nextMaps = new LavaMap[VOTE_COUNT];
+    private ArrayList<CraftBossBar> bars = new ArrayList<>();
     private int[] votes = new int[VOTE_COUNT];
     private int voteCount;
     private static LavaMap lastMap, currentMap;
@@ -138,6 +143,11 @@ public abstract class Gamemode {
         currentMap.prepare();
     }
 
+    private void addBar(CraftBossBar bar) {
+        this.bars.add(bar);
+        bar.show();
+    }
+
     public final void start() {
         if (restart) {
             Lavasurvival.INSTANCE.updating = true;
@@ -195,6 +205,17 @@ public abstract class Gamemode {
         hasEnded = false;
 
         setIsLava(currentMap.getFloodOptions());
+
+        for (CraftBossBar bar : this.bars) {
+            bar.hide();
+            bar.removeAll();
+        }
+        this.bars.clear();
+        BarFlag[] flags = new BarFlag[0];
+        //TODO: Make it so that it does not have to recreate the welcome bar just the other bars (put this in necessities?) onplayerjoin
+        addBar(new CraftBossBar(ChatColor.GOLD + "Welcome to " + ChatColor.AQUA + "Galaxy Gaming", BarColor.GREEN, BarStyle.SOLID, flags));
+        addBar(new CraftBossBar(ChatColor.GOLD + "Gamemode: " + (LAVA ? ChatColor.RED : ChatColor.BLUE) + "" + this.getClass().getSimpleName(), LAVA ? BarColor.RED : BarColor.BLUE, BarStyle.SEGMENTED_6, flags));
+        addBar(new CraftBossBar(ChatColor.GOLD + "Reward is " + (isRewardDoubled() ? "double" : "normal"), BarColor.WHITE, BarStyle.SEGMENTED_20, flags));
 
         alive = new ArrayList<>();
         dead = new ArrayList<>();
@@ -450,8 +471,8 @@ public abstract class Gamemode {
 
                 Lavasurvival.INSTANCE.depositPlayer(player, reward);
                 player.getPlayer().sendMessage(ChatColor.GREEN + "+ " + ChatColor.GOLD + "You won " + ChatColor.BOLD + reward + ChatColor.RESET + "" + ChatColor.GOLD + " GGs!");
-                IChatBaseComponent titleJSON = IChatBaseComponent.ChatSerializer.a("{'text': 'You won!'}");
-                IChatBaseComponent subtitleJSON = IChatBaseComponent.ChatSerializer.a("{'text': '§6§l" + reward + "§6 GGs!'}");
+                IChatBaseComponent titleJSON = IChatBaseComponent.ChatSerializer.a("{\"text\": \"You won!\"}");
+                IChatBaseComponent subtitleJSON = IChatBaseComponent.ChatSerializer.a("{\"text\": \"§6§l" + reward + "§6 GGs!\"}");
                 PacketPlayOutTitle titlePacket = new PacketPlayOutTitle(PacketPlayOutTitle.EnumTitleAction.TITLE, titleJSON, 0, 60, 0);
                 PacketPlayOutTitle subtitlePacket = new PacketPlayOutTitle(PacketPlayOutTitle.EnumTitleAction.SUBTITLE, subtitleJSON);
                 ((CraftPlayer) player).getHandle().playerConnection.sendPacket(titlePacket);
@@ -804,20 +825,21 @@ public abstract class Gamemode {
         ShopFactory.validateInventory(inv);
 
         u.giveBoughtBlocks();
-        boolean doubled = isRewardDoubled();//TODO: set properly
-
-        String lowerText;
-        if (getCurrentMap().getCreator().equals("")) {
-            lowerText = "§6Map created by " + getCurrentMap().getCreator();
-        } else {
-            lowerText = "§6Reward is " + (doubled ? "double" : "normal");
+        if (!getCurrentMap().getCreator().equals("")) {
+            IChatBaseComponent titleJSON = IChatBaseComponent.ChatSerializer.a("{'text': '\"§6Map created by \"" + getCurrentMap().getCreator() + "\"}");
+            PacketPlayOutTitle titlePacket = new PacketPlayOutTitle(PacketPlayOutTitle.EnumTitleAction.TITLE, titleJSON, 0, 60, 0);
+            ((CraftPlayer)player).getHandle().playerConnection.sendPacket(titlePacket);
         }
-        IChatBaseComponent titleJSON = IChatBaseComponent.ChatSerializer.a("{'text': '§6Gamemode: §c" + this.getClass().getSimpleName() + "'}");
-        IChatBaseComponent subtitleJSON = IChatBaseComponent.ChatSerializer.a("{'text': '" + lowerText + "'}");
-        PacketPlayOutTitle titlePacket = new PacketPlayOutTitle(PacketPlayOutTitle.EnumTitleAction.TITLE, titleJSON, 0, 60, 0);
-        PacketPlayOutTitle subtitlePacket = new PacketPlayOutTitle(PacketPlayOutTitle.EnumTitleAction.SUBTITLE, subtitleJSON);
-        ((CraftPlayer)player).getHandle().playerConnection.sendPacket(titlePacket);
-        ((CraftPlayer)player).getHandle().playerConnection.sendPacket(subtitlePacket);
+    }
+
+    public void addBars(Player p) {
+        for (CraftBossBar bar : this.bars)
+            bar.addPlayer(p);
+    }
+
+    public void removeBars(Player p) {
+        for (CraftBossBar bar : this.bars)
+            bar.removePlayer(p);
     }
 
     private double getHealth(Rank r) {

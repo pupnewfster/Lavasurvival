@@ -9,14 +9,14 @@ import me.eddiep.minecraft.ls.game.status.PlayerStatusManager;
 import me.eddiep.minecraft.ls.ranks.UserInfo;
 import me.eddiep.minecraft.ls.ranks.UserManager;
 import me.eddiep.minecraft.ls.system.bank.BankInventory;
-import net.minecraft.server.v1_8_R3.EntityPlayer;
-import net.minecraft.server.v1_8_R3.IChatBaseComponent;
-import net.minecraft.server.v1_8_R3.PacketPlayInClientCommand;
-import net.minecraft.server.v1_8_R3.PacketPlayOutTitle;
+import net.minecraft.server.v1_9_R1.EntityPlayer;
+import net.minecraft.server.v1_9_R1.IChatBaseComponent;
+import net.minecraft.server.v1_9_R1.PacketPlayInClientCommand;
+import net.minecraft.server.v1_9_R1.PacketPlayOutTitle;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
-import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
+import org.bukkit.craftbukkit.v1_9_R1.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -290,6 +290,7 @@ public class PlayerListener implements Listener {
         um.getUser(event.getPlayer().getUniqueId()).logOut();
         if (Gamemode.getCurrentGame().allDead() && !Gamemode.getCurrentGame().hasEnded())
             Gamemode.getCurrentGame().endRound();
+        Gamemode.getCurrentGame().removeBars(event.getPlayer());
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
@@ -321,8 +322,10 @@ public class PlayerListener implements Listener {
             }
         }
 
-        if (Gamemode.getCurrentGame() != null)
+        if (Gamemode.getCurrentGame() != null) {
             event.getPlayer().setScoreboard(Gamemode.getScoreboard());
+            Gamemode.getCurrentGame().addBars(event.getPlayer());
+        }
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
@@ -375,7 +378,6 @@ public class PlayerListener implements Listener {
 
 
     private static String[] deathMessages = new String[]{"§c§lWasted!", "§a§lBetter luck next time!", "§c§lYou died!", "§c§lrip."};
-    private static final IChatBaseComponent subtitleJSON = IChatBaseComponent.ChatSerializer.a("{'text': '§6Please wait for the next round to start!'}");
     @EventHandler(priority = EventPriority.HIGHEST)
     public void playerDeath(PlayerDeathEvent event) {
         if (Gamemode.getCurrentGame() != null) {
@@ -385,7 +387,8 @@ public class PlayerListener implements Listener {
             event.getDrops().clear();
             event.setDroppedExp(0);
             final Player p = event.getEntity();
-            final IChatBaseComponent titleJSON = IChatBaseComponent.ChatSerializer.a("{'text': '" + deathMessages[rand.nextInt(deathMessages.length)] + "'}");
+            final IChatBaseComponent subtitleJSON = IChatBaseComponent.ChatSerializer.a("{\"text\": \"§6Please wait for the next round to start!\"}");
+            final IChatBaseComponent titleJSON = IChatBaseComponent.ChatSerializer.a("{\"text\": \"" + deathMessages[rand.nextInt(deathMessages.length)] + "\"}");
             Bukkit.getScheduler().scheduleSyncDelayedTask(Lavasurvival.INSTANCE, new Runnable() {
                 @Override
                 public void run() {

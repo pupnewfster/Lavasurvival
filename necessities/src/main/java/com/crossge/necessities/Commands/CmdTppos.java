@@ -26,9 +26,9 @@ public class CmdTppos extends Cmd {
                 sender.sendMessage(var.getEr() + "Error: " + var.getErMsg() + "You must enter a valid z coordinate.");
                 return true;
             }
-            int x = Integer.parseInt(args[0]);
-            int y = Integer.parseInt(args[1]);
-            int z = Integer.parseInt(args[2]);
+            double x = Double.parseDouble(args[0]);
+            double y = Double.parseDouble(args[1]);
+            double z = Double.parseDouble(args[2]);
             Location loc = new Location(dim, x, y, z);
             if (args.length > 4) {
                 if (!form.isLegal(args[3])) {

@@ -1,14 +1,17 @@
 package me.eddiep;
 
-import net.minecraft.server.v1_8_R3.*;
+import net.minecraft.server.v1_9_R1.*;
 import org.bukkit.Material;
 import org.bukkit.block.BlockFace;
 
 public class ChunkEdit {
     public World world;
+    private PlayerChunkMap playerChunkMap;
 
     public ChunkEdit(World w) {
         this.world = w;
+        WorldServer s = w.getWorld().getHandle();
+        this.playerChunkMap = s.getPlayerChunkMap();
     }
 
     public void setBlock(int x, int y, int z, Material type, byte data) {
@@ -75,6 +78,7 @@ public class ChunkEdit {
         section.b(skyLight);
         sections[chunkY] = section;
         c.a(sections);
+        this.playerChunkMap.flagDirty(pos);
         //lightAround(x, y, z, getLight(type));
     }
 

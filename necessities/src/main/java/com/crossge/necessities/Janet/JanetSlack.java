@@ -247,7 +247,6 @@ public class JanetSlack {
         } catch (Exception e) {
         }
         setUserChannels();
-        sendPost("https://slack.com/api/users.setPresence?token=" + token + "&presence=auto&pretty=1");
         historyReader = new BukkitRunnable() {
             @Override
             public void run() {
@@ -259,10 +258,11 @@ public class JanetSlack {
         keepAlive = new BukkitRunnable() {
             @Override
             public void run() {
+                sendPost("https://slack.com/api/users.setPresence?token=" + token + "&presence=auto&pretty=1");
                 sendPost("https://slack.com/api/users.setActive?token=" + token + "&pretty=1");
             }
         };
-        keepAlive.runTaskTimerAsynchronously(Necessities.getInstance(), 0, 30 * 60 * 20);//Every thirty minutes force it to show that janet is still alive
+        keepAlive.runTaskTimerAsynchronously(Necessities.getInstance(), 0, 25 * 60 * 20);//Every 25 minutes force it to show that janet is still alive
         setHelp();
         sendMessage("Connected.");
         isConnected = true;
@@ -327,6 +327,10 @@ public class JanetSlack {
         temp.add("!slap <name> ~ Slaps <name> sky high.");
         temp.add("!mute <name> ~ Mutes and unmutes <name>.");
         temp.add("!showchat ~ Toggles showing the in game chat. (Only available in private messages)");
+        temp.add("!tps ~ Shows the in game ticks per second, and memory usage.");
+        temp.add("!reload ~ Reloads the server.");
+        temp.add("!restart ~ Restarts the server.");
+        temp.add("!consolecmd <command> ~ Perform a command through the console.");
         helpLists.put(1, (ArrayList<String>) temp.clone());//Admin
         helpLists.put(2, (ArrayList<String>) temp.clone());//Owner
         helpLists.put(3, (ArrayList<String>) temp.clone());//Primary owner
@@ -401,7 +405,6 @@ public class JanetSlack {
                     }
                 }
                 User u = um.getUser(uuid);
-                YamlConfiguration config = YamlConfiguration.loadConfiguration(configFile);
                 m += "===== WhoIs: " + u.getName() + " =====\n";
                 if (u.getPlayer() != null)
                     m += " - Nick: " + u.getPlayer().getDisplayName() + "\n";
@@ -746,6 +749,45 @@ public class JanetSlack {
                 bans.pardon(theirIP);
                 Bukkit.broadcastMessage(var.getMessages() + name + " unbanned " + theirIP + ".");
                 m += name + " unbanned " + theirIP + ".\n";
+            } else if (message.startsWith("!tps") && info.isAdmin()) {
+                m += form.getTPS() + "\n";
+                int mb = 1024 * 1024;
+                Runtime runtime = Runtime.getRuntime();
+                m += "Max Memory: " + runtime.maxMemory() / mb + " mb.\n";
+                m += "Total Memory: " + runtime.totalMemory() / mb + " mb.\n";
+                m += "Free Memory: " + runtime.freeMemory() / mb + " mb.\n";
+                m += "Used Memory: " + (runtime.totalMemory() - runtime.freeMemory()) / mb + " mb.\n";
+                for (World w : Bukkit.getWorlds()) {
+                    m += "World: " + w.getName() + "\n";
+                    m += "    Entities Loaded: " + w.getEntities().size() + "\n";
+                }
+            } else if (message.startsWith("!reload") && info.isAdmin()) {
+                sendMessage("Reloading...", isPM, info);
+                Bukkit.getScheduler().scheduleSyncDelayedTask(Necessities.getInstance(), new Runnable() {
+                    @Override
+                    public void run() {
+                        Bukkit.reload();
+                    }
+                });
+                return;
+            } else if (message.startsWith("!restart") && info.isAdmin()) {
+                sendMessage("Restarting...", isPM, info);
+                Bukkit.getScheduler().scheduleSyncDelayedTask(Necessities.getInstance(), new Runnable() {
+                    @Override
+                    public void run() {
+                        Bukkit.spigot().restart();
+                    }
+                });
+                return;
+            } else if ((message.startsWith("!consolecmd") || message.startsWith("!ccmd") || message.startsWith("!consolecommand")) && info.isAdmin()) {//TODO Make it show the result to slack
+                final String command = message.replaceFirst(message.split(" ")[0], "").trim();
+                Bukkit.getScheduler().scheduleSyncDelayedTask(Necessities.getInstance(), new Runnable() {
+                    @Override
+                    public void run() {
+                        Bukkit.dispatchCommand(Bukkit.getConsoleSender(), command);
+                    }
+                });
+                return;
             } else if ((message.startsWith("!showchat") || message.startsWith("!togglechat") || message.startsWith("!showingamechat") || message.startsWith("!ingamechat")) && info.isAdmin()) {
                 if (!isPM)
                     m += "Error: You must pm me to be able to view in game chat.\n";
@@ -760,9 +802,11 @@ public class JanetSlack {
             sendMessage(m, isPM, info);
         } else if (!isPM)
             Bukkit.broadcast(var.getMessages() + "From Slack - " + ChatColor.WHITE + name + ": " + message, "Necessities.slack");
+        JanetAI ai = new JanetAI();
+        ai.parseMessage(name, message, JanetAI.Source.Slack, isPM, info);
     }
 
-    private class SlackUser {
+    public class SlackUser {
         private boolean justLoaded = true, viewingChat = false;
         private String id, name, latest, channel;
         private int rank = 0;
