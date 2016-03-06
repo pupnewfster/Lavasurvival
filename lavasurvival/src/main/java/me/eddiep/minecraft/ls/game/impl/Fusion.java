@@ -34,6 +34,8 @@ public class Fusion extends Gamemode {
         bonusScore = objective.getScore(ChatColor.GOLD + "" + ChatColor.BOLD + "Reward Bonus");
         layersLeft = objective.getScore(ChatColor.RED + "" + ChatColor.BOLD + "Layers Left");
 
+        type = "Fusion";
+
         super.onStart();
 
         duration = getCurrentMap().getFusionOptions().generateRandomPrepareTime();

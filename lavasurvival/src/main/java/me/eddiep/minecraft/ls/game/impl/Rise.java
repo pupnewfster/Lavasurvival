@@ -33,6 +33,8 @@ public class Rise extends Gamemode {
         bonusScore = objective.getScore(ChatColor.GOLD + "" + ChatColor.BOLD + "Reward Bonus");
         layersLeft = objective.getScore(ChatColor.RED + "" + ChatColor.BOLD + "Layers Left");
 
+        type = "Rise";
+
         super.onStart();
 
         duration = getCurrentMap().getRiseOptions().generateRandomPrepareTime();

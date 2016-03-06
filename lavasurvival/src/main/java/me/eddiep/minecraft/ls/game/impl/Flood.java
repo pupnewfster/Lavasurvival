@@ -31,6 +31,8 @@ public class Flood extends Gamemode {
         objective.setDisplayName((LAVA ? "Lava" : "Water") + "Pour");
         bonusScore = objective.getScore(ChatColor.GOLD + "" + ChatColor.BOLD + "Reward Bonus");
 
+        type = "Flood";
+
         super.onStart();
 
         duration = getCurrentMap().getFloodOptions().generateRandomPrepareTime();

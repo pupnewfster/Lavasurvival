@@ -78,6 +78,7 @@ public abstract class Gamemode {
     private static PlayerListener listener;
     private static PhysicsListener physicsListener;
     private static Gamemode currentGame = null;
+    protected String type = "Rise";
     protected boolean poured;
     private BukkitRunnable tickTask;
     private Gamemode nextGame;
@@ -214,7 +215,7 @@ public abstract class Gamemode {
         BarFlag[] flags = new BarFlag[0];
         //TODO: Make it so that it does not have to recreate the welcome bar just the other bars (put this in necessities?) onplayerjoin
         addBar(new CraftBossBar(ChatColor.GOLD + "Welcome to " + ChatColor.AQUA + "Galaxy Gaming", BarColor.GREEN, BarStyle.SOLID, flags));
-        addBar(new CraftBossBar(ChatColor.GOLD + "Gamemode: " + (LAVA ? ChatColor.RED : ChatColor.BLUE) + "" + this.getClass().getSimpleName(), LAVA ? BarColor.RED : BarColor.BLUE, BarStyle.SEGMENTED_6, flags));
+        addBar(new CraftBossBar(ChatColor.GOLD + "Gamemode: " + (LAVA ? ChatColor.RED : ChatColor.BLUE) + type, LAVA ? BarColor.RED : BarColor.BLUE, BarStyle.SEGMENTED_6, flags));
         addBar(new CraftBossBar(ChatColor.GOLD + "Reward is " + (isRewardDoubled() ? "double" : "normal"), BarColor.WHITE, BarStyle.SEGMENTED_20, flags));
 
         alive = new ArrayList<>();
