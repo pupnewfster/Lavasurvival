@@ -201,7 +201,7 @@ public class Listeners implements Listener {
             return;
         YamlConfiguration config = YamlConfiguration.loadConfiguration(configFile);
         User u = um.getUser(e.getPlayer().getUniqueId());
-        Player player = e.getPlayer();
+        final Player player = e.getPlayer();
         final UUID uuid = player.getUniqueId();
         String status = u.getStatus();
         if (status.equals("dead"))
@@ -277,7 +277,7 @@ public class Listeners implements Listener {
             Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(Necessities.getInstance(), new Runnable() {
                 @Override
                 public void run() {
-                    ai.parseMessage(uuid, message);
+                    ai.parseMessage(player.getName(), message, JanetAI.Source.Server, false, null);
                 }
             });
     }

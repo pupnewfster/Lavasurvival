@@ -802,9 +802,11 @@ public class JanetSlack {
             sendMessage(m, isPM, info);
         } else if (!isPM)
             Bukkit.broadcast(var.getMessages() + "From Slack - " + ChatColor.WHITE + name + ": " + message, "Necessities.slack");
+        JanetAI ai = new JanetAI();
+        ai.parseMessage(name, message, JanetAI.Source.Slack, isPM, info);
     }
 
-    private class SlackUser {
+    public class SlackUser {
         private boolean justLoaded = true, viewingChat = false;
         private String id, name, latest, channel;
         private int rank = 0;
