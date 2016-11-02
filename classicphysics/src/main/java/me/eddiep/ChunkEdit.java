@@ -1,6 +1,6 @@
 package me.eddiep;
 
-import net.minecraft.server.v1_9_R1.*;
+import net.minecraft.server.v1_10_R1.*;
 import org.bukkit.Material;
 import org.bukkit.block.BlockFace;
 
