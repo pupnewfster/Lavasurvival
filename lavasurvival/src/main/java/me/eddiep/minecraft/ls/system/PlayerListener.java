@@ -9,14 +9,12 @@ import me.eddiep.minecraft.ls.game.status.PlayerStatusManager;
 import me.eddiep.minecraft.ls.ranks.UserInfo;
 import me.eddiep.minecraft.ls.ranks.UserManager;
 import me.eddiep.minecraft.ls.system.bank.BankInventory;
-import net.minecraft.server.v1_9_R1.EntityPlayer;
-import net.minecraft.server.v1_9_R1.IChatBaseComponent;
-import net.minecraft.server.v1_9_R1.PacketPlayInClientCommand;
-import net.minecraft.server.v1_9_R1.PacketPlayOutTitle;
+import net.minecraft.server.v1_10_R1.*;
 import org.bukkit.*;
+import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
-import org.bukkit.craftbukkit.v1_9_R1.entity.CraftPlayer;
+import org.bukkit.craftbukkit.v1_10_R1.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -114,9 +112,11 @@ public class PlayerListener implements Listener {
             return;
         }
         if (!survival && event.getEntity() instanceof Player && Gamemode.getCurrentGame() != null && Gamemode.getCurrentGame().isAlive((Player) event.getEntity())) {
-            event.setCancelled(true);
-            if (event.getCause().equals(EntityDamageEvent.DamageCause.LAVA))
-                ((Player) event.getEntity()).damage(Gamemode.DAMAGE);
+            if (!event.getCause().equals(EntityDamageEvent.DamageCause.VOID)) {
+                event.setCancelled(true);
+                if (event.getCause().equals(EntityDamageEvent.DamageCause.LAVA))
+                    ((CraftPlayer) event.getEntity()).getHandle().damageEntity(DamageSource.OUT_OF_WORLD, (float) Gamemode.DAMAGE);
+            }
         }
     }
 
@@ -351,7 +351,8 @@ public class PlayerListener implements Listener {
                 to.getBlock().getRelative(BlockFace.UP).hasMetadata("classic_block"))) {
                 if (!u.isInWater()) {
                     if (!PlayerStatusManager.isInvincible(event.getPlayer()))
-                        event.getPlayer().damage(Gamemode.DAMAGE);
+                        ((CraftPlayer)event.getPlayer()).getHandle().damageEntity(DamageSource.OUT_OF_WORLD, (float) Gamemode.DAMAGE);
+                        //event.getPlayer().damage(Gamemode.DAMAGE);
                     u.setInWater(true);
                 }
             } else if(u.isInWater())
@@ -370,7 +371,7 @@ public class PlayerListener implements Listener {
                 UserInfo u = um.getUser(p.getUniqueId());
                 if (!u.isInWater()) {
                     if (!PlayerStatusManager.isInvincible(p))
-                        p.damage(Gamemode.DAMAGE);
+                        ((CraftPlayer)p).getHandle().damageEntity(DamageSource.OUT_OF_WORLD, (float) Gamemode.DAMAGE);
                     u.setInWater(true);
                 }
             }

@@ -6,12 +6,11 @@ import me.eddiep.minecraft.ls.game.items.LavaItem;
 import me.eddiep.minecraft.ls.ranks.UserInfo;
 import me.eddiep.minecraft.ls.ranks.UserManager;
 import net.md_5.bungee.api.ChatColor;
-import net.minecraft.server.v1_9_R1.NBTTagCompound;
-import org.bukkit.craftbukkit.v1_9_R1.inventory.CraftItemStack;
+import net.minecraft.server.v1_10_R1.NBTTagCompound;
+import org.bukkit.Material;
+import org.bukkit.craftbukkit.v1_10_R1.inventory.CraftItemStack;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.potion.Potion;
-import org.bukkit.potion.PotionType;
 
 public class Generosity extends LavaItem {
     UserManager um = new UserManager();
@@ -44,7 +43,7 @@ public class Generosity extends LavaItem {
 
     @Override
     protected ItemStack displayItem() {
-        net.minecraft.server.v1_9_R1.ItemStack nmsStack = CraftItemStack.asNMSCopy(new Potion(PotionType.JUMP).toItemStack(1));
+        net.minecraft.server.v1_10_R1.ItemStack nmsStack = CraftItemStack.asNMSCopy(new ItemStack(Material.POTION));
         NBTTagCompound tag = null;
         if (!nmsStack.hasTag()) {
             tag = new NBTTagCompound();
@@ -53,6 +52,7 @@ public class Generosity extends LavaItem {
         if (tag == null)
             tag = nmsStack.getTag();
         tag.setInt("HideFlags", 32);
+        tag.setString("Potion", "minecraft:leaping");
         nmsStack.setTag(tag);
         return CraftItemStack.asCraftMirror(nmsStack);
     }

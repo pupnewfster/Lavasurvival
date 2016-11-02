@@ -2,6 +2,7 @@ package org.bukkit.entity;
 
 import org.bukkit.GameMode;
 import org.bukkit.Location;
+import org.bukkit.inventory.MainHand;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.InventoryView;
@@ -35,6 +36,13 @@ public interface HumanEntity extends LivingEntity, AnimalTamer, Permissible, Inv
      * @return The EnderChest of the player
      */
     public Inventory getEnderChest();
+
+    /**
+     * Gets the player's selected main hand
+     *
+     * @return the players main hand
+     */
+    public MainHand getMainHand();
 
     /**
      * If the player currently has an inventory window open, this method will
@@ -181,11 +189,19 @@ public interface HumanEntity extends LivingEntity, AnimalTamer, Permissible, Inv
     public void setGameMode(GameMode mode);
 
     /**
-     * Check if the player is currently blocking (ie with a sword).
+     * Check if the player is currently blocking (ie with a shield).
      *
      * @return Whether they are blocking.
      */
     public boolean isBlocking();
+
+    /**
+     * Check if the player currently has their hand raised (ie about to begin
+     * blocking).
+     *
+     * @return Whether their hand is raised
+     */
+    public boolean isHandRaised();
 
     /**
      * Get the total amount of experience required for the player to level

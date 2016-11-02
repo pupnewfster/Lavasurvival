@@ -39,6 +39,7 @@ import com.avaje.ebean.config.ServerConfig;
 import com.avaje.ebeaninternal.api.SpiEbeanServer;
 import com.avaje.ebeaninternal.server.ddl.DdlGenerator;
 import com.google.common.base.Charsets;
+import com.google.common.base.Preconditions;
 import com.google.common.io.ByteStreams;
 
 /**
@@ -397,11 +398,11 @@ public abstract class JavaPlugin extends PluginBase {
      * @return the plugin command if found, otherwise null
      */
     public PluginCommand getCommand(String name) {
-        String alias = name.toLowerCase();
+        String alias = name.toLowerCase(java.util.Locale.ENGLISH);
         PluginCommand command = getServer().getPluginCommand(alias);
 
         if (command == null || command.getPlugin() != this) {
-            command = getServer().getPluginCommand(description.getName().toLowerCase() + ":" + alias);
+            command = getServer().getPluginCommand(description.getName().toLowerCase(java.util.Locale.ENGLISH) + ":" + alias);
         }
 
         if (command != null && command.getPlugin() == this) {
@@ -437,6 +438,8 @@ public abstract class JavaPlugin extends PluginBase {
 
     @Override
     public EbeanServer getDatabase() {
+        Preconditions.checkState(description.isDatabaseEnabled(), "Plugin does not have database: true in plugin.yml");
+
         return ebean;
     }
 

@@ -9,12 +9,14 @@ import me.eddiep.minecraft.ls.glicko.Rankable;
 import me.eddiep.minecraft.ls.system.BukkitUtils;
 import me.eddiep.minecraft.ls.system.PhysicsListener;
 import me.eddiep.minecraft.ls.system.bank.BankInventory;
+import net.minecraft.server.v1_10_R1.DamageSource;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.craftbukkit.v1_10_R1.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
@@ -156,7 +158,7 @@ public class UserInfo implements Rankable {
                 public void run() {
                     if (isInWater() && getPlayer() != null) {
                         if (!PlayerStatusManager.isInvincible(getPlayer()))
-                            getPlayer().damage(Gamemode.DAMAGE);
+                            ((CraftPlayer)getPlayer()).getHandle().damageEntity(DamageSource.OUT_OF_WORLD, (float) Gamemode.DAMAGE);
                         Block b = getPlayer().getLocation().getBlock();
                         setInWater(((b.getType().equals(Material.WATER) || b.getType().equals(Material.STATIONARY_WATER)) && b.hasMetadata("classic_block")) ||
                                 ((b.getRelative(BlockFace.UP).getType().equals(Material.WATER) || b.getRelative(BlockFace.UP).getType().equals(Material.STATIONARY_WATER)) &&

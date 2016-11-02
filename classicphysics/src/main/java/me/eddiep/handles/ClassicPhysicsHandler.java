@@ -6,15 +6,15 @@ import me.eddiep.PhysicsType;
 import me.eddiep.handles.logic.LavaLogic;
 import me.eddiep.handles.logic.LogicContainer;
 import me.eddiep.handles.logic.WaterLogic;
-import net.minecraft.server.v1_9_R1.*;
+import net.minecraft.server.v1_10_R1.*;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
-import org.bukkit.craftbukkit.v1_9_R1.CraftWorld;
-import org.bukkit.craftbukkit.v1_9_R1.entity.CraftPlayer;
+import org.bukkit.craftbukkit.v1_10_R1.CraftWorld;
+import org.bukkit.craftbukkit.v1_10_R1.entity.CraftPlayer;
 import org.bukkit.entity.FallingBlock;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -213,14 +213,14 @@ public final class ClassicPhysicsHandler implements Listener {
                     World world = count.getWorld();
                     if (world != null) {
                         int x = (int) (l >> 32), z = (int) l;
-                        net.minecraft.server.v1_9_R1.World w = ((CraftWorld) world).getHandle();
+                        net.minecraft.server.v1_10_R1.World w = ((CraftWorld) world).getHandle();
                         Chunk c = w.getChunkAt(x, z);
-                        if (count.getCount() >= 64) {
+                        /*if (count.getCount() >= 64) {
                             WorldServer s = w.getWorld().getHandle();
                             PlayerChunkMap m = s.getPlayerChunkMap();
                             PlayerChunk ch = m.b(x, z);
                             ch.d();
-                        } else if (count.getCount() > 1)
+                        } else*/ if (count.getCount() > 1)
                             packets.add(new PacketPlayOutMultiBlockChange(count.getCount(), count.getChanged(), c));
                         else
                             packets.add(new PacketPlayOutBlockChange(w, new BlockPosition(count.getX(), count.getY(), count.getZ())));
@@ -244,7 +244,7 @@ public final class ClassicPhysicsHandler implements Listener {
                 }
             if (removePrevious)
                 removePrevious = false;
-            sendingPackets = false;
+            sendingPackets = false;//*/
         }
     };
 
