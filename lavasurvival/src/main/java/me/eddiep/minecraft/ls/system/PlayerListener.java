@@ -352,7 +352,6 @@ public class PlayerListener implements Listener {
                 if (!u.isInWater()) {
                     if (!PlayerStatusManager.isInvincible(event.getPlayer()))
                         ((CraftPlayer)event.getPlayer()).getHandle().damageEntity(DamageSource.OUT_OF_WORLD, (float) Gamemode.DAMAGE);
-                        //event.getPlayer().damage(Gamemode.DAMAGE);
                     u.setInWater(true);
                 }
             } else if(u.isInWater())
@@ -366,15 +365,14 @@ public class PlayerListener implements Listener {
         if (Gamemode.getCurrentGame() != null && Gamemode.DAMAGE != 0 && !type.equals(Material.WATER) && !type.equals(Material.STATIONARY_WATER))
             return;
         Location loc = event.getLocation().getBlock().getLocation();
-        for (Player p : Bukkit.getOnlinePlayers())
-            if (Gamemode.getCurrentGame().isAlive(p) && (p.getLocation().getBlock().getLocation().equals(loc) || p.getLocation().getBlock().getRelative(BlockFace.UP).getLocation().equals(loc))) {
-                UserInfo u = um.getUser(p.getUniqueId());
-                if (!u.isInWater()) {
-                    if (!PlayerStatusManager.isInvincible(p))
-                        ((CraftPlayer)p).getHandle().damageEntity(DamageSource.OUT_OF_WORLD, (float) Gamemode.DAMAGE);
-                    u.setInWater(true);
-                }
+        Bukkit.getOnlinePlayers().stream().filter(p -> Gamemode.getCurrentGame().isAlive(p) && (p.getLocation().getBlock().getLocation().equals(loc) || p.getLocation().getBlock().getRelative(BlockFace.UP).getLocation().equals(loc))).forEach(p -> {
+            UserInfo u = um.getUser(p.getUniqueId());
+            if (!u.isInWater()) {
+                if (!PlayerStatusManager.isInvincible(p))
+                    ((CraftPlayer) p).getHandle().damageEntity(DamageSource.OUT_OF_WORLD, (float) Gamemode.DAMAGE);
+                u.setInWater(true);
             }
+        });
     }
 
 
@@ -383,6 +381,8 @@ public class PlayerListener implements Listener {
     public void playerDeath(PlayerDeathEvent event) {
         if (Gamemode.getCurrentGame() != null) {
             Gamemode.getCurrentGame().setDead(event.getEntity());
+            if (event.getDeathMessage().contains("fell out of the world"))
+                event.setDeathMessage(event.getDeathMessage().replace("fell out of the world", ChatColor.YELLOW + "died to the elements."));
             UserInfo u = um.getUser(event.getEntity().getUniqueId());
             u.setInWater(false);
             event.getDrops().clear();
@@ -390,15 +390,12 @@ public class PlayerListener implements Listener {
             final Player p = event.getEntity();
             final IChatBaseComponent subtitleJSON = IChatBaseComponent.ChatSerializer.a("{\"text\": \"§6Please wait for the next round to start!\"}");
             final IChatBaseComponent titleJSON = IChatBaseComponent.ChatSerializer.a("{\"text\": \"" + deathMessages[rand.nextInt(deathMessages.length)] + "\"}");
-            Bukkit.getScheduler().scheduleSyncDelayedTask(Lavasurvival.INSTANCE, new Runnable() {
-                @Override
-                public void run() {
-                    EntityPlayer ep = ((CraftPlayer) p).getHandle();
-                    ep.playerConnection.a(new PacketPlayInClientCommand(PacketPlayInClientCommand.EnumClientCommand.PERFORM_RESPAWN));
-                    ep.playerConnection.sendPacket(new PacketPlayOutTitle(PacketPlayOutTitle.EnumTitleAction.TITLE, titleJSON, 0, 60, 0));
-                    ep.playerConnection.sendPacket(new PacketPlayOutTitle(PacketPlayOutTitle.EnumTitleAction.SUBTITLE, subtitleJSON));
-                    p.teleport(Gamemode.getCurrentWorld().getSpawnLocation());
-                }
+            Bukkit.getScheduler().scheduleSyncDelayedTask(Lavasurvival.INSTANCE, () -> {
+                EntityPlayer ep = ((CraftPlayer) p).getHandle();
+                ep.playerConnection.a(new PacketPlayInClientCommand(PacketPlayInClientCommand.EnumClientCommand.PERFORM_RESPAWN));
+                ep.playerConnection.sendPacket(new PacketPlayOutTitle(PacketPlayOutTitle.EnumTitleAction.TITLE, titleJSON, 0, 60, 0));
+                ep.playerConnection.sendPacket(new PacketPlayOutTitle(PacketPlayOutTitle.EnumTitleAction.SUBTITLE, subtitleJSON));
+                p.teleport(Gamemode.getCurrentWorld().getSpawnLocation());
             }, 1);
         }
     }
