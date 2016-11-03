@@ -116,6 +116,8 @@ public class PlayerListener implements Listener {
                 event.setCancelled(true);
                 if (event.getCause().equals(EntityDamageEvent.DamageCause.LAVA))
                     ((CraftPlayer) event.getEntity()).getHandle().damageEntity(DamageSource.OUT_OF_WORLD, (float) Gamemode.DAMAGE);
+                else if (event.getCause().equals(EntityDamageEvent.DamageCause.FIRE) || event.getCause().equals(EntityDamageEvent.DamageCause.FIRE_TICK))
+                    event.getEntity().setFireTicks(0);
             }
         }
     }
