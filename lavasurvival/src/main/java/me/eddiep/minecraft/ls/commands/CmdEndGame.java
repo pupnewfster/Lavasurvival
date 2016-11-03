@@ -8,7 +8,7 @@ import org.bukkit.command.CommandSender;
 import java.util.ArrayList;
 import java.util.List;
 
-public class CmdEndGame extends Cmd {
+public class CmdEndGame implements Cmd {
     public boolean commandUse(CommandSender sender, String[] args) {
         if(Gamemode.getCurrentGame() != null) {
             Gamemode.getCurrentGame().endRound();

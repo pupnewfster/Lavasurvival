@@ -17,13 +17,9 @@ public class ShopFactory {
 
     public static Shop createShop(Plugin plugin, String ShopName, ShopManager shopManager, Material material, List<String> description, boolean haveGlow) {
         Shop shop = new Shop(shopManager);
-
         shop.createOpenItem(material, ShopName, description, haveGlow);
-
         shop.register(plugin);
-
         shops.add(shop);
-
         return shop;
     }
 
@@ -31,7 +27,7 @@ public class ShopFactory {
         return Collections.unmodifiableList(shops);
     }
 
-    public static Shop findShop(String shopName) {
+    private static Shop findShop(String shopName) {
         for (Shop shop : shops)
             if (shop.getShopName().equals(shopName))
                 return shop;
@@ -44,23 +40,18 @@ public class ShopFactory {
 
     public static Shop unregisterShop(String shopName) {
         Shop shop = findShop(shopName);
-
         if (shop != null)
             shop.unregister();
         return shop;
     }
 
     public static Inventory validateInventory(Inventory inventory) {
-        for (Shop shop : shops)
-            if (!inventory.contains(shop.getOpener()))
-                inventory.setItem(inventory.firstEmpty(), shop.getOpener());
-
+        shops.stream().filter(shop -> !inventory.contains(shop.getOpener())).forEach(shop -> inventory.setItem(inventory.firstEmpty(), shop.getOpener()));
         return inventory;
     }
 
     public static void cleanup() {
-        for (Shop shop : shops)
-            shop.unregister();
+        shops.forEach(Shop::unregister);
         shops.clear();
     }
 

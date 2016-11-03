@@ -8,22 +8,16 @@ public class PlayerStatusManager {
     private static final WeakHashMap<Player, PlayerStatus> status = new WeakHashMap<>();
 
     public static void tick() {
-        for (Player p : status.keySet()) {
-            PlayerStatus s = status.get(p);
-            s.tick();
-        }
+        status.keySet().forEach(p -> status.get(p).tick());
     }
 
     public static void cleanup() {
         status.clear();
     }
 
-    public static PlayerStatus getStatus(Player owner) {
-        if (!status.containsKey(owner)) {
-            PlayerStatus s = new PlayerStatus(owner);
-            status.put(owner, s);
-        }
-
+    private static PlayerStatus getStatus(Player owner) {
+        if (!status.containsKey(owner))
+            status.put(owner, new PlayerStatus(owner));
         return status.get(owner);
     }
 

@@ -47,11 +47,11 @@ public final class ClassicPhysicsHandler implements Listener {
         private World world;
         private int x, y, z;
 
-        public WorldCount(World world) {
+        WorldCount(World world) {
             this.world = world;
         }
 
-        public void addChange(int x, int y, int z) {
+        void addChange(int x, int y, int z) {
             this.x = x;
             this.y = y;
             this.z = z;
@@ -70,7 +70,7 @@ public final class ClassicPhysicsHandler implements Listener {
                 this.changes.add(loc);
         }
 
-        public int getCount() {
+        int getCount() {
             return this.changes.size();
         }
 
@@ -78,22 +78,22 @@ public final class ClassicPhysicsHandler implements Listener {
             return this.world;
         }
 
-        public short[] getChanged() {
+        short[] getChanged() {
             short[] temp = new short[this.changes.size()];
             for (int i = 0; i < this.changes.size(); i++)
                 temp[i] = this.changes.get(i);
             return temp;
         }
 
-        public int getX() {
+        int getX() {
             return this.x;
         }
 
-        public int getY() {
+        int getY() {
             return this.y;
         }
 
-        public int getZ() {
+        int getZ() {
             return this.z;
         }
     }
@@ -101,7 +101,7 @@ public final class ClassicPhysicsHandler implements Listener {
     private class ToAndFrom {
         Location from, to;
 
-        public ToAndFrom(Location to, Location from) {
+        ToAndFrom(Location to, Location from) {
             this.to = to;
             this.from = from;
         }
@@ -390,7 +390,7 @@ public final class ClassicPhysicsHandler implements Listener {
             placeClassicBlockAt(event.getBlock().getLocation(), event.getToBlock().getType(), event.getToBlock().getLocation());
     }
 
-    public void requestUpdateAround(Location location) {
+    private void requestUpdateAround(Location location) {
         for (int x = -1; x <= 1; x++)
             for (int y = -1; y <= 1; y++)
                 for (int z = -1; z <= 1; z++) {
@@ -432,9 +432,7 @@ public final class ClassicPhysicsHandler implements Listener {
                 break;
             }
         PacketPlayOutBlockChange packet = new PacketPlayOutBlockChange(((CraftWorld) location.getWorld()).getHandle(), new BlockPosition(location.getBlockX(), location.getBlockY(), location.getBlockZ()));
-        for (Player p : Bukkit.getOnlinePlayers())
-            if (p != null)
-                ((CraftPlayer) p).getHandle().playerConnection.sendPacket(packet);
+        Bukkit.getOnlinePlayers().stream().filter(p -> p != null).forEach(p -> ((CraftPlayer) p).getHandle().playerConnection.sendPacket(packet));
     }
 
     public void placeClassicBlockAt(Location location, Material type, Location from) {
@@ -461,7 +459,7 @@ public final class ClassicPhysicsHandler implements Listener {
             }
     }
 
-    public void addLogicContainer(LogicContainer container) {
+    private void addLogicContainer(LogicContainer container) {
         for (LogicContainerHolder holder : logicContainers)
             if (holder.container.equals(container))
                 return;

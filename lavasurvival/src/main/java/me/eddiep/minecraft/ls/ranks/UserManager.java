@@ -14,19 +14,15 @@ public class UserManager {
     private File configFileUsers = new File(Lavasurvival.INSTANCE.getDataFolder(), "userinfo.yml");
 
     public void readUsers() {
-        for (Player p : Bukkit.getOnlinePlayers())
-            parseUser(p);
+        Bukkit.getOnlinePlayers().forEach(this::parseUser);
     }
 
-    public void parseUser(final Player p) {
-        Bukkit.getScheduler().scheduleSyncDelayedTask(Lavasurvival.INSTANCE, new Runnable() {
-            @Override
-            public void run() {
-                if (players.containsKey(p.getUniqueId()))
-                    players.get(p.getUniqueId()).setPlayer(p);
-                else
-                    players.put(p.getUniqueId(), new UserInfo(p));
-            }
+    private void parseUser(final Player p) {
+        Bukkit.getScheduler().scheduleSyncDelayedTask(Lavasurvival.INSTANCE, () -> {
+            if (players.containsKey(p.getUniqueId()))
+                players.get(p.getUniqueId()).setPlayer(p);
+            else
+                players.put(p.getUniqueId(), new UserInfo(p));
         });
     }
 
@@ -38,8 +34,7 @@ public class UserManager {
     }
 
     public void saveAll() {
-        for (UUID uuid : players.keySet())
-            players.get(uuid).save();
+        players.keySet().forEach(uuid -> players.get(uuid).save());
     }
 
     public HashMap<UUID, UserInfo> getUsers() {

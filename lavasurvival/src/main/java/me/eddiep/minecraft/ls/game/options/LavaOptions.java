@@ -5,8 +5,9 @@ import org.bukkit.Location;
 import org.bukkit.util.Vector;
 
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class LavaOptions extends BaseOptions {
     private transient Vector selectedSpawn;
@@ -18,77 +19,61 @@ public class LavaOptions extends BaseOptions {
         return new LavaOptions(owner);
     }
 
-    LavaOptions(LavaMap owner) {
+    private LavaOptions(LavaMap owner) {
         this.owner = owner;
     }
 
     public List<Vector> getSpawnPoints() {
         if (!isEnabled())
-            return Arrays.asList(new Vector(owner.getLavaX(), owner.getLavaY(), owner.getLavaZ()));
-        return spawnPoints;
+            return Collections.singletonList(new Vector(this.owner.getLavaX(), this.owner.getLavaY(), this.owner.getLavaZ()));
+        return this.spawnPoints;
     }
 
     public List<Location> getSpawnLocations() {
         if (!isEnabled())
-            return Arrays.asList(owner.getLavaSpawnAsLocation());
-
-        List<Location> list = new ArrayList<>();
-        for (Vector vector : spawnPoints) {
-            Location location = new Location(owner.getWorld(), vector.getX(), vector.getY(), vector.getZ());
-            list.add(location);
-        }
-
-        return list;
+            return Collections.singletonList(this.owner.getLavaSpawnAsLocation());
+        return this.spawnPoints.stream().map(vector -> new Location(this.owner.getWorld(), vector.getX(), vector.getY(), vector.getZ())).collect(Collectors.toList());
     }
 
-    public Vector getHighestSpawn() {
+    private Vector getHighestSpawn() {
         if (!isEnabled())
-            return owner.getLavaSpawnAsLocation().toVector();
-
-        Vector highest = spawnPoints.get(0);
-        for (Vector vector : spawnPoints)
+            return this.owner.getLavaSpawnAsLocation().toVector();
+        Vector highest = this.spawnPoints.get(0);
+        for (Vector vector : this.spawnPoints)
             if (vector.getY() > highest.getY())
                 highest = vector;
-
         return highest;
     }
 
     public Location getHighestLocation() {
         Vector highest = getHighestSpawn();
-        return new Location(owner.getWorld(), highest.getX(), highest.getY(), highest.getZ());
+        return new Location(this.owner.getWorld(), highest.getX(), highest.getY(), highest.getZ());
     }
 
     public List<Location> getSpawnLocation(int xoffset, int yoffset, int zoffet) {
         if (!isEnabled())
-            return Arrays.asList(owner.getLavaSpawnAsLocation(xoffset, yoffset, zoffet));
-
-        List<Location> list = new ArrayList<>();
-        for (Vector vector : spawnPoints) {
-            Location location = new Location(owner.getWorld(), vector.getX() + xoffset, vector.getY() + yoffset, vector.getZ() + zoffet);
-            list.add(location);
-        }
-
-        return list;
+            return Collections.singletonList(this.owner.getLavaSpawnAsLocation(xoffset, yoffset, zoffet));
+        return this.spawnPoints.stream().map(vector -> new Location(this.owner.getWorld(), vector.getX() + xoffset, vector.getY() + yoffset, vector.getZ() + zoffet)).collect(Collectors.toList());
     }
 
-    public Vector getSingleSpawn() {
+    private Vector getSingleSpawn() {
         if (!isEnabled())
-            return new Vector(owner.getLavaX(), owner.getLavaY(), owner.getLavaZ());
+            return new Vector(this.owner.getLavaX(), this.owner.getLavaY(), this.owner.getLavaZ());
         else {
-            if (selectedSpawn == null)
-                selectedSpawn = spawnPoints.get(RANDOM.nextInt(spawnPoints.size()));
-            return selectedSpawn;
+            if (this.selectedSpawn == null)
+                this.selectedSpawn = this.spawnPoints.get(RANDOM.nextInt(this.spawnPoints.size()));
+            return this.selectedSpawn;
         }
     }
 
     public Location getSingleSpawnLocation() {
         Vector spawn = getSingleSpawn();
-        return new Location(owner.getWorld(), spawn.getX(), spawn.getY(), spawn.getZ());
+        return new Location(this.owner.getWorld(), spawn.getX(), spawn.getY(), spawn.getZ());
     }
 
     @Override
     public boolean isEnabled() {
-        return spawnPoints.size() > 0 && super.isEnabled();
+        return this.spawnPoints.size() > 0 && super.isEnabled();
     }
 
     public void setParent(LavaMap parent) {

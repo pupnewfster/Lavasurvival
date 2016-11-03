@@ -22,7 +22,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class LavaMap {
-    public static final int CONFIG_VERSION = 8;
+    private static final int CONFIG_VERSION = 8;
 
     private String name, worldName, filePath;
     private int lavax, lavay, lavaz, mapHeight;
@@ -39,26 +39,21 @@ public class LavaMap {
     private volatile World world;
     private volatile boolean poured;
 
-    public static LavaMap load(String file) throws IOException {
+    static LavaMap load(String file) throws IOException {
         String contents = FileUtils.readAllText(file);
         LavaMap map = Lavasurvival.GSON.fromJson(contents, LavaMap.class);
         map.poured = false;
         map.filePath = file;
-
         if (!map.riseOptions.hasParent())
             map.riseOptions.setParent(map);
-
         if (!map.floodOptions.hasParent())
             map.floodOptions.setParent(map);
-
         if (!map.fusionOptions.hasParent())
             map.fusionOptions.setParent(map);
-
         if (map.configVersion < CONFIG_VERSION) { //Update config with new values
             map.configVersion = CONFIG_VERSION;
             map.save();
         }
-
         return map;
     }
 
@@ -70,19 +65,16 @@ public class LavaMap {
             for (File f : files)
                 if (f.getAbsolutePath().endsWith(".map"))
                     maps.add(f.getAbsolutePath());
-
         return maps.toArray(new String[maps.size()]);
     }
 
-    public void restoreBackup() {
-        File directoy = new File(worldName);
+    private void restoreBackup() {
+        File directoy = new File(this.worldName);
         File backup = new File(Lavasurvival.INSTANCE.getDataFolder(), worldName);
         if (!backup.exists())
             return;
-
         if (directoy.exists()) {
-            boolean val = directoy.delete();
-            if (!val) {
+            if (!directoy.delete()) {
                 System.err.println("Could not delete world!");
                 return;
             }
@@ -96,48 +88,43 @@ public class LavaMap {
     }
 
     public void save() throws IOException {
-        String json = Lavasurvival.GSON.toJson(this);
-        me.eddiep.minecraft.ls.system.FileUtils.writeText(new File(Lavasurvival.INSTANCE.getDataFolder(), "maps/" + name + ".map").getAbsolutePath(), json);
+        me.eddiep.minecraft.ls.system.FileUtils.writeText(new File(Lavasurvival.INSTANCE.getDataFolder(), "maps/" + this.name + ".map").getAbsolutePath(), Lavasurvival.GSON.toJson(this));
     }
 
     @Deprecated
     public Location getLavaSpawnAsLocation() {
-        return world.getBlockAt(lavax, lavay, lavaz).getLocation();
+        return this.world.getBlockAt(this.lavax, this.lavay, this.lavaz).getLocation();
     }
 
     @Deprecated
     public Location getLavaSpawnAsLocation(int xoffset, int yoffset, int zoffet) {
-        return world.getBlockAt(lavax + xoffset, lavay + yoffset, lavaz + zoffet).getLocation();
+        return this.world.getBlockAt(this.lavax + xoffset, this.lavay + yoffset, this.lavaz + zoffet).getLocation();
     }
 
     public void prepare() {
         restoreBackup();
-        world = loadOrGetWorld(worldName);
-        world.setAutoSave(false);
-        world.setPVP(false);
-        world.setAnimalSpawnLimit(0);
-        world.setWaterAnimalSpawnLimit(0);
-        world.setMonsterSpawnLimit(0);
-        world.setThundering(isThundering);
-        world.setThunderDuration(1);
-        world.setWeatherDuration(Integer.MAX_VALUE);
-        world.setGameRuleValue("randomTickSpeed", "0");
-        world.setGameRuleValue("mobGriefing", "false");
-        world.setGameRuleValue("spectatorsGenerateChunks", "false");
-        world.setSpawnFlags(false, false);//Do not let mobs or animals spawn
-        world.setSpawnLocation(mapSpawn.getBlockX(), mapSpawn.getBlockY(), mapSpawn.getBlockZ());
-        world.setTime(time.getStartTimeTick());
-        world.setKeepSpawnInMemory(true);
-
-        if (!time.isEnabled())
-            world.setGameRuleValue("doDaylightCycle", "false");
-
-        for (Entity e : world.getEntities())
-            e.remove();
-
+        this.world = loadOrGetWorld(this.worldName);
+        this.world.setAutoSave(false);
+        this.world.setPVP(false);
+        this.world.setAnimalSpawnLimit(0);
+        this.world.setWaterAnimalSpawnLimit(0);
+        this.world.setMonsterSpawnLimit(0);
+        this.world.setThundering(this.isThundering);
+        this.world.setThunderDuration(1);
+        this.world.setWeatherDuration(Integer.MAX_VALUE);
+        this.world.setGameRuleValue("randomTickSpeed", "0");
+        this.world.setGameRuleValue("mobGriefing", "false");
+        this.world.setGameRuleValue("spectatorsGenerateChunks", "false");
+        this.world.setSpawnFlags(false, false);//Do not let mobs or animals spawn
+        this.world.setSpawnLocation(this.mapSpawn.getBlockX(), this.mapSpawn.getBlockY(), this.mapSpawn.getBlockZ());
+        this.world.setTime(this.time.getStartTimeTick());
+        this.world.setKeepSpawnInMemory(true);
+        if (!this.time.isEnabled())
+            this.world.setGameRuleValue("doDaylightCycle", "false");
+        this.world.getEntities().forEach(Entity::remove);
         try {
-            Lavasurvival.log("Backing up " + world.getName() + "...");
-            FileUtils.copyDirectory(world.getWorldFolder(), new File(Lavasurvival.INSTANCE.getDataFolder(), world.getName()));
+            Lavasurvival.log("Backing up " + this.world.getName() + "...");
+            FileUtils.copyDirectory(this.world.getWorldFolder(), new File(Lavasurvival.INSTANCE.getDataFolder(), this.world.getName()));
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -151,11 +138,11 @@ public class LavaMap {
     }
 
     public World getWorld() {
-        return world;
+        return this.world;
     }
 
     public Vector getMapSpawn() {
-        return mapSpawn;
+        return this.mapSpawn;
     }
 
     public void setMapSpawn(Location mapSpawn) {
@@ -163,7 +150,7 @@ public class LavaMap {
     }
 
     public String getWorldName() {
-        return worldName;
+        return this.worldName;
     }
 
     public void setWorldName(String worldName) {
@@ -178,21 +165,21 @@ public class LavaMap {
 
     @Deprecated
     public int getLavaX() {
-        return lavax;
+        return this.lavax;
     }
 
     @Deprecated
     public int getLavaY() {
-        return lavay;
+        return this.lavay;
     }
 
     @Deprecated
     public int getLavaZ() {
-        return lavaz;
+        return this.lavaz;
     }
 
     public int getHeight() {
-        return mapHeight;
+        return this.mapHeight;
     }
 
     public void setHeight(int height) {
@@ -211,28 +198,22 @@ public class LavaMap {
         double maxY = this.maxSafeZone.getY() + 1;
         double minZ = this.minSafeZone.getZ() - 1;
         double maxZ = this.maxSafeZone.getZ() + 1;
-
-        return minX <= loc.getX() && minY <= loc.getY() && minZ <= loc.getZ() &&
-                loc.getX() <= maxX && loc.getY() <= maxY && loc.getZ() <= maxZ;
+        return minX <= loc.getX() && minY <= loc.getY() && minZ <= loc.getZ() && loc.getX() <= maxX && loc.getY() <= maxY && loc.getZ() <= maxZ;
     }
 
-    public Class<? extends Gamemode>[] getEnabledGames() {
+    Class<? extends Gamemode>[] getEnabledGames() {
         List<Class<? extends Gamemode>> games = new ArrayList<>();
-
-        if (riseOptions.isEnabled())
+        if (this.riseOptions.isEnabled())
             games.add(Rise.class);
-
-        if (floodOptions.isEnabled())
+        if (this.floodOptions.isEnabled())
             games.add(Flood.class);
-
-        if (fusionOptions.isEnabled())
+        if (this.fusionOptions.isEnabled())
             games.add(Fusion.class);
-
         return games.toArray(new Class[games.size()]);
     }
 
     public String getName() {
-        return name;
+        return this.name;
     }
 
     public void setName(String name) {
@@ -240,35 +221,35 @@ public class LavaMap {
     }
 
     public String getFilePath() {
-        return filePath;
+        return this.filePath;
     }
 
     public String getFileName() {
-        return new File(filePath).getName();
+        return new File(this.filePath).getName();
     }
 
-    public File getFile() {
-        return new File(filePath);
+    File getFile() {
+        return new File(this.filePath);
     }
 
-    public TimeOptions getTimeOptions() {
-        return time;
+    TimeOptions getTimeOptions() {
+        return this.time;
     }
 
     public FloodOptions getFloodOptions() {
-        return floodOptions;
+        return this.floodOptions;
     }
 
     public RiseOptions getRiseOptions() {
-        return riseOptions;
+        return this.riseOptions;
     }
 
     public FusionOptions getFusionOptions() {
-        return fusionOptions;
+        return this.fusionOptions;
     }
 
-    public String getCreator() {
-        return creator;
+    String getCreator() {
+        return this.creator;
     }
 
     public double getMeltMultiplier() {

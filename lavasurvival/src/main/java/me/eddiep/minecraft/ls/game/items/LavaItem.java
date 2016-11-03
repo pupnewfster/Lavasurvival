@@ -9,7 +9,6 @@ import org.bukkit.inventory.meta.ItemMeta;
 import java.util.Arrays;
 
 public abstract class LavaItem {
-
     public static final LavaItem[] ITEMS = new LavaItem[] {
             new Generosity(),
             new MinorHeal(),
@@ -34,31 +33,22 @@ public abstract class LavaItem {
     public ItemStack createItem() {
         ItemStack item = displayItem();
         ItemMeta meta = item.getItemMeta();
-
         meta.setDisplayName(name());
-
         meta.setLore(Arrays.asList((description() + "\n" + getPrice() + " ggs").split("\n")));
-
         item.setItemMeta(meta);
-
         return item;
     }
 
     public boolean isItem(ItemStack item) {
-        ItemMeta meta = item.getItemMeta();
-
-        return meta.getDisplayName().equals(name());
+        return item.getItemMeta().getDisplayName().equals(name());
     }
 
     public boolean giveItem(Player player) {
-        ItemStack item = createItem();
-
         Inventory inventory = player.getInventory();
         int index = inventory.firstEmpty();
         if (index == -1)
             return false;
-
-        inventory.setItem(index, item);
+        inventory.setItem(index, createItem());
         return true;
     }
 

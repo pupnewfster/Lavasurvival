@@ -8,7 +8,7 @@ import org.bukkit.entity.Player;
 import java.util.ArrayList;
 import java.util.List;
 
-public class CmdRules extends Cmd {
+public class CmdRules implements Cmd {
     public boolean commandUse(CommandSender sender, String[] args) {
         if(sender instanceof Player) {
             Player p = (Player) sender;

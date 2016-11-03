@@ -9,8 +9,7 @@ import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
 
-public class CmdAirc extends Cmd {
-
+public class CmdAirc implements Cmd {
     @Override
     public boolean commandUse(CommandSender sender, String[] args) {
         if (sender instanceof Player) {
@@ -27,7 +26,6 @@ public class CmdAirc extends Cmd {
             ArrayList<Rank> ranks = Lavasurvival.INSTANCE.getRankManager().getOrder();
             for (Rank rank : ranks) {
                 double bonusAdd = (5 + ranks.indexOf(rank)) / 2.0;
-
                 double reward = 100 + (bonusAdd * count);
                 player.sendMessage(rank.getColor() + rank.getName() + ChatColor.RESET + " - " + reward);
             }

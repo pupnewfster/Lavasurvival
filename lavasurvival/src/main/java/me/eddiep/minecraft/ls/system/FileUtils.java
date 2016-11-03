@@ -14,7 +14,7 @@ public class FileUtils {
      * @param contents - The contents inside the file.
      * @throws IOException - Signals that an I/O exception has occurred.
      */
-    public static void createIfNotExist(String path, String fileName, String contents) throws IOException {
+    private static void createIfNotExist(String path, String fileName, String contents) throws IOException {
         File filePath = new File(path);
         File fileFile = new File(path, fileName);
         filePath.mkdirs();
@@ -64,7 +64,7 @@ public class FileUtils {
      * @param fileName - The name of the file
      * @throws IOException - If there's a problem writing the file
      */
-    public static void createIfNotExist(String fileName) throws IOException {
+    private static void createIfNotExist(String fileName) throws IOException {
         File file = new File(fileName);
         if (!file.exists())
             file.createNewFile();
@@ -122,7 +122,7 @@ public class FileUtils {
      * @return A string array with the contents of the read file
      * @throws IOException If there's an error while reading from the file
      */
-    public static String[] readAllLines(String filePath) throws IOException {
+    private static String[] readAllLines(String filePath) throws IOException {
         List<String> lines = readToList(filePath);
         return lines.toArray(new String[lines.size()]);
     }
@@ -134,7 +134,7 @@ public class FileUtils {
      * @return A string list with the contents of the read file
      * @throws IOException If there's an error while reading from the file
      */
-    public static List<String> readToList(String filePath) throws IOException {
+    private static List<String> readToList(String filePath) throws IOException {
         LineNumberReader reader = new LineNumberReader(new FileReader(filePath));
         List<String> lines = new ArrayList<>();
         String line;
@@ -183,7 +183,7 @@ public class FileUtils {
             //list all the directory contents
             String files[] = src.list();
 
-            for (String file : files) {
+            for (String file : files != null ? files : new String[0]) {
                 //construct the src and dest file structure
                 File srcFile = new File(src, file);
                 File destFile = new File(dest, file);

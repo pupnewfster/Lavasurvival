@@ -14,7 +14,6 @@ public abstract class Invincibility extends LavaItem {
     public boolean consume(Player owner) {
         PlayerStatusManager.makeInvincible(owner, duration());
         owner.sendMessage(ChatColor.GREEN + "You are invincible for " + duration() + " seconds!");
-
         return true;
     }
 
@@ -40,6 +39,4 @@ public abstract class Invincibility extends LavaItem {
     }
 
     public abstract int duration();
-
-
 }

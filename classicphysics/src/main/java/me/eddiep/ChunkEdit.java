@@ -6,15 +6,15 @@ import org.bukkit.block.BlockFace;
 
 public class ChunkEdit {
     public World world;
-    private PlayerChunkMap playerChunkMap;
+    //private PlayerChunkMap playerChunkMap;
 
     public ChunkEdit(World w) {
         this.world = w;
         WorldServer s = w.getWorld().getHandle();
-        this.playerChunkMap = s.getPlayerChunkMap();
+        //this.playerChunkMap = s.getPlayerChunkMap();
     }
 
-    public void setBlock(int x, int y, int z, Material type, byte data) {
+    private void setBlock(int x, int y, int z, Material type, byte data) {
         int columnX = x >> 4;
         int columnZ = z >> 4;
         int chunkY = y >> 4;

@@ -40,7 +40,7 @@ import java.io.IOException;
 import java.util.*;
 
 public abstract class Gamemode {
-    public static final Material[] DEFAULT_BLOCKS = new Material[] {
+    private static final Material[] DEFAULT_BLOCKS = new Material[]{
             Material.TORCH,
             Material.COBBLESTONE,
             Material.DIRT,
@@ -48,13 +48,13 @@ public abstract class Gamemode {
             Material.WOOD,
             Material.SAND
     };
-    public static final Class[] GAMES = new Class[] {
+    private static final Class[] GAMES = new Class[]{
             Rise.class,
             Flood.class,
             Fusion.class
     };
 
-    public static final int VOTE_COUNT;
+    private static final int VOTE_COUNT;
     private static boolean restart;
     private static String restartServer;
 
@@ -65,9 +65,10 @@ public abstract class Gamemode {
             VOTE_COUNT = LavaMap.getPossibleMaps().length <= 3 ? LavaMap.getPossibleMaps().length - 1 : 3;
     }
 
-    public static final Random RANDOM = new Random();
+    protected static final Random RANDOM = new Random();
     public static double DAMAGE = 3, DAMAGE_FREQUENCY = 0.5;
-    public static boolean LAVA = true, voting = false;
+    protected static boolean LAVA = true;
+    private static boolean voting = false;
     private LavaMap[] nextMaps = new LavaMap[VOTE_COUNT];
     private ArrayList<CraftBossBar> bars = new ArrayList<>();
     private int[] votes = new int[VOTE_COUNT];
@@ -86,7 +87,7 @@ public abstract class Gamemode {
     private boolean endGame;
     private List<Block> spongeLocations = new ArrayList<>();
 
-    public static PlayerListener getPlayerListener() {
+    protected static PlayerListener getPlayerListener() {
         return listener;
     }
 
@@ -125,8 +126,7 @@ public abstract class Gamemode {
             Lavasurvival.INSTANCE.getServer().getPluginManager().registerEvents(physicsListener, Lavasurvival.INSTANCE);
             physicsListener.prepare();
         }
-
-        if (map == null) {
+        if (this.map == null) {
             String[] files = LavaMap.getPossibleMaps();
             lastMap = currentMap;
             do {
@@ -139,7 +139,7 @@ public abstract class Gamemode {
                 }
             } while (true);
         } else
-            currentMap = map;
+            currentMap = this.map;
 
         currentMap.prepare();
     }
@@ -152,7 +152,6 @@ public abstract class Gamemode {
     public final void start() {
         if (restart) {
             Lavasurvival.INSTANCE.updating = true;
-
             for (Player p : Bukkit.getOnlinePlayers()) {
                 try {
                     Lavasurvival.INSTANCE.changeServer(p, restartServer);
@@ -160,53 +159,37 @@ public abstract class Gamemode {
                     e.printStackTrace();
                 }
             }
-
-            Bukkit.getScheduler().scheduleSyncDelayedTask(Lavasurvival.INSTANCE, new Runnable() {
-                @Override
-                public void run() {
-                    //Unloading world
-                    if (lastMap != null) {
-                        Lavasurvival.log("Unloading " + lastMap.getWorld().getName() + "..");
-                        boolean success = Bukkit.unloadWorld(lastMap.getWorld(), false);
-                        if (!success)
-                            Lavasurvival.log("Failed to unload last map! A manual unload may be required..");
-                        else {
-                            restoreBackup(lastMap.getWorld());
-                        }
+            Bukkit.getScheduler().scheduleSyncDelayedTask(Lavasurvival.INSTANCE, () -> {
+                //Unloading world
+                if (lastMap != null) {
+                    Lavasurvival.log("Unloading " + lastMap.getWorld().getName() + "..");
+                    boolean success = Bukkit.unloadWorld(lastMap.getWorld(), false);
+                    if (!success)
+                        Lavasurvival.log("Failed to unload last map! A manual unload may be required..");
+                    else {
+                        restoreBackup(lastMap.getWorld());
                     }
-
-                    //Restart
-                    Bukkit.getScheduler().scheduleSyncDelayedTask(Lavasurvival.INSTANCE, new Runnable() {
-                        @Override
-                        public void run() {
-                            Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "restart");
-                        }
-                    }, 20);
                 }
+                //Restart
+                Bukkit.getScheduler().scheduleSyncDelayedTask(Lavasurvival.INSTANCE, () -> Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "restart"), 20);
             }, 20 * 2);
-
             return;
         }
-
         onStart();
     }
 
     private long lastMoneyCheck = System.currentTimeMillis();
+
     protected void onStart() {
         Lavasurvival.log("New game on " + getCurrentWorld().getName());
-
         if (Necessities.isTracking()) {
-            if (isRewardDoubled()) {
+            if (isRewardDoubled())
                 Necessities.trackAction("LS", "DoubleRound", getCurrentMap().getName());
-            }
             Necessities.trackAction("LS", "RoundStart", getCurrentMap().getName());
         }
-
-        isEnding = false;
-        hasEnded = false;
-
+        this.isEnding = false;
+        this.hasEnded = false;
         setIsLava(currentMap.getFloodOptions());
-
         for (CraftBossBar bar : this.bars) {
             bar.hide();
             bar.removeAll();
@@ -215,44 +198,27 @@ public abstract class Gamemode {
         BarFlag[] flags = new BarFlag[0];
         //TODO: Make it so that it does not have to recreate the welcome bar just the other bars (put this in necessities?) onplayerjoin
         addBar(new CraftBossBar(ChatColor.GOLD + "Welcome to " + ChatColor.AQUA + "Galaxy Gaming", BarColor.GREEN, BarStyle.SOLID, flags));
-        addBar(new CraftBossBar(ChatColor.GOLD + "Gamemode: " + (LAVA ? ChatColor.RED : ChatColor.BLUE) + type, LAVA ? BarColor.RED : BarColor.BLUE, BarStyle.SEGMENTED_6, flags));
+        addBar(new CraftBossBar(ChatColor.GOLD + "Gamemode: " + (LAVA ? ChatColor.RED : ChatColor.BLUE) + this.type, LAVA ? BarColor.RED : BarColor.BLUE, BarStyle.SEGMENTED_6, flags));
         addBar(new CraftBossBar(ChatColor.GOLD + "Reward is " + (isRewardDoubled() ? "double" : "normal"), BarColor.WHITE, BarStyle.SEGMENTED_20, flags));
-
         alive = new ArrayList<>();
         dead = new ArrayList<>();
-
-        for (Player p : Bukkit.getOnlinePlayers())
-            playerJoin(p);
-
+        Bukkit.getOnlinePlayers().forEach(this::playerJoin);
         UserManager um = new UserManager();
-
-        for (Player p : Bukkit.getOnlinePlayers()) {
-            if (p.hasPermission("lavasurvival.seemmr")) {
-                UserInfo info = um.getUser(p.getUniqueId());
-
-                p.setLevel(info.getRanking().getRating());
-            }
-        }
-
+        Bukkit.getOnlinePlayers().stream().filter(p -> p.hasPermission("lavasurvival.seemmr")).forEach(p -> {
+            UserInfo info = um.getUser(p.getUniqueId());
+            p.setLevel(info.getRanking().getRating());
+        });
         currentGame = this;
-
         if (lastMap != null) {
             Lavasurvival.log("Unloading " + lastMap.getWorld().getName() + "..");
             boolean success = Bukkit.unloadWorld(lastMap.getWorld(), false);
             if (!success)
                 Lavasurvival.log("Failed to unload last map! A manual unload may be required..");
-            else {
-                new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        restoreBackup(lastMap.getWorld());
-                    }
-                }).start();
-            }
+            else
+                new Thread(() -> restoreBackup(lastMap.getWorld())).start();
         }
-
         Lavasurvival.INSTANCE.MONEY_VIEWER.run();
-        tickTask = new BukkitRunnable() {
+        this.tickTask = new BukkitRunnable() {
             @Override
             public void run() {
                 if (System.currentTimeMillis() - lastMoneyCheck >= 20000) {
@@ -262,7 +228,7 @@ public abstract class Gamemode {
                 tick();
             }
         };
-        tickTask.runTaskTimer(Lavasurvival.INSTANCE, 0, 1);
+        this.tickTask.runTaskTimer(Lavasurvival.INSTANCE, 0, 1);
     }
 
     private void restoreBackup(World world) {
@@ -277,19 +243,17 @@ public abstract class Gamemode {
 
     private long timeTickCount;
     private long lastBlockUpdate = 0;
+
     private void tick() {
         PlayerStatusManager.tick();
-
         double multiplier = currentMap.getTimeOptions().getMultiplier();
         if (currentMap.getTimeOptions().isEnabled()) {
             if (multiplier != 1.0) {
-                timeTickCount++;
-
-                long tick = (long) (timeTickCount * multiplier);
+                this.timeTickCount++;
+                long tick = (long) (this.timeTickCount * multiplier);
                 getCurrentWorld().setTime(currentMap.getTimeOptions().getStartTimeTick() + tick);
             }
         }
-
         onTick();
     }
 
@@ -301,74 +265,61 @@ public abstract class Gamemode {
         return airBlocksAround(player.getLocation(), limit);
     }
 
-    protected int airBlocksAround(Location original, int limit) {
+    private int airBlocksAround(Location original, int limit) {
         Block starting = original.getBlock();
         Stack<Block> blocks = new Stack<>();
         ArrayList<Block> counted = new ArrayList<>();
         int count = 0;
         blocks.push(starting);
-
         while (!blocks.isEmpty()) {
             Block b = blocks.pop();
-
-            if (b.getLocation().distance(original) >= limit || getCurrentMap().isInSafeZone(b.getLocation())) {
+            if (b.getLocation().distance(original) >= limit || getCurrentMap().isInSafeZone(b.getLocation()))
                 continue;
-            }
-
             Block north = b.getRelative(BlockFace.NORTH);
             Block south = b.getRelative(BlockFace.SOUTH);
             Block east = b.getRelative(BlockFace.EAST);
             Block west = b.getRelative(BlockFace.WEST);
             Block up = b.getRelative(BlockFace.UP);
             Block down = b.getRelative(BlockFace.DOWN);
-
             if (!north.getType().isSolid() && !north.isLiquid() && !counted.contains(north) && !getCurrentMap().isInSafeZone(north.getLocation())) {
                 count++;
                 blocks.push(north);
                 counted.add(north);
             }
-
             if (!south.getType().isSolid() && !south.isLiquid() && !counted.contains(south) && !getCurrentMap().isInSafeZone(south.getLocation())) {
                 count++;
                 blocks.push(south);
                 counted.add(south);
             }
-
             if (!east.getType().isSolid() && !east.isLiquid() && !counted.contains(east) && !getCurrentMap().isInSafeZone(east.getLocation())) {
                 count++;
                 blocks.push(east);
                 counted.add(east);
             }
-
             if (!west.getType().isSolid() && !west.isLiquid() && !counted.contains(west) && !getCurrentMap().isInSafeZone(west.getLocation())) {
                 count++;
                 blocks.push(west);
                 counted.add(west);
             }
-
             if (!up.getType().isSolid() && !up.isLiquid() && !counted.contains(up) && !getCurrentMap().isInSafeZone(up.getLocation())) {
                 count++;
                 blocks.push(up);
                 counted.add(up);
             }
-
             if (!down.getType().isSolid() && !down.isLiquid() && !counted.contains(down) && !getCurrentMap().isInSafeZone(down.getLocation())) {
                 count++;
                 blocks.push(down);
                 counted.add(down);
             }
         }
-
         counted.clear(); //Clear memory
-
         return count;
     }
 
     @Deprecated
-    protected int __INVALID_airBlocksAround(Location original, Location location, int limit, List<Block> alreadyChecked) {
+    private int __INVALID_airBlocksAround(Location original, Location location, int limit, List<Block> alreadyChecked) {
         if (original.toVector().distance(location.toVector()) >= limit)
             return 1;
-
         int total = 0;
         for (int x = -1; x <= 1; x++) {
             for (int y = -1; y <= 1; y++) {
@@ -384,26 +335,21 @@ public abstract class Gamemode {
                 }
             }
         }
-
         return total;
     }
 
-    protected boolean isEnding, hasEnded;
-    public void endRoundIn(long seconds) {
-        if (isEnding)
-            return;
+    protected boolean isEnding;
+    private boolean hasEnded;
 
-        isEnding = true;
-        Bukkit.getScheduler().scheduleSyncDelayedTask(Lavasurvival.INSTANCE, new Runnable() {
-            @Override
-            public void run() {
-                endRound();
-            }
-        }, seconds * 20L);
+    protected void endRoundIn(long seconds) {
+        if (this.isEnding)
+            return;
+        this.isEnding = true;
+        Bukkit.getScheduler().scheduleSyncDelayedTask(Lavasurvival.INSTANCE, this::endRound, seconds * 20L);
     }
 
     public boolean hasEnded() {
-        return hasEnded;
+        return this.hasEnded;
     }
 
     public void endRound() {
@@ -411,11 +357,9 @@ public abstract class Gamemode {
     }
 
     public void endRound(boolean skipVote, boolean giveRewards) {
-        if (hasEnded)
+        if (this.hasEnded)
             return;
-
         end();
-
         final UserManager um = Lavasurvival.INSTANCE.getUserManager();
         if (giveRewards) {
             CmdHide hide = Lavasurvival.INSTANCE.getHide();
@@ -439,9 +383,7 @@ public abstract class Gamemode {
                 globalMessage(survivors);
             } else
                 globalMessage("Congratulations to all " + amount + " survivors!");
-
             final HashMap<Player, Integer> winners = new HashMap<>();
-
             HashMap<Rank, Double[]> avgs = new HashMap<>();
             /*double count = 0;
             int avgAir = 0;
@@ -450,14 +392,12 @@ public abstract class Gamemode {
                 Player player = Bukkit.getPlayer(id);
                 if (id == null || player == null || hide.isHidden(player) || isInSpawn(Bukkit.getPlayer(id)))
                     continue;
-
                 Rank rank = Lavasurvival.INSTANCE.getNecessitiesUserManager().getUser(player.getUniqueId()).getRank();
                 Double[] array;
                 if (!avgs.containsKey(rank))
-                    array = new Double[] { 0.0,0.0,0.0 };
+                    array = new Double[]{0.0, 0.0, 0.0};
                 else
                     array = avgs.get(rank);
-
                 int blockCount = countAirBlocksAround(player, 10);
                 //avgAir += blockCount;
                 array[0] += blockCount;
@@ -465,11 +405,8 @@ public abstract class Gamemode {
                 //avgReward += reward;
                 array[1] += reward;
                 array[2]++;
-
                 avgs.put(rank, array);
-
                 winners.put(player, blockCount);
-
                 Lavasurvival.INSTANCE.depositPlayer(player, reward);
                 player.getPlayer().sendMessage(ChatColor.GREEN + "+ " + ChatColor.GOLD + "You won " + ChatColor.BOLD + reward + ChatColor.RESET + "" + ChatColor.GOLD + " GGs!");
                 IChatBaseComponent titleJSON = IChatBaseComponent.ChatSerializer.a("{\"text\": \"You won!\"}");
@@ -490,56 +427,41 @@ public abstract class Gamemode {
                 }
             }
             avgs.clear();
-
             calculateGlicko(winners, um);
         }
 
         Lavasurvival.INSTANCE.MONEY_VIEWER.run();
-        lastMoneyCheck = System.currentTimeMillis();
+        this.lastMoneyCheck = System.currentTimeMillis();
 
-        if (!skipVote) {
-            new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    startVoting();
-                }
-            }).start();
-        } else {
+        if (!skipVote)
+            new Thread(this::startVoting).start();
+        else {
             try {
                 String[] files = LavaMap.getPossibleMaps();
-                if (nextGame == null)
-                    nextGame = pickRandomGame(null);
-                nextGame.map = LavaMap.load(files[RANDOM.nextInt(files.length)]);
-
-                Bukkit.getScheduler().scheduleSyncDelayedTask(Lavasurvival.INSTANCE, new Runnable() {
-                    @Override
-                    public void run() {
-                        lastMap = getCurrentMap();
-                        tryNextGame();
-                    }
+                if (this.nextGame == null)
+                    this.nextGame = pickRandomGame(null);
+                this.nextGame.map = LavaMap.load(files[RANDOM.nextInt(files.length)]);
+                Bukkit.getScheduler().scheduleSyncDelayedTask(Lavasurvival.INSTANCE, () -> {
+                    lastMap = getCurrentMap();
+                    tryNextGame();
                 }, 20);
             } catch (IOException e) {
                 e.printStackTrace();
             }
         }
-
         if (giveRewards) {
-            new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    System.out.println("Updating ratings..");
-                    int count = 0;
-                    long start = System.currentTimeMillis();
-                    for (Player p : Bukkit.getOnlinePlayers()) {
-                        UserInfo info = um.getUser(p.getUniqueId());
-
-                        if (info.getRanking().shouldUpdate()) {
-                            info.getRanking().update();
-                            count++;
-                        }
+            new Thread(() -> {
+                System.out.println("Updating ratings..");
+                int count = 0;
+                long start = System.currentTimeMillis();
+                for (Player p : Bukkit.getOnlinePlayers()) {
+                    UserInfo info = um.getUser(p.getUniqueId());
+                    if (info.getRanking().shouldUpdate()) {
+                        info.getRanking().update();
+                        count++;
                     }
-                    System.out.println("Updated " + count + " in " + (System.currentTimeMillis() - start) + "ms !");
                 }
+                System.out.println("Updated " + count + " in " + (System.currentTimeMillis() - start) + "ms !");
             }).start();
         }
     }
@@ -548,15 +470,11 @@ public abstract class Gamemode {
         for (Player player : winners.keySet()) {
             int reward = winners.get(player);
             UserInfo info = um.getUser(player.getUniqueId());
-
             for (Player other : winners.keySet()) {
                 if (player.equals(other))
                     continue;
-
                 UserInfo otherInfo = um.getUser(other.getUniqueId());
-
                 int otherReward = winners.get(other);
-
                 double result;
                 if (reward > otherReward)
                     result = 1; //They won
@@ -564,17 +482,13 @@ public abstract class Gamemode {
                     result = 0; //They lost
                 else
                     result = 0.5; //They tied
-
                 info.getRanking().addResult(otherInfo, result);
             }
-
             for (UUID id : dead) {
                 Player p = Bukkit.getPlayer(id);
                 if (p == null)
                     continue;
-
                 UserInfo otherInfo = um.getUser(id);
-
                 info.getRanking().addResult(otherInfo, 1.0);
                 otherInfo.getRanking().addResult(info, 0.0);
             }
@@ -582,31 +496,31 @@ public abstract class Gamemode {
     }
 
     public List<LavaMap> getMapsInVote() {
-        return Collections.unmodifiableList(Arrays.asList(nextMaps));
+        return Collections.unmodifiableList(Arrays.asList(this.nextMaps));
     }
 
     public boolean hasVoted(Player player) {
-        return voted.contains(player);
+        return this.voted.contains(player);
     }
 
     public void voteFor(int index) {
-        votes[index]++;
-        voteCount++;
+        this.votes[index]++;
+        this.voteCount++;
     }
 
     private ArrayList<OfflinePlayer> voted = new ArrayList<>();
+
     public void voteFor(int number, Player player) {
-        if (number >= nextMaps.length) {
-            player.sendMessage(ChatColor.DARK_RED + "Invalid number! Please choose a number between (1 - " + nextMaps.length + ").");
+        if (number >= this.nextMaps.length) {
+            player.sendMessage(ChatColor.DARK_RED + "Invalid number! Please choose a number between (1 - " + this.nextMaps.length + ").");
             return;
         }
-        voted.add(player);
-        votes[number]++;
-        voteCount++;
-        player.sendMessage(ChatColor.GREEN + "+ " + ChatColor.RESET + "" + ChatColor.BOLD + "You voted for " + nextMaps[number].getName() + "!");
-
+        this.voted.add(player);
+        this.votes[number]++;
+        this.voteCount++;
+        player.sendMessage(ChatColor.GREEN + "+ " + ChatColor.RESET + "" + ChatColor.BOLD + "You voted for " + this.nextMaps[number].getName() + "!");
         if (Necessities.isTracking()) {
-            Necessities.trackAction(player, "vote", nextMaps[number].getName());
+            Necessities.trackAction(player, "vote", this.nextMaps[number].getName());
         }
     }
 
@@ -614,121 +528,96 @@ public abstract class Gamemode {
         return voting;
     }
 
-    public void startVoting() {
+    private void startVoting() {
         if (voting)
             return;
-
         String[] files = LavaMap.getPossibleMaps();
         if (files.length > 1) {
             FancyMessage message = new FancyMessage("");
-            for (int i = 0; i < nextMaps.length; i++) {
-                votes[i] = 0; //reset votes
+            for (int i = 0; i < this.nextMaps.length; i++) {
+                this.votes[i] = 0; //reset votes
                 boolean found;
                 String next;
-
                 do {
                     found = false;
                     next = files[RANDOM.nextInt(files.length)];
-
                     File possibleNext = new File(next);
-
                     if (currentMap.getFile().equals(possibleNext)) {
                         found = true;
                         continue;
                     }
-
-                    for (LavaMap nextMap : nextMaps) {
+                    for (LavaMap nextMap : this.nextMaps) {
                         if (nextMap != null && nextMap.getFile().equals(possibleNext)) {
                             found = true;
                             break;
                         }
                     }
                 } while (found);
-
                 try {
-                    nextMaps[i] = LavaMap.load(next);
+                    this.nextMaps[i] = LavaMap.load(next);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
-
-                message.then((i + 1) + ". " + nextMaps[i].getName())
-                        .style(ChatColor.UNDERLINE)
-                        .command("/lvote " + (i + 1))
-                        .tooltip("Vote for " + nextMaps[i].getName())
-                        .then(" ");
+                message.then((i + 1) + ". " + this.nextMaps[i].getName()).style(ChatColor.UNDERLINE).command("/lvote " + (i + 1)).tooltip("Vote for " + this.nextMaps[i].getName()).then(" ");
             }
-
-            voted.clear();
+            this.voted.clear();
             globalMessage(ChatColor.GREEN + "It's time to vote for the next map!");
             voting = true;
             globalMessage(ChatColor.BOLD + "No talking will be allowed during the vote.");
-
             globalMessageNoPrefix(ChatColor.BOLD + "" + ChatColor.UNDERLINE + "Click the map you want to vote for:");
             globalMessageNoPrefix(" ");
             globalRawMessage(message);
             globalMessageNoPrefix(" ");
-
             long start = System.currentTimeMillis();
             while (true) {
                 long cur = System.currentTimeMillis();
-                if (voteCount >= Bukkit.getServer().getOnlinePlayers().size() || cur - start >= 50000)
+                if (this.voteCount >= Bukkit.getServer().getOnlinePlayers().size() || cur - start >= 50000)
                     break;
-
                 try {
                     Thread.sleep(500);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
             }
-
             voting = false;
-            voteCount = 0;
+            this.voteCount = 0;
             LavaMap next = null;
             int highest = 0;
-
-            for (int i = 0; i < nextMaps.length; i++) {
-                globalMessage(ChatColor.BOLD + nextMaps[i].getName() + ChatColor.RESET + " - " + votes[i] + " votes");
-
+            for (int i = 0; i < this.nextMaps.length; i++) {
+                globalMessage(ChatColor.BOLD + this.nextMaps[i].getName() + ChatColor.RESET + " - " + this.votes[i] + " votes");
                 if (next == null) {
-                    next = nextMaps[i];
-                    highest = votes[i];
-                }
-                else if (votes[i] > highest) {
-                    highest = votes[i];
-                    next = nextMaps[i];
+                    next = this.nextMaps[i];
+                    highest = this.votes[i];
+                } else if (this.votes[i] > highest) {
+                    highest = this.votes[i];
+                    next = this.nextMaps[i];
                 }
             }
-
-            if(next != null)
+            if (next != null)
                 globalMessage(ChatColor.BOLD + next.getName() + ChatColor.RESET + " won the vote!");
-            if (nextGame == null)
-                nextGame = pickRandomGame(next);
-            nextGame.map = next;
+            if (this.nextGame == null)
+                this.nextGame = pickRandomGame(next);
+            this.nextGame.map = next;
         } else {
             try {
-                if (nextGame == null)
-                    nextGame = pickRandomGame(null);
-                nextGame.map = LavaMap.load(files[RANDOM.nextInt(files.length)]);
+                if (this.nextGame == null)
+                    this.nextGame = pickRandomGame(null);
+                this.nextGame.map = LavaMap.load(files[RANDOM.nextInt(files.length)]);
             } catch (IOException e) {
                 e.printStackTrace();
             }
         }
-
-        Bukkit.getScheduler().scheduleSyncDelayedTask(Lavasurvival.INSTANCE, new Runnable() {
-            @Override
-            public void run() {
-                lastMap = getCurrentMap();
-                tryNextGame();
-            }
+        Bukkit.getScheduler().scheduleSyncDelayedTask(Lavasurvival.INSTANCE, () -> {
+            lastMap = getCurrentMap();
+            tryNextGame();
         }, 20);
     }
 
     protected void setIsLava(FloodOptions option) {
-        if (option.isLavaEnabled() && option.isWaterEnabled()) {
+        if (option.isLavaEnabled() && option.isWaterEnabled())
             LAVA = RANDOM.nextInt(100) < 75; //Have water/lava check be in here instead of as arguement
-        } else {
+        else
             LAVA = option.isLavaEnabled() || !option.isWaterEnabled() && RANDOM.nextInt(100) < 75;
-        }
     }
 
     public void forceEnd() {
@@ -736,14 +625,14 @@ public abstract class Gamemode {
     }
 
     private void end() {
-        tickTask.cancel();
+        this.tickTask.cancel();
         //Bukkit.getScheduler().cancelTasks(Lavasurvival.INSTANCE);
         globalMessage(ChatColor.GREEN + "The round has ended!");
-        isEnding = false;
-        hasEnded = true;
+        this.isEnding = false;
+        this.hasEnded = true;
     }
 
-    protected Gamemode pickRandomGame(LavaMap map) {
+    private Gamemode pickRandomGame(LavaMap map) {
         if (map == null) {
             Class<?> nextGameClass = GAMES[RANDOM.nextInt(GAMES.length)];
             try {
@@ -763,16 +652,11 @@ public abstract class Gamemode {
         return null;
     }
 
-    protected void tryNextGame() {
-        if (nextGame != null) {
+    private void tryNextGame() {
+        if (this.nextGame != null) {
             globalMessage("Preparing next game..");
-            nextGame.prepare();
-            Bukkit.getScheduler().scheduleSyncDelayedTask(Lavasurvival.INSTANCE, new Runnable() {
-                @Override
-                public void run() {
-                    nextGame.start();
-                }
-            }, 40); //2 seconds
+            this.nextGame.prepare();
+            Bukkit.getScheduler().scheduleSyncDelayedTask(Lavasurvival.INSTANCE, () -> this.nextGame.start(), 40); //2 seconds
         }
     }
 
@@ -780,14 +664,11 @@ public abstract class Gamemode {
         Player onlinePlayer = player.getPlayer();
         if (onlinePlayer == null)
             return 0.0;
-
         double base = 100.0;
         Rank rank = Lavasurvival.INSTANCE.getNecessitiesUserManager().getUser(player.getUniqueId()).getRank();
         double bonusAdd = (5 + Lavasurvival.INSTANCE.getRankManager().getOrder().indexOf(rank)) / 2.0;
-
         //int blockCount = countAirBlocksAround(onlinePlayer, 20);
         //System.out.println(onlinePlayer.getName() + " had " + blockCount + " blocks around them!");
-
         return base + (bonusAdd * blockCount);
     }
 
@@ -804,9 +685,7 @@ public abstract class Gamemode {
         setAlive(player);
         player.teleport(new Location(getCurrentWorld(), getCurrentMap().getMapSpawn().getX(), getCurrentMap().getMapSpawn().getY(), getCurrentMap().getMapSpawn().getZ()));
         player.setGameMode(GameMode.SURVIVAL);
-
         player.setMaxHealth(getHealth(Lavasurvival.INSTANCE.getNecessitiesUserManager().getUser(player.getUniqueId()).getRank()));
-
         player.setHealth(player.getMaxHealth());
         UserManager um = Lavasurvival.INSTANCE.getUserManager();
         UserInfo u = um.getUser(player.getUniqueId());
@@ -824,12 +703,11 @@ public abstract class Gamemode {
         if (!player.getInventory().containsAtLeast(Lavasurvival.INSTANCE.getRules(), 1))
             player.getInventory().addItem(Lavasurvival.INSTANCE.getRules());
         ShopFactory.validateInventory(inv);
-
         u.giveBoughtBlocks();
         if (!getCurrentMap().getCreator().equals("")) {
             IChatBaseComponent titleJSON = IChatBaseComponent.ChatSerializer.a("{'text': '\"§6Map created by \"" + getCurrentMap().getCreator() + "\"}");
             PacketPlayOutTitle titlePacket = new PacketPlayOutTitle(PacketPlayOutTitle.EnumTitleAction.TITLE, titleJSON, 0, 60, 0);
-            ((CraftPlayer)player).getHandle().playerConnection.sendPacket(titlePacket);
+            ((CraftPlayer) player).getHandle().playerConnection.sendPacket(titlePacket);
         }
     }
 
@@ -888,14 +766,8 @@ public abstract class Gamemode {
         Lavasurvival.INSTANCE.getNecessitiesUserManager().getUser(uuid).setStatus("dead");
         player.setGameMode(GameMode.SPECTATOR);
         Lavasurvival.log(player.getName() + " has joined the dead team.");
-        if (allDead()) {
-            Bukkit.getScheduler().scheduleSyncDelayedTask(Lavasurvival.INSTANCE, new Runnable() {
-                @Override
-                public void run() {
-                    getCurrentGame().endRound();
-                }
-            }, 20 * 3);
-        }
+        if (allDead())
+            Bukkit.getScheduler().scheduleSyncDelayedTask(Lavasurvival.INSTANCE, () -> getCurrentGame().endRound(), 20 * 3);
     }
 
     public boolean isAlive(Player player) {
@@ -907,29 +779,26 @@ public abstract class Gamemode {
     }
 
     public boolean isInGame(Player player) {
-         return player != null && (alive.contains(player.getUniqueId()) || dead.contains(player.getUniqueId()));
+        return player != null && (alive.contains(player.getUniqueId()) || dead.contains(player.getUniqueId()));
     }
 
     public void globalMessage(String message) {
-        for (Player p : getCurrentWorld().getPlayers())
-            p.sendMessage(ChatColor.RED + "[Lavasurvival] " + ChatColor.RESET + message);
+        getCurrentWorld().getPlayers().forEach(p -> p.sendMessage(ChatColor.RED + "[Lavasurvival] " + ChatColor.RESET + message));
     }
 
-    public void globalMessageNoPrefix(String message) {
-        for (Player p : getCurrentWorld().getPlayers())
-            p.sendMessage(message);
+    private void globalMessageNoPrefix(String message) {
+        getCurrentWorld().getPlayers().forEach(p -> p.sendMessage(message));
     }
 
-    public void globalRawMessage(FancyMessage rawMessage) {
-        for (Player p : getCurrentWorld().getPlayers())
-            rawMessage.send(p);
+    private void globalRawMessage(FancyMessage rawMessage) {
+        getCurrentWorld().getPlayers().forEach(rawMessage::send);
     }
 
     protected Material getMat() {
         return LAVA ? Material.STATIONARY_LAVA : Material.STATIONARY_WATER;
     }
 
-    public boolean isInSpawn(Player player) {
+    private boolean isInSpawn(Player player) {
         return player != null && (getCurrentMap().isInSafeZone(player.getLocation()) || getCurrentMap().isInSafeZone(player.getEyeLocation()));
     }
 
@@ -946,7 +815,7 @@ public abstract class Gamemode {
     }
 
     public boolean isEndGame() {
-        return endGame;
+        return this.endGame;
     }
 
     public abstract void addToBonus(double takeOut);
