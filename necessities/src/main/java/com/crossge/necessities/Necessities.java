@@ -39,9 +39,9 @@ public class Necessities extends JavaPlugin {
     private Tracker googleAnalyticsTracker;
     private Property skin;
     private UUID janetID;
-    DonationReader dr = new DonationReader();
-    UserManager um = new UserManager();
-    RankManager rm = new RankManager();
+    private DonationReader dr = new DonationReader();
+    private UserManager um = new UserManager();
+    private RankManager rm = new RankManager();
 
     public static Necessities getInstance() {
         return INSTANCE;
@@ -112,7 +112,7 @@ public class Necessities extends JavaPlugin {
         ep.listName = formatMessage(u.getRank() == null ? "" : ChatColor.translateAlternateColorCodes('&', u.getRank().getTitle() + " ") + p.getDisplayName());
         PacketPlayOutPlayerInfo tabList = new PacketPlayOutPlayerInfo(PacketPlayOutPlayerInfo.EnumPlayerInfoAction.UPDATE_DISPLAY_NAME, ep);
         for (Player x : Bukkit.getOnlinePlayers())
-            ((CraftPlayer)x).getHandle().playerConnection.sendPacket(tabList);
+            ((CraftPlayer) x).getHandle().playerConnection.sendPacket(tabList);
     }
 
     public void updateAll(Player x) {
@@ -123,7 +123,7 @@ public class Necessities extends JavaPlugin {
             ep.listName = formatMessage(u.getRank() == null ? "" : ChatColor.translateAlternateColorCodes('&', u.getRank().getTitle() + " ") + p.getDisplayName());
             players.add(ep);
         }
-        ((CraftPlayer)x).getHandle().playerConnection.sendPacket(new PacketPlayOutPlayerInfo(PacketPlayOutPlayerInfo.EnumPlayerInfoAction.UPDATE_DISPLAY_NAME, players));
+        ((CraftPlayer) x).getHandle().playerConnection.sendPacket(new PacketPlayOutPlayerInfo(PacketPlayOutPlayerInfo.EnumPlayerInfoAction.UPDATE_DISPLAY_NAME, players));
     }
 
     public void addJanet(Player p) {
@@ -150,7 +150,7 @@ public class Necessities extends JavaPlugin {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        ((CraftPlayer)p).getHandle().playerConnection.sendPacket(packet);
+        ((CraftPlayer) p).getHandle().playerConnection.sendPacket(packet);
     }
 
     private Property getSkin() {
@@ -280,7 +280,7 @@ public class Necessities extends JavaPlugin {
             com = new CmdSlack();
         else if (isEqual(name, "requestmod"))
             com = new CmdRequestMod();
-        //RankManager
+            //RankManager
         else if (isEqual(name, "promote"))
             com = new CmdPromote();
         else if (isEqual(name, "demote"))
@@ -325,7 +325,7 @@ public class Necessities extends JavaPlugin {
             com = new CmdRankCmds();
         else if (isEqual(name, "reloadpermissions"))
             com = new CmdReloadPermissions();
-        //WorldManager
+            //WorldManager
         else if (isEqual(name, "createworld"))
             com = new CmdCreateWorld();
         else if (isEqual(name, "worldspawn"))
@@ -403,16 +403,14 @@ public class Necessities extends JavaPlugin {
             usesPluginChannel = p.getListeningPluginChannels().size() != 0;
         }
         String clientVersion = Bukkit.getVersion().substring("git-Bukkit".length());
-        String clientName = "Minecraft " + clientVersion.substring(0, clientVersion.indexOf("-")) + (usesPluginChannel ? " [Supports Plugin Channels]" : "");
-        getTracker().TrackAction(clientName, clientId, ip, clientId, action, label.toString());
+        getTracker().TrackAction("Minecraft " + clientVersion.substring(0, clientVersion.indexOf("-")) + (usesPluginChannel ? " [Supports Plugin Channels]" : ""), clientId, ip, clientId, action, label.toString());
     }
 
     public static void trackAction(Player p, String action, Object label) {
         String clientId = p.getName(), ip = (p.getAddress() != null ? p.getAddress().toString().substring(1) : "0.0.0.0");
         boolean usesPluginChannel = p.getListeningPluginChannels().size() != 0;
         String clientVersion = Bukkit.getVersion().substring("git-Bukkit".length());
-        String clientName = "Minecraft " + clientVersion.substring(0, clientVersion.indexOf("-")) + (usesPluginChannel ? " [Supports Plugin Channels]" : "");
-        getTracker().TrackAction(clientName, clientId, ip, clientId, action, label.toString());
+        getTracker().TrackAction("Minecraft " + clientVersion.substring(0, clientVersion.indexOf("-")) + (usesPluginChannel ? " [Supports Plugin Channels]" : ""), clientId, ip, clientId, action, label.toString());
     }
 
     public static void trackActionWithValue(UUID uuid, String action, Object label, Object value) {

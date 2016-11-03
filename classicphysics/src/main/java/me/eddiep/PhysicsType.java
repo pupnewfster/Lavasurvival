@@ -6,9 +6,9 @@ public enum PhysicsType {
     DEFAULT("Default");
 
     public static PhysicsType getFromName(String name) {
-        if(name.equalsIgnoreCase("classic"))
+        if (name.equalsIgnoreCase("classic"))
             return CLASSIC;
-        else if(name.equalsIgnoreCase("reverse"))
+        else if (name.equalsIgnoreCase("reverse"))
             return REVERSE;
         else
             return DEFAULT;
@@ -16,7 +16,7 @@ public enum PhysicsType {
 
     private String name;
 
-    PhysicsType(String name){
+    PhysicsType(String name) {
         this.name = name;
     }
 

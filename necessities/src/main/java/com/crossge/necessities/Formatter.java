@@ -47,7 +47,7 @@ public class Formatter {
     }
 
     public String getTPS() {
-        String ticks = ChatColor.GOLD + "TPS from last 1m, 5m, 15m: " ;
+        String ticks = ChatColor.GOLD + "TPS from last 1m, 5m, 15m: ";
         for (double tps : getNMSRecentTps())
             ticks += format(tps) + ", ";
         return ticks.substring(0, ticks.length() - 2).trim();
@@ -58,6 +58,7 @@ public class Formatter {
     }
 
     private static final Field recentTpsField = makeField(MinecraftServer.class, "recentTps");
+
     private double[] getNMSRecentTps() {
         if (recentTpsField == null)
             return new double[0];

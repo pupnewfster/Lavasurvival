@@ -61,7 +61,7 @@ public class Shop implements Listener {
 
     @EventHandler(priority = EventPriority.MONITOR)
     public void onInventoryClosed(InventoryCloseEvent event) {
-        Player p = (Player)event.getPlayer();
+        Player p = (Player) event.getPlayer();
         if (this.manager.isShopInventory(event.getInventory(), p)) {
             this.manager.shopClosed(p, event.getInventory(), this);
         }

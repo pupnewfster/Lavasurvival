@@ -10,7 +10,7 @@ import java.util.List;
 
 public class CmdEndGame implements Cmd {
     public boolean commandUse(CommandSender sender, String[] args) {
-        if(Gamemode.getCurrentGame() != null) {
+        if (Gamemode.getCurrentGame() != null) {
             Gamemode.getCurrentGame().endRound();
             Bukkit.broadcastMessage(ChatColor.RED + sender.getName() + ChatColor.GOLD + " ended the game early.");
         } else

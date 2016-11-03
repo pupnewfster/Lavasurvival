@@ -13,7 +13,9 @@ public class FusionOptions extends FloodOptions {
         return foptions;
     }
 
-    private FusionOptions(LavaMap owner) { super(owner); }
+    private FusionOptions(LavaMap owner) {
+        super(owner);
+    }
 
     public long generateRandomFusionTime() {
         return (RANDOM.nextInt(this.maxRiseTimeSeconds - this.minRiseTimeSeconds) + this.minRiseTimeSeconds) * 1000L;

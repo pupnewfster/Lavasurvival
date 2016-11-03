@@ -18,17 +18,11 @@ public class UserManager {
     RankManager rm = new RankManager();
 
     public void readUsers() {
-        for (Player p : Bukkit.getOnlinePlayers())
-            parseUser(p);
+        Bukkit.getOnlinePlayers().forEach(this::parseUser);
     }
 
     public void parseUser(final Player p) {
-        Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(Necessities.getInstance(), new Runnable() {
-            @Override
-            public void run() {
-                forceParseUser(p);
-            }
-        });
+        Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(Necessities.getInstance(), () -> forceParseUser(p));
     }
 
     public void forceParseUser(Player p) {
@@ -62,17 +56,13 @@ public class UserManager {
     public void addRankPerm(Rank r, String node) {
         if (players == null)
             return;
-        for (UUID uuid : players.keySet())
-            if (rm.hasRank(players.get(uuid).getRank(), r))
-                players.get(uuid).addPerm(node);
+        players.keySet().stream().filter(uuid -> rm.hasRank(players.get(uuid).getRank(), r)).forEach(uuid -> players.get(uuid).addPerm(node));
     }
 
     public void delRankPerm(Rank r, String node) {
         if (players == null)
             return;
-        for (UUID uuid : players.keySet())
-            if (rm.hasRank(players.get(uuid).getRank(), r))
-                players.get(uuid).removePerm(node);
+        players.keySet().stream().filter(uuid -> rm.hasRank(players.get(uuid).getRank(), r)).forEach(uuid -> players.get(uuid).removePerm(node));
     }
 
     public void refreshRankPerm(Rank r) {

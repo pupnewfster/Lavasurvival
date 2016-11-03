@@ -143,12 +143,20 @@ public class ChunkEdit {
     private int light(BlockFace dir, int cur) {
         if (dir.equals(BlockFace.SELF))
             return cur;
-         return cur - (dir.equals(BlockFace.NORTH) || dir.equals(BlockFace.EAST) || dir.equals(BlockFace.SOUTH) || dir.equals(BlockFace.WEST) ? 1 : 2);
+        return cur - (dir.equals(BlockFace.NORTH) || dir.equals(BlockFace.EAST) || dir.equals(BlockFace.SOUTH) || dir.equals(BlockFace.WEST) ? 1 : 2);
     }
 
     private int getLight(Material type) {
         switch (type) {
-            case BEACON: case ENDER_PORTAL: case FIRE: case GLOWSTONE: case JACK_O_LANTERN: case LAVA: case STATIONARY_LAVA: case REDSTONE_LAMP_ON: case SEA_LANTERN:
+            case BEACON:
+            case ENDER_PORTAL:
+            case FIRE:
+            case GLOWSTONE:
+            case JACK_O_LANTERN:
+            case LAVA:
+            case STATIONARY_LAVA:
+            case REDSTONE_LAMP_ON:
+            case SEA_LANTERN:
                 return 15;
             case TORCH:// case END_ROD:
                 return 14;
@@ -158,9 +166,13 @@ public class ChunkEdit {
                 return 11;
             case GLOWING_REDSTONE_ORE:
                 return 9;
-            case ENDER_CHEST: case REDSTONE_TORCH_ON:
+            case ENDER_CHEST:
+            case REDSTONE_TORCH_ON:
                 return 7;
-            case BREWING_STAND: case BROWN_MUSHROOM: case DRAGON_EGG: case ENDER_PORTAL_FRAME:
+            case BREWING_STAND:
+            case BROWN_MUSHROOM:
+            case DRAGON_EGG:
+            case ENDER_PORTAL_FRAME:
                 return 1;
             default:
                 return 0;

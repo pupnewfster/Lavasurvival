@@ -21,7 +21,9 @@ public class FloodOptions extends BaseOptions {
         return new FloodOptions(lavaMap);
     }
 
-    FloodOptions(LavaMap owner) { this.owner = owner; }
+    FloodOptions(LavaMap owner) {
+        this.owner = owner;
+    }
 
     public long generateRandomPrepareTime() {
         return (RANDOM.nextInt(maxPrepareTimeSeconds - minPrepareTimeSeconds) + minPrepareTimeSeconds) * 1000L;

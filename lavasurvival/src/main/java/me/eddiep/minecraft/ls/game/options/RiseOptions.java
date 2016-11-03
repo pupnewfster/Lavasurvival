@@ -9,7 +9,9 @@ public class RiseOptions extends FloodOptions {
         return new RiseOptions(owner);
     }
 
-    private RiseOptions(LavaMap owner) { super(owner); }
+    private RiseOptions(LavaMap owner) {
+        super(owner);
+    }
 
     public long generateRandomRiseTime() {
         return (RANDOM.nextInt(this.maxRiseTimeSeconds - this.minRiseTimeSeconds) + this.minRiseTimeSeconds) * 1000L;

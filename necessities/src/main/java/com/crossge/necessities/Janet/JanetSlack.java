@@ -443,12 +443,7 @@ public class JanetSlack {
                     return;
                 }
                 final String reason = message.replaceFirst(message.split(" ")[0], "").trim();
-                Bukkit.getScheduler().scheduleSyncDelayedTask(Necessities.getInstance(), new Runnable() {
-                    @Override
-                    public void run() {
-                        warns.warn(target.getUniqueId(), reason, name);
-                    }
-                });
+                Bukkit.getScheduler().scheduleSyncDelayedTask(Necessities.getInstance(), () -> warns.warn(target.getUniqueId(), reason, name));
                 m += target.getName() + " was warned by " + name + " for " + reason + ".\n";
             } else if (message.startsWith("!worlds")) {
                 String levels = "";
@@ -484,12 +479,7 @@ public class JanetSlack {
                 final String reason = ChatColor.translateAlternateColorCodes('&', message.replaceFirst(message.split(" ")[0], "").trim());
                 Bukkit.broadcastMessage(var.getMessages() + name + " kicked " + var.getObj() + target.getName() + (reason.equals("") ? "" : var.getMessages() + " for " + var.getObj() + reason));
                 m += name + " kicked " + target.getName() + (reason.equals("") ? "" : " for " + reason) + "\n";
-                Bukkit.getScheduler().scheduleSyncDelayedTask(Necessities.getInstance(), new Runnable() {
-                    @Override
-                    public void run() {
-                        target.kickPlayer(reason);
-                    }
-                });
+                Bukkit.getScheduler().scheduleSyncDelayedTask(Necessities.getInstance(), () -> target.kickPlayer(reason));
             } else if (message.startsWith("!ban ") && info.isAdmin()) {
                 message = message.replaceFirst("!ban ", "");
                 if (message.split(" ").length == 0) {
@@ -512,12 +502,7 @@ public class JanetSlack {
                 String theirName = target.getName();
                 BanList bans = Bukkit.getBanList(BanList.Type.NAME);
                 if (target.getPlayer() != null) {
-                    Bukkit.getScheduler().scheduleSyncDelayedTask(Necessities.getInstance(), new Runnable() {
-                        @Override
-                        public void run() {
-                            target.getPlayer().kickPlayer(reason);
-                        }
-                    });
+                    Bukkit.getScheduler().scheduleSyncDelayedTask(Necessities.getInstance(), () -> target.getPlayer().kickPlayer(reason));
                 }
                 bans.addBan(theirName, reason, null, "Slack_" + name);
                 Bukkit.broadcastMessage(var.getMessages() + name + " banned " + var.getObj() + theirName + var.getMessages() + (reason.equals("") ? "." : " for " + var.getObj() + reason + var.getMessages() + "."));
@@ -610,12 +595,7 @@ public class JanetSlack {
                 BanList bans = Bukkit.getBanList(BanList.Type.NAME);
                 String theirName = target.getName();
                 if (target.getPlayer() != null) {
-                    Bukkit.getScheduler().scheduleSyncDelayedTask(Necessities.getInstance(), new Runnable() {
-                        @Override
-                        public void run() {
-                            target.getPlayer().kickPlayer(reason);
-                        }
-                    });
+                    Bukkit.getScheduler().scheduleSyncDelayedTask(Necessities.getInstance(), () -> target.getPlayer().kickPlayer(reason));
                 }
                 Date date = new Date(System.currentTimeMillis() + minutes * 60 * 1000);
                 bans.addBan(theirName, reason, date, "Slack_" + name);
@@ -639,12 +619,7 @@ public class JanetSlack {
                     String theirName = target.getName();
                     BanList bans = Bukkit.getBanList(BanList.Type.IP);
                     String theirIP = target.getAddress().toString().split("/")[1].split(":")[0];
-                    Bukkit.getScheduler().scheduleSyncDelayedTask(Necessities.getInstance(), new Runnable() {
-                        @Override
-                        public void run() {
-                            target.getPlayer().kickPlayer(reason);
-                        }
-                    });
+                    Bukkit.getScheduler().scheduleSyncDelayedTask(Necessities.getInstance(), () -> target.getPlayer().kickPlayer(reason));
                     bans.addBan(theirIP, reason, null, "Slack_" + name);
                     Bukkit.broadcastMessage(var.getMessages() + name + " banned " + var.getObj() + theirName + var.getMessages() + (reason.equals("") ? "." : " for " + var.getObj() + reason + var.getMessages() + "."));
                     m += name + " banned " + theirName + (reason.equals("") ? "." : " for " + reason + ".") + "\n";
@@ -664,12 +639,7 @@ public class JanetSlack {
                     String theirIP = message.split(" ")[0];
                     for (final Player t : Bukkit.getOnlinePlayers())
                         if (t.getAddress().toString().split("/")[1].split(":")[0].equals(theirIP)) {
-                            Bukkit.getScheduler().scheduleSyncDelayedTask(Necessities.getInstance(), new Runnable() {
-                                @Override
-                                public void run() {
-                                    t.getPlayer().kickPlayer(reason);
-                                }
-                            });
+                            Bukkit.getScheduler().scheduleSyncDelayedTask(Necessities.getInstance(), () -> t.getPlayer().kickPlayer(reason));
                             break;
                         }
                     bans.addBan(theirIP, reason, null, "Console");
@@ -715,30 +685,15 @@ public class JanetSlack {
                 }
             } else if (message.startsWith("!reload") && info.isAdmin()) {
                 sendMessage("Reloading...", isPM, info);
-                Bukkit.getScheduler().scheduleSyncDelayedTask(Necessities.getInstance(), new Runnable() {
-                    @Override
-                    public void run() {
-                        Bukkit.reload();
-                    }
-                });
+                Bukkit.getScheduler().scheduleSyncDelayedTask(Necessities.getInstance(), Bukkit::reload);
                 return;
             } else if (message.startsWith("!restart") && info.isAdmin()) {
                 sendMessage("Restarting...", isPM, info);
-                Bukkit.getScheduler().scheduleSyncDelayedTask(Necessities.getInstance(), new Runnable() {
-                    @Override
-                    public void run() {
-                        Bukkit.spigot().restart();
-                    }
-                });
+                Bukkit.getScheduler().scheduleSyncDelayedTask(Necessities.getInstance(), () -> Bukkit.spigot().restart());
                 return;
             } else if ((message.startsWith("!consolecmd") || message.startsWith("!ccmd") || message.startsWith("!consolecommand")) && info.isAdmin()) {//TODO Make it show the result to slack
                 final String command = message.replaceFirst(message.split(" ")[0], "").trim();
-                Bukkit.getScheduler().scheduleSyncDelayedTask(Necessities.getInstance(), new Runnable() {
-                    @Override
-                    public void run() {
-                        Bukkit.dispatchCommand(Bukkit.getConsoleSender(), command);
-                    }
-                });
+                Bukkit.getScheduler().scheduleSyncDelayedTask(Necessities.getInstance(), () -> Bukkit.dispatchCommand(Bukkit.getConsoleSender(), command));
                 return;
             } else if ((message.startsWith("!showchat") || message.startsWith("!togglechat") || message.startsWith("!showingamechat") || message.startsWith("!ingamechat")) && info.isAdmin()) {
                 if (!isPM)

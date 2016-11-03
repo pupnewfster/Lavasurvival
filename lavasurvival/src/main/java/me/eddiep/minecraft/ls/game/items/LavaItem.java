@@ -9,7 +9,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 import java.util.Arrays;
 
 public abstract class LavaItem {
-    public static final LavaItem[] ITEMS = new LavaItem[] {
+    public static final LavaItem[] ITEMS = new LavaItem[]{
             new Generosity(),
             new MinorHeal(),
             new MajorHeal(),
