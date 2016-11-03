@@ -5,11 +5,13 @@ import com.TentacleLabs.GoogleAnalyticsPlugin.Tracker;
 import com.crossge.necessities.Commands.*;
 import com.crossge.necessities.Commands.RankManager.*;
 import com.crossge.necessities.Commands.WorldManager.*;
-import com.crossge.necessities.Janet.Janet;
-import com.crossge.necessities.Janet.JanetSlack;
+import com.crossge.necessities.Janet.*;
 import com.crossge.necessities.RankManager.RankManager;
 import com.crossge.necessities.RankManager.User;
 import com.crossge.necessities.RankManager.UserManager;
+import com.crossge.necessities.WorldManager.PortalManager;
+import com.crossge.necessities.WorldManager.WarpManager;
+import com.crossge.necessities.WorldManager.WorldManager;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
 import net.minecraft.server.v1_10_R1.*;
@@ -40,8 +42,96 @@ public class Necessities extends JavaPlugin {
     private Property skin;
     private UUID janetID;
     private DonationReader dr = new DonationReader();
+    private CmdCommandSpy spy = new CmdCommandSpy();
+    private PortalManager pm = new PortalManager();
+    private JanetRandom random = new JanetRandom();
+    private WarpManager warps = new WarpManager();
+    private WorldManager wm = new WorldManager();
+    private JanetSlack slack = new JanetSlack();
     private UserManager um = new UserManager();
     private RankManager rm = new RankManager();
+    private ScoreBoards sb = new ScoreBoards();
+    private JanetWarn warns = new JanetWarn();
+    private Console console = new Console();
+    private Variables var = new Variables();
+    private Teleports tps = new Teleports();
+    private JanetLog log = new JanetLog();
+    private CmdHide hide = new CmdHide();
+    private GetUUID get = new GetUUID();
+    private JanetAI ai = new JanetAI();
+    private Janet bot = new Janet();
+
+    public UserManager getUM() {
+        return this.um;
+    }
+
+    public CmdCommandSpy getSpy() {
+        return this.spy;
+    }
+
+    public RankManager getRM() {
+        return this.rm;
+    }
+
+    public PortalManager getPM() {
+        return this.pm;
+    }
+
+    public JanetSlack getSlack() {
+        return this.slack;
+    }
+
+    public Console getConsole() {
+        return this.console;
+    }
+
+    public Variables getVar() {
+        return this.var;
+    }
+
+    public Teleports getTPs() {
+        return this.tps;
+    }
+
+    public JanetWarn getWarns() {
+        return this.warns;
+    }
+
+    public ScoreBoards getSBs() {
+        return this.sb;
+    }
+
+    public CmdHide getHide() {
+        return this.hide;
+    }
+
+    public JanetAI getAI() {
+        return this.ai;
+    }
+
+    public Janet getBot() {
+        return this.bot;
+    }
+
+    public GetUUID getUUID() {
+        return this.get;
+    }
+
+    public WarpManager getWarps() {
+        return this.warps;
+    }
+
+    public WorldManager getWM() {
+        return this.wm;
+    }
+
+    public JanetLog getLog() {
+        return this.log;
+    }
+
+    public JanetRandom getRandom() {
+        return this.random;
+    }
 
     public static Necessities getInstance() {
         return INSTANCE;
@@ -53,11 +143,11 @@ public class Necessities extends JavaPlugin {
         INSTANCE = this;
         if (!hookGoogle())
             getLogger().warning("Could not hook into Google Analytics!");
-        janetID = UUID.randomUUID();
+        this.janetID = UUID.randomUUID();
         Initialization init = new Initialization();
         init.initiateFiles();
         getServer().getPluginManager().registerEvents(new Listeners(), this);
-        dr.init();
+        this.dr.init();
         getLogger().info("Necessities enabled.");
     }
 
@@ -200,13 +290,13 @@ public class Necessities extends JavaPlugin {
         else if (isEqual(name, "hat"))
             com = new CmdHat();
         else if (isEqual(name, "hide"))
-            com = new CmdHide();
+            com = this.hide;
         else if (isEqual(name, "title"))
             com = new CmdTitle();
         else if (isEqual(name, "bracketcolor"))
             com = new CmdBracketColor();
         else if (isEqual(name, "commandspy"))
-            com = new CmdCommandSpy();
+            com = this.spy;
         else if (isEqual(name, "gamemode"))
             com = new CmdGamemode();
         else if (isEqual(name, "fly"))
@@ -360,15 +450,11 @@ public class Necessities extends JavaPlugin {
 
     @Override
     public void onDisable() {
-        CmdCommandSpy cs = new CmdCommandSpy();
-        JanetSlack slack = new JanetSlack();
-        CmdHide hide = new CmdHide();
-        Janet bot = new Janet();
         this.um.unload();
-        cs.unload();
-        hide.unload();
-        slack.disconnect();
-        bot.unload();
+        this.spy.unload();
+        this.hide.unload();
+        this.slack.disconnect();
+        this.bot.unload();
         this.dr.disconnect();
         getLogger().info("Necessities disabled.");
     }

@@ -2,6 +2,7 @@ package com.crossge.necessities.Commands.RankManager;
 
 import com.crossge.necessities.Commands.CmdHide;
 import com.crossge.necessities.RankManager.User;
+import com.crossge.necessities.Utils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
@@ -59,7 +60,7 @@ public class CmdWhois implements RankCmd {
             Player p = u.getPlayer();
             sender.sendMessage(var.getMessages() + " - Health: " + ChatColor.RESET + (int) p.getHealth() + "/" + (int) p.getMaxHealth());
             sender.sendMessage(var.getMessages() + " - Hunger: " + ChatColor.RESET + p.getFoodLevel() + "/20 (+" + (int) p.getSaturation() + " saturation)");
-            sender.sendMessage(var.getMessages() + " - Exp: " + ChatColor.RESET + form.addCommas(p.getTotalExperience()) + " (Level " + p.getLevel() + ")");
+            sender.sendMessage(var.getMessages() + " - Exp: " + ChatColor.RESET + Utils.addCommas(p.getTotalExperience()) + " (Level " + p.getLevel() + ")");
             String location = "(" + p.getWorld().getName() + ", " + p.getLocation().getBlockX() + ", " + p.getLocation().getBlockY() + ", " + p.getLocation().getBlockZ() + ")";
             sender.sendMessage(var.getMessages() + " - Location: " + ChatColor.RESET + location);
         }

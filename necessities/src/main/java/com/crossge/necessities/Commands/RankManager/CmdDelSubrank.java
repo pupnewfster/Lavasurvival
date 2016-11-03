@@ -1,6 +1,7 @@
 package com.crossge.necessities.Commands.RankManager;
 
 import com.crossge.necessities.RankManager.Rank;
+import com.crossge.necessities.Utils;
 import org.bukkit.command.CommandSender;
 
 public class CmdDelSubrank implements RankCmd {
@@ -21,7 +22,7 @@ public class CmdDelSubrank implements RankCmd {
         }
         subrank = rm.getSub(subrank);
         rm.updateRankSubrank(r, subrank, true);
-        sender.sendMessage(var.getMessages() + "Removed " + var.getObj() + subrank + var.getMessages() + " from " + var.getObj() + form.ownerShip(r.getName()) + var.getMessages() + " subranks.");
+        sender.sendMessage(var.getMessages() + "Removed " + var.getObj() + subrank + var.getMessages() + " from " + var.getObj() + Utils.ownerShip(r.getName()) + var.getMessages() + " subranks.");
         return true;
     }
 }

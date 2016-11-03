@@ -2,6 +2,7 @@ package com.crossge.necessities.Commands.RankManager;
 
 import com.crossge.necessities.RankManager.Rank;
 import com.crossge.necessities.RankManager.User;
+import com.crossge.necessities.Utils;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -22,7 +23,7 @@ public class CmdSetrank implements RankCmd {
             return true;
         }
         User u = um.getUser(uuid);
-        Rank r = rm.getRank(form.capFirst(args[1]));
+        Rank r = rm.getRank(Utils.capFirst(args[1]));
         if (r == null) {
             sender.sendMessage(var.getEr() + "Error: " + var.getErMsg() + "That rank does not exist");
             return true;
@@ -38,7 +39,7 @@ public class CmdSetrank implements RankCmd {
             name = player.getName();
         }
         um.updateUserRank(u, uuid, r);
-        Bukkit.broadcastMessage(var.getMessages() + name + " set " + form.ownerShip(get.nameFromString(uuid.toString())) + " rank to " + u.getRank().getName() + ".");
+        Bukkit.broadcastMessage(var.getMessages() + name + " set " + Utils.ownerShip(get.nameFromString(uuid.toString())) + " rank to " + u.getRank().getName() + ".");
         return true;
     }
 }

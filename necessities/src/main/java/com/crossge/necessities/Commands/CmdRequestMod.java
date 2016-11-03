@@ -1,6 +1,7 @@
 package com.crossge.necessities.Commands;
 
 import com.crossge.necessities.Janet.JanetSlack;
+import com.crossge.necessities.Necessities;
 import com.crossge.necessities.RankManager.User;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -8,7 +9,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 public class CmdRequestMod implements Cmd {
-    private JanetSlack slack = new JanetSlack();
+    private JanetSlack slack = Necessities.getInstance().getSlack();
 
     public boolean commandUse(CommandSender sender, String[] args) {
         String reason = "";

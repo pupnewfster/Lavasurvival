@@ -1,5 +1,6 @@
 package com.crossge.necessities.Commands.RankManager;
 
+import com.crossge.necessities.Utils;
 import org.bukkit.command.CommandSender;
 
 import java.util.UUID;
@@ -24,7 +25,7 @@ public class CmdAddSubrankUser implements RankCmd {
         }
         subrank = rm.getSub(subrank);
         um.updateUserSubrank(uuid, subrank, false);
-        sender.sendMessage(var.getMessages() + "Added " + var.getObj() + subrank + var.getMessages() + " to " + var.getObj() + form.ownerShip(get.nameFromString(uuid.toString())) + var.getMessages() + " subranks.");
+        sender.sendMessage(var.getMessages() + "Added " + var.getObj() + subrank + var.getMessages() + " to " + var.getObj() + Utils.ownerShip(get.nameFromString(uuid.toString())) + var.getMessages() + " subranks.");
         return true;
     }
 }

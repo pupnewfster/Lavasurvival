@@ -1,13 +1,14 @@
 package com.crossge.necessities.Commands;
 
 import com.crossge.necessities.Janet.JanetLog;
+import com.crossge.necessities.Necessities;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 public class CmdRagequit implements Cmd {
-    private JanetLog log = new JanetLog();
+    private JanetLog log = Necessities.getInstance().getLog();
 
     public boolean commandUse(CommandSender sender, String[] args) {
         if (sender instanceof Player) {

@@ -41,8 +41,7 @@ public class RankManager {
         }
         //If is an actual subrank not just base node in tree of a subrank
         configSubranks.getKeys(true).stream().filter(subrank -> !subrank.equals("") && !configSubranks.getStringList(subrank).isEmpty()).forEach(subrank -> subranks.put(subrank.toLowerCase(), subrank));
-        UserManager um = new UserManager();
-        um.readUsers();
+        Necessities.getInstance().getUM().readUsers();
         Bukkit.getScheduler().scheduleSyncDelayedTask(Necessities.getInstance(), () -> {
             Bukkit.getConsoleSender().sendMessage(ChatColor.AQUA + "Retrieving all permissions.");
             updatePerms();
@@ -62,10 +61,9 @@ public class RankManager {
     }
 
     public void reloadPermissions() {
-        UserManager um = new UserManager();
         for (Rank r : getOrder()) {
             r.refreshPerms();
-            um.refreshRankPerm(r);
+            Necessities.getInstance().getUM().refreshRankPerm(r);
         }
     }
 
@@ -100,7 +98,6 @@ public class RankManager {
     public void updateRankPerms(Rank r, String permission, boolean remove) {
         if (permission.equals(""))
             return;
-        UserManager um = new UserManager();
         YamlConfiguration configRanks = YamlConfiguration.loadConfiguration(this.configFileRanks);
         List<String> perms = configRanks.getStringList(r.getName() + ".permissions");
         if (perms.contains(""))
@@ -111,13 +108,13 @@ public class RankManager {
                 perms.add("");
             configRanks.set(r.getName() + ".permissions", perms);
             r.removePerm(permission);
-            um.delRankPerm(r, permission);
+            Necessities.getInstance().getUM().delRankPerm(r, permission);
 
         } else {
             perms.add(permission);
             configRanks.set(r.getName() + ".permissions", perms);
             r.addPerm(permission);
-            um.addRankPerm(r, permission);
+            Necessities.getInstance().getUM().addRankPerm(r, permission);
         }
         try {
             configRanks.save(this.configFileRanks);
@@ -130,7 +127,6 @@ public class RankManager {
             return;
         YamlConfiguration configSubranks = YamlConfiguration.loadConfiguration(this.configFileSubranks);
         YamlConfiguration configRanks = YamlConfiguration.loadConfiguration(this.configFileRanks);
-        UserManager um = new UserManager();
         List<String> perms = configSubranks.getStringList(subrank);
         if (perms.contains(""))
             perms.remove("");
@@ -149,14 +145,13 @@ public class RankManager {
         }
         order.stream().filter(r -> configRanks.contains(r.getName()) && configRanks.getStringList(r.getName() + ".subranks").contains(subrank)).forEach(r -> {
             r.refreshPerms();
-            um.refreshRankPerm(r);
+            Necessities.getInstance().getUM().refreshRankPerm(r);
         });
     }
 
     public void updateRankSubrank(Rank r, String name, boolean remove) {
         if (name.equals(""))
             return;
-        UserManager um = new UserManager();
         YamlConfiguration configRanks = YamlConfiguration.loadConfiguration(this.configFileRanks);
         List<String> subranks = configRanks.getStringList(r.getName() + ".subranks");
         if (subranks.contains(""))
@@ -173,7 +168,7 @@ public class RankManager {
         } catch (Exception ignored) {
         }
         r.refreshPerms();
-        um.refreshRankPerm(r);
+        Necessities.getInstance().getUM().refreshRankPerm(r);
     }
 
     public void addRank(String name, Rank previous, Rank next) {
@@ -205,7 +200,7 @@ public class RankManager {
     }
 
     public void removeRank(Rank rank) {
-        UserManager um = new UserManager();
+        UserManager um = Necessities.getInstance().getUM();
         Rank previous = rank.getPrevious();
         Rank next = rank.getNext();
         um.getUsers().values().stream().filter(u -> u.getRank().equals(rank)).forEach(u -> {
@@ -250,11 +245,9 @@ public class RankManager {
     public void removeSubrank(String name) {
         if (name.equals(""))
             return;
-        UserManager um = new UserManager();
-        for (User u : um.getUsers().values())
-            um.updateUserSubrank(u.getUUID(), name, true);
-        for (Rank r : order)
-            updateRankSubrank(r, name, true);
+        UserManager um = Necessities.getInstance().getUM();
+        um.getUsers().values().forEach(u -> um.updateUserSubrank(u.getUUID(), name, true));
+        order.forEach(r -> updateRankSubrank(r, name, true));
         YamlConfiguration configSubranks = YamlConfiguration.loadConfiguration(this.configFileSubranks);
         configSubranks.set(name, null);
         subranks.remove(name.toLowerCase());

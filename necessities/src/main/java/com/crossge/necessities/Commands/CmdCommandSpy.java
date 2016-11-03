@@ -9,9 +9,10 @@ import org.bukkit.entity.Player;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 public class CmdCommandSpy implements Cmd {
-    private static ArrayList<UUID> spying = new ArrayList<>();
+    private ArrayList<UUID> spying = new ArrayList<>();
     private File configFileSpying = new File("plugins/Necessities", "spying.yml");
 
     public void broadcast(String sender, String command) {
@@ -53,7 +54,6 @@ public class CmdCommandSpy implements Cmd {
 
     public void init() {
         YamlConfiguration configSpying = YamlConfiguration.loadConfiguration(configFileSpying);
-        for (String key : configSpying.getKeys(false))
-            spying.add(UUID.fromString(key));
+        spying.addAll(configSpying.getKeys(false).stream().map(UUID::fromString).collect(Collectors.toList()));
     }
 }

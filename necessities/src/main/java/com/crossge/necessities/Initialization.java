@@ -1,40 +1,17 @@
 package com.crossge.necessities;
 
-import com.crossge.necessities.Commands.CmdCommandSpy;
-import com.crossge.necessities.Commands.CmdHide;
 import com.crossge.necessities.Hats.HatType;
-import com.crossge.necessities.Janet.Janet;
-import com.crossge.necessities.Janet.JanetAI;
-import com.crossge.necessities.Janet.JanetSlack;
-import com.crossge.necessities.Janet.JanetWarn;
-import com.crossge.necessities.RankManager.RankManager;
-import com.crossge.necessities.WorldManager.PortalManager;
-import com.crossge.necessities.WorldManager.WarpManager;
-import com.crossge.necessities.WorldManager.WorldManager;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.File;
 import java.util.Collections;
 
-public class Initialization {
+class Initialization {
     private File configFileWarps = new File("plugins/Necessities/WorldManager", "warps.yml"), configFilePM = new File("plugins/Necessities/WorldManager", "portals.yml"),
             configFileUsers = new File("plugins/Necessities/RankManager", "users.yml"), configFileWM = new File("plugins/Necessities/WorldManager", "worlds.yml"),
             configFileLogOut = new File("plugins/Necessities", "logoutmessages.yml"), configFileLogIn = new File("plugins/Necessities", "loginmessages.yml"),
             configFileCensors = new File("plugins/Necessities", "censors.yml"), configFileSpying = new File("plugins/Necessities", "spying.yml"),
             configFileHiding = new File("plugins/Necessities", "hiding.yml"), configFileTitles = new File("plugins/Necessities", "titles.yml"), configFile = new File("plugins/Necessities", "config.yml");
-    private CmdCommandSpy cs = new CmdCommandSpy();
-    private PortalManager pm = new PortalManager();
-    private WarpManager warps = new WarpManager();
-    private WorldManager wm = new WorldManager();
-    private JanetSlack slack = new JanetSlack();
-    private ScoreBoards sb = new ScoreBoards();
-    private RankManager rm = new RankManager();
-    private JanetWarn warns = new JanetWarn();
-    private Console console = new Console();
-    private CmdHide hide = new CmdHide();
-    private GetUUID get = new GetUUID();
-    private JanetAI ai = new JanetAI();
-    private Janet bot = new Janet();
 
     void initiateFiles() {
         dirCreate("plugins/Necessities");
@@ -48,26 +25,26 @@ public class Initialization {
         HatType.mapHats();
 
         //RankManager
-        this.rm.setRanks();
-        this.rm.setSubranks();
-        this.rm.readRanks();
-        this.sb.createScoreboard();
+        Necessities.getInstance().getRM().setRanks();
+        Necessities.getInstance().getRM().setSubranks();
+        Necessities.getInstance().getRM().readRanks();
+        Necessities.getInstance().getSBs().createScoreboard();
 
         YamlConfiguration config = YamlConfiguration.loadConfiguration(this.configFile);
         //WorldManager
         if (config.contains("Necessities.WorldManager") && config.getBoolean("Necessities.WorldManager")) {
-            this.wm.initiate();
-            this.warps.initiate();
-            this.pm.initiate();
+            Necessities.getInstance().getWM().initiate();
+            Necessities.getInstance().getWarps().initiate();
+            Necessities.getInstance().getPM().initiate();
         }
 
-        this.get.initiate();
-        this.bot.initiate();
-        this.cs.init();
-        this.hide.init();
-        this.warns.initiate();
-        this.slack.init();
-        this.ai.initiate();
+        Necessities.getInstance().getUUID().initiate();
+        Necessities.getInstance().getBot().initiate();
+        Necessities.getInstance().getSpy().init();
+        Necessities.getInstance().getHide().init();
+        Necessities.getInstance().getWarns().initiate();
+        Necessities.getInstance().getSlack().init();
+        Necessities.getInstance().getAI().initiate();
     }
 
     private void dirCreate(String directory) {

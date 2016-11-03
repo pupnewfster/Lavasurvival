@@ -12,14 +12,14 @@ import java.io.File;
 import java.sql.*;
 import java.util.UUID;
 
-public class DonationReader { //TODO 1.10.2: UPDATE
+class DonationReader { //TODO 1.10.2: UPDATE
     private BukkitRunnable current;
     private String pass;
     private int server;
-    private RankManager rm = new RankManager();
-    private UserManager um = new UserManager();
-    private Variables var = new Variables();
-    private GetUUID get = new GetUUID();
+    private RankManager rm = Necessities.getInstance().getRM();
+    private UserManager um = Necessities.getInstance().getUM();
+    private Variables var = Necessities.getInstance().getVar();
+    private GetUUID get = Necessities.getInstance().getUUID();
 
     private void check() {
         try {
@@ -57,11 +57,11 @@ public class DonationReader { //TODO 1.10.2: UPDATE
             stmt.close();
             stmt2.close();
             conn.close();
-        } catch (Exception e) {
+        } catch (Exception ignored) {
         }
     }
 
-    public void init() {
+    void init() {
         Bukkit.getConsoleSender().sendMessage(ChatColor.AQUA + "Connecting to Donator Database.");
         this.current = new BukkitRunnable() {
             @Override
@@ -77,7 +77,7 @@ public class DonationReader { //TODO 1.10.2: UPDATE
         Bukkit.getConsoleSender().sendMessage(ChatColor.AQUA + "Connected to Donator Database.");
     }
 
-    public void disconnect() {
+    void disconnect() {
         if (this.current != null)
             this.current.cancel();
     }

@@ -1,5 +1,6 @@
 package com.crossge.necessities.Commands;
 
+import com.crossge.necessities.Utils;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.command.CommandSender;
@@ -14,26 +15,26 @@ public class CmdTppos implements Cmd {
         if (sender instanceof Player) {
             Player p = (Player) sender;
             World dim = p.getWorld();
-            if (!form.isLegal(args[0])) {
+            if (!Utils.legalDouble(args[0])) {
                 sender.sendMessage(var.getEr() + "Error: " + var.getErMsg() + "You must enter a valid x coordinate.");
                 return true;
             }
-            if (!form.isLegal(args[1])) {
+            if (!Utils.legalDouble(args[1])) {
                 sender.sendMessage(var.getEr() + "Error: " + var.getErMsg() + "You must enter a valid y coordinate.");
                 return true;
             }
-            if (!form.isLegal(args[2])) {
+            if (!Utils.legalDouble(args[2])) {
                 sender.sendMessage(var.getEr() + "Error: " + var.getErMsg() + "You must enter a valid z coordinate.");
                 return true;
             }
             double x = Double.parseDouble(args[0]), y = Double.parseDouble(args[1]), z = Double.parseDouble(args[2]);
             Location loc = new Location(dim, x, y, z);
             if (args.length > 4) {
-                if (!form.isLegal(args[3])) {
+                if (!Utils.legalInt(args[3])) {
                     sender.sendMessage(var.getEr() + "Error: " + var.getErMsg() + "You must enter a valid yaw.");
                     return true;
                 }
-                if (!form.isLegal(args[4])) {
+                if (!Utils.legalInt(args[4])) {
                     sender.sendMessage(var.getEr() + "Error: " + var.getErMsg() + "You must enter a valid pitch.");
                     return true;
                 }

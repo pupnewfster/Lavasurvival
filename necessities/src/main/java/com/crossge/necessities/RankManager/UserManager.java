@@ -12,7 +12,7 @@ import java.util.*;
 public class UserManager {
     private File configFileUsers = new File("plugins/Necessities/RankManager", "users.yml");
     private static HashMap<UUID, User> players = new HashMap<>();
-    private RankManager rm = new RankManager();
+    private RankManager rm = Necessities.getInstance().getRM();
 
     void readUsers() {
         Bukkit.getOnlinePlayers().forEach(this::parseUser);

@@ -1,5 +1,6 @@
 package com.crossge.necessities.Commands.RankManager;
 
+import com.crossge.necessities.Utils;
 import org.bukkit.command.CommandSender;
 
 public class CmdAddPermSubrank implements RankCmd {
@@ -15,7 +16,7 @@ public class CmdAddPermSubrank implements RankCmd {
         String subrank = rm.getSub(args[0]);
         String node = args[1];
         rm.updateSubPerms(subrank, node, false);
-        sender.sendMessage(var.getMessages() + "Added " + var.getObj() + node + var.getMessages() + " to " + var.getObj() + form.ownerShip(form.capFirst(subrank)) + var.getMessages() + " permissions.");
+        sender.sendMessage(var.getMessages() + "Added " + var.getObj() + node + var.getMessages() + " to " + var.getObj() + Utils.ownerShip(Utils.capFirst(subrank)) + var.getMessages() + " permissions.");
         return true;
     }
 }

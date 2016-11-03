@@ -33,16 +33,16 @@ import java.util.UUID;
 class Listeners implements Listener {
     private File configFileLogOut = new File("plugins/Necessities", "logoutmessages.yml"), configFileLogIn = new File("plugins/Necessities", "loginmessages.yml"),
             configFileTitles = new File("plugins/Necessities", "titles.yml"), configFile = new File("plugins/Necessities", "config.yml");
-    private CmdCommandSpy spy = new CmdCommandSpy();
-    private PortalManager pm = new PortalManager();
-    private JanetSlack slack = new JanetSlack();
-    private UserManager um = new UserManager();
-    private Console console = new Console();
-    private Variables var = new Variables();
-    private Teleports tps = new Teleports();
-    private CmdHide hide = new CmdHide();
-    private JanetAI ai = new JanetAI();
-    private Janet bot = new Janet();
+    private CmdCommandSpy spy = Necessities.getInstance().getSpy();
+    private PortalManager pm = Necessities.getInstance().getPM();
+    private JanetSlack slack = Necessities.getInstance().getSlack();
+    private UserManager um = Necessities.getInstance().getUM();
+    private Console console = Necessities.getInstance().getConsole();
+    private Variables var = Necessities.getInstance().getVar();
+    private Teleports tps = Necessities.getInstance().getTPs();
+    private CmdHide hide = Necessities.getInstance().getHide();
+    private JanetAI ai = Necessities.getInstance().getAI();
+    private Janet bot = Necessities.getInstance().getBot();
 
     private String corTime(String time) {
         return time.length() == 1 ? "0" + time : time;

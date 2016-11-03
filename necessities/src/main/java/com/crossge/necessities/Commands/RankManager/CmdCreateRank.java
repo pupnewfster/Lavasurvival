@@ -1,6 +1,7 @@
 package com.crossge.necessities.Commands.RankManager;
 
 import com.crossge.necessities.RankManager.Rank;
+import com.crossge.necessities.Utils;
 import org.bukkit.command.CommandSender;
 
 public class CmdCreateRank implements RankCmd {
@@ -10,13 +11,13 @@ public class CmdCreateRank implements RankCmd {
                     + " that comes after.");
             return true;
         }
-        if (rm.getRank(form.capFirst(args[0])) != null) {
+        if (rm.getRank(Utils.capFirst(args[0])) != null) {
             sender.sendMessage(var.getEr() + "Error: " + var.getErMsg() + "That rank already exists.");
             return true;
         }
-        String rank = form.capFirst(args[0]);
-        Rank previous = rm.getRank(form.capFirst(args[1]));
-        Rank next = rm.getRank(form.capFirst(args[2]));
+        String rank = Utils.capFirst(args[0]);
+        Rank previous = rm.getRank(Utils.capFirst(args[1]));
+        Rank next = rm.getRank(Utils.capFirst(args[2]));
         if (!args[1].equalsIgnoreCase("null") && previous == null) {
             sender.sendMessage(var.getEr() + "Error: " + var.getErMsg() + "The rank you inputted as previous does not exists.");
             return true;

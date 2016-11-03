@@ -1,5 +1,6 @@
 package com.crossge.necessities.RankManager;
 
+import com.crossge.necessities.Necessities;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -20,7 +21,7 @@ public class Rank {
         if (configRanks.contains(getName() + ".rankTitle"))
             this.title = configRanks.getString(getName() + ".rankTitle");
         if (configRanks.contains(getName() + ".previousRank")) {
-            RankManager rm = new RankManager();
+            RankManager rm = Necessities.getInstance().getRM();
             this.previous = rm.getRank(configRanks.getString(getName() + ".previousRank"));
             this.previous.setNext(this);
         }
