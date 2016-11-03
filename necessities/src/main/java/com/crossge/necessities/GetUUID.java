@@ -40,7 +40,7 @@ public class GetUUID {
         return null;
     }
 
-    public void initiate() {
+    void initiate() {
         Bukkit.getConsoleSender().sendMessage(ChatColor.AQUA + "Retrieving all stored UUIDs.");
         YamlConfiguration configUUIDs = YamlConfiguration.loadConfiguration(configFileUUIDs);
         ArrayList<String> invalidKeys = new ArrayList<>();
@@ -58,18 +58,12 @@ public class GetUUID {
                 invalidKeys.add(key);
         if (!invalidKeys.isEmpty() && invalidKeys.size() < 3) {
             Bukkit.broadcast("Invalid keys found.", "Necessities.opBroadcast");
-            for (String key : invalidKeys)
-                //configUUIDs.set(key, null);
-                Bukkit.broadcast("Invalid key: " + key, "Necessities.opBroadcast");
-            /*try {
-                configUUIDs.save(configFileUUIDs);
-            } catch (Exception e) {
-            }*/
+            invalidKeys.forEach(key -> Bukkit.broadcast("Invalid key: " + key, "Necessities.opBroadcast"));
         }
         Bukkit.getConsoleSender().sendMessage(ChatColor.AQUA + "All stored UUIDs retrieved.");
     }
 
-    public boolean hasJoined(UUID uuid) {
+    boolean hasJoined(UUID uuid) {
         return uuids.containsValue(uuid);
     }
 

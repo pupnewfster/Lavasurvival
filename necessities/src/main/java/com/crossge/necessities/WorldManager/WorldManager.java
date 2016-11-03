@@ -6,11 +6,11 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import java.io.File;
 
 public class WorldManager {
-    private File configFileWM = new File("plugins/Necessities/WorldManager", "worlds.yml"), configFile = new File("plugins/Necessities", "config.yml");
+    private File configFileWM = new File("plugins/Necessities/WorldManager", "worlds.yml");
 
     public void initiate() {
         Bukkit.getConsoleSender().sendMessage(ChatColor.AQUA + "Loading worlds...");
-        YamlConfiguration configWM = YamlConfiguration.loadConfiguration(configFileWM);
+        YamlConfiguration configWM = YamlConfiguration.loadConfiguration(this.configFileWM);
         for (String world : configWM.getKeys(false)) {
             if (!worldExists(world) && (new File(world + "/level.dat")).exists()) {
                 WorldCreator creator = new WorldCreator(world);
@@ -30,7 +30,7 @@ public class WorldManager {
     }
 
     public GameMode getGameMode(String world) {
-        YamlConfiguration configWM = YamlConfiguration.loadConfiguration(configFileWM);
+        YamlConfiguration configWM = YamlConfiguration.loadConfiguration(this.configFileWM);
         if (configWM.contains(world + ".gamemode")) {
             String gamemode = configWM.getString(world + ".gamemode");
             if (gamemode.equalsIgnoreCase("adventure"))
@@ -44,7 +44,7 @@ public class WorldManager {
     }
 
     private void setWorldProps(String world) {
-        YamlConfiguration configWM = YamlConfiguration.loadConfiguration(configFileWM);
+        YamlConfiguration configWM = YamlConfiguration.loadConfiguration(this.configFileWM);
         if (worldExists(world)) {
             World w = Bukkit.getWorld(world);
             if (configWM.contains(world + ".difficulty"))
@@ -107,7 +107,7 @@ public class WorldManager {
     }
 
     public void loadWorld(String name) {
-        YamlConfiguration configWM = YamlConfiguration.loadConfiguration(configFileWM);
+        YamlConfiguration configWM = YamlConfiguration.loadConfiguration(this.configFileWM);
         if (!worldExists(name) && (new File(name + "/level.dat")).exists()) {
             WorldCreator creator = new WorldCreator(name);
             if (configWM.contains(name + ".environment"))
@@ -123,38 +123,38 @@ public class WorldManager {
     }
 
     public void setWorldSpawn(Location l) {
-        YamlConfiguration configWM = YamlConfiguration.loadConfiguration(configFileWM);
+        YamlConfiguration configWM = YamlConfiguration.loadConfiguration(this.configFileWM);
         configWM.set(l.getWorld().getName() + ".defaultSpawn", false);
         configWM.set(l.getWorld().getName() + ".spawn.x", l.getBlockX());
         configWM.set(l.getWorld().getName() + ".spawn.y", l.getBlockY());
         configWM.set(l.getWorld().getName() + ".spawn.z", l.getBlockZ());
         try {
-            configWM.save(configFileWM);
-        } catch (Exception e) {
+            configWM.save(this.configFileWM);
+        } catch (Exception ignored) {
         }
         l.getWorld().setSpawnLocation(l.getBlockX(), l.getBlockY(), l.getBlockZ());
     }
 
     public void setSetting(String name, String setting, String value) {
-        YamlConfiguration configWM = YamlConfiguration.loadConfiguration(configFileWM);
+        YamlConfiguration configWM = YamlConfiguration.loadConfiguration(this.configFileWM);
         configWM.set(name + "." + setting, value);
         try {
-            configWM.save(configFileWM);
-        } catch (Exception e) {
+            configWM.save(this.configFileWM);
+        } catch (Exception ignored) {
         }
     }
 
     public void setSetting(String name, String setting, boolean value) {
-        YamlConfiguration configWM = YamlConfiguration.loadConfiguration(configFileWM);
+        YamlConfiguration configWM = YamlConfiguration.loadConfiguration(this.configFileWM);
         configWM.set(name + "." + setting, value);
         try {
-            configWM.save(configFileWM);
-        } catch (Exception e) {
+            configWM.save(this.configFileWM);
+        } catch (Exception ignored) {
         }
     }
 
     public void createWorld(String name, World.Environment enviro, String generator, WorldType type) {
-        YamlConfiguration configWM = YamlConfiguration.loadConfiguration(configFileWM);
+        YamlConfiguration configWM = YamlConfiguration.loadConfiguration(this.configFileWM);
         configWM.set(name + ".difficulty", "EASY");
         configWM.set(name + ".gamemode", "SURVIVAL");
         configWM.set(name + ".environment", enviro.toString());
@@ -171,8 +171,8 @@ public class WorldManager {
         configWM.set(name + ".spawn.y", 64);
         configWM.set(name + ".spawn.z", 0);
         try {
-            configWM.save(configFileWM);
-        } catch (Exception e) {
+            configWM.save(this.configFileWM);
+        } catch (Exception ignored) {
         }
         WorldCreator creator = new WorldCreator(name);
         creator.environment(enviro);
@@ -184,16 +184,16 @@ public class WorldManager {
     }
 
     public void removeWorld(String name) {
-        YamlConfiguration configWM = YamlConfiguration.loadConfiguration(configFileWM);
+        YamlConfiguration configWM = YamlConfiguration.loadConfiguration(this.configFileWM);
         configWM.set(name, null);
         try {
-            configWM.save(configFileWM);
-        } catch (Exception e) {
+            configWM.save(this.configFileWM);
+        } catch (Exception ignored) {
         }
     }
 
     public boolean worldUnloaded(String name) {
-        return !worldExists(name) && YamlConfiguration.loadConfiguration(configFileWM).contains(name);
+        return !worldExists(name) && YamlConfiguration.loadConfiguration(this.configFileWM).contains(name);
     }
 
     public boolean worldExists(String name) {

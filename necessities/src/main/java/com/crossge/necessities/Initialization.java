@@ -14,7 +14,7 @@ import com.crossge.necessities.WorldManager.WorldManager;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.File;
-import java.util.Arrays;
+import java.util.Collections;
 
 public class Initialization {
     private File configFileWarps = new File("plugins/Necessities/WorldManager", "warps.yml"), configFilePM = new File("plugins/Necessities/WorldManager", "portals.yml"),
@@ -22,21 +22,21 @@ public class Initialization {
             configFileLogOut = new File("plugins/Necessities", "logoutmessages.yml"), configFileLogIn = new File("plugins/Necessities", "loginmessages.yml"),
             configFileCensors = new File("plugins/Necessities", "censors.yml"), configFileSpying = new File("plugins/Necessities", "spying.yml"),
             configFileHiding = new File("plugins/Necessities", "hiding.yml"), configFileTitles = new File("plugins/Necessities", "titles.yml"), configFile = new File("plugins/Necessities", "config.yml");
-    CmdCommandSpy cs = new CmdCommandSpy();
-    PortalManager pm = new PortalManager();
-    WarpManager warps = new WarpManager();
-    WorldManager wm = new WorldManager();
-    JanetSlack slack = new JanetSlack();
-    ScoreBoards sb = new ScoreBoards();
-    RankManager rm = new RankManager();
-    JanetWarn warns = new JanetWarn();
-    Console console = new Console();
-    CmdHide hide = new CmdHide();
-    GetUUID get = new GetUUID();
-    JanetAI ai = new JanetAI();
-    Janet bot = new Janet();
+    private CmdCommandSpy cs = new CmdCommandSpy();
+    private PortalManager pm = new PortalManager();
+    private WarpManager warps = new WarpManager();
+    private WorldManager wm = new WorldManager();
+    private JanetSlack slack = new JanetSlack();
+    private ScoreBoards sb = new ScoreBoards();
+    private RankManager rm = new RankManager();
+    private JanetWarn warns = new JanetWarn();
+    private Console console = new Console();
+    private CmdHide hide = new CmdHide();
+    private GetUUID get = new GetUUID();
+    private JanetAI ai = new JanetAI();
+    private Janet bot = new Janet();
 
-    public void initiateFiles() {
+    void initiateFiles() {
         dirCreate("plugins/Necessities");
         dirCreate("plugins/Necessities/Logs");
         dirCreate("plugins/Necessities/RankManager");
@@ -48,26 +48,26 @@ public class Initialization {
         HatType.mapHats();
 
         //RankManager
-        rm.setRanks();
-        rm.setSubranks();
-        rm.readRanks();
-        sb.createScoreboard();
+        this.rm.setRanks();
+        this.rm.setSubranks();
+        this.rm.readRanks();
+        this.sb.createScoreboard();
 
-        YamlConfiguration config = YamlConfiguration.loadConfiguration(configFile);
+        YamlConfiguration config = YamlConfiguration.loadConfiguration(this.configFile);
         //WorldManager
         if (config.contains("Necessities.WorldManager") && config.getBoolean("Necessities.WorldManager")) {
-            wm.initiate();
-            warps.initiate();
-            pm.initiate();
+            this.wm.initiate();
+            this.warps.initiate();
+            this.pm.initiate();
         }
 
-        get.initiate();
-        bot.initiate();
-        cs.init();
-        hide.init();
-        warns.initiate();
-        slack.init();
-        ai.initiate();
+        this.get.initiate();
+        this.bot.initiate();
+        this.cs.init();
+        this.hide.init();
+        this.warns.initiate();
+        this.slack.init();
+        this.ai.initiate();
     }
 
     private void dirCreate(String directory) {
@@ -81,7 +81,7 @@ public class Initialization {
         if (!f.exists())
             try {
                 f.createNewFile();
-            } catch (Exception e) {
+            } catch (Exception ignored) {
             }
     }
 
@@ -89,34 +89,34 @@ public class Initialization {
         if (!file.exists())
             try {
                 file.createNewFile();
-            } catch (Exception e) {
+            } catch (Exception ignored) {
             }
     }
 
     private void createYaml() {
-        addYML(configFileTitles);
-        addYML(configFileSpying);
-        addYML(configFileHiding);
-        addYML(configFileWarps);
-        addYML(configFileLogOut);
-        addYML(configFileLogIn);
-        addYML(configFileUsers);
-        addYML(configFileWM);
-        addYML(configFilePM);
-        if (!configFileCensors.exists())
+        addYML(this.configFileTitles);
+        addYML(this.configFileSpying);
+        addYML(this.configFileHiding);
+        addYML(this.configFileWarps);
+        addYML(this.configFileLogOut);
+        addYML(this.configFileLogIn);
+        addYML(this.configFileUsers);
+        addYML(this.configFileWM);
+        addYML(this.configFilePM);
+        if (!this.configFileCensors.exists())
             try {
-                configFileCensors.createNewFile();
-                YamlConfiguration config = YamlConfiguration.loadConfiguration(configFileCensors);
-                config.set("badwords", Arrays.asList(""));
-                config.set("goodwords", Arrays.asList(""));
-                config.set("ips", Arrays.asList(""));
-                config.save(configFileCensors);
-            } catch (Exception e) {
+                this.configFileCensors.createNewFile();
+                YamlConfiguration config = YamlConfiguration.loadConfiguration(this.configFileCensors);
+                config.set("badwords", Collections.singletonList(""));
+                config.set("goodwords", Collections.singletonList(""));
+                config.set("ips", Collections.singletonList(""));
+                config.save(this.configFileCensors);
+            } catch (Exception ignored) {
             }
         if (!configFile.exists())
             try {
-                configFile.createNewFile();
-                YamlConfiguration config = YamlConfiguration.loadConfiguration(configFile);
+                this.configFile.createNewFile();
+                YamlConfiguration config = YamlConfiguration.loadConfiguration(this.configFile);
                 config.set("Necessities.WorldManager", true);
                 config.set("Necessities.warns", 3);
                 config.set("Necessities.caps", true);
@@ -136,11 +136,11 @@ public class Initialization {
                 config.set("Necessities.SlackChanel", "channel");
                 config.set("Necessities.ChannelID", "channelID");
                 config.set("Necessities.WebHook", "webHook");
-                config.save(configFile);
-            } catch (Exception e) {
+                config.save(this.configFile);
+            } catch (Exception ignored) {
             }
         else {
-            YamlConfiguration config = YamlConfiguration.loadConfiguration(configFile);
+            YamlConfiguration config = YamlConfiguration.loadConfiguration(this.configFile);
             if (!config.contains("Necessities.warns"))
                 config.set("Necessities.warns", 3);
             if (!config.contains("Necessities.caps"))
@@ -180,8 +180,8 @@ public class Initialization {
             if (!config.contains("Necessities.WebHook"))
                 config.set("Necessities.WebHook", "webHook");
             try {
-                config.save(configFile);
-            } catch (Exception e) {
+                config.save(this.configFile);
+            } catch (Exception ignored) {
             }
         }
     }

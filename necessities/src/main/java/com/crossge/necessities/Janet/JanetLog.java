@@ -28,7 +28,7 @@ public class JanetLog {
             bw.write(time + " " + message);
             bw.newLine();
             bw.close();
-        } catch (Exception e) {
+        } catch (Exception ignored) {
         }
     }
 
@@ -44,7 +44,7 @@ public class JanetLog {
             bw.write("#Log for " + file.replaceAll("plugins/Necessities/Logs/", "").replaceAll(".txt", ""));
             bw.newLine();
             bw.close();
-        } catch (Exception e) {
+        } catch (Exception ignored) {
         }
     }
 }

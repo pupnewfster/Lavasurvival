@@ -37,7 +37,7 @@ public class JanetAI {//TODO: Upgrade
                 int applePie = 0;
                 try {
                     applePie = Integer.parseInt(message.split(" ")[1]);
-                } catch (Exception e) {
+                } catch (Exception ignored) {
                 }
                 result = JanetName + r.memeRandom(applePie);
             } else if (message.toLowerCase().startsWith("!say "))
@@ -114,7 +114,7 @@ public class JanetAI {//TODO: Upgrade
         else if (s.equals(Source.Slack)) {
             if (!isPM)
                 Bukkit.broadcast(var.getMessages() + "To Slack - " + ChatColor.WHITE + message, "Necessities.slack");
-            slack.sendMessage(ChatColor.stripColor(message), isPM, user);
+            this.slack.sendMessage(ChatColor.stripColor(message), isPM, user);
         }
     }
 

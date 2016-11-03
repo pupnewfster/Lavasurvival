@@ -5,8 +5,8 @@ import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.EulerAngle;
 
-public class StrawHat extends Hat {
-    public StrawHat(Location loc) {
+class StrawHat extends Hat {
+    StrawHat(Location loc) {
         this.trueLoc = loc;
         int turn = 5, turnV = 5;
         Location temp = loc.clone().add(0, 0.5, 0);

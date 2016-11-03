@@ -37,36 +37,31 @@ public class Rank {
 
     private void setPerms() {
         if (this.previous != null)
-            for (String node : this.previous.getNodes())
-                this.permissions.add(node);
-        YamlConfiguration configRanks = YamlConfiguration.loadConfiguration(configFileRanks);
-        YamlConfiguration configSubranks = YamlConfiguration.loadConfiguration(configFileSubranks);
-        for (String subrank : configRanks.getStringList(getName() + ".subranks"))
-            if (!subrank.equals("") && configSubranks.contains(subrank))
-                for (String node : configSubranks.getStringList(subrank))
-                    this.permissions.add(node);
-        for (String node : configRanks.getStringList(getName() + ".permissions"))
-            this.permissions.add(node);
+            this.permissions.addAll(this.previous.getNodes());
+        YamlConfiguration configRanks = YamlConfiguration.loadConfiguration(this.configFileRanks);
+        YamlConfiguration configSubranks = YamlConfiguration.loadConfiguration(this.configFileSubranks);
+        configRanks.getStringList(getName() + ".subranks").stream().filter(subrank -> !subrank.equals("") && configSubranks.contains(subrank)).forEach(subrank -> this.permissions.addAll(configSubranks.getStringList(subrank)));
+        this.permissions.addAll(configRanks.getStringList(getName() + ".permissions"));
     }
 
-    public void refreshPerms() {
+    void refreshPerms() {
         this.permissions.clear();
         setPerms();
         if (this.next != null)
             this.next.refreshPerms();
     }
 
-    public void addPerm(String permission) {
+    void addPerm(String permission) {
         this.permissions.add(permission);
         refreshPerms();
     }
 
-    public void removePerm(String permission) {
+    void removePerm(String permission) {
         this.permissions.remove(permission);
         refreshPerms();
     }
 
-    public ArrayList<String> getNodes() {
+    ArrayList<String> getNodes() {
         return this.permissions;
     }
 
@@ -82,7 +77,7 @@ public class Rank {
         return this.previous;
     }
 
-    public void setPrevious(Rank r) {
+    void setPrevious(Rank r) {
         this.previous = r;
     }
 
@@ -91,8 +86,8 @@ public class Rank {
     }
 
     public String getCommands() {
-        YamlConfiguration configRanks = YamlConfiguration.loadConfiguration(configFileRanks);
-        YamlConfiguration configSubranks = YamlConfiguration.loadConfiguration(configFileSubranks);
+        YamlConfiguration configRanks = YamlConfiguration.loadConfiguration(this.configFileRanks);
+        YamlConfiguration configSubranks = YamlConfiguration.loadConfiguration(this.configFileSubranks);
         String commands = "";
         for (String subrank : configRanks.getStringList(getName() + ".subranks"))
             if (!subrank.equals("") && configSubranks.contains(subrank))

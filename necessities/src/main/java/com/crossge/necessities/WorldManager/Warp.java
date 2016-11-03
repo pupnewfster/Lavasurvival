@@ -10,7 +10,7 @@ public class Warp {
     private Location loc = null;
     private String name = "";
 
-    public Warp(String name) {
+    Warp(String name) {
         File configFileWarps = new File("plugins/Necessities/WorldManager", "warps.yml");
         YamlConfiguration configWarps = YamlConfiguration.loadConfiguration(configFileWarps);
         this.name = name;

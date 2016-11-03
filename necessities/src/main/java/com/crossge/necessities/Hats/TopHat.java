@@ -5,8 +5,8 @@ import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.EulerAngle;
 
-public class TopHat extends Hat {
-    public TopHat(Location loc) {
+class TopHat extends Hat {
+    TopHat(Location loc) {
         this.trueLoc = loc;
         int turn = 5, turnV = 5;
         spawn(360 / turn, loc);

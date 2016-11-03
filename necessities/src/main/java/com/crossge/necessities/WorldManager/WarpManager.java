@@ -17,7 +17,7 @@ public class WarpManager {
 
     public void initiate() {
         Bukkit.getConsoleSender().sendMessage(ChatColor.AQUA + "Loading warps...");
-        YamlConfiguration configWarps = YamlConfiguration.loadConfiguration(configFileWarps);
+        YamlConfiguration configWarps = YamlConfiguration.loadConfiguration(this.configFileWarps);
         for (String warp : configWarps.getKeys(false)) {
             warps.put(warp, new Warp(warp));
             lowerNames.put(warp.toLowerCase(), warp);
@@ -35,8 +35,7 @@ public class WarpManager {
 
     public String getWarps() {
         ArrayList<String> ws = new ArrayList<>();
-        for (String w : warps.keySet())
-            ws.add(w);
+        ws.addAll(warps.keySet());
         Collections.sort(ws);
         String wrps = "";
         for (String w : ws)
@@ -45,18 +44,18 @@ public class WarpManager {
     }
 
     public void remove(String name) {
-        YamlConfiguration configWarps = YamlConfiguration.loadConfiguration(configFileWarps);
+        YamlConfiguration configWarps = YamlConfiguration.loadConfiguration(this.configFileWarps);
         configWarps.set(name, null);
         try {
-            configWarps.save(configFileWarps);
-        } catch (Exception e) {
+            configWarps.save(this.configFileWarps);
+        } catch (Exception ignored) {
         }
         warps.remove(name);
         lowerNames.remove(name.toLowerCase());
     }
 
     public void create(String name, Location loc) {
-        YamlConfiguration configWarps = YamlConfiguration.loadConfiguration(configFileWarps);
+        YamlConfiguration configWarps = YamlConfiguration.loadConfiguration(this.configFileWarps);
         configWarps.set(name + ".world", loc.getWorld().getName());
         configWarps.set(name + ".x", loc.getX());
         configWarps.set(name + ".y", loc.getY());
@@ -64,8 +63,8 @@ public class WarpManager {
         configWarps.set(name + ".yaw", loc.getYaw());
         configWarps.set(name + ".pitch", loc.getPitch());
         try {
-            configWarps.save(configFileWarps);
-        } catch (Exception e) {
+            configWarps.save(this.configFileWarps);
+        } catch (Exception ignored) {
         }
         warps.put(name, new Warp(name));
         lowerNames.put(name.toLowerCase(), name);

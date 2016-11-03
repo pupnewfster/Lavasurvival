@@ -30,19 +30,19 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.UUID;
 
-public class Listeners implements Listener {
+class Listeners implements Listener {
     private File configFileLogOut = new File("plugins/Necessities", "logoutmessages.yml"), configFileLogIn = new File("plugins/Necessities", "loginmessages.yml"),
             configFileTitles = new File("plugins/Necessities", "titles.yml"), configFile = new File("plugins/Necessities", "config.yml");
-    CmdCommandSpy spy = new CmdCommandSpy();
-    PortalManager pm = new PortalManager();
-    JanetSlack slack = new JanetSlack();
-    UserManager um = new UserManager();
-    Console console = new Console();
-    Variables var = new Variables();
-    Teleports tps = new Teleports();
-    CmdHide hide = new CmdHide();
-    JanetAI ai = new JanetAI();
-    Janet bot = new Janet();
+    private CmdCommandSpy spy = new CmdCommandSpy();
+    private PortalManager pm = new PortalManager();
+    private JanetSlack slack = new JanetSlack();
+    private UserManager um = new UserManager();
+    private Console console = new Console();
+    private Variables var = new Variables();
+    private Teleports tps = new Teleports();
+    private CmdHide hide = new CmdHide();
+    private JanetAI ai = new JanetAI();
+    private Janet bot = new Janet();
 
     private String corTime(String time) {
         return time.length() == 1 ? "0" + time : time;
@@ -83,37 +83,37 @@ public class Listeners implements Listener {
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent e) {
         final Player p = e.getPlayer();
-        um.addUser(p);
-        um.forceParseUser(p);
-        final User u = um.getUser(p.getUniqueId());
+        this.um.addUser(p);
+        this.um.forceParseUser(p);
+        final User u = this.um.getUser(p.getUniqueId());
         if (u.getNick() != null)
             p.setDisplayName(u.getNick());
         UUID uuid = p.getUniqueId();
-        YamlConfiguration configLogIn = YamlConfiguration.loadConfiguration(configFileLogIn);
+        YamlConfiguration configLogIn = YamlConfiguration.loadConfiguration(this.configFileLogIn);
         if (!configLogIn.contains(uuid.toString())) {
             configLogIn.set(uuid.toString(), "{RANK} {NAME}&r joined the game.");
             try {
-                configLogIn.save(configFileLogIn);
-            } catch (Exception er) {
+                configLogIn.save(this.configFileLogIn);
+            } catch (Exception ignored) {
             }
         }
-        YamlConfiguration configLogOut = YamlConfiguration.loadConfiguration(configFileLogOut);
+        YamlConfiguration configLogOut = YamlConfiguration.loadConfiguration(this.configFileLogOut);
         if (!configLogOut.contains(uuid.toString())) {
             configLogOut.set(uuid.toString(), "{RANK} {NAME}&r Disconnected.");
             try {
-                configLogOut.save(configFileLogOut);
-            } catch (Exception er) {
+                configLogOut.save(this.configFileLogOut);
+            } catch (Exception ignored) {
             }
         }
         e.setJoinMessage((ChatColor.GREEN + " + " + ChatColor.YELLOW + ChatColor.translateAlternateColorCodes('&',
                 configLogIn.getString(uuid.toString()).replaceAll("\\{NAME\\}", p.getDisplayName()).replaceAll("\\{RANK\\}",
-                        um.getUser(p.getUniqueId()).getRank().getTitle()))).replaceAll(ChatColor.RESET + "", ChatColor.YELLOW + ""));
-        bot.logIn(uuid);
-        hide.playerJoined(p);
-        if (hide.isHidden(e.getPlayer())) {
+                        this.um.getUser(p.getUniqueId()).getRank().getTitle()))).replaceAll(ChatColor.RESET + "", ChatColor.YELLOW + ""));
+        this.bot.logIn(uuid);
+        this.hide.playerJoined(p);
+        if (this.hide.isHidden(e.getPlayer())) {
             Bukkit.broadcast(var.getMessages() + "To Ops -" + e.getJoinMessage(), "Necessities.opBroadcast");
             e.setJoinMessage(null);
-            hide.hidePlayer(e.getPlayer());
+            this.hide.hidePlayer(e.getPlayer());
         }
         Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(Necessities.getInstance(), () -> {
             Necessities.getInstance().addHeader(p);
@@ -129,7 +129,7 @@ public class Listeners implements Listener {
                         if (!line.equals(""))
                             p.sendMessage(ChatColor.translateAlternateColorCodes('&', line));
                     read.close();
-                } catch (Exception er) {
+                } catch (Exception ignored) {
                 }
         });
     }
@@ -137,36 +137,36 @@ public class Listeners implements Listener {
     @EventHandler
     public void onPlayerQuit(PlayerQuitEvent e) {
         UUID uuid = e.getPlayer().getUniqueId();
-        YamlConfiguration configLogOut = YamlConfiguration.loadConfiguration(configFileLogOut);
+        YamlConfiguration configLogOut = YamlConfiguration.loadConfiguration(this.configFileLogOut);
         e.setQuitMessage((ChatColor.RED + " - " + ChatColor.YELLOW + ChatColor.translateAlternateColorCodes('&',
                 configLogOut.getString(uuid.toString()).replaceAll("\\{NAME\\}", e.getPlayer().getDisplayName()).replaceAll("\\{RANK\\}",
-                        um.getUser(e.getPlayer().getUniqueId()).getRank().getTitle()))).replaceAll(ChatColor.RESET + "", ChatColor.YELLOW + ""));
-        if (hide.isHidden(e.getPlayer())) {
+                        this.um.getUser(e.getPlayer().getUniqueId()).getRank().getTitle()))).replaceAll(ChatColor.RESET + "", ChatColor.YELLOW + ""));
+        if (this.hide.isHidden(e.getPlayer())) {
             Bukkit.broadcast(var.getMessages() + "To Ops -" + e.getQuitMessage(), "Necessities.opBroadcast");
             e.setQuitMessage(null);
         }
-        User u = um.getUser(e.getPlayer().getUniqueId());
+        User u = this.um.getUser(e.getPlayer().getUniqueId());
         u.logOut();
-        bot.logOut(uuid);
-        um.removeUser(uuid);
-        hide.playerLeft(e.getPlayer());
-        tps.removeRequests(uuid);
+        this.bot.logOut(uuid);
+        this.um.removeUser(uuid);
+        this.hide.playerLeft(e.getPlayer());
+        this.tps.removeRequests(uuid);
     }
 
     @EventHandler
     public void onPlayerMove(final PlayerMoveEvent e) {
         if (e.isCancelled())
             return;
-        User u = um.getUser(e.getPlayer().getUniqueId());
+        User u = this.um.getUser(e.getPlayer().getUniqueId());
         Location from = e.getFrom();
         Location to = e.getTo();
         Hat h = u.getHat();
         if (h != null)
             h.move(to.getX() - from.getX(), to.getY() - from.getY(), to.getZ() - from.getZ(), to.getYaw() - from.getYaw(), to.getPitch() - from.getPitch());
-        YamlConfiguration config = YamlConfiguration.loadConfiguration(configFile);
+        YamlConfiguration config = YamlConfiguration.loadConfiguration(this.configFile);
         boolean locationChanged = Math.abs(from.getX() - to.getX()) > 0.1 || Math.abs(from.getY() - to.getY()) > 0.1 || Math.abs(from.getZ() - to.getZ()) > 0.1;
         if (config.contains("Necessities.WorldManager") && config.getBoolean("Necessities.WorldManager") && locationChanged) {
-            Location destination = pm.portalDestination(to);
+            Location destination = this.pm.portalDestination(to);
             if (destination != null)
                 e.getPlayer().teleport(destination);
         }
@@ -174,8 +174,8 @@ public class Listeners implements Listener {
 
     @EventHandler
     public void onPlayerClick(PlayerInteractEvent e) {
-        User u = um.getUser(e.getPlayer().getUniqueId());
-        if (hide.isHidden(u.getPlayer()) && e.getAction().equals(Action.PHYSICAL))//cancel crop breaking when hidden
+        User u = this.um.getUser(e.getPlayer().getUniqueId());
+        if (this.hide.isHidden(u.getPlayer()) && e.getAction().equals(Action.PHYSICAL))//cancel crop breaking when hidden
             e.setCancelled(true);
         if (e.getAction() == Action.LEFT_CLICK_BLOCK)
             u.setLeft(e.getClickedBlock().getLocation());
@@ -196,8 +196,8 @@ public class Listeners implements Listener {
     public void onChat(AsyncPlayerChatEvent e) {
         if (e.isCancelled())
             return;
-        YamlConfiguration config = YamlConfiguration.loadConfiguration(configFile);
-        User u = um.getUser(e.getPlayer().getUniqueId());
+        YamlConfiguration config = YamlConfiguration.loadConfiguration(this.configFile);
+        User u = this.um.getUser(e.getPlayer().getUniqueId());
         final Player player = e.getPlayer();
         final UUID uuid = player.getUniqueId();
         String status = u.getStatus();
@@ -216,22 +216,22 @@ public class Listeners implements Listener {
             e.setMessage(u.getAppended() + " " + m);
             u.setAppended("");
         }
-        YamlConfiguration configTitles = YamlConfiguration.loadConfiguration(configFileTitles);
+        YamlConfiguration configTitles = YamlConfiguration.loadConfiguration(this.configFileTitles);
         e.setFormat(ChatColor.translateAlternateColorCodes('&', config.getString("Necessities.ChatFormat")));
         boolean isop = false;
         if (u.slackChat()) {
-            e.setFormat(var.getMessages() + "To Slack - " + ChatColor.WHITE + e.getFormat());
+            e.setFormat(this.var.getMessages() + "To Slack - " + ChatColor.WHITE + e.getFormat());
             e.setFormat(e.getFormat().replaceAll("\\{TITLE\\} ", ""));
         } else if (u.opChat()) {
-            e.setFormat(var.getMessages() + "To Ops - " + ChatColor.WHITE + e.getFormat());
+            e.setFormat(this.var.getMessages() + "To Ops - " + ChatColor.WHITE + e.getFormat());
             e.setFormat(e.getFormat().replaceAll("\\{TITLE\\} ", ""));
         } else if (player.hasPermission("Necessities.opBroadcast") && e.getMessage().startsWith("#")) {
             isop = true;
-            e.setFormat(var.getMessages() + "To Ops - " + ChatColor.WHITE + e.getFormat());
+            e.setFormat(this.var.getMessages() + "To Ops - " + ChatColor.WHITE + e.getFormat());
             e.setFormat(e.getFormat().replaceAll("\\{TITLE\\} ", ""));
             e.setMessage(e.getMessage().replaceFirst("#", ""));
         }
-        if (hide.isHidden(player) || isop || u.slackChat())
+        if (this.hide.isHidden(player) || isop || u.slackChat())
             status = "";
         String fullTitle = "";
         if (configTitles.contains(player.getUniqueId() + ".title")) {
@@ -242,32 +242,32 @@ public class Listeners implements Listener {
         }
         e.setFormat(e.getFormat().replaceAll("\\{TITLE\\} ", fullTitle));
         e.setFormat(e.getFormat().replaceAll("\\{NAME\\}", player.getDisplayName()));
-        String rank = ChatColor.translateAlternateColorCodes('&', um.getUser(uuid).getRank().getTitle());
+        String rank = ChatColor.translateAlternateColorCodes('&', this.um.getUser(uuid).getRank().getTitle());
         e.setFormat(e.getFormat().replaceAll("\\{RANK\\}", rank));
-        final String message = bot.logChat(uuid, e.getMessage());
+        final String message = this.bot.logChat(uuid, e.getMessage());
         e.setMessage(message);//Why did it not previously setMessage?
         if (player.hasPermission("Necessities.colorchat"))
             e.setMessage(ChatColor.translateAlternateColorCodes('&', (player.hasPermission("Necessities.magicchat") ? message : message.replaceAll("&k", ""))));
         if (u.isMuted())
-            player.sendMessage(var.getEr() + "Error: " + var.getErMsg() + "You are muted.");
+            player.sendMessage(this.var.getEr() + "Error: " + this.var.getErMsg() + "You are muted.");
         else {
             if (!e.getRecipients().isEmpty()) {
                 ArrayList<Player> toRem = new ArrayList<>();
                 for (Player recip : e.getRecipients())
-                    if (um.getUser(recip.getUniqueId()).isIgnoring(player.getUniqueId()) || (isop && !recip.hasPermission("Necessities.opBroadcast")) ||
+                    if (this.um.getUser(recip.getUniqueId()).isIgnoring(player.getUniqueId()) || (isop && !recip.hasPermission("Necessities.opBroadcast")) ||
                             (u.slackChat() && !recip.hasPermission("Necessities.slack")))
                         toRem.add(recip);
-                for (Player recip : toRem)
-                    e.getRecipients().remove(recip);
+                toRem.forEach(recip -> e.getRecipients().remove(recip));
             }
-            if (!e.getRecipients().isEmpty())
-                for (Player recip : e.getRecipients())
-                    recip.sendMessage(status + e.getFormat().replaceAll("\\{MESSAGE\\}", "") + e.getMessage());
+            if (!e.getRecipients().isEmpty()) {
+                String finalStatus = status;
+                e.getRecipients().forEach(recip -> recip.sendMessage(finalStatus + e.getFormat().replaceAll("\\{MESSAGE\\}", "") + e.getMessage()));
+            }
             Bukkit.getConsoleSender().sendMessage(status + e.getFormat().replaceAll("\\{MESSAGE\\}", "") + e.getMessage());
             if (u.slackChat())
-                slack.sendMessage((status + e.getFormat().replaceAll("\\{MESSAGE\\}", "") + e.getMessage()).replaceFirst("To Slack - ", ""));
+                this.slack.sendMessage((status + e.getFormat().replaceAll("\\{MESSAGE\\}", "") + e.getMessage()).replaceFirst("To Slack - ", ""));
             else
-                slack.handleIngameChat(status + e.getFormat().replaceAll("\\{MESSAGE\\}", "") + e.getMessage());
+                this.slack.handleIngameChat(status + e.getFormat().replaceAll("\\{MESSAGE\\}", "") + e.getMessage());
         }
         e.setCancelled(true);
         if (config.contains("Necessities.AI") && config.getBoolean("Necessities.AI") && (!isop || message.startsWith("!")))
@@ -278,7 +278,7 @@ public class Listeners implements Listener {
     public void onPlayerDeath(PlayerDeathEvent e) {
         Player player = e.getEntity().getPlayer();
         if (player != null)
-            bot.logDeath(player.getUniqueId(), e.getDeathMessage());
+            this.bot.logDeath(player.getUniqueId(), e.getDeathMessage());
     }
 
     @EventHandler
@@ -287,20 +287,20 @@ public class Listeners implements Listener {
             return;
         Player player = e.getPlayer();
         if (!e.getMessage().contains("login") && !e.getMessage().contains("register")) {
-            spy.broadcast(player.getName(), e.getMessage());
-            String message = bot.logCom(player.getUniqueId(), e.getMessage());
+            this.spy.broadcast(player.getName(), e.getMessage());
+            String message = this.bot.logCom(player.getUniqueId(), e.getMessage());
             e.setMessage(message);
             if (e.getMessage().startsWith("/tps"))
                 e.setMessage(e.getMessage().replaceFirst("tps", "necessities:tps"));
-            YamlConfiguration config = YamlConfiguration.loadConfiguration(configFile);
+            YamlConfiguration config = YamlConfiguration.loadConfiguration(this.configFile);
             if (config.contains("Necessities.customDeny") && config.getBoolean("Necessities.customDeny")) {
                 PluginCommand pc = null;
                 try {
                     pc = Bukkit.getPluginCommand(e.getMessage().split(" ")[0].replaceFirst("/", ""));
-                } catch (Exception er) {
+                } catch (Exception ignored) {
                 }//Invalid command
                 if (pc != null && !pc.testPermissionSilent(player)) {
-                    player.sendMessage(var.getEr() + "Error: " + var.getErMsg() + "You do not have permission to perform this command.");
+                    player.sendMessage(this.var.getEr() + "Error: " + this.var.getErMsg() + "You do not have permission to perform this command.");
                     e.setCancelled(true);
                 }
             }
@@ -309,11 +309,11 @@ public class Listeners implements Listener {
 
     @EventHandler
     public void onCommand(ServerCommandEvent e) {
-        if (console.chatToggled() && !e.getCommand().equalsIgnoreCase("togglechat") && !e.getCommand().equalsIgnoreCase("tc"))
+        if (this.console.chatToggled() && !e.getCommand().equalsIgnoreCase("togglechat") && !e.getCommand().equalsIgnoreCase("tc"))
             e.setCommand("say " + e.getCommand());
         e.setCommand(ChatColor.translateAlternateColorCodes('&', e.getCommand()));
-        spy.broadcast(console.getName().replaceAll(":", "") + ChatColor.AQUA, e.getCommand());
-        bot.logConsole(e.getCommand());
+        this.spy.broadcast(this.console.getName().replaceAll(":", "") + ChatColor.AQUA, e.getCommand());
+        this.bot.logConsole(e.getCommand());
         if (e.getCommand().startsWith("tps"))
             e.setCommand("necessities:" + e.getCommand());
     }
@@ -322,7 +322,7 @@ public class Listeners implements Listener {
     public void onPlayerTeleport(PlayerTeleportEvent e) {
         if (e.isCancelled())
             return;
-        final User u = um.getUser(e.getPlayer().getUniqueId());
+        final User u = this.um.getUser(e.getPlayer().getUniqueId());
         Hat h = u.getHat();
         if (h != null) {
             if (!e.getFrom().getWorld().equals(e.getTo().getWorld())) {
@@ -342,7 +342,7 @@ public class Listeners implements Listener {
     public void onSneak(PlayerToggleSneakEvent e) {
         if (e.isCancelled())
             return;
-        User u = um.getUser(e.getPlayer().getUniqueId());
+        User u = this.um.getUser(e.getPlayer().getUniqueId());
         Hat h = u.getHat();
         if (h != null) {
             if (e.isSneaking())
@@ -354,7 +354,7 @@ public class Listeners implements Listener {
 
     @EventHandler
     public void onPickupItem(PlayerPickupItemEvent e) {
-        if (hide.isHidden(e.getPlayer()))
+        if (this.hide.isHidden(e.getPlayer()))
             e.setCancelled(true);
     }
 }

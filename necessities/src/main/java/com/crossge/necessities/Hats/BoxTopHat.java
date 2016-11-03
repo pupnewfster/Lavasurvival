@@ -7,10 +7,10 @@ import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.EulerAngle;
 
-public class BoxTopHat extends Hat {
+class BoxTopHat extends Hat {
     private double dist = 0.22;
 
-    public BoxTopHat(Location loc) {
+    BoxTopHat(Location loc) {
         this.trueLoc = loc;
         spawn(1, loc);
         this.armorStands.get(0).setHelmet(new ItemStack(Material.CARPET, 1, (short) 15));

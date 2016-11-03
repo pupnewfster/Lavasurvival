@@ -12,9 +12,9 @@ public class ScoreBoards {
     private static String[] ALPHABET = new String[]{"a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z"};
     private static ScoreboardManager man;
     private static Scoreboard b;
-    RankManager rm = new RankManager();
+    private RankManager rm = new RankManager();
 
-    public void createScoreboard() {
+    void createScoreboard() {
         man = Bukkit.getScoreboardManager();
         b = man.getMainScoreboard();//Use main scoreboard instead of a new one for better compatability with other plugins
         for (Rank r : rm.getOrder()) {
@@ -31,9 +31,7 @@ public class ScoreBoards {
         Team t = b.getTeam(fromInt(rm.getOrder().size() - rm.getOrder().indexOf(u.getRank())));
         if (t == null)
             return;
-        for (Team team : b.getTeams())
-            if (team.hasEntry(u.getPlayer().getName()))
-                team.removeEntry(u.getPlayer().getName());
+        b.getTeams().stream().filter(team -> team.hasEntry(u.getPlayer().getName())).forEach(team -> team.removeEntry(u.getPlayer().getName()));
         t.addEntry(u.getPlayer().getName());
         u.getPlayer().setScoreboard(b);
     }

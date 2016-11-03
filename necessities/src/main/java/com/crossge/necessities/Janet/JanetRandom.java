@@ -2,7 +2,7 @@ package com.crossge.necessities.Janet;
 
 import java.util.Random;
 
-public class JanetRandom extends Random {
+class JanetRandom extends Random {
     private static final long serialVersionUID = 1L;
     private static Random[] pies = new Random[]{
             new BlueberryPie(),

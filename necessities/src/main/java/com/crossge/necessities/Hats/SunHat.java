@@ -5,8 +5,8 @@ import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.EulerAngle;
 
-public class SunHat extends Hat {
-    public SunHat(Location loc) {
+class SunHat extends Hat {
+    SunHat(Location loc) {
         this.trueLoc = loc;
         int turn = 5;
         Location temp = loc.clone().add(0, 0.5, 0);

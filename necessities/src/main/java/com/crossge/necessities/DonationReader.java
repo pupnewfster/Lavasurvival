@@ -12,7 +12,7 @@ import java.io.File;
 import java.sql.*;
 import java.util.UUID;
 
-public class DonationReader {
+public class DonationReader { //TODO 1.10.2: UPDATE
     private BukkitRunnable current;
     private String pass;
     private int server;
