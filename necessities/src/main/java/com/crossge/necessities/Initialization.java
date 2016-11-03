@@ -133,8 +133,6 @@ public class Initialization {
                 config.set("Necessities.DonationPass", "password");
                 config.set("Necessities.DonationServer", 9);
                 config.set("Necessities.SlackToken", "token");
-                config.set("Necessities.SlackChanel", "channel");
-                config.set("Necessities.ChannelID", "channelID");
                 config.set("Necessities.WebHook", "webHook");
                 config.save(this.configFile);
             } catch (Exception ignored) {
@@ -173,10 +171,6 @@ public class Initialization {
                 config.set("Necessities.DonationServer", 9);
             if (!config.contains("Necessities.SlackToken"))
                 config.set("Necessities.SlackToken", "token");
-            if (!config.contains("Necessities.SlackChanel"))
-                config.set("Necessities.SlackChanel", "channel");
-            if (!config.contains("Necessities.ChannelID"))
-                config.set("Necessities.ChannelID", "channelID");
             if (!config.contains("Necessities.WebHook"))
                 config.set("Necessities.WebHook", "webHook");
             try {
