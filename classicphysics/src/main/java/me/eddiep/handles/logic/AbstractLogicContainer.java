@@ -23,7 +23,7 @@ public abstract class AbstractLogicContainer implements LogicContainer {
     public synchronized void queueBlock(Block block) {
         World containingWorld = block.getWorld();
         if (Bukkit.getWorld(containingWorld.getName()) == null) {
-            worldQueues.remove(containingWorld);
+            this.worldQueues.remove(containingWorld);
             return;
         }
 
@@ -35,13 +35,13 @@ public abstract class AbstractLogicContainer implements LogicContainer {
             this.worldQueues.put(containingWorld, queue);
         }
 
-        if (ticking) {
+        if (this.ticking) {
             List<Block> toAdd;
-            if (worldToAdd.containsKey(containingWorld))
-                toAdd = worldToAdd.get(containingWorld);
+            if (this.worldToAdd.containsKey(containingWorld))
+                toAdd = this.worldToAdd.get(containingWorld);
             else {
                 toAdd = new LinkedList<>();
-                worldToAdd.put(containingWorld, toAdd);
+                this.worldToAdd.put(containingWorld, toAdd);
             }
             toAdd.add(block);
         } else

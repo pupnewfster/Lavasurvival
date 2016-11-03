@@ -55,7 +55,8 @@ public class GlickoRank {
         isRanked = false;
     }
 
-    private GlickoRank() { }
+    private GlickoRank() {
+    }
 
     public void save(String baseKey, FileConfiguration configuration) {
         configuration.set(baseKey + ".tau", tau);
@@ -219,9 +220,9 @@ public class GlickoRank {
         return new PFunction<Double, Double>() {
             @Override
             public Double run(Double x) {
-                return ( Math.exp(x) * ( (delta * delta) - (rd * rd) - v - Math.exp(x) ) /
-                        (2.0 * Math.pow( (rd * rd) + v + Math.exp(x), 2) )) -
-                        ( ( x - a ) / (tau * tau) );
+                return (Math.exp(x) * ((delta * delta) - (rd * rd) - v - Math.exp(x)) /
+                        (2.0 * Math.pow((rd * rd) + v + Math.exp(x), 2))) -
+                        ((x - a) / (tau * tau));
             }
         };
     }
@@ -232,11 +233,11 @@ public class GlickoRank {
         double epsilon = 0.000001;
 
         double B, k;
-        if ((delta * delta) >  (rd * rd) + v){
-            B = Math.log((delta * delta) -  (rd * rd) - v);
+        if ((delta * delta) > (rd * rd) + v) {
+            B = Math.log((delta * delta) - (rd * rd) - v);
         } else {
             k = 1;
-            while (f.run(A - (k * tau)) < 0){
+            while (f.run(A - (k * tau)) < 0) {
                 k = k + 1;
             }
             B = A - (k * this.tau);
@@ -246,11 +247,11 @@ public class GlickoRank {
         double fB = f.run(B);
 
         double C, fC;
-        while (Math.abs(B - A) > epsilon){
-            C = A + (( (A-B)*fA ) / (fB - fA));
+        while (Math.abs(B - A) > epsilon) {
+            C = A + (((A - B) * fA) / (fB - fA));
             //C = (A + ((A - B) * fA)) / (fB - fA);
             fC = f.run(C);
-            if (fC * fB < 0){
+            if (fC * fB < 0) {
                 A = B;
                 fA = fB;
             } else {
@@ -259,7 +260,7 @@ public class GlickoRank {
             B = C;
             fB = fC;
         }
-        return Math.exp(A/2.0);
+        return Math.exp(A / 2.0);
     }
 
     /*private double tau;

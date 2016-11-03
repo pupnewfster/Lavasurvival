@@ -18,7 +18,9 @@ public class BankInventory {
     private Inventory inventory;
     private int offset = 0;
     private List<ItemStack> items;
-    private BankInventory() { }
+
+    private BankInventory() {
+    }
 
     public static BankInventory create(Player p, List<ItemStack> items) {
         int slotSize = 9;

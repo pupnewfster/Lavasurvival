@@ -35,13 +35,8 @@ public class BoxTopHat extends Hat {
         this.armorStands.get(5).setSmall(true);
         final float yaw = this.trueLoc.getYaw();
         try {
-            Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(Necessities.getInstance(), new Runnable() {
-                @Override
-                public void run() {
-                    move(0, 0, 0, yaw, 0);
-                }
-            }, 1);//Wait a tick and reposition orientation
-        } catch (Exception er) {
+            Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(Necessities.getInstance(), () -> move(0, 0, 0, yaw, 0), 1);//Wait a tick and reposition orientation
+        } catch (Exception ignored) {
         }
     }
 

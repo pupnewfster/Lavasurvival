@@ -16,10 +16,10 @@ public class DonationReader {
     private BukkitRunnable current;
     private String pass;
     private int server;
-    RankManager rm = new RankManager();
-    UserManager um = new UserManager();
-    Variables var = new Variables();
-    GetUUID get = new GetUUID();
+    private RankManager rm = new RankManager();
+    private UserManager um = new UserManager();
+    private Variables var = new Variables();
+    private GetUUID get = new GetUUID();
 
     private void check() {
         try {

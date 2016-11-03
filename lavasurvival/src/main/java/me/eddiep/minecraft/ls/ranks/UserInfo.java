@@ -134,7 +134,7 @@ public class UserInfo implements Rankable {
     }
 
     private UUID getUUID() {
-        return getPlayer() == null ? this.userUUID: getPlayer().getUniqueId();
+        return getPlayer() == null ? this.userUUID : getPlayer().getUniqueId();
     }
 
     public String getName() {
@@ -147,13 +147,13 @@ public class UserInfo implements Rankable {
 
     public void setInWater(boolean value) {
         this.inWater = value;
-        if(!isInWater())
+        if (!isInWater())
             Bukkit.getScheduler().cancelTask(this.taskID);
-        if(value && getPlayer() != null && Gamemode.getCurrentGame() != null && Gamemode.DAMAGE != 0 && Gamemode.getCurrentGame().isAlive(getPlayer()))
+        if (value && getPlayer() != null && Gamemode.getCurrentGame() != null && Gamemode.DAMAGE != 0 && Gamemode.getCurrentGame().isAlive(getPlayer()))
             this.taskID = Bukkit.getScheduler().scheduleSyncDelayedTask(Lavasurvival.INSTANCE, () -> {
                 if (isInWater() && getPlayer() != null) {
                     if (!PlayerStatusManager.isInvincible(getPlayer()))
-                        ((CraftPlayer)getPlayer()).getHandle().damageEntity(DamageSource.OUT_OF_WORLD, (float) Gamemode.DAMAGE);
+                        ((CraftPlayer) getPlayer()).getHandle().damageEntity(DamageSource.OUT_OF_WORLD, (float) Gamemode.DAMAGE);
                     Block b = getPlayer().getLocation().getBlock();
                     setInWater(((b.getType().equals(Material.WATER) || b.getType().equals(Material.STATIONARY_WATER)) && b.hasMetadata("classic_block")) ||
                             ((b.getRelative(BlockFace.UP).getType().equals(Material.WATER) || b.getRelative(BlockFace.UP).getType().equals(Material.STATIONARY_WATER)) &&
@@ -183,7 +183,7 @@ public class UserInfo implements Rankable {
 
     public void giveBoughtBlocks() {
         Player p = getPlayer();
-        if(p != null)
+        if (p != null)
             for (MaterialData dat : this.ownedBlocks) {
                 if (BukkitUtils.hasItem(p.getInventory(), dat) || isInBank(dat))
                     continue;
@@ -194,7 +194,7 @@ public class UserInfo implements Rankable {
     private void addBlock(MaterialData dat) {
         if (!this.ownedBlocks.contains(dat)) {
             this.ownedBlocks.add(dat);
-            if(getPlayer() != null)
+            if (getPlayer() != null)
                 getPlayer().getInventory().addItem(getItem(dat));
         }
     }

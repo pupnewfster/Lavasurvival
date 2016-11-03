@@ -11,7 +11,8 @@ public class BaseOptions {
         return new BaseOptions();
     }
 
-    BaseOptions() { }
+    BaseOptions() {
+    }
 
     public boolean isEnabled() {
         return isEnabled;

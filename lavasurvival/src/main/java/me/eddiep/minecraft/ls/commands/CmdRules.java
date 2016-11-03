@@ -10,9 +10,9 @@ import java.util.List;
 
 public class CmdRules implements Cmd {
     public boolean commandUse(CommandSender sender, String[] args) {
-        if(sender instanceof Player) {
+        if (sender instanceof Player) {
             Player p = (Player) sender;
-            if(!p.getInventory().contains(Lavasurvival.INSTANCE.getRules())) {
+            if (!p.getInventory().contains(Lavasurvival.INSTANCE.getRules())) {
                 p.getInventory().addItem(Lavasurvival.INSTANCE.getRules());
                 sender.sendMessage(ChatColor.GOLD + "You have been given the rules.");
             } else

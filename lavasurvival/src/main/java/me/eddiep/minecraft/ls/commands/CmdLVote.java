@@ -35,7 +35,7 @@ public class CmdLVote implements Cmd {
 
     public List<String> tabComplete(CommandSender sender, String[] args) {
         List<String> complete = new ArrayList<>();
-        if(sender instanceof Player && args.length == 1) {
+        if (sender instanceof Player && args.length == 1) {
             if (Gamemode.getCurrentGame().getMapsInVote().size() == 0)
                 return complete;
             if ("1".startsWith(args[0]))

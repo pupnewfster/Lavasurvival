@@ -107,7 +107,7 @@ public class PlayerListener implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onPlayerDamage(EntityDamageEvent event) {
-        if (event.getEntity() instanceof Player && PlayerStatusManager.isInvincible((Player)event.getEntity())) {
+        if (event.getEntity() instanceof Player && PlayerStatusManager.isInvincible((Player) event.getEntity())) {
             event.setCancelled(true);
             return;
         }
@@ -223,7 +223,7 @@ public class PlayerListener implements Listener {
 
     @EventHandler(priority = EventPriority.LOW)
     public void inventoryClosed(InventoryCloseEvent e) {
-        final Player p = (Player)e.getPlayer();
+        final Player p = (Player) e.getPlayer();
 
         BankInventory view = BankInventory.from(p);
         if (view != null) {
@@ -233,7 +233,7 @@ public class PlayerListener implements Listener {
 
     @EventHandler(priority = EventPriority.LOW)
     public void inventoryClicked(InventoryClickEvent e) {
-        final Player p = (Player)e.getWhoClicked();
+        final Player p = (Player) e.getWhoClicked();
         int clickedSlot = e.getView().convertSlot(e.getRawSlot());
 
         BankInventory view = BankInventory.from(p);
@@ -260,7 +260,7 @@ public class PlayerListener implements Listener {
             return;
         if (Gamemode.getCurrentGame() != null && Gamemode.getCurrentGame().isAlive(event.getPlayer()) &&
                 ((event.getBlock().getType().equals(Material.WOODEN_DOOR) && event.getPlayer().getInventory().contains(Material.WOOD_DOOR)) ||
-                event.getPlayer().getInventory().contains(event.getBlock().getType()) || event.getPlayer().getInventory().contains(Material.getMaterial(event.getBlock().getType().toString() + "_ITEM")) ||
+                        event.getPlayer().getInventory().contains(event.getBlock().getType()) || event.getPlayer().getInventory().contains(Material.getMaterial(event.getBlock().getType().toString() + "_ITEM")) ||
                         event.getPlayer().getInventory().contains(Material.getMaterial(event.getBlock().getType().toString().replaceAll("DOOR_BLOCK", "DOOR"))))) {
             if (event.getBlock().getLocation().getBlockY() >= Gamemode.getCurrentMap().getLavaY()) {
                 event.getPlayer().sendMessage(ChatColor.RED + "" + ChatColor.BOLD + "You are building too high!");
@@ -347,14 +347,14 @@ public class PlayerListener implements Listener {
         if (locationChanged && Gamemode.getCurrentGame() != null && Gamemode.DAMAGE != 0 && Gamemode.getCurrentGame().isAlive(event.getPlayer())) {
             UserInfo u = this.um.getUser(event.getPlayer().getUniqueId());
             if (((to.getBlock().getType().equals(Material.WATER) || to.getBlock().getType().equals(Material.STATIONARY_WATER)) && to.getBlock().hasMetadata("classic_block")) ||
-                ((to.getBlock().getRelative(BlockFace.UP).getType().equals(Material.WATER) || to.getBlock().getRelative(BlockFace.UP).getType().equals(Material.STATIONARY_WATER)) &&
-                to.getBlock().getRelative(BlockFace.UP).hasMetadata("classic_block"))) {
+                    ((to.getBlock().getRelative(BlockFace.UP).getType().equals(Material.WATER) || to.getBlock().getRelative(BlockFace.UP).getType().equals(Material.STATIONARY_WATER)) &&
+                            to.getBlock().getRelative(BlockFace.UP).hasMetadata("classic_block"))) {
                 if (!u.isInWater()) {
                     if (!PlayerStatusManager.isInvincible(event.getPlayer()))
-                        ((CraftPlayer)event.getPlayer()).getHandle().damageEntity(DamageSource.OUT_OF_WORLD, (float) Gamemode.DAMAGE);
+                        ((CraftPlayer) event.getPlayer()).getHandle().damageEntity(DamageSource.OUT_OF_WORLD, (float) Gamemode.DAMAGE);
                     u.setInWater(true);
                 }
-            } else if(u.isInWater())
+            } else if (u.isInWater())
                 u.setInWater(false);
         }
     }
@@ -377,6 +377,7 @@ public class PlayerListener implements Listener {
 
 
     private static String[] deathMessages = new String[]{"§c§lWasted!", "§a§lBetter luck next time!", "§c§lYou died!", "§c§lrip."};
+
     @EventHandler(priority = EventPriority.HIGHEST)
     public void playerDeath(PlayerDeathEvent event) {
         if (Gamemode.getCurrentGame() != null) {

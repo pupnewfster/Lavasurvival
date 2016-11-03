@@ -7,7 +7,8 @@ public class TimeOptions extends BaseOptions {
         return new TimeOptions();
     }
 
-    private TimeOptions() { }
+    private TimeOptions() {
+    }
 
     public long getStartTimeTick() {
         return startTimeTick;
@@ -18,6 +19,6 @@ public class TimeOptions extends BaseOptions {
     }
 
     public double getMultiplier() {
-        return 24000.0 / (double)dayLength;
+        return 24000.0 / (double) dayLength;
     }
 }

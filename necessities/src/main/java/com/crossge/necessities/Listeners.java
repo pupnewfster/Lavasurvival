@@ -115,25 +115,22 @@ public class Listeners implements Listener {
             e.setJoinMessage(null);
             hide.hidePlayer(e.getPlayer());
         }
-        Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(Necessities.getInstance(), new Runnable() {
-            @Override
-            public void run() {
-                Necessities.getInstance().addHeader(p);
-                Necessities.getInstance().addJanet(p);
-                Necessities.getInstance().updateAll(p);
-                u.updateListName();
-                File f = new File("plugins/Necessities/motd.txt");
-                if (f.exists())
-                    try {
-                        BufferedReader read = new BufferedReader(new FileReader(f));
-                        String line;
-                        while ((line = read.readLine()) != null)
-                            if (!line.equals(""))
-                                p.sendMessage(ChatColor.translateAlternateColorCodes('&', line));
-                        read.close();
-                    } catch (Exception er) {
-                    }
-            }
+        Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(Necessities.getInstance(), () -> {
+            Necessities.getInstance().addHeader(p);
+            Necessities.getInstance().addJanet(p);
+            Necessities.getInstance().updateAll(p);
+            u.updateListName();
+            File f = new File("plugins/Necessities/motd.txt");
+            if (f.exists())
+                try {
+                    BufferedReader read = new BufferedReader(new FileReader(f));
+                    String line;
+                    while ((line = read.readLine()) != null)
+                        if (!line.equals(""))
+                            p.sendMessage(ChatColor.translateAlternateColorCodes('&', line));
+                    read.close();
+                } catch (Exception er) {
+                }
         });
     }
 
@@ -274,12 +271,7 @@ public class Listeners implements Listener {
         }
         e.setCancelled(true);
         if (config.contains("Necessities.AI") && config.getBoolean("Necessities.AI") && (!isop || message.startsWith("!")))
-            Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(Necessities.getInstance(), new Runnable() {
-                @Override
-                public void run() {
-                    ai.parseMessage(player.getName(), message, JanetAI.Source.Server, false, null);
-                }
-            });
+            Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(Necessities.getInstance(), () -> ai.parseMessage(player.getName(), message, JanetAI.Source.Server, false, null));
     }
 
     @EventHandler
@@ -335,13 +327,8 @@ public class Listeners implements Listener {
         if (h != null) {
             if (!e.getFrom().getWorld().equals(e.getTo().getWorld())) {
                 try {
-                    Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(Necessities.getInstance(), new Runnable() {
-                        @Override
-                        public void run() {
-                            u.respawnHat();
-                        }
-                    });
-                } catch (Exception er) {
+                    Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(Necessities.getInstance(), u::respawnHat);
+                } catch (Exception ignored) {
                 }
             } else {
                 Location from = e.getFrom();

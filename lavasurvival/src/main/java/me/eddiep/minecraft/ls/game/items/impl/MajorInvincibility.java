@@ -1,6 +1,6 @@
 package me.eddiep.minecraft.ls.game.items.impl;
 
-public class MajorInvincibility extends Invincibility{
+public class MajorInvincibility extends Invincibility {
     @Override
     public int duration() {
         return 20;

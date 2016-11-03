@@ -220,7 +220,8 @@ public final class ClassicPhysicsHandler implements Listener {
                             PlayerChunkMap m = s.getPlayerChunkMap();
                             PlayerChunk ch = m.b(x, z);
                             ch.d();
-                        } else*/ if (count.getCount() > 1)
+                        } else*/
+                        if (count.getCount() > 1)
                             packets.add(new PacketPlayOutMultiBlockChange(count.getCount(), count.getChanged(), c));
                         else
                             packets.add(new PacketPlayOutBlockChange(w, new BlockPosition(count.getX(), count.getY(), count.getZ())));
@@ -298,7 +299,7 @@ public final class ClassicPhysicsHandler implements Listener {
             removePrevious = true;
     }
 
-    @EventHandler (priority = EventPriority.MONITOR)
+    @EventHandler(priority = EventPriority.MONITOR)
     public void onBlockPlace(BlockPlaceEvent event) {
         if (ClassicPhysics.TYPE == PhysicsType.DEFAULT)
             return;
@@ -315,7 +316,7 @@ public final class ClassicPhysicsHandler implements Listener {
         requestUpdateAround(event.getBlock().getLocation());
     }
 
-    @EventHandler (priority = EventPriority.MONITOR)
+    @EventHandler(priority = EventPriority.MONITOR)
     public void onBlockBreak(BlockBreakEvent event) {
         if (ClassicPhysics.TYPE.equals(PhysicsType.DEFAULT))
             return;
@@ -476,7 +477,7 @@ public final class ClassicPhysicsHandler implements Listener {
             return;
         if (!event.getBlock().getType().toString().contains("DOOR") || !event.getChangedType().toString().contains("PLATE") ||
                 (event.getBlock().getType().toString().contains("DOOR") && event.getChangedType().toString().contains("PLATE") &&
-                !event.getBlock().getType().equals(event.getBlock().getRelative(BlockFace.UP).getType())))
+                        !event.getBlock().getType().equals(event.getBlock().getRelative(BlockFace.UP).getType())))
             event.setCancelled(true);
     }
 

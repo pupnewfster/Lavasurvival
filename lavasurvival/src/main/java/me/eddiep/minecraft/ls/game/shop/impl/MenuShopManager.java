@@ -53,5 +53,6 @@ public class MenuShopManager implements ShopManager {
     }
 
     @Override
-    public void shopClosed(Player owner, Inventory inventory, Shop shop) { } //Do nothing
+    public void shopClosed(Player owner, Inventory inventory, Shop shop) {
+    } //Do nothing
 }

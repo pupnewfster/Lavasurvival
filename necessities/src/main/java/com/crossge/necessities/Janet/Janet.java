@@ -41,12 +41,7 @@ public class Janet {
         if (!rm.getOrder().isEmpty())
             rank = rm.getRank(rm.getOrder().size() - 1).getTitle() + " ";
         final String login = ChatColor.translateAlternateColorCodes('&', "&a + " + rank + "Janet&e joined the game.");
-        Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(Necessities.getInstance(), new Runnable() {
-            @Override
-            public void run() {
-                Bukkit.broadcastMessage(login);
-            }
-        });
+        Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(Necessities.getInstance(), () -> Bukkit.broadcastMessage(login));
         Bukkit.getConsoleSender().sendMessage(ChatColor.AQUA + "Janet initiated.");
     }
 
@@ -412,11 +407,6 @@ public class Janet {
     }
 
     private void delayedWarn(final UUID uuid, final String reason) {
-        Bukkit.getScheduler().scheduleSyncDelayedTask(Necessities.getInstance(), new Runnable() {
-            @Override
-            public void run() {
-                warns.warn(uuid, reason, "Janet");
-            }
-        });
+        Bukkit.getScheduler().scheduleSyncDelayedTask(Necessities.getInstance(), () -> warns.warn(uuid, reason, "Janet"));
     }
 }

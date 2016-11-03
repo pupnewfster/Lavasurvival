@@ -12,9 +12,12 @@ public class Glicko2 {
     private int default_rating;
     private int default_rd;
     private double default_vol;
-    private Glicko2() { }
+
+    private Glicko2() {
+    }
 
     private static Glicko2 INSTANCE;
+
     public static Glicko2 getInstance() {
         if (INSTANCE != null)
             return INSTANCE;

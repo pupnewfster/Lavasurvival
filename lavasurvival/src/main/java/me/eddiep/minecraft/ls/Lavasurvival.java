@@ -42,16 +42,9 @@ import java.util.*;
 public class Lavasurvival extends JavaPlugin {
     public static final Gson GSON = new Gson();
     public static Lavasurvival INSTANCE;
-    public final Runnable MONEY_VIEWER = new Runnable() {
-        @Override
-        public void run() {
-            Collection<? extends Player> players = Bukkit.getOnlinePlayers();
-            for (Player player : players) {
-                //TODO Don't validate shop items
-                //ShopFactory.validateInventory(player.getInventory());
-                updateMoneyView(player);
-            }
-        }
+    public final Runnable MONEY_VIEWER = () -> {
+        Collection<? extends Player> players = Bukkit.getOnlinePlayers();
+        players.forEach(this::updateMoneyView);
     };
 
     private Cmd[] commands;
@@ -180,7 +173,7 @@ public class Lavasurvival extends JavaPlugin {
 
     private void setupShops() {
         MenuFramework.enable(new MenuRegistry(this, RankShop.class, ItemShop.class, BlockShopCategory.class, BasicBlockShop.class, AdvancedBlockShop.class,
-                SurvivorBlockShop.class, TrustedBlockShop.class,ElderBlockShop.class, DonatorBlockShop.class));
+                SurvivorBlockShop.class, TrustedBlockShop.class, ElderBlockShop.class, DonatorBlockShop.class));
 
         ArrayList<String> lore = new ArrayList<>();
         lore.add(ChatColor.GOLD + "" + ChatColor.ITALIC + "Buy more blocks!");
@@ -201,7 +194,7 @@ public class Lavasurvival extends JavaPlugin {
     }
 
     private void init() {
-        this.commands = new Cmd[] {
+        this.commands = new Cmd[]{
                 new CmdEndGame(),
                 new CmdLVote(),
                 new CmdRules(),

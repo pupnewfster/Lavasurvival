@@ -39,18 +39,14 @@ public class RankManager {
             ranks.put(name, new Rank(name));
             order.add(ranks.get(name));
         }
-        for (String subrank : configSubranks.getKeys(true))
-            if (!subrank.equals("") && !configSubranks.getStringList(subrank).isEmpty())//If is an actual subrank not just base node in tree of a subrank
-                subranks.put(subrank.toLowerCase(), subrank);
+        //If is an actual subrank not just base node in tree of a subrank
+        configSubranks.getKeys(true).stream().filter(subrank -> !subrank.equals("") && !configSubranks.getStringList(subrank).isEmpty()).forEach(subrank -> subranks.put(subrank.toLowerCase(), subrank));
         UserManager um = new UserManager();
         um.readUsers();
-        Bukkit.getScheduler().scheduleSyncDelayedTask(Necessities.getInstance(), new Runnable() {
-            @Override
-            public void run() {
-                Bukkit.getConsoleSender().sendMessage(ChatColor.AQUA + "Retrieving all permissions.");
-                updatePerms();
-                Bukkit.getConsoleSender().sendMessage(ChatColor.AQUA + "All permissions retrieved.");
-            }
+        Bukkit.getScheduler().scheduleSyncDelayedTask(Necessities.getInstance(), () -> {
+            Bukkit.getConsoleSender().sendMessage(ChatColor.AQUA + "Retrieving all permissions.");
+            updatePerms();
+            Bukkit.getConsoleSender().sendMessage(ChatColor.AQUA + "All permissions retrieved.");
         });
     }
 

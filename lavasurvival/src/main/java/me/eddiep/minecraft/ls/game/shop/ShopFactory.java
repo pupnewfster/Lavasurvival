@@ -55,7 +55,7 @@ public class ShopFactory {
         shops.clear();
     }
 
-    public static ItemStack addGlow(ItemStack item){
+    public static ItemStack addGlow(ItemStack item) {
         net.minecraft.server.v1_10_R1.ItemStack nmsStack = CraftItemStack.asNMSCopy(item);
         NBTTagCompound tag = null;
         if (!nmsStack.hasTag()) {
