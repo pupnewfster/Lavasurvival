@@ -28,13 +28,13 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 public class JanetSlack {
-    private static File configFile = new File("plugins/Necessities", "config.yml");
-    private static HashMap<String, SlackUser> userMap = new HashMap<>();
-    private static HashMap<Integer, ArrayList<String>> helpLists = new HashMap<>();
-    private static boolean isConnected = false;
-    private static String token;
-    private static URL hookURL;
-    private static WebSocket ws;
+    private File configFile = new File("plugins/Necessities", "config.yml");
+    private HashMap<String, SlackUser> userMap = new HashMap<>();
+    private HashMap<Integer, ArrayList<String>> helpLists = new HashMap<>();
+    private boolean isConnected = false;
+    private String token;
+    private URL hookURL;
+    private WebSocket ws;
     private JanetRandom r = Necessities.getInstance().getRandom();
     private RankManager rm = Necessities.getInstance().getRM();
     private UserManager um = Necessities.getInstance().getUM();
