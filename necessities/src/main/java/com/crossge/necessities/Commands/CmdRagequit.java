@@ -6,8 +6,8 @@ import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-public class CmdRagequit extends Cmd {
-    JanetLog log = new JanetLog();
+public class CmdRagequit implements Cmd {
+    private JanetLog log = new JanetLog();
 
     public boolean commandUse(CommandSender sender, String[] args) {
         if (sender instanceof Player) {

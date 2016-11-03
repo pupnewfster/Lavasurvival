@@ -7,9 +7,9 @@ import org.bukkit.entity.Player;
 
 import java.util.UUID;
 
-public class CmdTpa extends Cmd {
-    Teleports tps = new Teleports();
-    CmdHide hide = new CmdHide();
+public class CmdTpa implements Cmd {
+    private Teleports tps = new Teleports();
+    private CmdHide hide = new CmdHide();
 
     public boolean commandUse(CommandSender sender, String[] args) {
         if (sender instanceof Player) {

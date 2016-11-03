@@ -7,7 +7,7 @@ import org.bukkit.entity.Player;
 
 import java.io.File;
 
-public class CmdLogOutMessage extends Cmd {
+public class CmdLogOutMessage implements Cmd {
     private File configFileLogOut = new File("plugins/Necessities", "logoutmessages.yml");
 
     public boolean commandUse(CommandSender sender, String[] args) {
@@ -25,7 +25,7 @@ public class CmdLogOutMessage extends Cmd {
             configLogOut.set(p.getUniqueId().toString(), logoutmessage);
             try {
                 configLogOut.save(configFileLogOut);
-            } catch (Exception e) {
+            } catch (Exception ignored) {
             }
             p.sendMessage("Logout message set to: " + ChatColor.YELLOW + ChatColor.translateAlternateColorCodes('&',
                     logoutmessage.replaceAll("\\{NAME\\}", p.getDisplayName()).replaceAll("\\{RANK\\}",

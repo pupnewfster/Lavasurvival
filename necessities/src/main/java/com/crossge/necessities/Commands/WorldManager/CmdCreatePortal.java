@@ -6,7 +6,7 @@ import org.bukkit.Location;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-public class CmdCreatePortal extends WorldCmd {
+public class CmdCreatePortal implements WorldCmd {
     public boolean commandUse(CommandSender sender, String[] args) {
         if (args.length < 2) {
             sender.sendMessage(var.getEr() + "Error: " + var.getErMsg() + "Format requires you enter a name for the portal and a world that it takes you to.");

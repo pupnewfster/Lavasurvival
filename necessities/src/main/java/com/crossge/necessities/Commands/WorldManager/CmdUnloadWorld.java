@@ -3,7 +3,7 @@ package com.crossge.necessities.Commands.WorldManager;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 
-public class CmdUnloadWorld extends WorldCmd {
+public class CmdUnloadWorld implements WorldCmd {
     public boolean commandUse(CommandSender sender, String[] args) {
         if (args.length == 0) {
             sender.sendMessage(var.getEr() + "Error: " + var.getErMsg() + "You must enter a worldname to unload.");

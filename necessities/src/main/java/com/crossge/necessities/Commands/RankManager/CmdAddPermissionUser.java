@@ -4,7 +4,7 @@ import org.bukkit.command.CommandSender;
 
 import java.util.UUID;
 
-public class CmdAddPermissionUser extends RankCmd {
+public class CmdAddPermissionUser implements RankCmd {
     public boolean commandUse(CommandSender sender, String[] args) {
         if (args.length != 2) {
             sender.sendMessage(var.getEr() + "Error: " + var.getErMsg() + "Format requires a user and a permission node to add for that user.");

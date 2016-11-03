@@ -6,7 +6,7 @@ import org.bukkit.Difficulty;
 import org.bukkit.GameMode;
 import org.bukkit.command.CommandSender;
 
-public class CmdModifyWorld extends WorldCmd {
+public class CmdModifyWorld implements WorldCmd {
     public boolean commandUse(CommandSender sender, String[] args) {
         if (args.length < 3) {
             sender.sendMessage(var.getEr() + "Error: " + var.getErMsg() + "Format requires you enter a worldname a setting to modify and a value to change the "

@@ -6,7 +6,7 @@ import com.crossge.necessities.RankManager.User;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-public class CmdHat extends Cmd {
+public class CmdHat implements Cmd {
     public boolean commandUse(CommandSender sender, String[] args) {
         if (sender instanceof Player) {
             Player p = (Player) sender;

@@ -6,7 +6,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-public class CmdMe extends Cmd {
+public class CmdMe implements Cmd {
     public boolean commandUse(CommandSender sender, String[] args) {
         String msg = "";
         for (String s : args)

@@ -8,7 +8,7 @@ import org.bukkit.entity.Player;
 
 import java.util.UUID;
 
-public class CmdMsg extends Cmd {
+public class CmdMsg implements Cmd {
     public boolean commandUse(CommandSender sender, String[] args) {
         if (args.length < 2) {
             sender.sendMessage(var.getEr() + "Error: " + var.getErMsg() + "You must enter a player to message and a message to send.");

@@ -6,7 +6,7 @@ import org.bukkit.command.CommandSender;
 
 import java.util.List;
 
-public class CmdDevs extends Cmd {
+public class CmdDevs implements Cmd {
     public boolean commandUse(CommandSender sender, String[] args) {
         String d = var.getMessages() + "The Devs for Necessities are: ";
         List<String> devs = Necessities.getInstance().getDevs();

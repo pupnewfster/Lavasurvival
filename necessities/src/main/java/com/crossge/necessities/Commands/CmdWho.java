@@ -10,9 +10,9 @@ import org.bukkit.entity.Player;
 
 import java.util.HashMap;
 
-public class CmdWho extends Cmd {
-    UserManager um = new UserManager();
-    CmdHide hide = new CmdHide();
+public class CmdWho implements Cmd {
+    private UserManager um = new UserManager();
+    private CmdHide hide = new CmdHide();
 
     public boolean commandUse(CommandSender sender, String[] args) {
         if (sender instanceof Player && !sender.hasPermission("Necessities.seehidden")) {

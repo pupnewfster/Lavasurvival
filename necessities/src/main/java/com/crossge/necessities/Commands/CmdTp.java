@@ -6,8 +6,8 @@ import org.bukkit.entity.Player;
 
 import java.util.UUID;
 
-public class CmdTp extends Cmd {
-    CmdHide hide = new CmdHide();
+public class CmdTp implements Cmd {
+    private CmdHide hide = new CmdHide();
 
     public boolean commandUse(CommandSender sender, String[] args) {
         if (args.length == 0) {

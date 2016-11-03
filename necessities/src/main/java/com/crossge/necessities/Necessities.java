@@ -188,7 +188,7 @@ public class Necessities extends JavaPlugin {
     }
 
     private Cmd getCmd(String name) {
-        Cmd com = new Cmd();
+        Cmd com = null;
         if (isEqual(name, "slap"))
             com = new CmdSlap();
         else if (isEqual(name, "warn"))
@@ -355,7 +355,7 @@ public class Necessities extends JavaPlugin {
         YamlConfiguration config = YamlConfiguration.loadConfiguration(configFile);
         if (com instanceof WorldCmd && config.contains("Necessities.WorldManager") && !config.getBoolean("Necessities.WorldManager"))
             com = new DisabledCmd();
-        return com;
+        return com == null ? (sender, args) -> false : com;
     }
 
     @Override

@@ -10,19 +10,17 @@ import org.bukkit.command.CommandSender;
 
 import java.util.List;
 
-public class Cmd {
-    protected UserManager um = new UserManager();
-    protected RankManager rm = new RankManager();
-    protected Utils form = new Utils();
-    protected Variables var = new Variables();
-    protected Console console = new Console();
-    protected GetUUID get = new GetUUID();
+public interface Cmd {
+    UserManager um = new UserManager();
+    RankManager rm = new RankManager();
+    Utils form = new Utils();
+    Variables var = new Variables();
+    Console console = new Console();
+    GetUUID get = new GetUUID();
 
-    public boolean commandUse(CommandSender sender, String[] args) {
-        return false;
-    }
+    boolean commandUse(CommandSender sender, String[] args);
 
-    public List<String> tabComplete(CommandSender sender, String[] args) {
+    default List<String> tabComplete(CommandSender sender, String[] args) {
         return null;
     }
 }
