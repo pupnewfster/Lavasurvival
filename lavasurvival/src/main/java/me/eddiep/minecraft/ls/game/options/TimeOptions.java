@@ -7,7 +7,7 @@ public class TimeOptions extends BaseOptions {
         return new TimeOptions();
     }
 
-    TimeOptions() { }
+    private TimeOptions() { }
 
     public long getStartTimeTick() {
         return startTimeTick;

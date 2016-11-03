@@ -11,7 +11,6 @@ import org.bukkit.Bukkit;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
-import java.util.concurrent.Callable;
 
 public class Updater implements UpdateNotifier {
     @Override
@@ -27,17 +26,10 @@ public class Updater implements UpdateNotifier {
     @Override
     public Schedule<UpdateType> shouldPatch(UpdateType updateType, UBot uBot) {
         if (updateType == UpdateType.BUGFIX) {
-
             Lavasurvival.log("BugFix Patch detected! Will patch when server is empty");
             //Only patch bugs when the server is empty
-            return Schedule.when(new Callable<Boolean>() {
-                @Override
-                public Boolean call() throws Exception {
-                    return Bukkit.getOnlinePlayers().size() == 0;
-                }
-            });
+            return Schedule.when(() -> Bukkit.getOnlinePlayers().size() == 0);
         } else if (updateType == UpdateType.MINOR) {
-
             Lavasurvival.log("Minor Patch detected! Will patch when server is empty OR at midnight");
             //Patch minor updates when the server is empty or when it's midnight
             Calendar date = new GregorianCalendar();
@@ -49,12 +41,9 @@ public class Updater implements UpdateNotifier {
 
             final Date midnight = date.getTime();
 
-            return Schedule.when(new Callable<Boolean>() {
-                @Override
-                public Boolean call() throws Exception {
-                    Date today = new Date();
-                    return Bukkit.getOnlinePlayers().size() == 0 || today.after(midnight);
-                }
+            return Schedule.when(() -> {
+                Date today = new Date();
+                return Bukkit.getOnlinePlayers().size() == 0 || today.after(midnight);
             });
 
             /*return Schedule.combind(

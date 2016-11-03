@@ -18,10 +18,8 @@ public class Glicko2 {
     public static Glicko2 getInstance() {
         if (INSTANCE != null)
             return INSTANCE;
-
         INSTANCE = new Glicko2();
         FileConfiguration config = Lavasurvival.INSTANCE.getConfig();
-
         INSTANCE.tau = config.getDouble("glicko.tau", 0.5);
         INSTANCE.default_rating = config.getInt("glicko.defaultRank", 1500);
         INSTANCE.default_rd = config.getInt("glicko.defaultDeviation", 350);

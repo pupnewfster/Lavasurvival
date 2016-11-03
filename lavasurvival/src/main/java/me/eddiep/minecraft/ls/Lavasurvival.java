@@ -68,17 +68,15 @@ public class Lavasurvival extends JavaPlugin {
     private CancelToken ubotCancelToken;
     public boolean updating;
 
-    public void updateMoneyView(Player player) {
+    private void updateMoneyView(Player player) {
         Inventory inv = player.getInventory();
-
         int index = inv.contains(Material.GOLD_INGOT) ? inv.first(Material.GOLD_INGOT) : -1;
-
         if (index == -1) {
             ItemStack item = new ItemStack(Material.GOLD_INGOT);
             ItemMeta meta = item.getItemMeta();
             meta.setDisplayName(ChatColor.GOLD + "Balance");
             ArrayList<String> lore = new ArrayList<>();
-            lore.add(ChatColor.ITALIC + "Current Balance: " + ChatColor.RESET + econ.format(econ.getBalance(player)));
+            lore.add(ChatColor.ITALIC + "Current Balance: " + ChatColor.RESET + this.econ.format(this.econ.getBalance(player)));
             meta.setLore(lore);
             item.setItemMeta(meta);
             inv.setItem(inv.firstEmpty(), item);
@@ -88,15 +86,14 @@ public class Lavasurvival extends JavaPlugin {
         ItemStack item = inv.getItem(index);
         ItemMeta meta = item.getItemMeta();
         ArrayList<String> lore = new ArrayList<>();
-        lore.add(ChatColor.ITALIC + "Current Balance: " + ChatColor.RESET + econ.format(econ.getBalance(player)));
+        lore.add(ChatColor.ITALIC + "Current Balance: " + ChatColor.RESET + this.econ.format(this.econ.getBalance(player)));
         meta.setLore(lore);
         item.setItemMeta(meta);
     }
 
     public void withdrawAndUpdate(Player player, double price) {
-        econ.withdrawPlayer(player, price);
+        this.econ.withdrawPlayer(player, price);
         updateMoneyView(player);
-
         if (Necessities.isTracking()) {
             Necessities.trackActionWithValue(player, "Economy", -price, -price);
         }
@@ -139,36 +136,30 @@ public class Lavasurvival extends JavaPlugin {
             Rise rise = new Rise();
             rise.prepare();
             rise.start();
-            running = true;
+            this.running = true;
         } else //Only schedule a listener if no maps. If maps then it already is initialized through Gamemode.prepare()
             getServer().getPluginManager().registerEvents(new PlayerListener(), this);
     }
 
     private boolean setupPhysics() {
-        physics = (ClassicPhysics) Bukkit.getPluginManager().getPlugin("ClassicPhysics");
-
-        return physics != null;
+        return (this.physics = (ClassicPhysics) Bukkit.getPluginManager().getPlugin("ClassicPhysics")) != null;
     }
 
     @Override
     public void onDisable() {
-        if (running) {
+        if (this.running) {
             log("Stopping game..");
             Gamemode.getCurrentGame().forceEnd();
             log("Cleaning up..");
             //ubotCancelToken.cancel();
             Gamemode.cleanup();
             ShopFactory.cleanup();
-
-            for (UUID uuid : setups.keySet())
-                setups.get(uuid).end();
-            setups.clear();
-
-            userManager.saveAll();
-
+            this.setups.keySet().forEach(uuid -> this.setups.get(uuid).end());
+            this.setups.clear();
+            this.userManager.saveAll();
             log("Disabled");
         }
-        running = false;
+        this.running = false;
     }
 
     private void setRules() {
@@ -184,7 +175,7 @@ public class Lavasurvival extends JavaPlugin {
                 "6. No leaving the map." + "\n" +
                 "7. No blocking spawn." + "\n" +
                 "8. Please ask before entering someone else's shelter." + "\n");
-        rules.setItemMeta(meta);
+        this.rules.setItemMeta(meta);
     }
 
     private void setupShops() {
@@ -210,7 +201,7 @@ public class Lavasurvival extends JavaPlugin {
     }
 
     private void init() {
-        commands = new Cmd[] {
+        this.commands = new Cmd[] {
                 new CmdEndGame(),
                 new CmdLVote(),
                 new CmdRules(),
@@ -230,12 +221,12 @@ public class Lavasurvival extends JavaPlugin {
             } catch (Exception e) {
                 e.printStackTrace();
             }
-        userManager = new UserManager();
-        um = new com.crossge.necessities.RankManager.UserManager();
-        rm = new RankManager();
-        uuiDs = new GetUUID();
-        hide = new CmdHide();
-        userManager.readUsers();
+        this.userManager = new UserManager();
+        this.um = new com.crossge.necessities.RankManager.UserManager();
+        this.rm = new RankManager();
+        this.uuiDs = new GetUUID();
+        this.hide = new CmdHide();
+        this.userManager.readUsers();
 
         //log("Starting UBot");
         //UBot ubot = new UBot(new File("/root/ubot/ls1/Lavasurvival"), new Updater(), new UBotLogger());
@@ -248,48 +239,48 @@ public class Lavasurvival extends JavaPlugin {
         RegisteredServiceProvider<Economy> rsp = getServer().getServicesManager().getRegistration(Economy.class);
         if (rsp == null)
             return false;
-        econ = rsp.getProvider();
-        return econ != null;
+        this.econ = rsp.getProvider();
+        return (this.econ = rsp.getProvider()) != null;
     }
 
     public ItemStack getRules() {
-        return rules;
+        return this.rules;
     }
 
     public Economy getEconomy() {
-        return econ;
+        return this.econ;
     }
 
     public GetUUID getUUIDs() {
-        return uuiDs;
+        return this.uuiDs;
     }
 
     public UserManager getUserManager() {
-        return userManager;
+        return this.userManager;
     }
 
     public CmdHide getHide() {
-        return hide;
+        return this.hide;
     }
 
     public com.crossge.necessities.RankManager.UserManager getNecessitiesUserManager() {
-        return um;
+        return this.um;
     }
 
     public RankManager getRankManager() {
-        return rm;
+        return this.rm;
     }
 
     public void removeFromSetup(UUID uuid) {
-        setups.remove(uuid);
+        this.setups.remove(uuid);
     }
 
     public void addToSetup(UUID uuid, SetupMap setup) {
-        setups.put(uuid, setup);
+        this.setups.put(uuid, setup);
     }
 
     public HashMap<UUID, SetupMap> getSetups() {
-        return setups;
+        return this.setups;
     }
 
     public boolean onCommand(CommandSender sender, Command cmd, String alias, String[] args) {
@@ -305,7 +296,7 @@ public class Lavasurvival extends JavaPlugin {
     }
 
     private Cmd getCmd(String name) {
-        for (Cmd possible : commands) {
+        for (Cmd possible : this.commands) {
             if (possible.getName().equalsIgnoreCase(name))
                 return possible;
         }
@@ -313,11 +304,11 @@ public class Lavasurvival extends JavaPlugin {
     }
 
     public ClassicPhysics getPhysics() {
-        return physics;
+        return this.physics;
     }
 
     public ClassicPhysicsHandler getPhysicsHandler() {
-        return physics.getPhysicsHandler();
+        return this.physics.getPhysicsHandler();
     }
 
     public static void warn(String s) {
@@ -335,7 +326,7 @@ public class Lavasurvival extends JavaPlugin {
     }
 
     public void stopUbot() {
-        ubotCancelToken.cancel();
+        this.ubotCancelToken.cancel();
     }
 
     public void depositPlayer(Player player, double reward) {

@@ -23,42 +23,34 @@ public class Rise extends Gamemode {
 
     @Override
     public void onStart() {
-        doubleReward = Math.random() < 0.25;
+        this.doubleReward = Math.random() < 0.25;
         if (getScoreboard().getObjective("game") == null)
-            objective = getScoreboard().registerNewObjective("game", "dummy");
+            this.objective = getScoreboard().registerNewObjective("game", "dummy");
         else
-            objective = getScoreboard().getObjective("game");
-        objective.setDisplaySlot(DisplaySlot.SIDEBAR);
-        objective.setDisplayName("Prepare Time");
-        bonusScore = objective.getScore(ChatColor.GOLD + "" + ChatColor.BOLD + "Reward Bonus");
-        layersLeft = objective.getScore(ChatColor.RED + "" + ChatColor.BOLD + "Layers Left");
-
-        type = "Rise";
-
+            this.objective = getScoreboard().getObjective("game");
+        this.objective.setDisplaySlot(DisplaySlot.SIDEBAR);
+        this.objective.setDisplayName("Prepare Time");
+        this.bonusScore = this.objective.getScore(ChatColor.GOLD + "" + ChatColor.BOLD + "Reward Bonus");
+        this.layersLeft = this.objective.getScore(ChatColor.RED + "" + ChatColor.BOLD + "Layers Left");
+        this.type = "Rise";
         super.onStart();
-
-        duration = getCurrentMap().getRiseOptions().generateRandomPrepareTime();
-        timeOut = getCurrentMap().getRiseOptions().generateRandomRiseTime();
+        this.duration = getCurrentMap().getRiseOptions().generateRandomPrepareTime();
+        this.timeOut = getCurrentMap().getRiseOptions().generateRandomRiseTime();
         globalMessage("The current gamemode is " + ChatColor.RED + ChatColor.BOLD + "RISE");
         globalMessage("The " + (LAVA ? "lava" : "water") + " will rise every " + ChatColor.DARK_RED + TimeUtils.toFriendlyTime(timeOut));
-        globalMessage("You have " + ChatColor.DARK_RED + TimeUtils.toFriendlyTime(duration) + ChatColor.RESET + " to prepare!");
-        lastEvent = System.currentTimeMillis();
-        lastMinute = 0;
-        bonus = Gamemode.RANDOM.nextInt(80) + 50;
-        bonusScore.setScore(bonus);
-        layersLeft.setScore(getCurrentMap().getHeight());
-
-        if (doubleReward) {
-            objective.getScore(ChatColor.GOLD + "" + ChatColor.BOLD + "Double Reward!");
-        }
-
+        globalMessage("You have " + ChatColor.DARK_RED + TimeUtils.toFriendlyTime(this.duration) + ChatColor.RESET + " to prepare!");
+        this.lastEvent = System.currentTimeMillis();
+        this.lastMinute = 0;
+        this.bonus = Gamemode.RANDOM.nextInt(80) + 50;
+        this.bonusScore.setScore(this.bonus);
+        this.layersLeft.setScore(getCurrentMap().getHeight());
+        if (this.doubleReward)
+            this.objective.getScore(ChatColor.GOLD + "" + ChatColor.BOLD + "Double Reward!");
         Gamemode.getPlayerListener().survival = false;
-
-        if (doubleReward) {
+        if (this.doubleReward) {
             globalMessage("" + ChatColor.GREEN + ChatColor.BOLD + "All rewards this round are doubled!");
             globalMessage("but.." + ChatColor.RED + ChatColor.BOLD + "THE PREPARE TIME HAS BEEN CUT IN HALF");
-
-            duration *= 0.5;
+            this.duration *= 0.5;
         }
         /*if (Gamemode.getPlayerListener().survival)
             globalMessage("The building style will be " + ChatColor.RED + "" + ChatColor.BOLD + "SURVIVAL STYLE");
@@ -74,108 +66,84 @@ public class Rise extends Gamemode {
     @Override
     public void playerJoin(Player player) {
         super.playerJoin(player);
-        bonus += Gamemode.RANDOM.nextInt(10);
-        bonusScore.setScore(bonus);
+        this.bonus += Gamemode.RANDOM.nextInt(10);
+        this.bonusScore.setScore(this.bonus);
     }
 
     @Override
     public void addToBonus(double takeOut) {
-        bonus += takeOut;
-        bonusScore.setScore(bonus);
+        this.bonus += takeOut;
+        this.bonusScore.setScore(this.bonus);
     }
 
     @Override
     public boolean isRewardDoubled() {
-        return doubleReward;
+        return this.doubleReward;
     }
 
     @Override
     public void endRound() {
-        objective.unregister();
-        objective = null;
-        Bukkit.getScheduler().cancelTask(sched);
+        this.objective.unregister();
+        this.objective = null;
+        Bukkit.getScheduler().cancelTask(this.sched);
         super.endRound();
     }
 
     @Override
     public void onTick() {
-        if (objective == null)
+        if (this.objective == null)
             return;
-
-        long since = System.currentTimeMillis() - lastEvent;
-
-        int minutes = (int) (((duration - since) / 1000) / 60);
-        int seconds = (int) (((duration - since) / 1000) % 60);
-
+        long since = System.currentTimeMillis() - this.lastEvent;
+        int minutes = (int) ((duration - since) / 60000), seconds = (int) (((duration - since) / 1000) % 60);
         String time = (minutes < 10 ? "0" + minutes : minutes) + ":" + (seconds < 10 ? "0" + seconds : seconds);
-
         if (isRoundEnding()) {
-            objective.setDisplayName("Round Ends In: " + ChatColor.BOLD + time);
+            this.objective.setDisplayName("Round Ends In: " + ChatColor.BOLD + time);
             return;
         }
-        objective.setDisplayName((!super.poured ? "Prepare Time: " : "Next Pour: ") + ChatColor.BOLD + time);
-
-        if (!super.poured && since < duration) {
+        this.objective.setDisplayName((!super.poured ? "Prepare Time: " : "Next Pour: ") + ChatColor.BOLD + time);
+        if (!super.poured && since < this.duration) {
             int nextMinute = (int) Math.floor((since / 1000.0) / 60.0);
-            if (nextMinute != lastMinute) {
-                lastMinute = nextMinute;
-
-                List<Location> locations = getCurrentMap().getRiseOptions().getSpawnLocation(0, lvl - getCurrentMap().getHeight(), 0);
+            if (nextMinute != this.lastMinute) {
+                this.lastMinute = nextMinute;
+                List<Location> locations = getCurrentMap().getRiseOptions().getSpawnLocation(0, this.lvl - getCurrentMap().getHeight(), 0);
                 getCurrentWorld().strikeLightningEffect(locations.get(RANDOM.nextInt(locations.size()))); //Changed to just effect not to kill unknowing player nearby
                 globalMessage("The " + (LAVA ? "lava" : "water") + " will rise in " + ChatColor.DARK_RED + TimeUtils.toFriendlyTime(duration - since));
             }
         } else if (!super.poured) {
             super.poured = true;
             globalMessage(ChatColor.DARK_RED + "Here comes the " + (LAVA ? "lava" : "water") + "!");
-
-            duration = timeOut; //The duration will not change
-            objective.setDisplayName("Time Till Next Pour");
-            pourAndAdvance(timeOut / 1000L);
+            this.duration = this.timeOut; //The duration will not change
+            this.objective.setDisplayName("Time Till Next Pour");
+            pourAndAdvance(this.timeOut / 1000L);
         }
     }
 
     private void liquidUp(final long time) {
-        sched = Bukkit.getScheduler().scheduleSyncDelayedTask(Lavasurvival.INSTANCE, new Runnable() {
-            @Override
-            public void run() {
-                pourAndAdvance(time);
-            }
-        }, 20 * time);
+        this.sched = Bukkit.getScheduler().scheduleSyncDelayedTask(Lavasurvival.INSTANCE, () -> pourAndAdvance(time), 20 * time);
     }
 
     private void pourAndAdvance(long time) {
         List<Location> locs = getCurrentMap().getRiseOptions().getSpawnLocation(0, lvl - getCurrentMap().getHeight(), 0);
-
         int highestCurrentY = locs.get(0).getBlockY();
         for (Location loc : locs) {
             if (loc.getBlockY() > highestCurrentY)
                 highestCurrentY = loc.getBlockY();
         }
-
-        //final Location loc = getCurrentMap().getLavaSpawnAsLocation(0, lvl - getCurrentMap().getHeight(), 0);
-
         int lavaY = getCurrentMap().getRiseOptions().getHighestLocation().getBlockY();
-
         if (highestCurrentY > lavaY) { //If we have passed the original lava spawn, that means the previous pour was the last one
             if (!isRoundEnding()) {
-                lastEvent = System.currentTimeMillis(); //Set the last event to now
-                duration = getCurrentMap().getRiseOptions().generateRandomEndTime() / 1000L;
-                super.endRoundIn(duration);
-                duration *= 1000L;
+                this.lastEvent = System.currentTimeMillis(); //Set the last event to now
+                this.duration = getCurrentMap().getRiseOptions().generateRandomEndTime() / 1000L;
+                super.endRoundIn(this.duration);
+                this.duration *= 1000L;
             }
             return;
         }
-
-        for (Location location : locs) {
-            Lavasurvival.INSTANCE.getPhysicsHandler().forcePlaceClassicBlockAt(location, getMat());
-        }
-
-
-        lastEvent = System.currentTimeMillis(); //Set the last event to now
+        locs.forEach(l -> Lavasurvival.INSTANCE.getPhysicsHandler().forcePlaceClassicBlockAt(l, getMat()));
+        this.lastEvent = System.currentTimeMillis(); //Set the last event to now
         getCurrentWorld().strikeLightningEffect(locs.get(RANDOM.nextInt(locs.size()))); //Actions are better than words :3
-
-        lvl += getCurrentMap().getRiseOptions().getLayerCount();
-        layersLeft.setScore(lavaY - highestCurrentY);
+        this.lvl += getCurrentMap().getRiseOptions().getLayerCount();
+        this.layersLeft.setScore(lavaY - highestCurrentY);
         if (highestCurrentY <= lavaY)
             liquidUp(time); //Only advance up if we are still less than the actual lava spawn or if we are at the lava spawn (the next check will end the game, see above)
     }
@@ -183,12 +151,12 @@ public class Rise extends Gamemode {
     @Override
     public double calculateReward(Player player, int blockCount) {
         double multiplier = 1.0;//In case we want a triple reward
-        if (doubleReward)
+        if (this.doubleReward)
             multiplier = 2.0;
-        return (super.getDefaultReward(player, blockCount) + bonus) * multiplier;
+        return (super.getDefaultReward(player, blockCount) + this.bonus) * multiplier;
     }
 
     public boolean isRoundEnding() {
-        return isEnding;
+        return this.isEnding;
     }
 }

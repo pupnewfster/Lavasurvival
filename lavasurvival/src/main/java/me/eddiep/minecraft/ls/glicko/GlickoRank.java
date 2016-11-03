@@ -36,7 +36,6 @@ public class GlickoRank {
     private List<Double> workingAdvRanks = new ArrayList<>();
     private List<Double> workingAdvRds = new ArrayList<>();
 
-
     private List<Double> outcomes = new ArrayList<>();
     private List<Double> advRanks = new ArrayList<>();
     private List<Double> advRds = new ArrayList<>();
@@ -46,7 +45,6 @@ public class GlickoRank {
     private long lastUpdate;
 
     private final Object lock = new Object();
-
 
     GlickoRank(int rating, double rd, double vol) {
         setRating(rating);

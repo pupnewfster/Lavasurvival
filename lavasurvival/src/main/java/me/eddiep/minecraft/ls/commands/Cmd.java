@@ -4,14 +4,12 @@ import org.bukkit.command.CommandSender;
 
 import java.util.List;
 
-public abstract class Cmd {
-    public boolean commandUse(CommandSender sender, String[] args) {
-        return false;
-    }
+public interface Cmd {
+    boolean commandUse(CommandSender sender, String[] args);
 
-    public List<String> tabComplete(CommandSender sender, String[] args) {
+    default List<String> tabComplete(CommandSender sender, String[] args) {
         return null;
     }
 
-    public abstract String getName();
+    String getName();
 }

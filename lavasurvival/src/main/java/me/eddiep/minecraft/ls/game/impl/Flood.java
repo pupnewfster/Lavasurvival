@@ -22,36 +22,31 @@ public class Flood extends Gamemode {
 
     @Override
     public void onStart() {
-        doubleReward = Math.random() < 0.25;
+        this.doubleReward = Math.random() < 0.25;
         if (getScoreboard().getObjective("game") == null)
-            objective = getScoreboard().registerNewObjective("game", "dummy");
+            this.objective = getScoreboard().registerNewObjective("game", "dummy");
         else
-            objective = getScoreboard().getObjective("game");
-        objective.setDisplaySlot(DisplaySlot.SIDEBAR);
-        objective.setDisplayName((LAVA ? "Lava" : "Water") + "Pour");
-        bonusScore = objective.getScore(ChatColor.GOLD + "" + ChatColor.BOLD + "Reward Bonus");
-
-        type = "Flood";
-
+            this.objective = getScoreboard().getObjective("game");
+        this.objective.setDisplaySlot(DisplaySlot.SIDEBAR);
+        this.objective.setDisplayName((LAVA ? "Lava" : "Water") + "Pour");
+        this.bonusScore = this.objective.getScore(ChatColor.GOLD + "" + ChatColor.BOLD + "Reward Bonus");
+        this.type = "Flood";
         super.onStart();
-
-        duration = getCurrentMap().getFloodOptions().generateRandomPrepareTime();
-        lavaPoints = getCurrentMap().getFloodOptions().getSpawnLocations();
-        //duration = Gamemode.RANDOM.nextInt(180000) + 300000;
+        this.duration = getCurrentMap().getFloodOptions().generateRandomPrepareTime();
+        this.lavaPoints = getCurrentMap().getFloodOptions().getSpawnLocations();
         globalMessage("The " + (LAVA ? "lava" : "water") + " will pour in " + ChatColor.DARK_RED + TimeUtils.toFriendlyTime(duration));
-        gameStart = System.currentTimeMillis();
-        lastMinute = 0;
+        this.gameStart = System.currentTimeMillis();
+        this.lastMinute = 0;
 
-        bonus = Gamemode.RANDOM.nextInt(80) + 50;
-        bonusScore.setScore(bonus);
+        this.bonus = Gamemode.RANDOM.nextInt(80) + 50;
+        this.bonusScore.setScore(this.bonus);
 
         Gamemode.getPlayerListener().survival = false;
 
-
-        if (doubleReward) {
+        if (this.doubleReward) {
             globalMessage("" + ChatColor.GREEN + ChatColor.BOLD + "All rewards this round are doubled!");
             globalMessage("but.." + ChatColor.RED + ChatColor.BOLD + "THE TIME HAS BEEN CUT IN HALF");
-            duration *= 0.5;
+            this.duration *= 0.5;
         }
         /*if (Gamemode.getPlayerListener().survival)
             globalMessage("The building style will be " + ChatColor.RED + "" + ChatColor.BOLD + "SURVIVAL STYLE");
@@ -62,14 +57,14 @@ public class Flood extends Gamemode {
     @Override
     public void playerJoin(Player player) {
         super.playerJoin(player);
-        bonus += Gamemode.RANDOM.nextInt(70) + 20;
-        bonusScore.setScore(bonus);
+        this.bonus += Gamemode.RANDOM.nextInt(70) + 20;
+        this.bonusScore.setScore(this.bonus);
     }
 
     @Override
     public void addToBonus(double takeOut) {
-        bonus += takeOut;
-        bonusScore.setScore(bonus);
+        this.bonus += takeOut;
+        this.bonusScore.setScore(this.bonus);
     }
 
     @Override
@@ -79,58 +74,44 @@ public class Flood extends Gamemode {
 
     @Override
     public void endRound() {
-        objective.unregister();
-        objective = null;
+        this.objective.unregister();
+        this.objective = null;
         super.endRound();
     }
 
     @Override
     public void onTick() {
-        if (objective == null)
+        if (this.objective == null)
             return;
-
-        long since = System.currentTimeMillis() - gameStart;
-
-        int minutes = (int) (((duration - since) / 1000) / 60);
-        int seconds = (int) (((duration - since) / 1000) % 60);
-
+        long since = System.currentTimeMillis() - this.gameStart;
+        int minutes = (int) ((this.duration - since) / 60000), seconds = (int) (((this.duration - since) / 1000) % 60);
         String time = (minutes < 10 ? "0" + minutes : minutes) + ":" + (seconds < 10 ? "0" + seconds : seconds);
+        if (!super.poured)
+            this.objective.setDisplayName((LAVA ? "Lava" : "Water") + " Pour: " + ChatColor.BOLD + time);
+        else
+            this.objective.setDisplayName("Round Ends In: " + ChatColor.BOLD + time);
 
-        if (!super.poured) {
-            objective.setDisplayName((LAVA ? "Lava" : "Water") + " Pour: " + ChatColor.BOLD + time);
-        } else {
-            objective.setDisplayName("Round Ends In: " + ChatColor.BOLD + time);
-        }
-
-
-        if (!super.poured && since < duration) {
-            int nextMinute = (int) Math.floor((since / 1000.0) / 60.0);
-            if (nextMinute != lastMinute) {
-                lastMinute = nextMinute;
-
-                getCurrentWorld().strikeLightningEffect(lavaPoints.get(RANDOM.nextInt(lavaPoints.size()))); //Changed to just effect not to kill unknowing player nearby
-                globalMessage("The " + (LAVA ? "lava" : "water") + " will pour in " + ChatColor.DARK_RED + TimeUtils.toFriendlyTime(duration - since));
+        if (!super.poured && since < this.duration) {
+            int nextMinute = (int) Math.floor(since / 60000.0);
+            if (nextMinute != this.lastMinute) {
+                this.lastMinute = nextMinute;
+                getCurrentWorld().strikeLightningEffect(this.lavaPoints.get(RANDOM.nextInt(this.lavaPoints.size()))); //Changed to just effect not to kill unknowing player nearby
+                globalMessage("The " + (LAVA ? "lava" : "water") + " will pour in " + ChatColor.DARK_RED + TimeUtils.toFriendlyTime(this.duration - since));
             }
         } else if (!super.poured) {
             super.poured = true;
             globalMessage(ChatColor.DARK_RED + "Here comes the " + (LAVA ? "lava" : "water") + "!");
-
-            gameStart = System.currentTimeMillis();
-
-            for (Location location : lavaPoints) {
-                Lavasurvival.INSTANCE.getPhysicsHandler().forcePlaceClassicBlockAt(location, getMat());
-            }
-
-            duration = getCurrentMap().getFloodOptions().generateRandomEndTime();
-            objective.setDisplayName("Round Ends In: " + ChatColor.BOLD + time);
+            this.gameStart = System.currentTimeMillis();
+            this.lavaPoints.forEach(l -> Lavasurvival.INSTANCE.getPhysicsHandler().forcePlaceClassicBlockAt(l, getMat()));
+            this.duration = getCurrentMap().getFloodOptions().generateRandomEndTime();
+            this.objective.setDisplayName("Round Ends In: " + ChatColor.BOLD + time);
         } else {
-            if (since < duration) {
-                int nextMinute = (int) Math.floor((since / 1000.0) / 60.0);
-                if (nextMinute != lastMinute) {
-                    lastMinute = nextMinute;
-
-                    getCurrentWorld().strikeLightningEffect(lavaPoints.get(RANDOM.nextInt(lavaPoints.size()))); //Changed to just effect not to kill unknowing player nearby
-                    globalMessage("The round will end in " + ChatColor.DARK_RED + TimeUtils.toFriendlyTime(duration - since));
+            if (since < this.duration) {
+                int nextMinute = (int) Math.floor(since / 60000.0);
+                if (nextMinute != this.lastMinute) {
+                    this.lastMinute = nextMinute;
+                    getCurrentWorld().strikeLightningEffect(this.lavaPoints.get(RANDOM.nextInt(this.lavaPoints.size()))); //Changed to just effect not to kill unknowing player nearby
+                    globalMessage("The round will end in " + ChatColor.DARK_RED + TimeUtils.toFriendlyTime(this.duration - since));
                 }
             } else
                 endRound();
@@ -140,8 +121,8 @@ public class Flood extends Gamemode {
     @Override
     public double calculateReward(Player player, int blockCount) {
         double multiplier = 1.0;//In case we want a triple reward
-        if (doubleReward)
+        if (this.doubleReward)
             multiplier = 2.0;
-        return (super.getDefaultReward(player, blockCount) + bonus) * multiplier;
+        return (super.getDefaultReward(player, blockCount) + this.bonus) * multiplier;
     }
 }

@@ -6,7 +6,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-public class CmdSpawn extends Cmd {
+public class CmdSpawn implements Cmd {
     @Override
     public boolean commandUse(CommandSender sender, String[] args) {
         if (sender instanceof Player) {

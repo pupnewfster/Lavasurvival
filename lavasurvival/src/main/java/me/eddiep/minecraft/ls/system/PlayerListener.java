@@ -42,7 +42,7 @@ import java.util.List;
 import java.util.Random;
 
 public class PlayerListener implements Listener {
-    public final ArrayList<Material> invalidBlocks = new ArrayList<>(Arrays.asList(new Material[]{
+    private final ArrayList<Material> invalidBlocks = new ArrayList<>(Arrays.asList(new Material[]{
             Material.OBSIDIAN,
             Material.STONE_PLATE,
             Material.GOLD_PLATE,
@@ -111,7 +111,7 @@ public class PlayerListener implements Listener {
             event.setCancelled(true);
             return;
         }
-        if (!survival && event.getEntity() instanceof Player && Gamemode.getCurrentGame() != null && Gamemode.getCurrentGame().isAlive((Player) event.getEntity())) {
+        if (!this.survival && event.getEntity() instanceof Player && Gamemode.getCurrentGame() != null && Gamemode.getCurrentGame().isAlive((Player) event.getEntity())) {
             if (!event.getCause().equals(EntityDamageEvent.DamageCause.VOID)) {
                 event.setCancelled(true);
                 if (event.getCause().equals(EntityDamageEvent.DamageCause.LAVA))
@@ -143,12 +143,12 @@ public class PlayerListener implements Listener {
                     event.getPlayer().sendMessage(ChatColor.RED + "" + ChatColor.BOLD + "You are not allowed to build in spawn!");
                     return;
                 }
-                UserInfo u = um.getUser(event.getPlayer().getUniqueId());
+                UserInfo u = this.um.getUser(event.getPlayer().getUniqueId());
                 if (System.currentTimeMillis() - u.getLastBreak() <= 100)//So that two blocks don't break instantly, may need to be adjusted
                     return;
                 u.setLastBreak(System.currentTimeMillis());
                 u.incrimentBlockCount();
-                if (survival) {
+                if (this.survival) {
                     Inventory inventory = event.getPlayer().getInventory();
                     int index = inventory.first(block.getType());
                     if (index == -1)
@@ -194,13 +194,13 @@ public class PlayerListener implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void dropItem(PlayerDropItemEvent event) {
-        if (!survival)
+        if (!this.survival)
             event.setCancelled(true);
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void pickupItem(PlayerPickupItemEvent event) {//Stops items from being picked up if they somehow drop
-        if (!survival) {
+        if (!this.survival) {
             event.getItem().remove();//Remove the dropped item
             event.setCancelled(true);
         }
@@ -276,18 +276,18 @@ public class PlayerListener implements Listener {
             event.getBlock().setMetadata("player_placed", new FixedMetadataValue(Lavasurvival.INSTANCE, event.getPlayer().getUniqueId()));
             if (event.getBlock().getType().toString().contains("DOOR") && event.getBlock().getRelative(BlockFace.UP).getType().equals(event.getBlock().getType()))
                 event.getBlock().getRelative(BlockFace.UP).setMetadata("player_placed", new FixedMetadataValue(Lavasurvival.INSTANCE, event.getPlayer().getUniqueId()));
-            if (!survival) {
+            if (!this.survival) {
                 int index = event.getPlayer().getInventory().first(event.getItemInHand());
                 event.getPlayer().getInventory().setItem(index, event.getPlayer().getInventory().getItem(index).clone());
             }
         }
-        UserInfo u = um.getUser(event.getPlayer().getUniqueId());
+        UserInfo u = this.um.getUser(event.getPlayer().getUniqueId());
         u.incrimentBlockCount();
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void playerQuit(PlayerQuitEvent event) {
-        um.getUser(event.getPlayer().getUniqueId()).logOut();
+        this.um.getUser(event.getPlayer().getUniqueId()).logOut();
         if (Gamemode.getCurrentGame().allDead() && !Gamemode.getCurrentGame().hasEnded())
             Gamemode.getCurrentGame().endRound();
         Gamemode.getCurrentGame().removeBars(event.getPlayer());
@@ -302,8 +302,8 @@ public class PlayerListener implements Listener {
             return;
         }
 
-        um.addUser(player);
-        um.forceParseUser(player);
+        this.um.addUser(player);
+        this.um.forceParseUser(player);
         player.setLevel(0);
         player.setExp(0);
 
@@ -345,7 +345,7 @@ public class PlayerListener implements Listener {
         Location from = event.getFrom(), to = event.getTo();
         boolean locationChanged = Math.abs(from.getX() - to.getX()) > 0.1 || Math.abs(from.getY() - to.getY()) > 0.1 || Math.abs(from.getZ() - to.getZ()) > 0.1;
         if (locationChanged && Gamemode.getCurrentGame() != null && Gamemode.DAMAGE != 0 && Gamemode.getCurrentGame().isAlive(event.getPlayer())) {
-            UserInfo u = um.getUser(event.getPlayer().getUniqueId());
+            UserInfo u = this.um.getUser(event.getPlayer().getUniqueId());
             if (((to.getBlock().getType().equals(Material.WATER) || to.getBlock().getType().equals(Material.STATIONARY_WATER)) && to.getBlock().hasMetadata("classic_block")) ||
                 ((to.getBlock().getRelative(BlockFace.UP).getType().equals(Material.WATER) || to.getBlock().getRelative(BlockFace.UP).getType().equals(Material.STATIONARY_WATER)) &&
                 to.getBlock().getRelative(BlockFace.UP).hasMetadata("classic_block"))) {
@@ -366,7 +366,7 @@ public class PlayerListener implements Listener {
             return;
         Location loc = event.getLocation().getBlock().getLocation();
         Bukkit.getOnlinePlayers().stream().filter(p -> Gamemode.getCurrentGame().isAlive(p) && (p.getLocation().getBlock().getLocation().equals(loc) || p.getLocation().getBlock().getRelative(BlockFace.UP).getLocation().equals(loc))).forEach(p -> {
-            UserInfo u = um.getUser(p.getUniqueId());
+            UserInfo u = this.um.getUser(p.getUniqueId());
             if (!u.isInWater()) {
                 if (!PlayerStatusManager.isInvincible(p))
                     ((CraftPlayer) p).getHandle().damageEntity(DamageSource.OUT_OF_WORLD, (float) Gamemode.DAMAGE);
@@ -383,7 +383,7 @@ public class PlayerListener implements Listener {
             Gamemode.getCurrentGame().setDead(event.getEntity());
             if (event.getDeathMessage().contains("fell out of the world"))
                 event.setDeathMessage(event.getDeathMessage().replace("fell out of the world", ChatColor.YELLOW + "died to the elements."));
-            UserInfo u = um.getUser(event.getEntity().getUniqueId());
+            UserInfo u = this.um.getUser(event.getEntity().getUniqueId());
             u.setInWater(false);
             event.getDrops().clear();
             event.setDroppedExp(0);

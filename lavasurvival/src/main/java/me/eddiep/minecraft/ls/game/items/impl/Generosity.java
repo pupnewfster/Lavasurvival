@@ -4,7 +4,6 @@ import me.eddiep.minecraft.ls.Lavasurvival;
 import me.eddiep.minecraft.ls.game.Gamemode;
 import me.eddiep.minecraft.ls.game.items.LavaItem;
 import me.eddiep.minecraft.ls.ranks.UserInfo;
-import me.eddiep.minecraft.ls.ranks.UserManager;
 import net.md_5.bungee.api.ChatColor;
 import net.minecraft.server.v1_10_R1.NBTTagCompound;
 import org.bukkit.Material;
@@ -13,24 +12,19 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 public class Generosity extends LavaItem {
-    UserManager um = new UserManager();
     @Override
     public boolean consume(Player owner) {
-        UserInfo info = um.getUser(owner.getUniqueId());
-
+        UserInfo info = Lavasurvival.INSTANCE.getUserManager().getUser(owner.getUniqueId());
         if (info.wasGenerous()) {
             owner.sendMessage("" + ChatColor.BOLD + ChatColor.RED + "You can only use this item once per round !");
             return false;
         }
-
         Gamemode gamemode = Gamemode.getCurrentGame();
         if (gamemode.isEndGame()) {
             owner.sendMessage("" + ChatColor.BOLD + ChatColor.RED + "You can't use this item during end-game !");
             return false;
         }
-
         info.usedGenerosity();
-
         double bal = Lavasurvival.INSTANCE.getEconomy().getBalance(owner);
         double cost = Math.round(bal * 0.07);
         double bonus = Math.round(bal * 0.05);

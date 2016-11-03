@@ -23,47 +23,46 @@ public class SetupMap implements Listener {
     public SetupMap(Player setupPlayer, Plugin plugin) {
         this.setupPlayer = setupPlayer;
         plugin.getServer().getPluginManager().registerEvents(this, plugin);
-        map = new LavaMap();
+        this.map = new LavaMap();
     }
 
     public void start() {
         sendMessage("Welcome to the map setup wizard!");
         sendMessage("The first thing we need to do is figure out where the lava will pour.");
         instruction("Place a block where the lava will spawn.");
-        map.setWorldName(setupPlayer.getWorld().getName());
-        step = 0;
+        this.map.setWorldName(this.setupPlayer.getWorld().getName());
+        this.step = 0;
     }
 
     private void step2() {
         sendMessage("Ok.");
         sendMessage("Next, I need to know the height of the map, relative to the lava spawn.");
         instruction("Find a spot on the map where there are no blocks blocking a straight path to the floor of the map and say 'ready' in chat.");
-        step = 1;
+        this.step = 1;
     }
 
     private void step3() {
         sendMessage("Ok.");
         sendMessage("Next, I need to know the safe zone bounds and spawn.");
         instruction("Stand where you want the safe zone spawn to be, then say 'ready' in chat.");
-        step = 2;
+        this.step = 2;
     }
 
     private void step4() {
         sendMessage("Got it!");
         instruction("Lastly, what's the name of this map? Say it in the chat.");
-        step = 3;
+        this.step = 3;
     }
 
     private void finish() {
         sendMessage("Saving..");
-
         try {
-            map.save();
+            this.map.save();
         } catch (IOException e) {
             e.printStackTrace();
         }
         sendMessage("All set!");
-        Lavasurvival.INSTANCE.removeFromSetup(setupPlayer.getUniqueId());
+        Lavasurvival.INSTANCE.removeFromSetup(this.setupPlayer.getUniqueId());
         end();
     }
 
@@ -71,43 +70,39 @@ public class SetupMap implements Listener {
         AsyncPlayerChatEvent.getHandlerList().unregister(this);
         BlockBreakEvent.getHandlerList().unregister(this);
         BlockPlaceEvent.getHandlerList().unregister(this);
-        setupPlayer = null;
-        step = 0;
-        map = null;
+        this.setupPlayer = null;
+        this.step = 0;
+        this.map = null;
     }
 
     public void sendMessage(String message) {
-        setupPlayer.sendMessage(ChatColor.YELLOW + "[Map Setup] " + ChatColor.RESET + message);
+        this.setupPlayer.sendMessage(ChatColor.YELLOW + "[Map Setup] " + ChatColor.RESET + message);
     }
 
-    public void instruction(String message) {
-        setupPlayer.sendMessage(ChatColor.YELLOW + "[Map Setup] " + ChatColor.GREEN + message);
+    private void instruction(String message) {
+        this.setupPlayer.sendMessage(ChatColor.YELLOW + "[Map Setup] " + ChatColor.GREEN + message);
     }
 
     @EventHandler
     public void onChat(AsyncPlayerChatEvent event) {
-        if (event.getPlayer().equals(setupPlayer) && event.getMessage().equalsIgnoreCase("ready")) {
+        if (event.getPlayer().equals(this.setupPlayer) && event.getMessage().equalsIgnoreCase("ready")) {
             switch (step) {
                 case 1:
                     event.setCancelled(true);
-
                     sendMessage("Please wait..");
-                    int x = setupPlayer.getLocation().getBlockX();
-                    int z = setupPlayer.getLocation().getBlockZ();
-                    int startY = setupPlayer.getLocation().getBlockY();
-                    while (!setupPlayer.getWorld().getBlockAt(x, startY, z).getType().isSolid() && startY > 0)
+                    int x = this.setupPlayer.getLocation().getBlockX();
+                    int z = this.setupPlayer.getLocation().getBlockZ();
+                    int startY = this.setupPlayer.getLocation().getBlockY();
+                    while (!this.setupPlayer.getWorld().getBlockAt(x, startY, z).getType().isSolid() && startY > 0)
                         startY--;
-
-                    int dif = map.getLavaY() - startY;
-                    map.setHeight(dif);
-
+                    int dif = this.map.getLavaY() - startY;
+                    this.map.setHeight(dif);
                     step3();
                     break;
                 case 2:
                     event.setCancelled(true);
                     sendMessage("Please wait..");
-
-                    map.setMapSpawn(event.getPlayer().getLocation());
+                    this.map.setMapSpawn(event.getPlayer().getLocation());
                     World world = event.getPlayer().getWorld();
                     double minx, maxx;
                     double miny, maxy;
@@ -141,24 +136,24 @@ public class SetupMap implements Listener {
                     temp2.setY(temp2.getY() + 1);
                     temp2.setX(temp2.getX() + 1);
 
-                    map.setSafeZoneBounds(temp, temp2);
+                    this.map.setSafeZoneBounds(temp, temp2);
 
                     step4();
                     break;
             }
-        } else if (event.getPlayer().equals(setupPlayer) && step == 3) {
+        } else if (event.getPlayer().equals(this.setupPlayer) && this.step == 3) {
             event.setCancelled(true);
-            map.setName(event.getMessage());
-            sendMessage(map.getName() + "? Got it.");
+            this.map.setName(event.getMessage());
+            sendMessage(this.map.getName() + "? Got it.");
             finish();
         }
     }
 
     @EventHandler
     public void onPlace(BlockPlaceEvent event) {
-        if (event.getPlayer().equals(setupPlayer) && step == 0) {
+        if (event.getPlayer().equals(this.setupPlayer) && this.step == 0) {
             event.setCancelled(true);
-            map.setLavaSpawn(event.getBlock().getLocation());
+            this.map.setLavaSpawn(event.getBlock().getLocation());
             step2();
         }
     }
