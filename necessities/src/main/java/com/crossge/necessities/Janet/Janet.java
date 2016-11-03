@@ -15,27 +15,22 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.UUID;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 public class Janet {
     private static ArrayList<String> badwords = new ArrayList<>(), goodwords = new ArrayList<>(), ips = new ArrayList<>();
     private static HashMap<UUID, Long[]> lastChat = new HashMap<>(), lastCmd = new HashMap<>();
     private File configFile = new File("plugins/Necessities", "config.yml");
-    JanetWarn warns = new JanetWarn();
-    JanetLog log = new JanetLog();
+    private JanetWarn warns = new JanetWarn();
+    private JanetLog log = new JanetLog();
 
     public void initiate() {//now has its own function instead of reading them all every time Janet was re-initiated
         Bukkit.getConsoleSender().sendMessage(ChatColor.AQUA + "Janet initiating...");
         File customConfigFileCensors = new File("plugins/Necessities", "censors.yml");
         YamlConfiguration customConfigCensors = YamlConfiguration.loadConfiguration(customConfigFileCensors);
-        for (String word : customConfigCensors.getStringList("badwords"))
-            if (!word.equals(""))
-                badwords.add(word.toUpperCase());
-        for (String word : customConfigCensors.getStringList("goodwords"))
-            if (!word.equals(""))
-                goodwords.add(word.toUpperCase());
-        for (String ip : customConfigCensors.getStringList("ips"))
-            if (!ip.equals(""))
-                ips.add(ip);
+        badwords.addAll(customConfigCensors.getStringList("badwords").stream().filter(word -> !word.equals("")).map(String::toUpperCase).collect(Collectors.toList()));
+        goodwords.addAll(customConfigCensors.getStringList("goodwords").stream().filter(word -> !word.equals("")).map(String::toUpperCase).collect(Collectors.toList()));
+        ips.addAll(customConfigCensors.getStringList("ips").stream().filter(ip -> !ip.equals("")).collect(Collectors.toList()));
         RankManager rm = new RankManager();
         String rank = "";
         if (!rm.getOrder().isEmpty())
@@ -54,7 +49,7 @@ public class Janet {
     }
 
     private void removePlayer(UUID uuid) {//called when player disconnects
-        warns.removePlayer(uuid);
+        this.warns.removePlayer(uuid);
         lastChat.remove(uuid);
         lastCmd.remove(uuid);
     }
@@ -119,7 +114,7 @@ public class Janet {
         return internalCaps(message) ? message.toLowerCase() : message;
     }
 
-    public boolean internalCaps(String message) {
+    private boolean internalCaps(String message) {
         String orig = message.replaceAll("[^A-Z]", "");
         int s = orig.length();
         message = message.replaceAll("[^a-zA-Z]", "");
@@ -136,7 +131,7 @@ public class Janet {
         return censored;
     }
 
-    public String internalLang(String message) {
+    private String internalLang(String message) {
         String[] orig = message.replaceAll("[^a-zA-Z ]", "").toUpperCase().split(" ");
         ArrayList<String> bad = new ArrayList<>();
         for (String badword : badwords) {
@@ -286,7 +281,7 @@ public class Janet {
         return censored;
     }
 
-    public String internalAdds(String message) {
+    private String internalAdds(String message) {
         String[] orig = message.split(" ");
         String temp;
         for (int i = 0; i < orig.length; i++) {
@@ -305,7 +300,7 @@ public class Janet {
                         is.close();
                         if (validateIPAddress(u))
                             orig[i] = starIP(orig[i]);
-                    } catch (Exception e) {
+                    } catch (Exception ignored) {
                     }
             }
         }
@@ -323,16 +318,16 @@ public class Janet {
         try {
             Pattern ipAdd = Pattern.compile("^([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\." + "([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\." + "([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\." + "([01]?\\d\\d?|2[0-4]\\d|25[0-5])$");
             return ipAdd.matcher(ipAddress).matches();
-        } catch (Exception e) {
+        } catch (Exception ignored) {
         }
         return false;
     }
 
     public String logChat(UUID uuid, String message) {
         Player p = Bukkit.getPlayer(uuid);
-        YamlConfiguration config = YamlConfiguration.loadConfiguration(configFile);
+        YamlConfiguration config = YamlConfiguration.loadConfiguration(this.configFile);
         if (config.contains("Necessities.log") && config.getBoolean("Necessities.log"))
-            log.log(p.getName() + ": " + message);
+            this.log.log(p.getName() + ": " + message);
         boolean warn = true;
         String censored = message;
         if (config.getBoolean("Necessities.chatSpam") && !p.hasPermission("Necessities.spamchat"))
@@ -351,9 +346,9 @@ public class Janet {
     public String logCom(UUID uuid, String message) {
         Player p = Bukkit.getPlayer(uuid);
         String messageOrig = message;
-        YamlConfiguration config = YamlConfiguration.loadConfiguration(configFile);
+        YamlConfiguration config = YamlConfiguration.loadConfiguration(this.configFile);
         if (config.contains("Necessities.log") && config.getBoolean("Necessities.log"))
-            log.log(p.getName() + " issued server command: " + message);
+            this.log.log(p.getName() + " issued server command: " + message);
         boolean warn = false;
         String censored = message.replaceFirst(message.split(" ")[0], "").trim();
         message = message.replaceFirst(message.split(" ")[0], "").trim();
@@ -377,28 +372,28 @@ public class Janet {
             message = "Console:" + message.replaceFirst("say", "");
         else
             message = "Console issued command: " + message;
-        YamlConfiguration config = YamlConfiguration.loadConfiguration(configFile);
+        YamlConfiguration config = YamlConfiguration.loadConfiguration(this.configFile);
         if (config.contains("Necessities.log") && config.getBoolean("Necessities.log"))
-            log.log(message);
+            this.log.log(message);
     }
 
     public void logIn(UUID uuid) {
-        YamlConfiguration config = YamlConfiguration.loadConfiguration(configFile);
+        YamlConfiguration config = YamlConfiguration.loadConfiguration(this.configFile);
         if (config.contains("Necessities.log") && config.getBoolean("Necessities.log"))
-            log.log(" + " + playerInfo(Bukkit.getPlayer(uuid)) + " joined the game.");
+            this.log.log(" + " + playerInfo(Bukkit.getPlayer(uuid)) + " joined the game.");
     }
 
     public void logDeath(UUID uuid, String cause) {
-        YamlConfiguration config = YamlConfiguration.loadConfiguration(configFile);
+        YamlConfiguration config = YamlConfiguration.loadConfiguration(this.configFile);
         if (config.contains("Necessities.log") && config.getBoolean("Necessities.log"))
-            log.log(playerInfo(Bukkit.getPlayer(uuid)) + " " + cause);
+            this.log.log(playerInfo(Bukkit.getPlayer(uuid)) + " " + cause);
     }
 
     public void logOut(UUID uuid) {
         removePlayer(uuid);
-        YamlConfiguration config = YamlConfiguration.loadConfiguration(configFile);
+        YamlConfiguration config = YamlConfiguration.loadConfiguration(this.configFile);
         if (config.contains("Necessities.log") && config.getBoolean("Necessities.log"))
-            log.log(" - " + playerInfo(Bukkit.getPlayer(uuid)) + " Disconnected.");
+            this.log.log(" - " + playerInfo(Bukkit.getPlayer(uuid)) + " Disconnected.");
     }
 
     private String playerInfo(Player p) {
@@ -407,6 +402,6 @@ public class Janet {
     }
 
     private void delayedWarn(final UUID uuid, final String reason) {
-        Bukkit.getScheduler().scheduleSyncDelayedTask(Necessities.getInstance(), () -> warns.warn(uuid, reason, "Janet"));
+        Bukkit.getScheduler().scheduleSyncDelayedTask(Necessities.getInstance(), () -> this.warns.warn(uuid, reason, "Janet"));
     }
 }

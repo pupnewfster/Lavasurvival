@@ -17,7 +17,7 @@ public class RankManager {
     private File configFileRanks = new File("plugins/Necessities/RankManager", "ranks.yml"), configFileSubranks = new File("plugins/Necessities/RankManager", "subranks.yml");
 
     public void readRanks() {
-        YamlConfiguration configRanks = YamlConfiguration.loadConfiguration(configFileRanks), configSubranks = YamlConfiguration.loadConfiguration(configFileSubranks);
+        YamlConfiguration configRanks = YamlConfiguration.loadConfiguration(this.configFileRanks), configSubranks = YamlConfiguration.loadConfiguration(configFileSubranks);
         for (String rank : configRanks.getKeys(false)) {
             if (configRanks.contains(rank + ".previousRank")) {
                 if (names.contains(configRanks.getString(rank + ".previousRank")))
@@ -53,9 +53,7 @@ public class RankManager {
     private void updatePerms() {
         ArrayList<String> p = new ArrayList<>();
         for (Permission perm : Bukkit.getPluginManager().getPermissions()) {
-            for (String t : perm.getChildren().keySet())
-                if (!p.contains(t))
-                    p.add(t);
+            perm.getChildren().keySet().stream().filter(t -> !p.contains(t)).forEach(p::add);
             if (!p.contains(perm.getName())) {
                 perm.addParent("*", true);
                 p.add(perm.getName());
@@ -103,7 +101,7 @@ public class RankManager {
         if (permission.equals(""))
             return;
         UserManager um = new UserManager();
-        YamlConfiguration configRanks = YamlConfiguration.loadConfiguration(configFileRanks);
+        YamlConfiguration configRanks = YamlConfiguration.loadConfiguration(this.configFileRanks);
         List<String> perms = configRanks.getStringList(r.getName() + ".permissions");
         if (perms.contains(""))
             perms.remove("");
@@ -122,16 +120,16 @@ public class RankManager {
             um.addRankPerm(r, permission);
         }
         try {
-            configRanks.save(configFileRanks);
-        } catch (Exception e) {
+            configRanks.save(this.configFileRanks);
+        } catch (Exception ignored) {
         }
     }
 
     public void updateSubPerms(String subrank, String permission, boolean remove) {
         if (permission.equals(""))
             return;
-        YamlConfiguration configSubranks = YamlConfiguration.loadConfiguration(configFileSubranks);
-        YamlConfiguration configRanks = YamlConfiguration.loadConfiguration(configFileRanks);
+        YamlConfiguration configSubranks = YamlConfiguration.loadConfiguration(this.configFileSubranks);
+        YamlConfiguration configRanks = YamlConfiguration.loadConfiguration(this.configFileRanks);
         UserManager um = new UserManager();
         List<String> perms = configSubranks.getStringList(subrank);
         if (perms.contains(""))
@@ -146,21 +144,20 @@ public class RankManager {
             configSubranks.set(subrank, perms);
         }
         try {
-            configSubranks.save(configFileSubranks);
-        } catch (Exception e) {
+            configSubranks.save(this.configFileSubranks);
+        } catch (Exception ignored) {
         }
-        for (Rank r : order)
-            if (configRanks.contains(r.getName()) && configRanks.getStringList(r.getName() + ".subranks").contains(subrank)) {
-                r.refreshPerms();
-                um.refreshRankPerm(r);
-            }
+        order.stream().filter(r -> configRanks.contains(r.getName()) && configRanks.getStringList(r.getName() + ".subranks").contains(subrank)).forEach(r -> {
+            r.refreshPerms();
+            um.refreshRankPerm(r);
+        });
     }
 
     public void updateRankSubrank(Rank r, String name, boolean remove) {
         if (name.equals(""))
             return;
         UserManager um = new UserManager();
-        YamlConfiguration configRanks = YamlConfiguration.loadConfiguration(configFileRanks);
+        YamlConfiguration configRanks = YamlConfiguration.loadConfiguration(this.configFileRanks);
         List<String> subranks = configRanks.getStringList(r.getName() + ".subranks");
         if (subranks.contains(""))
             subranks.remove("");
@@ -172,8 +169,8 @@ public class RankManager {
             subranks.add("");
         configRanks.set(r.getName() + ".subranks", subranks);
         try {
-            configRanks.save(configFileRanks);
-        } catch (Exception e) {
+            configRanks.save(this.configFileRanks);
+        } catch (Exception ignored) {
         }
         r.refreshPerms();
         um.refreshRankPerm(r);
@@ -182,16 +179,16 @@ public class RankManager {
     public void addRank(String name, Rank previous, Rank next) {
         if (name.equals(""))
             return;
-        YamlConfiguration configRanks = YamlConfiguration.loadConfiguration(configFileRanks);
-        configRanks.set(name, Arrays.asList(""));
-        configRanks.set(name + ".permissions", Arrays.asList(""));
-        configRanks.set(name + ".subranks", Arrays.asList(""));
+        YamlConfiguration configRanks = YamlConfiguration.loadConfiguration(this.configFileRanks);
+        configRanks.set(name, Collections.singletonList(""));
+        configRanks.set(name + ".permissions", Collections.singletonList(""));
+        configRanks.set(name + ".subranks", Collections.singletonList(""));
         configRanks.set(name + ".rankTitle", "[" + name + "]");
         if (previous != null)
             configRanks.set(name + ".previousRank", previous.getName());
         try {
-            configRanks.save(configFileRanks);
-        } catch (Exception e) {
+            configRanks.save(this.configFileRanks);
+        } catch (Exception ignored) {
         }
         if (previous == null) {
             ranks.put(name, new Rank(name));
@@ -211,13 +208,12 @@ public class RankManager {
         UserManager um = new UserManager();
         Rank previous = rank.getPrevious();
         Rank next = rank.getNext();
-        for (User u : um.getUsers().values())
-            if (u.getRank().equals(rank)) {
-                if (next != null)
-                    u.setRank(next);
-                else if (previous != null)
-                    u.setRank(previous);
-            }
+        um.getUsers().values().stream().filter(u -> u.getRank().equals(rank)).forEach(u -> {
+            if (next != null)
+                u.setRank(next);
+            else if (previous != null)
+                u.setRank(previous);
+        });
         order.remove(rank);
         ranks.remove(rank.getName());
         if (previous != null && next != null) {
@@ -227,11 +223,11 @@ public class RankManager {
             next.setPrevious(null);
         else if (previous != null)
             previous.setNext(null);
-        YamlConfiguration configRanks = YamlConfiguration.loadConfiguration(configFileRanks);
+        YamlConfiguration configRanks = YamlConfiguration.loadConfiguration(this.configFileRanks);
         configRanks.set(rank.getName(), null);
         try {
-            configRanks.save(configFileRanks);
-        } catch (Exception e) {
+            configRanks.save(this.configFileRanks);
+        } catch (Exception ignored) {
         }
         if (next != null)
             um.refreshRankPerm(next);
@@ -242,12 +238,12 @@ public class RankManager {
     public void addSubrank(String name) {
         if (name.equals(""))
             return;
-        YamlConfiguration configSubranks = YamlConfiguration.loadConfiguration(configFileSubranks);
-        configSubranks.set(name, Arrays.asList(""));
+        YamlConfiguration configSubranks = YamlConfiguration.loadConfiguration(this.configFileSubranks);
+        configSubranks.set(name, Collections.singletonList(""));
         subranks.put(name.toLowerCase(), name);
         try {
-            configSubranks.save(configFileSubranks);
-        } catch (Exception e) {
+            configSubranks.save(this.configFileSubranks);
+        } catch (Exception ignored) {
         }
     }
 
@@ -259,32 +255,31 @@ public class RankManager {
             um.updateUserSubrank(u.getUUID(), name, true);
         for (Rank r : order)
             updateRankSubrank(r, name, true);
-        YamlConfiguration configSubranks = YamlConfiguration.loadConfiguration(configFileSubranks);
+        YamlConfiguration configSubranks = YamlConfiguration.loadConfiguration(this.configFileSubranks);
         configSubranks.set(name, null);
         subranks.remove(name.toLowerCase());
         try {
-            configSubranks.save(configFileSubranks);
-        } catch (Exception e) {
+            configSubranks.save(this.configFileSubranks);
+        } catch (Exception ignored) {
         }
     }
 
     public void setSubranks() {//TODO: Change these to something for LS or just use the normal rank permissions spot
-        if (!configFileSubranks.exists())
+        if (!this.configFileSubranks.exists())
             try {
-                configFileSubranks.createNewFile();
-                YamlConfiguration configSubranks = YamlConfiguration.loadConfiguration(configFileSubranks);
+                this.configFileSubranks.createNewFile();
+                YamlConfiguration configSubranks = YamlConfiguration.loadConfiguration(this.configFileSubranks);
                 configSubranks.set("Necessities.Donator", Arrays.asList("Necessities.colorchat", "lavasurvival.donator"));
-                ;
-                configSubranks.save(configFileSubranks);
-            } catch (Exception e) {
+                configSubranks.save(this.configFileSubranks);
+            } catch (Exception ignored) {
             }
     }
 
     public void setRanks() {
-        if (!configFileRanks.exists())
+        if (!this.configFileRanks.exists())
             try {
-                configFileRanks.createNewFile();
-                YamlConfiguration configRanks = YamlConfiguration.loadConfiguration(configFileRanks);
+                this.configFileRanks.createNewFile();
+                YamlConfiguration configRanks = YamlConfiguration.loadConfiguration(this.configFileRanks);
                 configRanks.set("New.permissions", Arrays.asList("bukkit.broadcast.user", "bukkit.command.plugins", "Necessities.me", "-bukkit.command.list", "-minecraft.command.list"));
                 configRanks.set("New.subranks", Arrays.asList(""));
                 configRanks.set("New.rankTitle", "&4[&7New&4]&7");
@@ -328,8 +323,8 @@ public class RankManager {
                 configRanks.set("Director.subranks", Arrays.asList(""));
                 configRanks.set("Director.rankTitle", "&4[&bDirector&4]&6");
                 configRanks.set("Director.previousRank", "Manager");
-                configRanks.save(configFileRanks);
-            } catch (Exception e) {
+                configRanks.save(this.configFileRanks);
+            } catch (Exception ignored) {
             }
     }
 }

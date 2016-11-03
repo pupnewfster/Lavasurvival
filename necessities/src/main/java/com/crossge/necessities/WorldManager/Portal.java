@@ -7,14 +7,14 @@ import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.File;
 
-public class Portal {
+class Portal {
     private double x1 = 0, y1 = 0, z1 = 0, x2 = 0, y2 = 0, z2 = 0;
     private boolean validPortal = false;
     private Warp destination;
     private World from, to;
     private String name;
 
-    public Portal(String portalname) {
+    Portal(String portalname) {
         File configFilePM = new File("plugins/Necessities/WorldManager", "portals.yml");
         YamlConfiguration configPM = YamlConfiguration.loadConfiguration(configFilePM);
         WarpManager warps = new WarpManager();
@@ -74,19 +74,19 @@ public class Portal {
         return this.name;
     }
 
-    public World getWorldTo() {
+    World getWorldTo() {
         return this.to;
     }
 
-    public Warp getWarp() {
+    Warp getWarp() {
         return this.destination;
     }
 
-    public boolean isWarp() {
+    boolean isWarp() {
         return (this.destination != null && this.destination.hasDestination());
     }
 
-    public boolean isPortal(Location l) {
+    boolean isPortal(Location l) {
         if ((this.to == null && !isWarp()) || this.from == null)
             return false;
         WorldManager wm = new WorldManager();

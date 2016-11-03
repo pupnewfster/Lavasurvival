@@ -15,7 +15,7 @@ public class PortalManager {//TODO: add a method to update the things when a wor
 
     public void initiate() {
         Bukkit.getConsoleSender().sendMessage(ChatColor.AQUA + "Loading portals...");
-        YamlConfiguration configPM = YamlConfiguration.loadConfiguration(configFilePM);
+        YamlConfiguration configPM = YamlConfiguration.loadConfiguration(this.configFilePM);
         for (String portal : configPM.getKeys(false)) {
             portals.put(portal, new Portal(portal));
             lowerNames.put(portal.toLowerCase(), portal);
@@ -38,18 +38,18 @@ public class PortalManager {//TODO: add a method to update the things when a wor
     }
 
     public void remove(String name) {
-        YamlConfiguration configPM = YamlConfiguration.loadConfiguration(configFilePM);
+        YamlConfiguration configPM = YamlConfiguration.loadConfiguration(this.configFilePM);
         configPM.set(name, null);
         try {
-            configPM.save(configFilePM);
-        } catch (Exception e) {
+            configPM.save(this.configFilePM);
+        } catch (Exception ignored) {
         }
         portals.remove(name);
         lowerNames.remove(name.toLowerCase());
     }
 
     public void create(String name, String destination, Location left, Location right) {
-        YamlConfiguration configPM = YamlConfiguration.loadConfiguration(configFilePM);
+        YamlConfiguration configPM = YamlConfiguration.loadConfiguration(this.configFilePM);
         configPM.set(name + ".world", left.getWorld().getName());
         configPM.set(name + ".destination", destination);
         configPM.set(name + ".location.x1", left.getBlockX());
@@ -59,8 +59,8 @@ public class PortalManager {//TODO: add a method to update the things when a wor
         configPM.set(name + ".location.y2", right.getBlockY());
         configPM.set(name + ".location.z2", right.getBlockZ());
         try {
-            configPM.save(configFilePM);
-        } catch (Exception e) {
+            configPM.save(this.configFilePM);
+        } catch (Exception ignored) {
         }
         portals.put(name, new Portal(name));
         lowerNames.put(name.toLowerCase(), name);

@@ -7,21 +7,18 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 
 import java.io.File;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 public class UserManager {
     private File configFileUsers = new File("plugins/Necessities/RankManager", "users.yml");
     private static HashMap<UUID, User> players = new HashMap<>();
-    RankManager rm = new RankManager();
+    private RankManager rm = new RankManager();
 
-    public void readUsers() {
+    void readUsers() {
         Bukkit.getOnlinePlayers().forEach(this::parseUser);
     }
 
-    public void parseUser(final Player p) {
+    private void parseUser(final Player p) {
         Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(Necessities.getInstance(), () -> forceParseUser(p));
     }
 
@@ -53,47 +50,45 @@ public class UserManager {
         }
     }
 
-    public void addRankPerm(Rank r, String node) {
+    void addRankPerm(Rank r, String node) {
         if (players == null)
             return;
         players.keySet().stream().filter(uuid -> rm.hasRank(players.get(uuid).getRank(), r)).forEach(uuid -> players.get(uuid).addPerm(node));
     }
 
-    public void delRankPerm(Rank r, String node) {
+    void delRankPerm(Rank r, String node) {
         if (players == null)
             return;
         players.keySet().stream().filter(uuid -> rm.hasRank(players.get(uuid).getRank(), r)).forEach(uuid -> players.get(uuid).removePerm(node));
     }
 
-    public void refreshRankPerm(Rank r) {
+    void refreshRankPerm(Rank r) {
         if (players == null)
             return;
-        for (UUID uuid : players.keySet())
-            if (rm.hasRank(players.get(uuid).getRank(), r))
-                players.get(uuid).refreshPerms();
+        players.keySet().stream().filter(uuid -> rm.hasRank(players.get(uuid).getRank(), r)).forEach(uuid -> players.get(uuid).refreshPerms());
     }
 
     public void addUser(Player player) {
-        YamlConfiguration configUsers = YamlConfiguration.loadConfiguration(configFileUsers);
+        YamlConfiguration configUsers = YamlConfiguration.loadConfiguration(this.configFileUsers);
         if (configUsers.contains(player.getUniqueId().toString()))
             return;
         configUsers.set(player.getUniqueId().toString() + ".rank", rm.getRank(0).getName());
-        configUsers.set(player.getUniqueId().toString() + ".permissions", Arrays.asList(""));
-        configUsers.set(player.getUniqueId().toString() + ".subranks", Arrays.asList(""));
+        configUsers.set(player.getUniqueId().toString() + ".permissions", Collections.singletonList(""));
+        configUsers.set(player.getUniqueId().toString() + ".subranks", Collections.singletonList(""));
         try {
-            configUsers.save(configFileUsers);
-        } catch (Exception e) {
+            configUsers.save(this.configFileUsers);
+        } catch (Exception ignored) {
         }
     }
 
     public void updateUserRank(User u, UUID uuid, Rank r) {
         if (r == null)
             return;
-        YamlConfiguration configUsers = YamlConfiguration.loadConfiguration(configFileUsers);
+        YamlConfiguration configUsers = YamlConfiguration.loadConfiguration(this.configFileUsers);
         configUsers.set(uuid.toString() + ".rank", r.getName());
         try {
-            configUsers.save(configFileUsers);
-        } catch (Exception e) {
+            configUsers.save(this.configFileUsers);
+        } catch (Exception ignored) {
         }
         u.updateRank(r);
     }
@@ -101,7 +96,7 @@ public class UserManager {
     public void updateUserPerms(UUID uuid, String permission, boolean remove) {
         if (permission.equals(""))
             return;
-        YamlConfiguration configUsers = YamlConfiguration.loadConfiguration(configFileUsers);
+        YamlConfiguration configUsers = YamlConfiguration.loadConfiguration(this.configFileUsers);
         List<String> perms = configUsers.getStringList(uuid.toString() + ".permissions");
         if (perms.contains(""))
             perms.remove("");
@@ -120,15 +115,15 @@ public class UserManager {
                 getUser(uuid).addPerm(permission);
         }
         try {
-            configUsers.save(configFileUsers);
-        } catch (Exception e) {
+            configUsers.save(this.configFileUsers);
+        } catch (Exception ignored) {
         }
     }
 
     public void updateUserSubrank(UUID uuid, String name, boolean remove) {
         if (name.equals(""))
             return;
-        YamlConfiguration configUsers = YamlConfiguration.loadConfiguration(configFileUsers);
+        YamlConfiguration configUsers = YamlConfiguration.loadConfiguration(this.configFileUsers);
         List<String> subranks = configUsers.getStringList(uuid.toString() + ".subranks");
         if (subranks.contains(""))
             subranks.remove("");
@@ -140,8 +135,8 @@ public class UserManager {
             subranks.add("");
         configUsers.set(uuid.toString() + ".subranks", subranks);
         try {
-            configUsers.save(configFileUsers);
-        } catch (Exception e) {
+            configUsers.save(this.configFileUsers);
+        } catch (Exception ignored) {
         }
         if (players.containsKey(uuid))
             getUser(uuid).refreshPerms();

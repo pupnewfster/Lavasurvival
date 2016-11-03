@@ -34,7 +34,7 @@ import java.util.UUID;
 
 public class Necessities extends JavaPlugin {
     private static Necessities INSTANCE;
-    private final List<String> devs = Arrays.asList("pupnewfster", "Mod_Chris", "hypereddie10");
+    private final List<String> devs = Arrays.asList("pupnewfster", "Mod_Chris", "hypereddie10"); //TODO 1.10.2: Update to UUIDS
     private File configFile = new File("plugins/Necessities", "config.yml");
     private Tracker googleAnalyticsTracker;
     private Property skin;
@@ -73,7 +73,7 @@ public class Necessities extends JavaPlugin {
         return getTracker() != null;
     }
 
-    public static Tracker getTracker() {
+    private static Tracker getTracker() {
         return getInstance().googleAnalyticsTracker;
     }
 
@@ -91,9 +91,7 @@ public class Necessities extends JavaPlugin {
 
     public void removePlayer(Player p) {
         PacketPlayOutPlayerInfo info = new PacketPlayOutPlayerInfo(PacketPlayOutPlayerInfo.EnumPlayerInfoAction.REMOVE_PLAYER, ((CraftPlayer) p).getHandle());
-        for (Player x : Bukkit.getOnlinePlayers())
-            if (!x.canSee(p) && !x.equals(p))
-                ((CraftPlayer) x).getHandle().playerConnection.sendPacket(info);
+        Bukkit.getOnlinePlayers().stream().filter(x -> !x.canSee(p) && !x.equals(p)).forEach(x -> ((CraftPlayer) x).getHandle().playerConnection.sendPacket(info));
     }
 
     public void addPlayer(Player p) {
@@ -101,9 +99,7 @@ public class Necessities extends JavaPlugin {
         User u = um.getUser(p.getUniqueId());
         ep.listName = formatMessage(u.getRank() == null ? "" : ChatColor.translateAlternateColorCodes('&', u.getRank().getTitle() + " ") + p.getDisplayName());
         PacketPlayOutPlayerInfo info = new PacketPlayOutPlayerInfo(PacketPlayOutPlayerInfo.EnumPlayerInfoAction.ADD_PLAYER, ep);
-        for (Player x : Bukkit.getOnlinePlayers())
-            if (!x.hasPermission("Necessities.seehidden") && x.canSee(p) && !x.equals(p))
-                ((CraftPlayer) x).getHandle().playerConnection.sendPacket(info);
+        Bukkit.getOnlinePlayers().stream().filter(x -> !x.hasPermission("Necessities.seehidden") && x.canSee(p) && !x.equals(p)).forEach(x -> ((CraftPlayer) x).getHandle().playerConnection.sendPacket(info));
     }
 
     public void updateName(Player p) {
@@ -111,8 +107,7 @@ public class Necessities extends JavaPlugin {
         User u = um.getUser(p.getUniqueId());
         ep.listName = formatMessage(u.getRank() == null ? "" : ChatColor.translateAlternateColorCodes('&', u.getRank().getTitle() + " ") + p.getDisplayName());
         PacketPlayOutPlayerInfo tabList = new PacketPlayOutPlayerInfo(PacketPlayOutPlayerInfo.EnumPlayerInfoAction.UPDATE_DISPLAY_NAME, ep);
-        for (Player x : Bukkit.getOnlinePlayers())
-            ((CraftPlayer) x).getHandle().playerConnection.sendPacket(tabList);
+        Bukkit.getOnlinePlayers().forEach(x -> ((CraftPlayer) x).getHandle().playerConnection.sendPacket(tabList));
     }
 
     public void updateAll(Player x) {
@@ -126,7 +121,7 @@ public class Necessities extends JavaPlugin {
         ((CraftPlayer) x).getHandle().playerConnection.sendPacket(new PacketPlayOutPlayerInfo(PacketPlayOutPlayerInfo.EnumPlayerInfoAction.UPDATE_DISPLAY_NAME, players));
     }
 
-    public void addJanet(Player p) {
+    void addJanet(Player p) {
         GameProfile janetProfile = new GameProfile(janetID, "Janet");
         if (this.skin == null)
             this.skin = getSkin();
@@ -141,7 +136,7 @@ public class Necessities extends JavaPlugin {
         ((CraftPlayer) p).getHandle().playerConnection.sendPacket(info);
     }
 
-    public void addHeader(Player p) {
+    void addHeader(Player p) {
         PacketPlayOutPlayerListHeaderFooter packet = new PacketPlayOutPlayerListHeaderFooter(formatMessage(ChatColor.AQUA + "Galaxy Gaming"));
         try {
             Field field = packet.getClass().getDeclaredField("b");
@@ -369,12 +364,12 @@ public class Necessities extends JavaPlugin {
         JanetSlack slack = new JanetSlack();
         CmdHide hide = new CmdHide();
         Janet bot = new Janet();
-        um.unload();
+        this.um.unload();
         cs.unload();
         hide.unload();
         slack.disconnect();
         bot.unload();
-        dr.disconnect();
+        this.dr.disconnect();
         getLogger().info("Necessities disabled.");
     }
 
@@ -392,12 +387,11 @@ public class Necessities extends JavaPlugin {
 
     public static void trackAction(UUID uuid, String action, Object label) {
         boolean usesPluginChannel = false;
-        String clientId, ip;
+        String clientId, ip = "0.0.0.0";
         Player p = Bukkit.getPlayer(uuid);
-        if (p == null) {
+        if (p == null)
             clientId = Bukkit.getOfflinePlayer(uuid).getName();
-            ip = "0.0.0.0";
-        } else {
+        else {
             clientId = p.getName();
             ip = (p.getAddress() != null ? p.getAddress().toString().substring(1) : "0.0.0.0");
             usesPluginChannel = p.getListeningPluginChannels().size() != 0;

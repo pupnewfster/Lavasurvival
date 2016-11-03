@@ -7,12 +7,10 @@ import java.util.UUID;
 public class Teleports {
     private static HashMap<UUID, ArrayList<String>> teleportRequests = new HashMap<>();
 
-    public void removeRequests(UUID uuid) {
+    void removeRequests(UUID uuid) {
         teleportRequests.remove(uuid);
         if (teleportRequests != null)
-            for (UUID u : teleportRequests.keySet())
-                if (hasRequestFrom(u, uuid))
-                    removeRequestFrom(u, uuid);
+            teleportRequests.keySet().stream().filter(u -> hasRequestFrom(u, uuid)).forEach(u -> removeRequestFrom(u, uuid));
     }
 
     public void addRequest(UUID to, String from) {

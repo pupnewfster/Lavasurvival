@@ -5,8 +5,8 @@ import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.EulerAngle;
 
-public class Fedora extends Hat {
-    public Fedora(Location loc) {
+class Fedora extends Hat {
+    Fedora(Location loc) {
         this.trueLoc = loc;
         int turn = 5, turnV = 5;
         Location temp = loc.clone().add(0, 0.5, 0);

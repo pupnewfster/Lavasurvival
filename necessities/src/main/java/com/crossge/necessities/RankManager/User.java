@@ -13,10 +13,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.permissions.PermissionAttachment;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class User {
     private File configFileSubranks = new File("plugins/Necessities/RankManager", "subranks.yml"), configFileUsers = new File("plugins/Necessities/RankManager", "users.yml");
@@ -34,7 +32,7 @@ public class User {
     private Rank rank;
 
     public User(Player p) {
-        YamlConfiguration configUsers = YamlConfiguration.loadConfiguration(configFileUsers);
+        YamlConfiguration configUsers = YamlConfiguration.loadConfiguration(this.configFileUsers);
         RankManager rm = new RankManager();
         this.bukkitPlayer = p;
         this.right = p.getLocation();
@@ -65,16 +63,12 @@ public class User {
 
     public User(UUID uuid) {
         this.userUUID = uuid;
-        YamlConfiguration configUsers = YamlConfiguration.loadConfiguration(configFileUsers);
+        YamlConfiguration configUsers = YamlConfiguration.loadConfiguration(this.configFileUsers);
         RankManager rm = new RankManager();
         if (configUsers.contains(getUUID().toString() + ".rank"))
             this.rank = rm.getRank(configUsers.getString(getUUID().toString() + ".rank"));
-        for (String subrank : configUsers.getStringList(uuid + ".subranks"))
-            if (!subrank.equals(""))
-                this.subranks.add(subrank);
-        for (String node : configUsers.getStringList(uuid + ".permissions"))
-            if (!node.equals(""))
-                this.permissions.add(node);
+        this.subranks.addAll(configUsers.getStringList(uuid + ".subranks").stream().filter(subrank -> !subrank.equals("")).collect(Collectors.toList()));
+        this.permissions.addAll(configUsers.getStringList(uuid + ".permissions").stream().filter(node -> !node.equals("")).collect(Collectors.toList()));
         if (configUsers.contains(getUUID().toString() + ".nick"))
             this.nick = ChatColor.translateAlternateColorCodes('&', configUsers.getString(getUUID().toString() + ".nick"));
         if (this.nick != null && !this.nick.startsWith("~"))
@@ -84,13 +78,13 @@ public class User {
         readIgnored();
     }
 
-    public void updateTimePlayed() {
-        YamlConfiguration configUsers = YamlConfiguration.loadConfiguration(configFileUsers);
+    void updateTimePlayed() {
+        YamlConfiguration configUsers = YamlConfiguration.loadConfiguration(this.configFileUsers);
         if (this.login != 0) {
             configUsers.set(getUUID().toString() + ".timePlayed", (int) (this.pastTotal + (System.currentTimeMillis() - this.login) / 1000));
             try {
-                configUsers.save(configFileUsers);
-            } catch (Exception e) {
+                configUsers.save(this.configFileUsers);
+            } catch (Exception ignored) {
             }
         }
         this.pastTotal = 0;
@@ -107,18 +101,16 @@ public class User {
     }
 
     private void readIgnored() {
-        YamlConfiguration configUsers = YamlConfiguration.loadConfiguration(configFileUsers);
+        YamlConfiguration configUsers = YamlConfiguration.loadConfiguration(this.configFileUsers);
         if (!configUsers.contains(getUUID().toString()))
             return;
         if (configUsers.contains(getUUID().toString() + ".ignored")) {
-            for (String name : configUsers.getStringList(getUUID().toString() + ".ignored"))
-                if (!name.equals(""))
-                    this.ignored.add(UUID.fromString(name));
+            this.ignored.addAll(configUsers.getStringList(getUUID().toString() + ".ignored").stream().filter(name -> !name.equals("")).map(UUID::fromString).collect(Collectors.toList()));
         } else {
-            configUsers.set(getUUID().toString() + ".ignored", Arrays.asList(""));
+            configUsers.set(getUUID().toString() + ".ignored", Collections.singletonList(""));
             try {
-                configUsers.save(configFileUsers);
-            } catch (Exception e) {
+                configUsers.save(this.configFileUsers);
+            } catch (Exception ignored) {
             }
         }
     }
@@ -130,7 +122,7 @@ public class User {
     public void ignore(UUID uuid) {
         if (!this.ignored.contains(uuid)) {//this should already be checked but whatevs
             this.ignored.add(uuid);
-            YamlConfiguration configUsers = YamlConfiguration.loadConfiguration(configFileUsers);
+            YamlConfiguration configUsers = YamlConfiguration.loadConfiguration(this.configFileUsers);
             if (!configUsers.contains(getUUID().toString()))
                 return;
             List<String> ign = configUsers.getStringList(uuid.toString() + ".ignored");
@@ -139,8 +131,8 @@ public class User {
             ign.add(uuid.toString());
             configUsers.set(uuid.toString() + ".ignored", ign);
             try {
-                configUsers.save(configFileUsers);
-            } catch (Exception e) {
+                configUsers.save(this.configFileUsers);
+            } catch (Exception ignored) {
             }
         }
     }
@@ -148,7 +140,7 @@ public class User {
     public void unignore(UUID uuid) {
         if (this.ignored.contains(uuid)) {//this should already be checked but whatevs
             this.ignored.remove(uuid);
-            YamlConfiguration configUsers = YamlConfiguration.loadConfiguration(configFileUsers);
+            YamlConfiguration configUsers = YamlConfiguration.loadConfiguration(this.configFileUsers);
             if (!configUsers.contains(getUUID().toString()))
                 return;
             List<String> ign = configUsers.getStringList(uuid.toString() + ".ignored");
@@ -157,8 +149,8 @@ public class User {
                 ign.add("");
             configUsers.set(uuid.toString() + ".ignored", ign);
             try {
-                configUsers.save(configFileUsers);
-            } catch (Exception e) {
+                configUsers.save(this.configFileUsers);
+            } catch (Exception ignored) {
             }
         }
     }
@@ -197,13 +189,13 @@ public class User {
 
     public void setRank(Rank r) {
         this.rank = r;
-        YamlConfiguration configUsers = YamlConfiguration.loadConfiguration(configFileUsers);
+        YamlConfiguration configUsers = YamlConfiguration.loadConfiguration(this.configFileUsers);
         if (!configUsers.contains(getUUID().toString()))
             return;
         configUsers.set(getUUID().toString() + ".rank", r.getName());
         try {
-            configUsers.save(configFileUsers);
-        } catch (Exception e) {
+            configUsers.save(this.configFileUsers);
+        } catch (Exception ignored) {
         }
         refreshPerms();
     }
@@ -215,13 +207,13 @@ public class User {
     public void setNick(String message) {
         this.nick = message != null ? ChatColor.translateAlternateColorCodes('&', message) : null;
         updateListName();
-        YamlConfiguration configUsers = YamlConfiguration.loadConfiguration(configFileUsers);
+        YamlConfiguration configUsers = YamlConfiguration.loadConfiguration(this.configFileUsers);
         if (!configUsers.contains(getUUID().toString()))
             return;
         configUsers.set(getUUID().toString() + ".nick", message);
         try {
-            configUsers.save(configFileUsers);
-        } catch (Exception e) {
+            configUsers.save(this.configFileUsers);
+        } catch (Exception ignored) {
         }
     }
 
@@ -248,13 +240,13 @@ public class User {
         if (this.hat != null)
             this.hat.despawn();
         this.hat = hat;
-        YamlConfiguration configUsers = YamlConfiguration.loadConfiguration(configFileUsers);
+        YamlConfiguration configUsers = YamlConfiguration.loadConfiguration(this.configFileUsers);
         if (!configUsers.contains(getUUID().toString()))
             return;
         configUsers.set(getUUID().toString() + ".hat", this.hat == null ? null : this.hat.getType().getName());
         try {
-            configUsers.save(configFileUsers);
-        } catch (Exception e) {
+            configUsers.save(this.configFileUsers);
+        } catch (Exception ignored) {
         }
     }
 
@@ -271,13 +263,13 @@ public class User {
 
     public void setMuted(boolean tomute) {
         this.muted = tomute;
-        YamlConfiguration configUsers = YamlConfiguration.loadConfiguration(configFileUsers);
+        YamlConfiguration configUsers = YamlConfiguration.loadConfiguration(this.configFileUsers);
         if (!configUsers.contains(getUUID().toString()))
             return;
         configUsers.set(getUUID().toString() + ".muted", this.muted);
         try {
-            configUsers.save(configFileUsers);
-        } catch (Exception e) {
+            configUsers.save(this.configFileUsers);
+        } catch (Exception ignored) {
         }
     }
 
@@ -292,18 +284,14 @@ public class User {
     public void givePerms() {
         ScoreBoards sb = new ScoreBoards();
         sb.addPlayer(this);
-        YamlConfiguration configUsers = YamlConfiguration.loadConfiguration(configFileUsers);
-        YamlConfiguration configSubranks = YamlConfiguration.loadConfiguration(configFileSubranks);
+        YamlConfiguration configUsers = YamlConfiguration.loadConfiguration(this.configFileUsers);
+        YamlConfiguration configSubranks = YamlConfiguration.loadConfiguration(this.configFileSubranks);
         this.attachment = this.bukkitPlayer.addAttachment(Necessities.getInstance());
-        for (String node : this.rank.getNodes())
-            setPerm(node);
-        for (String subrank : configUsers.getStringList(getUUID().toString() + ".subranks")) {
-            if (!subrank.equals("") && configSubranks.contains(subrank)) {
-                this.subranks.add(subrank);
-                for (String node : configSubranks.getStringList(subrank))
-                    setPerm(node);
-            }
-        }
+        this.rank.getNodes().forEach(this::setPerm);
+        configUsers.getStringList(getUUID().toString() + ".subranks").stream().filter(subrank -> !subrank.equals("") && configSubranks.contains(subrank)).forEach(subrank -> {
+            this.subranks.add(subrank);
+            configSubranks.getStringList(subrank).forEach(this::setPerm);
+        });
         for (String node : configUsers.getStringList(getUUID().toString() + ".permissions")) {
             if (!node.equals(""))
                 this.permissions.add(node);
@@ -320,13 +308,13 @@ public class User {
             this.attachment.setPermission(node, true);
     }
 
-    public void updateRank(Rank r) {
+    void updateRank(Rank r) {
         this.rank = r;
         if (this.bukkitPlayer != null)
             refreshPerms();
     }
 
-    public void refreshPerms() {
+    void refreshPerms() {
         this.subranks.clear();
         this.permissions.clear();
         removePerms();
@@ -334,9 +322,8 @@ public class User {
         updateListName();
     }
 
-    public void removePerms() {
-        for (String p : this.attachment.getPermissions().keySet())
-            this.attachment.unsetPermission(p);
+    void removePerms() {
+        this.attachment.getPermissions().keySet().forEach(p -> this.attachment.unsetPermission(p));
     }
 
     public String getSubranks() {
@@ -357,11 +344,11 @@ public class User {
         return permlist.trim().substring(0, permlist.length() - 2);
     }
 
-    public void addPerm(String permission) {
+    void addPerm(String permission) {
         setPerm(permission);
     }
 
-    public void removePerm(String permission) {
+    void removePerm(String permission) {
         this.attachment.unsetPermission(permission);
         if (this.permissions.contains(permission))
             this.permissions.remove(permission);

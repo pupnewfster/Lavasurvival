@@ -55,7 +55,7 @@ public abstract class Hat {
         }
     }
 
-    protected void spawnYaw(int num, Location loc) {
+    void spawnYaw(int num, Location loc) {
         World w = loc.getWorld();
         for (int i = 0; i < num; i++) {
             ArmorStand a = (ArmorStand) w.spawnEntity(new Location(w, loc.getX(), loc.getY(), loc.getZ(), loc.getYaw(), 0), EntityType.ARMOR_STAND);
