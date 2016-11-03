@@ -9,12 +9,15 @@ import com.crossge.necessities.RankManager.RankManager;
 import com.crossge.necessities.RankManager.User;
 import com.crossge.necessities.RankManager.UserManager;
 import com.crossge.necessities.Variables;
+import com.neovisionaries.ws.client.WebSocket;
+import com.neovisionaries.ws.client.WebSocketAdapter;
+import com.neovisionaries.ws.client.WebSocketFactory;
 import org.bukkit.*;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
-import org.bukkit.scheduler.BukkitRunnable;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
+import org.json.simple.JsonArray;
+import org.json.simple.JsonObject;
+import org.json.simple.Jsoner;
 import org.json.simple.parser.JSONParser;
 
 import javax.net.ssl.HttpsURLConnection;
@@ -27,11 +30,11 @@ public class JanetSlack {
     private static File configFile = new File("plugins/Necessities", "config.yml");
     private static HashMap<String, SlackUser> userMap = new HashMap<>();
     private static HashMap<Integer, ArrayList<String>> helpLists = new HashMap<>();
-    private static boolean justLoaded = true, isConnected = false, stopping = false;
-    private static String token, channel, channelID, hook, latestInChanel;
+    private static boolean isConnected = false, stopping = false;
+    private static String token, channel, channelID, hook;
     private static JanetRandom r = new JanetRandom();
-    private static BukkitRunnable historyReader, keepAlive;
     private static URL hookURL;
+    private static WebSocket ws;
     RankManager rm = new RankManager();
     UserManager um = new UserManager();
     JanetWarn warns = new JanetWarn();
@@ -53,6 +56,7 @@ public class JanetSlack {
         } catch (Exception e) {
             return;
         }
+        setHelp();
         connect();
     }
 
@@ -60,19 +64,17 @@ public class JanetSlack {
         if (!isConnected)
             return;
         stopping = true;
-        historyReader.cancel();
         userMap.clear();
         helpLists.clear();
-        keepAlive.cancel();
         sendMessage("Disconnected.");
         sendPost("https://slack.com/api/users.setPresence?token=" + token + "&presence=away&pretty=1");
         isConnected = false;
+        if (ws != null)
+            ws.disconnect();
     }
 
     public void handleIngameChat(String message) {
-        for (SlackUser u : userMap.values())
-            if (u.viewingChat())
-                u.sendPrivateMessage(message);
+        userMap.values().stream().filter(SlackUser::viewingChat).forEach(u -> u.sendPrivateMessage(message));
     }
 
     public void sendMessage(String message, boolean isPM, SlackUser u) {
@@ -91,7 +93,7 @@ public class JanetSlack {
         message = ChatColor.stripColor(message);
         if (message.endsWith("\n"))
             message = message.substring(0, message.length() - 1);
-        JSONObject json = new JSONObject();
+        JsonObject json = new JsonObject();
         json.put("text", message);
         try {
             HttpsURLConnection con = (HttpsURLConnection) hookURL.openConnection();
@@ -100,88 +102,13 @@ public class JanetSlack {
             con.setRequestProperty("Accept", "application/json,text/plain");
             con.setRequestMethod("POST");
             OutputStream os = con.getOutputStream();
-            os.write(json.toString().getBytes("UTF-8"));
+            os.write(Jsoner.serialize(json).getBytes("UTF-8"));
             os.close();
             InputStream is = con.getInputStream();
             is.close();
             con.disconnect();
-        } catch (Exception e) {
+        } catch (Exception ignored) {
         }
-    }
-
-    public void getPms() {
-        if (stopping)
-            return;
-        for (SlackUser u : userMap.values()) {
-            if (stopping)
-                return;
-            try {
-                URL url = new URL("https://slack.com/api/im.history?token=" + token + "&channel=" + u.getChannel() + "&oldest=" + u.getLatest() + "&pretty=1");
-                HttpsURLConnection con = (HttpsURLConnection) url.openConnection();
-                con.setRequestMethod("POST");
-                BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
-                String inputLine;
-                StringBuilder response = new StringBuilder();
-                while ((inputLine = in.readLine()) != null)
-                    response.append(inputLine);
-                in.close();
-                JSONParser jsonParser = new JSONParser();
-                JSONObject json = (JSONObject) jsonParser.parse(response.toString());
-                JSONArray messages = (JSONArray) json.get("messages");
-                if (messages != null)//If no messages from someone ignore them
-                    for (int i = messages.size() - 1; i >= 0; i--) {
-                        JSONObject message = (JSONObject) messages.get(i);
-                        if (!message.containsKey("subtype") && !u.getJustLoaded()) {
-                            SlackUser info = getUserInfo((String) message.get("user"));
-                            if (!info.getName().contains("janet")) {
-                                String text = (String) message.get("text");
-                                while (text.contains("<") && text.contains(">"))
-                                    text = text.split("<@")[0] + "@" + getUserInfo(text.split("<@")[1].split(">:")[0]).getName() + ":" + text.split("<@")[1].split(">:")[1];
-                                sendSlackChat(u, text, true);
-                            }
-                        }
-                        if (i == 0)
-                            u.setLatest((String) message.get("ts"));
-                    }
-            } catch (Exception e) {
-            }
-            u.setJustLoaded(false);
-            if (stopping)
-                return;
-        }
-    }
-
-    public void getHistory() {
-        try {
-            URL url = new URL("https://slack.com/api/channels.history?token=" + token + "&channel=" + channelID + "&oldest=" + latestInChanel + "&pretty=1");
-            HttpsURLConnection con = (HttpsURLConnection) url.openConnection();
-            con.setRequestMethod("POST");
-            BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
-            String inputLine;
-            StringBuilder response = new StringBuilder();
-            while ((inputLine = in.readLine()) != null)
-                response.append(inputLine);
-            in.close();
-            JSONParser jsonParser = new JSONParser();
-            JSONObject json = (JSONObject) jsonParser.parse(response.toString());
-            JSONArray messages = (JSONArray) json.get("messages");
-            for (int i = messages.size() - 1; i >= 0; i--) {
-                JSONObject message = (JSONObject) messages.get(i);
-                if (!message.containsKey("subtype") && !justLoaded) {
-                    SlackUser info = getUserInfo((String) message.get("user"));
-                    if (!info.getName().contains("janet")) {
-                        String text = (String) message.get("text");
-                        while (text.contains("<") && text.contains(">"))
-                            text = text.split("<@")[0] + "@" + getUserInfo(text.split("<@")[1].split(">:")[0]).getName() + ":" + text.split("<@")[1].split(">:")[1];
-                        sendSlackChat(info, text, false);
-                    }
-                }
-                if (i == 0)
-                    latestInChanel = (String) message.get("ts");
-            }
-        } catch (Exception e) {
-        }
-        justLoaded = false;
     }
 
     private SlackUser getUserInfo(String id) {
@@ -199,8 +126,8 @@ public class JanetSlack {
                 response.append(inputLine);
             in.close();
             JSONParser jsonParser = new JSONParser();
-            userMap.put(id, new SlackUser((JSONObject) jsonParser.parse(response.toString())));
-        } catch (Exception e) {
+            userMap.put(id, new SlackUser((JsonObject) jsonParser.parse(response.toString())));
+        } catch (Exception ignored) {
         }
         return userMap.get(id);
     }
@@ -213,7 +140,7 @@ public class JanetSlack {
             InputStream is = con.getInputStream();
             is.close();
             con.disconnect();
-        } catch (Exception e) {
+        } catch (Exception ignored) {
         }
     }
 
@@ -221,56 +148,82 @@ public class JanetSlack {
         if (isConnected)
             return;
         try {
-            URL url = new URL("https://slack.com/api/rtm.start?token=" + token + "&simple_latest=true&pretty=1");
+            URL url = new URL("https://slack.com/api/rtm.start?token=" + token + "&simple_latest=true&no_unreads=true");
             HttpsURLConnection con = (HttpsURLConnection) url.openConnection();
             con.setRequestMethod("POST");
             BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
             String inputLine;
             StringBuilder response = new StringBuilder();
-
             while ((inputLine = in.readLine()) != null)
                 response.append(inputLine);
             in.close();
+            JsonObject json = Jsoner.deserialize(response.toString(), new JsonObject());
+            String webSocketUrl = json.getString("url");
+            if (webSocketUrl != null)
+                openWebSocket(webSocketUrl);
+        } catch (Exception ignored) {
+        }
+        setUsers();
+        setUserChannels();
+        isConnected = true;
+        sendMessage("Connected.");
+    }
 
-            JSONParser jsonParser = new JSONParser();
-            JSONObject json = (JSONObject) jsonParser.parse(response.toString());
-            //Get a more recent timestamp than zero so first history pass is more efficient
-            latestInChanel = (String) json.get("latest_event_ts");
+    private void setUsers() {
+        try {
+            URL url = new URL("https://slack.com/api/users.list?token=" + token + "&presence=true");
+            HttpsURLConnection con = (HttpsURLConnection) url.openConnection();
+            con.setRequestMethod("POST");
+            BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
+            String inputLine;
+            StringBuilder response = new StringBuilder();
+            while ((inputLine = in.readLine()) != null)
+                response.append(inputLine);
+            in.close();
+            JsonObject json = Jsoner.deserialize(response.toString(), new JsonObject());
             //Map users
-            JSONArray users = (JSONArray) json.get("users");
-            for (int i = users.size() - 1; i >= 0; i--) {
-                JSONObject user = (JSONObject) users.get(i);
-                String id = (String) user.get("id");
+            JsonArray users = (JsonArray) json.get("members");
+            for (Object u : users) {
+                JsonObject user = (JsonObject) u;
+                if (user.getBoolean("deleted"))
+                    continue;
+                String id = user.getString("id");
                 if (!userMap.containsKey(id))
                     userMap.put(id, new SlackUser(user));
             }
-        } catch (Exception e) {
+        } catch (Exception ignored) {
         }
-        setUserChannels();
-        historyReader = new BukkitRunnable() {
-            @Override
-            public void run() {
-                getHistory();
-                getPms();
-            }
-        };
-        historyReader.runTaskTimerAsynchronously(Necessities.getInstance(), 0, 20);
-        keepAlive = new BukkitRunnable() {
-            @Override
-            public void run() {
-                sendPost("https://slack.com/api/users.setPresence?token=" + token + "&presence=auto&pretty=1");
-                sendPost("https://slack.com/api/users.setActive?token=" + token + "&pretty=1");
-            }
-        };
-        keepAlive.runTaskTimerAsynchronously(Necessities.getInstance(), 0, 25 * 60 * 20);//Every 25 minutes force it to show that janet is still alive
-        setHelp();
-        sendMessage("Connected.");
-        isConnected = true;
+    }
+
+    private void openWebSocket(String url) {
+        try {
+            ws = new WebSocketFactory().createSocket(url).addListener(new WebSocketAdapter() {
+                @Override
+                public void onTextMessage(WebSocket websocket, String message) throws Exception {
+                    JsonObject json = Jsoner.deserialize(message, new JsonObject());
+                    if (json.containsKey("type")) {
+                        if (json.getString("type").equals("message")) {
+                            //TODO: Figure out if there is a way to get the user id of a bot instead of just using janet's
+                            SlackUser info = json.containsKey("bot_id") ? getUserInfo("U2Y19AVNJ") : getUserInfo(json.getString("user"));
+                            String text = json.getString("text");
+                            while (text.contains("<") && text.contains(">"))
+                                text = text.split("<@")[0] + "@" + getUserInfo(text.split("<@")[1].split(">:")[0]).getName() + ":" + text.split("<@")[1].split(">:")[1];
+                            String channel = json.getString("channel");
+                            if (channel.startsWith("D")) //Direct Message
+                                sendSlackChat(info, text, true);
+                            else if (channel.startsWith("C") || channel.startsWith("G")) //Channel or Group
+                                sendSlackChat(info, text, false);
+                        }
+                    }
+                }
+            }).connect();
+        } catch (Exception ignored) {
+        }
     }
 
     private void setUserChannels() {
         try {
-            URL url = new URL("https://slack.com/api/im.list?token=" + token + "&pretty=1");
+            URL url = new URL("https://slack.com/api/im.list?token=" + token);
             HttpsURLConnection con = (HttpsURLConnection) url.openConnection();
             con.setRequestMethod("POST");
             BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
@@ -279,18 +232,15 @@ public class JanetSlack {
             while ((inputLine = in.readLine()) != null)
                 response.append(inputLine);
             in.close();
-
-            JSONParser jsonParser = new JSONParser();
-            JSONObject json = (JSONObject) jsonParser.parse(response.toString());
+            JsonObject json = Jsoner.deserialize(response.toString(), new JsonObject());
             //Map user channels
-            JSONArray ims = (JSONArray) json.get("ims");
-            for (int i = ims.size() - 1; i >= 0; i--) {
-                JSONObject im = (JSONObject) ims.get(i);
-                String userID = (String) im.get("user");
+            for (Object i : (JsonArray) json.get("ims")) {
+                JsonObject im = (JsonObject) i;
+                String userID = im.getString("user");
                 if (userMap.containsKey(userID))
-                    userMap.get(userID).setChannel((String) im.get("id"));
+                    userMap.get(userID).setChannel(im.getString("id"));
             }
-        } catch (Exception e) {
+        } catch (Exception ignored) {
         }
     }
 
@@ -342,6 +292,8 @@ public class JanetSlack {
             sendMessage("Error: You are restricted or ultra restricted", isPM, info);
             return;
         }
+        if (info.isBot) //If bot don't send to game
+            return;
         final String name = info.getName();
         if (message.startsWith("!")) {
             String m = "";
@@ -514,7 +466,7 @@ public class JanetSlack {
                 int applePie = 0;
                 try {
                     applePie = Integer.parseInt(message.split(" ")[1]);
-                } catch (Exception e) {
+                } catch (Exception ignored) {
                 }
                 m += r.memeRandom(applePie) + "\n";
             } else if (message.startsWith("!kick ") && info.isAdmin()) {
@@ -734,7 +686,7 @@ public class JanetSlack {
                 try {
                     Pattern ipAdd = Pattern.compile("^([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\." + "([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\." + "([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\." + "([01]?\\d\\d?|2[0-4]\\d|25[0-5])$");
                     validIp = ipAdd.matcher(message.split(" ")[0]).matches();
-                } catch (Exception e) {
+                } catch (Exception ignored) {
                 }
                 if (!validIp) {
                     sendMessage("Error: Invalid ip.", isPM, info);
@@ -807,23 +759,25 @@ public class JanetSlack {
     }
 
     public class SlackUser {
-        private boolean justLoaded = true, viewingChat = false;
+        private boolean justLoaded = true, viewingChat = false, isBot = false;
         private String id, name, latest, channel;
         private int rank = 0;
 
-        public SlackUser(JSONObject json) {
-            this.id = (String) json.get("id");
-            this.name = (String) json.get("name");
-            this.latest = latestInChanel;
-            if ((boolean) json.get("is_primary_owner"))
-                this.rank = 3;
-            else if ((boolean) json.get("is_owner"))
+        public SlackUser(JsonObject json) {
+            this.id = json.getString("id");
+            this.name = json.getString("name");
+            if (json.getBoolean("is_bot")) {
+                this.isBot = true;
                 this.rank = 2;
-            else if ((boolean) json.get("is_admin"))
+            } else if (json.getBoolean("is_primary_owner"))
+                this.rank = 3;
+            else if (json.getBoolean("is_owner"))
+                this.rank = 2;
+            else if (json.getBoolean("is_admin"))
                 this.rank = 1;
-            else if ((boolean) json.get("is_ultra_restricted"))
+            else if (json.getBoolean("is_ultra_restricted"))
                 this.rank = -2;
-            else if ((boolean) json.get("is_restricted"))
+            else if (json.getBoolean("is_restricted"))
                 this.rank = -1;
             //else leave it at 0 for member
         }
@@ -838,6 +792,10 @@ public class JanetSlack {
 
         public int getRank() {
             return this.rank;
+        }
+
+        public boolean isBot() {
+            return this.isBot;
         }
 
         public boolean isUltraRestricted() {
@@ -913,10 +871,9 @@ public class JanetSlack {
         }
 
         public void sendPrivateMessage(String message) {
-            message = ChatColor.stripColor(message);
             if (message.endsWith("\n"))
                 message = message.substring(0, message.length() - 1);
-            JSONObject json = new JSONObject();
+            JsonObject json = new JsonObject();
             json.put("text", message);
             json.put("channel", this.channel);
             try {
@@ -926,12 +883,12 @@ public class JanetSlack {
                 con.setRequestProperty("Accept", "application/json,text/plain");
                 con.setRequestMethod("POST");
                 OutputStream os = con.getOutputStream();
-                os.write(json.toString().getBytes("UTF-8"));
+                os.write(Jsoner.serialize(json).getBytes("UTF-8"));
                 os.close();
                 InputStream is = con.getInputStream();
                 is.close();
                 con.disconnect();
-            } catch (Exception e) {
+            } catch (Exception ignored) {
             }
         }
     }
