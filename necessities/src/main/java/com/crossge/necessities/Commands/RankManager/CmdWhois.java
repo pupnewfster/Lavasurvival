@@ -7,16 +7,13 @@ import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
-import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 
-import java.io.File;
 import java.util.Calendar;
 import java.util.UUID;
 
-public class CmdWhois extends RankCmd {
-    private File configFile = new File("plugins/Necessities", "config.yml");
-    CmdHide hide = new CmdHide();
+public class CmdWhois implements RankCmd {
+    private CmdHide hide = new CmdHide();
 
     public boolean commandUse(CommandSender sender, String[] args) {
         if (args.length == 0) {
@@ -31,7 +28,6 @@ public class CmdWhois extends RankCmd {
             return true;
         }
         User u = um.getUser(uuid);
-        YamlConfiguration config = YamlConfiguration.loadConfiguration(configFile);
         sender.sendMessage(var.getMessages() + "===== WhoIs: " + var.getObj() + u.getName() + var.getMessages() + " =====");
         if (u.getPlayer() != null)
             sender.sendMessage(var.getMessages() + " - Nick: " + ChatColor.RESET + u.getPlayer().getDisplayName());

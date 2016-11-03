@@ -2,7 +2,7 @@ package com.crossge.necessities.Commands.WorldManager;
 
 import org.bukkit.command.CommandSender;
 
-public class CmdRemovePortal extends WorldCmd {
+public class CmdRemovePortal implements WorldCmd {
     public boolean commandUse(CommandSender sender, String[] args) {
         if (args.length == 0) {
             sender.sendMessage(var.getEr() + "Error: " + var.getErMsg() + "You must enter a portal to remove.");

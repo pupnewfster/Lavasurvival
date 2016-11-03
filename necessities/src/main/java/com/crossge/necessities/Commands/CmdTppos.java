@@ -5,7 +5,7 @@ import org.bukkit.World;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-public class CmdTppos extends Cmd {
+public class CmdTppos implements Cmd {
     public boolean commandUse(CommandSender sender, String[] args) {
         if (args.length < 3) {
             sender.sendMessage(var.getEr() + "Error: " + var.getErMsg() + "Format requires you enter an x coordinate, a y coordinate, and a z coordinate to teleport to.");
@@ -26,9 +26,7 @@ public class CmdTppos extends Cmd {
                 sender.sendMessage(var.getEr() + "Error: " + var.getErMsg() + "You must enter a valid z coordinate.");
                 return true;
             }
-            double x = Double.parseDouble(args[0]);
-            double y = Double.parseDouble(args[1]);
-            double z = Double.parseDouble(args[2]);
+            double x = Double.parseDouble(args[0]), y = Double.parseDouble(args[1]), z = Double.parseDouble(args[2]);
             Location loc = new Location(dim, x, y, z);
             if (args.length > 4) {
                 if (!form.isLegal(args[3])) {

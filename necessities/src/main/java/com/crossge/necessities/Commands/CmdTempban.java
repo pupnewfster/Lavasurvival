@@ -10,7 +10,7 @@ import org.bukkit.entity.Player;
 import java.util.Date;
 import java.util.UUID;
 
-public class CmdTempban extends Cmd {
+public class CmdTempban implements Cmd {
     public boolean commandUse(CommandSender sender, String[] args) {
         if (args.length <= 1) {
             sender.sendMessage(var.getEr() + "Error: " + var.getErMsg() + "You must enter a player to ban and a duration in minutes.");

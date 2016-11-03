@@ -10,7 +10,7 @@ import org.bukkit.entity.Player;
 import java.io.File;
 import java.util.UUID;
 
-public class CmdOpChat extends Cmd {
+public class CmdOpChat implements Cmd {
     private File configFile = new File("plugins/Necessities", "config.yml");
 
     public boolean commandUse(CommandSender sender, String[] args) {
@@ -28,12 +28,10 @@ public class CmdOpChat extends Cmd {
                 p.sendMessage(var.getMessages() + "You are " + (!u.opChat() ? "now" : "no longer") + " sending messages only to ops.");
                 u.toggleOpChat();
             }
-        } else {
-            if (args.length == 0)
-                sender.sendMessage(var.getEr() + "Error: " + var.getErMsg() + "The console cannot toggle opchat.");
-            else
-                consoleToOps(message);
-        }
+        } else if (args.length == 0)
+            sender.sendMessage(var.getEr() + "Error: " + var.getErMsg() + "The console cannot toggle opchat.");
+        else
+            consoleToOps(message);
         return true;
     }
 

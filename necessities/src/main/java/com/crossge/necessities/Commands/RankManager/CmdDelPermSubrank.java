@@ -2,7 +2,7 @@ package com.crossge.necessities.Commands.RankManager;
 
 import org.bukkit.command.CommandSender;
 
-public class CmdDelPermSubrank extends RankCmd {
+public class CmdDelPermSubrank implements RankCmd {
     public boolean commandUse(CommandSender sender, String[] args) {
         if (args.length < 2) {
             sender.sendMessage(var.getEr() + "Error: " + var.getErMsg() + "Format requires a subrank and a permission node to remove from that subrank.");

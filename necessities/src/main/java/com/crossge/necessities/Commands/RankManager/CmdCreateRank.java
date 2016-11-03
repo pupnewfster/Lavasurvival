@@ -3,7 +3,7 @@ package com.crossge.necessities.Commands.RankManager;
 import com.crossge.necessities.RankManager.Rank;
 import org.bukkit.command.CommandSender;
 
-public class CmdCreateRank extends RankCmd {
+public class CmdCreateRank implements RankCmd {
     public boolean commandUse(CommandSender sender, String[] args) {
         if (args.length < 3) {
             sender.sendMessage(var.getEr() + "Error: " + var.getErMsg() + "Format requires you to enter a rank to create the rank that comes before and the rank"

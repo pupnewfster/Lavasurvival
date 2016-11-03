@@ -10,19 +10,18 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.UUID;
 
-public class CmdCommandSpy extends Cmd {
+public class CmdCommandSpy implements Cmd {
     private static ArrayList<UUID> spying = new ArrayList<>();
     private File configFileSpying = new File("plugins/Necessities", "spying.yml");
 
     public void broadcast(String sender, String command) {
         ArrayList<UUID> temp = new ArrayList<>();
-        for (UUID uuid : spying)
-            if (Bukkit.getPlayer(uuid) != null) {
-                if (Bukkit.getPlayer(uuid).hasPermission("Necessities.spy"))
-                    Bukkit.getPlayer(uuid).sendMessage(ChatColor.AQUA + sender + ": " + command);
-                else
-                    temp.add(uuid);
-            }
+        spying.stream().filter(uuid -> Bukkit.getPlayer(uuid) != null).forEach(uuid -> {
+            if (Bukkit.getPlayer(uuid).hasPermission("Necessities.spy"))
+                Bukkit.getPlayer(uuid).sendMessage(ChatColor.AQUA + sender + ": " + command);
+            else
+                temp.add(uuid);
+        });
         for (UUID uuid : temp)
             spying.remove(uuid);
     }
@@ -48,7 +47,7 @@ public class CmdCommandSpy extends Cmd {
             configSpying.set(uuid.toString(), true);
         try {
             configSpying.save(configFileSpying);
-        } catch (Exception e) {
+        } catch (Exception ignored) {
         }
     }
 

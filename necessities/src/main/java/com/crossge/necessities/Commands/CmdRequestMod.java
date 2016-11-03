@@ -7,8 +7,8 @@ import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-public class CmdRequestMod extends Cmd {
-    JanetSlack slack = new JanetSlack();
+public class CmdRequestMod implements Cmd {
+    private JanetSlack slack = new JanetSlack();
 
     public boolean commandUse(CommandSender sender, String[] args) {
         String reason = "";

@@ -11,9 +11,9 @@ import org.bukkit.entity.Player;
 import java.io.File;
 import java.util.UUID;
 
-public class CmdSlack extends Cmd {
+public class CmdSlack implements Cmd {
     private File configFile = new File("plugins/Necessities", "config.yml");
-    JanetSlack slack = new JanetSlack();
+    private JanetSlack slack = new JanetSlack();
 
     public boolean commandUse(CommandSender sender, String[] args) {
         String message = "";

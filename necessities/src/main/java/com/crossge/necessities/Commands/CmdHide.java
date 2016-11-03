@@ -12,8 +12,9 @@ import org.bukkit.entity.Player;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
-public class CmdHide extends Cmd {
+public class CmdHide implements Cmd {
     private static ArrayList<UUID> hidden = new ArrayList<>();
     private File configFileHiding = new File("plugins/Necessities", "hiding.yml");
     private File configFileLogOut = new File("plugins/Necessities", "logoutmessages.yml");
@@ -68,46 +69,35 @@ public class CmdHide extends Cmd {
 
     public void playerJoined(Player p) {
         if (!p.hasPermission("Necessities.seehidden"))
-            for (UUID uuid : hidden)
-                if (Bukkit.getPlayer(uuid) != null)
-                    p.hidePlayer(Bukkit.getPlayer(uuid));
+            hidden.stream().filter(uuid -> Bukkit.getPlayer(uuid) != null).forEach(uuid -> p.hidePlayer(Bukkit.getPlayer(uuid)));
     }
 
     public void playerLeft(Player p) {
-        for (UUID uuid : hidden)
-            if (Bukkit.getPlayer(uuid) != null)
-                p.showPlayer(Bukkit.getPlayer(uuid));
+        hidden.stream().filter(uuid -> Bukkit.getPlayer(uuid) != null).forEach(uuid -> p.showPlayer(Bukkit.getPlayer(uuid)));
     }
 
     public void hidePlayer(Player p) {
-        for (Player x : Bukkit.getOnlinePlayers())
-            if (!x.equals(p) && x.canSee(p) && !x.hasPermission("Necessities.seehidden"))
-                x.hidePlayer(p);
+        Bukkit.getOnlinePlayers().stream().filter(x -> !x.equals(p) && x.canSee(p) && !x.hasPermission("Necessities.seehidden")).forEach(x -> x.hidePlayer(p));
         Necessities.getInstance().removePlayer(p);
     }
 
     private void unhidePlayer(Player p) {
-        for (Player x : Bukkit.getOnlinePlayers())
-            if (!x.equals(p) && !x.canSee(p))
-                x.showPlayer(p);
+        Bukkit.getOnlinePlayers().stream().filter(x -> !x.equals(p) && !x.canSee(p)).forEach(x -> x.showPlayer(p));
         Necessities.getInstance().addPlayer(p);
     }
 
     public void unload() {
         YamlConfiguration configHiding = YamlConfiguration.loadConfiguration(configFileHiding);
-        for (String key : configHiding.getKeys(false))
-            configHiding.set(key, null);
-        for (UUID uuid : hidden)
-            configHiding.set(uuid.toString(), true);
+        configHiding.getKeys(false).forEach(key -> configHiding.set(key, null));
+        hidden.forEach(uuid -> configHiding.set(uuid.toString(), true));
         try {
             configHiding.save(configFileHiding);
-        } catch (Exception e) {
+        } catch (Exception ignored) {
         }
     }
 
     public void init() {
         YamlConfiguration configSpying = YamlConfiguration.loadConfiguration(configFileHiding);
-        for (String key : configSpying.getKeys(false))
-            hidden.add(UUID.fromString(key));
+        hidden.addAll(configSpying.getKeys(false).stream().map(UUID::fromString).collect(Collectors.toList()));
     }
 }

@@ -3,7 +3,7 @@ package com.crossge.necessities.Commands.WorldManager;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-public class CmdCreateWarp extends WorldCmd {
+public class CmdCreateWarp implements WorldCmd {
     public boolean commandUse(CommandSender sender, String[] args) {
         if (args.length == 0) {
             sender.sendMessage(var.getEr() + "Error: " + var.getErMsg() + "You must enter a name for the warp you wish to create.");

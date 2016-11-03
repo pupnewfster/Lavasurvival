@@ -5,7 +5,7 @@ import com.crossge.necessities.WorldManager.Warp;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-public class CmdWarp extends WorldCmd {
+public class CmdWarp implements WorldCmd {
     public boolean commandUse(CommandSender sender, String[] args) {
         if (args.length == 0) {
             sender.sendMessage(var.getEr() + "Error: " + var.getErMsg() + "You must enter a name for the warp you wish to teleport to.");

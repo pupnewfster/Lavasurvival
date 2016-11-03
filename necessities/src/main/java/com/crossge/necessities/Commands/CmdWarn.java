@@ -8,8 +8,8 @@ import org.bukkit.entity.Player;
 
 import java.util.UUID;
 
-public class CmdWarn extends Cmd {
-    JanetWarn warns = new JanetWarn();
+public class CmdWarn implements Cmd {
+    private JanetWarn warns = new JanetWarn();
 
     public boolean commandUse(CommandSender sender, String[] args) {
         if (args.length < 2) {

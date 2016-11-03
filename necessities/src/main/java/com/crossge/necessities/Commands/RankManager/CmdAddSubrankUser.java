@@ -4,7 +4,7 @@ import org.bukkit.command.CommandSender;
 
 import java.util.UUID;
 
-public class CmdAddSubrankUser extends RankCmd {
+public class CmdAddSubrankUser implements RankCmd {
     public boolean commandUse(CommandSender sender, String[] args) {
         if (args.length != 2) {
             sender.sendMessage(var.getEr() + "Error: " + var.getErMsg() + "Format requires a user and a subrank to add for that user.");

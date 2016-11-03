@@ -7,7 +7,7 @@ import org.bukkit.entity.Player;
 
 import java.util.UUID;
 
-public class CmdPromote extends RankCmd {
+public class CmdPromote implements RankCmd {
     public boolean commandUse(CommandSender sender, String[] args) {
         if (args.length != 1) {
             sender.sendMessage(var.getEr() + "Error: " + var.getErMsg() + "You must enter a user to promote.");

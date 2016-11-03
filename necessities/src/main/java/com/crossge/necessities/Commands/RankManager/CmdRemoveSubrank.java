@@ -2,7 +2,7 @@ package com.crossge.necessities.Commands.RankManager;
 
 import org.bukkit.command.CommandSender;
 
-public class CmdRemoveSubrank extends RankCmd {
+public class CmdRemoveSubrank implements RankCmd {
     public boolean commandUse(CommandSender sender, String[] args) {
         if (args.length == 0) {
             sender.sendMessage(var.getEr() + "Error: " + var.getErMsg() + "Format requires you to enter a subrank to delete.");

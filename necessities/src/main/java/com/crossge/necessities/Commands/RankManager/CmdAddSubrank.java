@@ -3,7 +3,7 @@ package com.crossge.necessities.Commands.RankManager;
 import com.crossge.necessities.RankManager.Rank;
 import org.bukkit.command.CommandSender;
 
-public class CmdAddSubrank extends RankCmd {
+public class CmdAddSubrank implements RankCmd {
     public boolean commandUse(CommandSender sender, String[] args) {
         if (args.length != 2) {
             sender.sendMessage(var.getEr() + "Error: " + var.getErMsg() + "Format requires a rank and a subrank to add to that rank.");

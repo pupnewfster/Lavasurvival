@@ -8,7 +8,7 @@ import org.bukkit.entity.Player;
 
 import java.util.UUID;
 
-public class CmdSetrank extends RankCmd {
+public class CmdSetrank implements RankCmd {
     public boolean commandUse(CommandSender sender, String[] args) {
         if (args.length != 2) {
             sender.sendMessage(var.getEr() + "Error: " + var.getErMsg() + "Format requires you enter a user and a rank to set the user's rank to.");

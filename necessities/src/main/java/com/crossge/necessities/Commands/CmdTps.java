@@ -4,7 +4,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.command.CommandSender;
 
-public class CmdTps extends Cmd {
+public class CmdTps implements Cmd {
     public boolean commandUse(CommandSender sender, String[] args) {
         sender.sendMessage(form.getTPS());
         int mb = 1024 * 1024;

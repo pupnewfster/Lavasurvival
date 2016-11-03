@@ -7,7 +7,7 @@ import org.bukkit.entity.Player;
 
 import java.io.File;
 
-public class CmdLogInMessage extends Cmd {
+public class CmdLogInMessage implements Cmd {
     private File configFileLogIn = new File("plugins/Necessities", "loginmessages.yml");
 
     public boolean commandUse(CommandSender sender, String[] args) {
@@ -26,7 +26,7 @@ public class CmdLogInMessage extends Cmd {
             configLogIn.set(p.getUniqueId().toString(), loginmessage);
             try {
                 configLogIn.save(configFileLogIn);
-            } catch (Exception e) {
+            } catch (Exception ignored) {
             }
             p.sendMessage("Login message set to: " + ChatColor.YELLOW + ChatColor.translateAlternateColorCodes('&',
                     loginmessage.replaceAll("\\{NAME\\}", p.getDisplayName()).replaceAll("\\{RANK\\}",

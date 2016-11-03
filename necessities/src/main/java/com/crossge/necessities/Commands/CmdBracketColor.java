@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-public class CmdBracketColor extends Cmd {
+public class CmdBracketColor implements Cmd {
     private File configFileTitles = new File("plugins/Necessities", "titles.yml");
 
     public boolean commandUse(CommandSender sender, String[] args) {
@@ -36,7 +36,7 @@ public class CmdBracketColor extends Cmd {
             configTitles.set(target.getUniqueId() + ".color", "r");
             try {
                 configTitles.save(configFileTitles);
-            } catch (Exception e) {
+            } catch (Exception ignored) {
             }
             sender.sendMessage(var.getMessages() + "Bracket color reset for player " + var.getObj() + target.getName());
             return true;
@@ -45,7 +45,7 @@ public class CmdBracketColor extends Cmd {
         configTitles.set(target.getUniqueId() + ".color", args[1]);
         try {
             configTitles.save(configFileTitles);
-        } catch (Exception e) {
+        } catch (Exception ignored) {
         }
         sender.sendMessage(var.getMessages() + "Bracket color changed to " + color + "this" + var.getMessages() + " for player " + var.getObj() + target.getName());
         return true;

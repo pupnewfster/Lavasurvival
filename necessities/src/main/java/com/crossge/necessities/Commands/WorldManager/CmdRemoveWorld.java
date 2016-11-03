@@ -2,7 +2,7 @@ package com.crossge.necessities.Commands.WorldManager;
 
 import org.bukkit.command.CommandSender;
 
-public class CmdRemoveWorld extends WorldCmd {
+public class CmdRemoveWorld implements WorldCmd {
     public boolean commandUse(CommandSender sender, String[] args) {
         if (args.length == 0) {
             sender.sendMessage(var.getEr() + "Error: " + var.getErMsg() + "You must enter a worldname to remove from the files.");

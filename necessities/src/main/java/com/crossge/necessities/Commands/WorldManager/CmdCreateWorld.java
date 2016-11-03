@@ -4,7 +4,7 @@ import org.bukkit.World;
 import org.bukkit.WorldType;
 import org.bukkit.command.CommandSender;
 
-public class CmdCreateWorld extends WorldCmd {
+public class CmdCreateWorld implements WorldCmd {
     public boolean commandUse(CommandSender sender, String[] args) {
         if (args.length == 0) {
             sender.sendMessage(var.getEr() + "Error: " + var.getErMsg() + "You must enter a worldname.");

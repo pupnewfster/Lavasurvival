@@ -3,7 +3,7 @@ package com.crossge.necessities.Commands.RankManager;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 
-public class CmdSubranks extends RankCmd {
+public class CmdSubranks implements RankCmd {
     public boolean commandUse(CommandSender sender, String[] args) {
         if (rm.getSubranks().isEmpty())
             sender.sendMessage(var.getEr() + "Error: " + var.getErMsg() + "No subranks are set.");

@@ -4,7 +4,7 @@ import com.crossge.necessities.RankManager.Rank;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 
-public class CmdRanks extends RankCmd {
+public class CmdRanks implements RankCmd {
     public boolean commandUse(CommandSender sender, String[] args) {
         if (rm.getOrder().isEmpty())
             sender.sendMessage(var.getEr() + "Error: " + var.getErMsg() + "No ranks are set.");

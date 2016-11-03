@@ -2,7 +2,7 @@ package com.crossge.necessities.Commands.RankManager;
 
 import org.bukkit.command.CommandSender;
 
-public class CmdCreateSubrank extends RankCmd {
+public class CmdCreateSubrank implements RankCmd {
     public boolean commandUse(CommandSender sender, String[] args) {
         if (args.length == 0) {
             sender.sendMessage(var.getEr() + "Error: " + var.getErMsg() + "Format requires you to enter a name for the subrank you are creating.");

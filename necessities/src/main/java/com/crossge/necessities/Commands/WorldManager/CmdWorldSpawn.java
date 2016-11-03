@@ -3,7 +3,7 @@ package com.crossge.necessities.Commands.WorldManager;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-public class CmdWorldSpawn extends WorldCmd {
+public class CmdWorldSpawn implements WorldCmd {
     public boolean commandUse(CommandSender sender, String[] args) {
         if (sender instanceof Player) {
             Player p = (Player) sender;

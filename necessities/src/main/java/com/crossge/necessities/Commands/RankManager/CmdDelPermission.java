@@ -3,7 +3,7 @@ package com.crossge.necessities.Commands.RankManager;
 import com.crossge.necessities.RankManager.Rank;
 import org.bukkit.command.CommandSender;
 
-public class CmdDelPermission extends RankCmd {
+public class CmdDelPermission implements RankCmd {
     public boolean commandUse(CommandSender sender, String[] args) {
         if (args.length != 2) {
             sender.sendMessage(var.getEr() + "Error: " + var.getErMsg() + "Format requires a rank and a permission node to remove from that rank.");
