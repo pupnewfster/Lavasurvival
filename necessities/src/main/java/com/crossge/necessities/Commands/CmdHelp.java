@@ -1,5 +1,6 @@
 package com.crossge.necessities.Commands;
 
+import com.crossge.necessities.Utils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
@@ -18,13 +19,13 @@ public class CmdHelp implements Cmd {
             int page = 0;
             String search = "";
             if (args.length == 1) {
-                if (!form.isLegal(args[0]))
+                if (!Utils.legalInt(args[0]))
                     search = args[0];
                 else
                     page = Integer.parseInt(args[0]);
             }
             if (args.length > 1) {
-                if (!form.isLegal(args[1])) {
+                if (!Utils.legalInt(args[1])) {
                     sender.sendMessage(var.getEr() + "Error: " + var.getErMsg() + "You must enter a valid help page.");
                     return true;
                 }
@@ -98,13 +99,13 @@ public class CmdHelp implements Cmd {
         int page = 0;
         String search = "";
         if (args.length == 1) {
-            if (!form.isLegal(args[0]))
+            if (!Utils.legalInt(args[0]))
                 search = args[0];
             else
                 page = Integer.parseInt(args[0]);
         }
         if (args.length > 1) {
-            if (!form.isLegal(args[1])) {
+            if (!Utils.legalInt(args[1])) {
                 sender.sendMessage(var.getEr() + "Error: " + var.getErMsg() + "You must enter a valid help page.");
                 return true;
             }

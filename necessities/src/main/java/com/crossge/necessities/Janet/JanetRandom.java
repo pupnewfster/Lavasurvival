@@ -2,7 +2,7 @@ package com.crossge.necessities.Janet;
 
 import java.util.Random;
 
-class JanetRandom extends Random {
+public class JanetRandom extends Random {
     private static final long serialVersionUID = 1L;
     private static Random[] pies = new Random[]{
             new BlueberryPie(),
@@ -12,29 +12,29 @@ class JanetRandom extends Random {
             new PecanPie()
     };
 
-    public int memeRandom(int m) {
+    int memeRandom(int m) {
         return m == 0 ? 0 : (int) Math.sqrt(Math.abs(m * (pies[nextInt(pies.length)].nextInt() / Math.PI))) % m;//sqrt((mathExpression/pi)*(applePie)) = meme
     }
 
     private static class ApplePie extends Random {
-        /*@Override
+        @Override
         public int nextInt(int m) {
-            return nextInt();
-        }*/
+            return super.nextInt();
+        }
     }
 
     private static class GrapePie extends Random {
-        /*@Override
+        @Override
         public int nextInt(int m) {
-            return nextInt();
-        }*/
+            return super.nextInt();
+        }
     }
 
     private static class ChocolatePie extends Random {
-        /*@Override
+        @Override
         public int nextInt(int m) {
-            return nextInt();
-        }*/
+            return super.nextInt();
+        }
     }
 
     private static class BlueberryPie extends Random {
@@ -45,9 +45,9 @@ class JanetRandom extends Random {
     }
 
     private static class PecanPie extends Random {
-        /*@Override
+        @Override
         public int nextInt(int m) {
-            return nextInt();
-        }*/
+            return super.nextInt();
+        }
     }
 }

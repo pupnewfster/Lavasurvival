@@ -7,10 +7,6 @@ import java.lang.reflect.Field;
 import java.text.DecimalFormat;
 
 public class Utils {
-    public boolean isLegal(String input) { //TODO 1.10.2: Remove
-        return legalDouble(input);
-    }
-
     public static boolean legalDouble(String input) {
         try {
             Double.parseDouble(input);
@@ -29,11 +25,11 @@ public class Utils {
         return false;
     }
 
-    public String addCommas(int i) {
+    public static String addCommas(int i) {
         return new DecimalFormat("#,###").format(i);
     }
 
-    public String capFirst(String matName) {
+    public static String capFirst(String matName) {
         if (matName == null)
             return "";
         String name = "";
@@ -44,7 +40,7 @@ public class Utils {
         return name.trim();
     }
 
-    private String upercaseFirst(String word) {
+    private static String upercaseFirst(String word) {
         if (word == null)
             return "";
         String firstCapitalized = "";
@@ -55,24 +51,24 @@ public class Utils {
         return firstCapitalized;
     }
 
-    public String ownerShip(String name) {
+    public static String ownerShip(String name) {
         return (name.endsWith("s") || name.endsWith("S")) ? name + "'" : name + "'s";
     }
 
-    public String getTPS() {
+    public static String getTPS() {
         String ticks = ChatColor.GOLD + "TPS from last 1m, 5m, 15m: ";
         for (double tps : getNMSRecentTps())
             ticks += format(tps) + ", ";
         return ticks.substring(0, ticks.length() - 2).trim();
     }
 
-    private String format(double tps) {
+    private static String format(double tps) {
         return ((tps > 18.0) ? ChatColor.GREEN : (tps > 16.0) ? ChatColor.YELLOW : ChatColor.RED).toString() + ((tps > 20.0) ? "*" : "") + Math.min(Math.round(tps * 100.0) / 100.0, 20.0);
     }
 
     private static final Field recentTpsField = makeField(MinecraftServer.class, "recentTps");
 
-    private double[] getNMSRecentTps() {
+    private static double[] getNMSRecentTps() {
         if (recentTpsField == null)
             return new double[0];
         return getField(recentTpsField, MinecraftServer.getServer());

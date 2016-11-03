@@ -1,6 +1,7 @@
 package com.crossge.necessities.Commands;
 
 import com.crossge.necessities.Janet.JanetSlack;
+import com.crossge.necessities.Necessities;
 import com.crossge.necessities.RankManager.User;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -13,7 +14,7 @@ import java.util.UUID;
 
 public class CmdSlack implements Cmd {
     private File configFile = new File("plugins/Necessities", "config.yml");
-    private JanetSlack slack = new JanetSlack();
+    private JanetSlack slack = Necessities.getInstance().getSlack();
 
     public boolean commandUse(CommandSender sender, String[] args) {
         String message = "";

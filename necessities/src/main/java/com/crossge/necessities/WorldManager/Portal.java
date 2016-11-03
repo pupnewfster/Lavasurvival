@@ -1,5 +1,6 @@
 package com.crossge.necessities.WorldManager;
 
+import com.crossge.necessities.Necessities;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
@@ -17,7 +18,7 @@ class Portal {
     Portal(String portalname) {
         File configFilePM = new File("plugins/Necessities/WorldManager", "portals.yml");
         YamlConfiguration configPM = YamlConfiguration.loadConfiguration(configFilePM);
-        WarpManager warps = new WarpManager();
+        WarpManager warps = Necessities.getInstance().getWarps();
         this.name = portalname;
         if (configPM.contains(this.name + ".world"))
             this.from = Bukkit.getWorld(configPM.getString(this.name + ".world"));
@@ -89,8 +90,8 @@ class Portal {
     boolean isPortal(Location l) {
         if ((this.to == null && !isWarp()) || this.from == null)
             return false;
-        WorldManager wm = new WorldManager();
-        return this.validPortal && this.from.equals(l.getWorld()) && (isWarp() || wm.worldExists(this.to.getName())) && this.x1 <= l.getBlockX() &&
-                l.getBlockX() <= this.x2 && this.y1 <= l.getBlockY() && l.getBlockY() <= this.y2 && this.z1 <= l.getBlockZ() && l.getBlockZ() <= this.z2;
+        WorldManager wm = Necessities.getInstance().getWM();
+        return this.validPortal && this.from.equals(l.getWorld()) && (isWarp() || wm.worldExists(this.to.getName())) && this.x1 <= l.getBlockX() && l.getBlockX() <= this.x2 && this.y1 <= l.getBlockY() &&
+                l.getBlockY() <= this.y2 && this.z1 <= l.getBlockZ() && l.getBlockZ() <= this.z2;
     }
 }

@@ -9,10 +9,10 @@ import org.bukkit.scoreboard.ScoreboardManager;
 import org.bukkit.scoreboard.Team;
 
 public class ScoreBoards {
-    private static String[] ALPHABET = new String[]{"a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z"};
-    private static ScoreboardManager man;
-    private static Scoreboard b;
-    private RankManager rm = new RankManager();
+    private String[] ALPHABET = new String[]{"a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z"};
+    private ScoreboardManager man;
+    private Scoreboard b;
+    private RankManager rm = Necessities.getInstance().getRM();
 
     void createScoreboard() {
         man = Bukkit.getScoreboardManager();

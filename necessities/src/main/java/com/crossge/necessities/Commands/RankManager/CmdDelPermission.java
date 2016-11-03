@@ -1,6 +1,7 @@
 package com.crossge.necessities.Commands.RankManager;
 
 import com.crossge.necessities.RankManager.Rank;
+import com.crossge.necessities.Utils;
 import org.bukkit.command.CommandSender;
 
 public class CmdDelPermission implements RankCmd {
@@ -16,7 +17,7 @@ public class CmdDelPermission implements RankCmd {
         }
         String node = args[1];
         rm.updateRankPerms(r, node, true);
-        sender.sendMessage(var.getMessages() + "Removed " + var.getObj() + node + var.getMessages() + " from " + var.getObj() + form.ownerShip(r.getName()) + var.getMessages() + " permissions.");
+        sender.sendMessage(var.getMessages() + "Removed " + var.getObj() + node + var.getMessages() + " from " + var.getObj() + Utils.ownerShip(r.getName()) + var.getMessages() + " permissions.");
         return true;
     }
 }

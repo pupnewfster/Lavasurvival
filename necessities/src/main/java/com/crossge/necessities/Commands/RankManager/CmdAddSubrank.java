@@ -1,6 +1,7 @@
 package com.crossge.necessities.Commands.RankManager;
 
 import com.crossge.necessities.RankManager.Rank;
+import com.crossge.necessities.Utils;
 import org.bukkit.command.CommandSender;
 
 public class CmdAddSubrank implements RankCmd {
@@ -9,7 +10,7 @@ public class CmdAddSubrank implements RankCmd {
             sender.sendMessage(var.getEr() + "Error: " + var.getErMsg() + "Format requires a rank and a subrank to add to that rank.");
             return true;
         }
-        Rank r = rm.getRank(form.capFirst(args[0]));
+        Rank r = rm.getRank(Utils.capFirst(args[0]));
         if (r == null) {
             sender.sendMessage(var.getEr() + "Error: " + var.getErMsg() + "That is not a valid rank.");
             return true;
@@ -21,7 +22,7 @@ public class CmdAddSubrank implements RankCmd {
         }
         subrank = rm.getSub(subrank);
         rm.updateRankSubrank(r, subrank, false);
-        sender.sendMessage(var.getMessages() + "Added " + var.getObj() + subrank + var.getMessages() + " to " + var.getObj() + form.ownerShip(r.getName()) + var.getMessages() + " subranks.");
+        sender.sendMessage(var.getMessages() + "Added " + var.getObj() + subrank + var.getMessages() + " to " + var.getObj() + Utils.ownerShip(r.getName()) + var.getMessages() + " subranks.");
         return true;
     }
 }

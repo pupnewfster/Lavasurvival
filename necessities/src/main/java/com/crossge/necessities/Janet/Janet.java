@@ -21,8 +21,8 @@ public class Janet {
     private static ArrayList<String> badwords = new ArrayList<>(), goodwords = new ArrayList<>(), ips = new ArrayList<>();
     private static HashMap<UUID, Long[]> lastChat = new HashMap<>(), lastCmd = new HashMap<>();
     private File configFile = new File("plugins/Necessities", "config.yml");
-    private JanetWarn warns = new JanetWarn();
-    private JanetLog log = new JanetLog();
+    private JanetWarn warns = Necessities.getInstance().getWarns();
+    private JanetLog log = Necessities.getInstance().getLog();
 
     public void initiate() {//now has its own function instead of reading them all every time Janet was re-initiated
         Bukkit.getConsoleSender().sendMessage(ChatColor.AQUA + "Janet initiating...");
@@ -31,7 +31,7 @@ public class Janet {
         badwords.addAll(customConfigCensors.getStringList("badwords").stream().filter(word -> !word.equals("")).map(String::toUpperCase).collect(Collectors.toList()));
         goodwords.addAll(customConfigCensors.getStringList("goodwords").stream().filter(word -> !word.equals("")).map(String::toUpperCase).collect(Collectors.toList()));
         ips.addAll(customConfigCensors.getStringList("ips").stream().filter(ip -> !ip.equals("")).collect(Collectors.toList()));
-        RankManager rm = new RankManager();
+        RankManager rm = Necessities.getInstance().getRM();
         String rank = "";
         if (!rm.getOrder().isEmpty())
             rank = rm.getRank(rm.getOrder().size() - 1).getTitle() + " ";
@@ -41,7 +41,7 @@ public class Janet {
     }
 
     public void unload() {//possibly empty the lists not sure if needed though
-        RankManager rm = new RankManager();
+        RankManager rm = Necessities.getInstance().getRM();
         String rank = "";
         if (!rm.getOrder().isEmpty())
             rank = rm.getRank(rm.getOrder().size() - 1).getTitle() + " ";
@@ -136,9 +136,7 @@ public class Janet {
         ArrayList<String> bad = new ArrayList<>();
         for (String badword : badwords) {
             ArrayList<String> s = removeSpaces(orig, badword);
-            for (String w : s)
-                if (w.contains(badword) && check(w, badword) && !isGood(w))
-                    bad.add(w);
+            bad.addAll(s.stream().filter(w -> w.contains(badword) && check(w, badword) && !isGood(w)).collect(Collectors.toList()));
             for (String o : orig) {
                 String t = removeConsec(o);
                 if ((o.contains(badword) && check(o, badword) && !isGood(o)) || (t.contains(badword) && check(t, badword) && !isGood(t)))

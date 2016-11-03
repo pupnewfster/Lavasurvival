@@ -51,11 +51,7 @@ public class Lavasurvival extends JavaPlugin {
     private HashMap<UUID, SetupMap> setups = new HashMap<>();
     private Economy econ;
     private ClassicPhysics physics;
-    private GetUUID uuiDs;
-    private CmdHide hide;
     private UserManager userManager;
-    private com.crossge.necessities.RankManager.UserManager um;
-    private RankManager rm;
     private boolean running = false;
     private ItemStack rules;
     private CancelToken ubotCancelToken;
@@ -215,10 +211,6 @@ public class Lavasurvival extends JavaPlugin {
                 e.printStackTrace();
             }
         this.userManager = new UserManager();
-        this.um = new com.crossge.necessities.RankManager.UserManager();
-        this.rm = new RankManager();
-        this.uuiDs = new GetUUID();
-        this.hide = new CmdHide();
         this.userManager.readUsers();
 
         //log("Starting UBot");
@@ -245,7 +237,7 @@ public class Lavasurvival extends JavaPlugin {
     }
 
     public GetUUID getUUIDs() {
-        return this.uuiDs;
+        return Necessities.getInstance().getUUID();
     }
 
     public UserManager getUserManager() {
@@ -253,15 +245,15 @@ public class Lavasurvival extends JavaPlugin {
     }
 
     public CmdHide getHide() {
-        return this.hide;
+        return Necessities.getInstance().getHide();
     }
 
     public com.crossge.necessities.RankManager.UserManager getNecessitiesUserManager() {
-        return this.um;
+        return Necessities.getInstance().getUM();
     }
 
     public RankManager getRankManager() {
-        return this.rm;
+        return Necessities.getInstance().getRM();
     }
 
     public void removeFromSetup(UUID uuid) {

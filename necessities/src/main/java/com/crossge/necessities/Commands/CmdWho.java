@@ -1,5 +1,6 @@
 package com.crossge.necessities.Commands;
 
+import com.crossge.necessities.Necessities;
 import com.crossge.necessities.RankManager.Rank;
 import com.crossge.necessities.RankManager.User;
 import com.crossge.necessities.RankManager.UserManager;
@@ -11,8 +12,8 @@ import org.bukkit.entity.Player;
 import java.util.HashMap;
 
 public class CmdWho implements Cmd {
-    private UserManager um = new UserManager();
-    private CmdHide hide = new CmdHide();
+    private UserManager um = Necessities.getInstance().getUM();
+    private CmdHide hide = Necessities.getInstance().getHide();
 
     public boolean commandUse(CommandSender sender, String[] args) {
         if (sender instanceof Player && !sender.hasPermission("Necessities.seehidden")) {

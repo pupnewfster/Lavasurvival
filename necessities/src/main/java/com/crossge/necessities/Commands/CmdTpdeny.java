@@ -1,5 +1,6 @@
 package com.crossge.necessities.Commands;
 
+import com.crossge.necessities.Necessities;
 import com.crossge.necessities.Teleports;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -7,8 +8,7 @@ import org.bukkit.entity.Player;
 import java.util.UUID;
 
 public class CmdTpdeny implements Cmd {
-    private Teleports tps = new Teleports();
-    private CmdHide hide = new CmdHide();
+    private Teleports tps = Necessities.getInstance().getTPs();
 
     public boolean commandUse(CommandSender sender, String[] args) {
         if (sender instanceof Player) {
@@ -28,7 +28,7 @@ public class CmdTpdeny implements Cmd {
                 return true;
             }
             Player target = sender.getServer().getPlayer(uuid);
-            if (!p.hasPermission("Necessities.seehidden") && hide.isHidden(target)) {
+            if (!p.hasPermission("Necessities.seehidden") && Necessities.getInstance().getHide().isHidden(target)) {
                 sender.sendMessage(var.getEr() + "Error: " + var.getErMsg() + "Invalid player.");
                 return true;
             }

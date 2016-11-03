@@ -19,11 +19,11 @@ public class JanetAI {//TODO: Upgrade
     private static String[] stalkerMessages = new String[4];
     private static String[] drunkMessages = new String[10];
     private static String[] tiltMessages = new String[8];
-    private static JanetRandom r = new JanetRandom();
     private static String JanetName = "";
-    private JanetSlack slack = new JanetSlack();
-    private Variables var = new Variables();
-    private GetUUID get = new GetUUID();
+    private JanetRandom r = Necessities.getInstance().getRandom();
+    private JanetSlack slack = Necessities.getInstance().getSlack();
+    private Variables var = Necessities.getInstance().getVar();
+    private GetUUID get = Necessities.getInstance().getUUID();
 
     public void parseMessage(String name, String message, Source s, boolean isPM, JanetSlack.SlackUser user) {
         UUID uuid = get.getID(name);
@@ -119,7 +119,7 @@ public class JanetAI {//TODO: Upgrade
     }
 
     public void initiate() {
-        RankManager rm = new RankManager();
+        RankManager rm = Necessities.getInstance().getRM();
         JanetName = (!rm.getOrder().isEmpty() ? ChatColor.translateAlternateColorCodes('&', rm.getRank(rm.getOrder().size() - 1).getTitle() + " ") : "") + "Janet" + ChatColor.DARK_RED + ": " + ChatColor.WHITE;
 
         String[] foods = new String[6];

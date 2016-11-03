@@ -1,5 +1,6 @@
 package com.crossge.necessities.Janet;
 
+import com.crossge.necessities.Necessities;
 import com.crossge.necessities.RankManager.RankManager;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -13,10 +14,10 @@ public class JanetWarn {
     private static HashMap<UUID, Integer> warnCount = new HashMap<>();
     private static String JanetName = "";
     private int warns = YamlConfiguration.loadConfiguration(new File("plugins/Necessities", "config.yml")).getInt("Necessities.warns");
-    private JanetLog log = new JanetLog();
+    private JanetLog log = Necessities.getInstance().getLog();
 
     public void initiate() {
-        RankManager rm = new RankManager();
+        RankManager rm = Necessities.getInstance().getRM();
         JanetName = (!rm.getOrder().isEmpty() ? ChatColor.translateAlternateColorCodes('&', rm.getRank(rm.getOrder().size() - 1).getTitle() + " ") : "") + "Janet" + ChatColor.DARK_RED + ": " + ChatColor.WHITE;
     }
 

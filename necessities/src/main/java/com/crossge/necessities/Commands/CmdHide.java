@@ -15,7 +15,7 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 public class CmdHide implements Cmd {
-    private static ArrayList<UUID> hidden = new ArrayList<>();
+    private ArrayList<UUID> hidden = new ArrayList<>();
     private File configFileHiding = new File("plugins/Necessities", "hiding.yml");
     private File configFileLogOut = new File("plugins/Necessities", "logoutmessages.yml");
     private File configFileLogIn = new File("plugins/Necessities", "loginmessages.yml");
@@ -34,7 +34,7 @@ public class CmdHide implements Cmd {
                 p.sendMessage(var.getMessages() + "You are now visible.");
                 Bukkit.broadcast(var.getMessages() + "To Ops - " + var.getObj() + p.getDisplayName() + var.getMessages() + " - is now " + ChatColor.DARK_GRAY + "visible" + var.getMessages() + ".",
                         "Necessities.opBroadcast");
-                RankManager rm = new RankManager();
+                RankManager rm = Necessities.getInstance().getRM();
                 String rank = "";
                 if (!rm.getOrder().isEmpty())
                     rank = ChatColor.translateAlternateColorCodes('&', rm.getRank(rm.getOrder().size() - 1).getTitle() + " ");

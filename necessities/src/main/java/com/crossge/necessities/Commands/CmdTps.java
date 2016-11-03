@@ -1,12 +1,13 @@
 package com.crossge.necessities.Commands;
 
+import com.crossge.necessities.Utils;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.command.CommandSender;
 
 public class CmdTps implements Cmd {
     public boolean commandUse(CommandSender sender, String[] args) {
-        sender.sendMessage(form.getTPS());
+        sender.sendMessage(Utils.getTPS());
         int mb = 1024 * 1024;
         Runtime runtime = Runtime.getRuntime();
         sender.sendMessage(var.getMessages() + "Max Memory: " + var.getObj() + runtime.maxMemory() / mb + var.getMessages() + " mb.");

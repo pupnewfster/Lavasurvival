@@ -33,13 +33,12 @@ public class User {
 
     public User(Player p) {
         YamlConfiguration configUsers = YamlConfiguration.loadConfiguration(this.configFileUsers);
-        RankManager rm = new RankManager();
         this.bukkitPlayer = p;
         this.right = p.getLocation();
         this.left = p.getLocation();
         this.userUUID = this.bukkitPlayer.getUniqueId();
         if (configUsers.contains(getUUID().toString() + ".rank"))
-            this.rank = rm.getRank(configUsers.getString(getUUID().toString() + ".rank"));
+            this.rank = Necessities.getInstance().getRM().getRank(configUsers.getString(getUUID().toString() + ".rank"));
         if (configUsers.contains(getUUID().toString() + ".nick"))
             this.nick = ChatColor.translateAlternateColorCodes('&', configUsers.getString(getUUID().toString() + ".nick"));
         if (this.nick != null && !this.nick.startsWith("~"))
@@ -64,9 +63,8 @@ public class User {
     public User(UUID uuid) {
         this.userUUID = uuid;
         YamlConfiguration configUsers = YamlConfiguration.loadConfiguration(this.configFileUsers);
-        RankManager rm = new RankManager();
         if (configUsers.contains(getUUID().toString() + ".rank"))
-            this.rank = rm.getRank(configUsers.getString(getUUID().toString() + ".rank"));
+            this.rank = Necessities.getInstance().getRM().getRank(configUsers.getString(getUUID().toString() + ".rank"));
         this.subranks.addAll(configUsers.getStringList(uuid + ".subranks").stream().filter(subrank -> !subrank.equals("")).collect(Collectors.toList()));
         this.permissions.addAll(configUsers.getStringList(uuid + ".permissions").stream().filter(node -> !node.equals("")).collect(Collectors.toList()));
         if (configUsers.contains(getUUID().toString() + ".nick"))
@@ -93,7 +91,7 @@ public class User {
 
     public void logOut() {
         updateTimePlayed();
-        ScoreBoards sb = new ScoreBoards();
+        ScoreBoards sb = Necessities.getInstance().getSBs();
         sb.delPlayer(this);
         if (this.hat != null)
             this.hat.despawn();
@@ -281,8 +279,8 @@ public class User {
         this.lastContact = last;
     }
 
-    public void givePerms() {
-        ScoreBoards sb = new ScoreBoards();
+    void givePerms() {
+        ScoreBoards sb = Necessities.getInstance().getSBs();
         sb.addPlayer(this);
         YamlConfiguration configUsers = YamlConfiguration.loadConfiguration(this.configFileUsers);
         YamlConfiguration configSubranks = YamlConfiguration.loadConfiguration(this.configFileSubranks);

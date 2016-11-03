@@ -1,16 +1,13 @@
 package com.crossge.necessities.Commands;
 
+import com.crossge.necessities.Necessities;
 import com.crossge.necessities.RankManager.User;
-import com.crossge.necessities.Teleports;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import java.util.UUID;
 
 public class CmdTpahere implements Cmd {
-    private Teleports tps = new Teleports();
-    private CmdHide hide = new CmdHide();
-
     public boolean commandUse(CommandSender sender, String[] args) {
         if (sender instanceof Player) {
             if (args.length == 0) {
@@ -30,7 +27,7 @@ public class CmdTpahere implements Cmd {
                 return true;
             }
             String tPrefix = um.getUser(uuid).getStatus(), pPrefix = um.getUser(p.getUniqueId()).getStatus();
-            if (!p.hasPermission("Necessities.seehidden") && hide.isHidden(target)) {
+            if (!p.hasPermission("Necessities.seehidden") && Necessities.getInstance().getHide().isHidden(target)) {
                 sender.sendMessage(var.getEr() + "Error: " + var.getErMsg() + "Invalid player.");
                 return true;
             } else if (!tPrefix.equals(pPrefix)) {
@@ -51,7 +48,7 @@ public class CmdTpahere implements Cmd {
                 sender.sendMessage(var.getEr() + "Error: " + var.getErMsg() + "You are ignoring that user, so cannot send them a teleport request.");
                 return true;
             }
-            tps.addRequest(uuid, p.getUniqueId().toString() + " toThem");
+            Necessities.getInstance().getTPs().addRequest(uuid, p.getUniqueId().toString() + " toThem");
             target.sendMessage(var.getObj() + p.getName() + var.getMessages() + " has requested that you teleport to them.");
             target.sendMessage(var.getMessages() + "To teleport, type " + var.getObj() + "/tpaccept" + var.getMessages() + ".");
             target.sendMessage(var.getMessages() + "To deny this request, type " + var.getObj() + "/tpdeny" + var.getMessages() + ".");
