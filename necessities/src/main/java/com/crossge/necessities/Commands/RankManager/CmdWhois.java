@@ -1,8 +1,10 @@
 package com.crossge.necessities.Commands.RankManager;
 
-import com.crossge.necessities.Commands.CmdHide;
+import com.crossge.necessities.GetUUID;
+import com.crossge.necessities.Necessities;
 import com.crossge.necessities.RankManager.User;
 import com.crossge.necessities.Utils;
+import com.crossge.necessities.Variables;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
@@ -14,13 +16,13 @@ import java.util.Calendar;
 import java.util.UUID;
 
 public class CmdWhois implements RankCmd {
-    private CmdHide hide = new CmdHide();
-
     public boolean commandUse(CommandSender sender, String[] args) {
+        Variables var = Necessities.getInstance().getVar();
         if (args.length == 0) {
             sender.sendMessage(var.getEr() + "Error: " + var.getErMsg() + "You must enter a player to view info of.");
             return true;
         }
+        GetUUID get = Necessities.getInstance().getUUID();
         UUID uuid = get.getID(args[0]);
         if (uuid == null)
             uuid = get.getOfflineID(args[0]);
@@ -28,7 +30,7 @@ public class CmdWhois implements RankCmd {
             sender.sendMessage(var.getEr() + "Error: " + var.getErMsg() + "That player has not joined the server. If the player is offline, please use the full and most recent name.");
             return true;
         }
-        User u = um.getUser(uuid);
+        User u = Necessities.getInstance().getUM().getUser(uuid);
         sender.sendMessage(var.getMessages() + "===== WhoIs: " + var.getObj() + u.getName() + var.getMessages() + " =====");
         if (u.getPlayer() != null)
             sender.sendMessage(var.getMessages() + " - Nick: " + ChatColor.RESET + u.getPlayer().getDisplayName());
@@ -79,7 +81,7 @@ public class CmdWhois implements RankCmd {
         if (u.getPlayer() != null) {
             Player p = u.getPlayer();
             sender.sendMessage(var.getMessages() + " - Banned: " + (p.isBanned() ? ChatColor.GREEN + "true" : ChatColor.DARK_RED + "false"));
-            sender.sendMessage(var.getMessages() + " - Visible: " + (hide.isHidden(p) ? ChatColor.DARK_RED + "false" : ChatColor.GREEN + "true"));
+            sender.sendMessage(var.getMessages() + " - Visible: " + (Necessities.getInstance().getHide().isHidden(p) ? ChatColor.DARK_RED + "false" : ChatColor.GREEN + "true"));
             sender.sendMessage(var.getMessages() + " - OP: " + (p.isOp() ? ChatColor.GREEN + "true" : ChatColor.DARK_RED + "false"));
             sender.sendMessage(var.getMessages() + " - Fly mode: " + (p.isFlying() ? ChatColor.GREEN + "true " + ChatColor.RESET + " (flying)" : ChatColor.DARK_RED + "false" + ChatColor.RESET + " (not flying)"));
         } else {

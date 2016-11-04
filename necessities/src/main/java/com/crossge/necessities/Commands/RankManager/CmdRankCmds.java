@@ -1,17 +1,20 @@
 package com.crossge.necessities.Commands.RankManager;
 
+import com.crossge.necessities.Necessities;
 import com.crossge.necessities.RankManager.Rank;
 import com.crossge.necessities.Utils;
+import com.crossge.necessities.Variables;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 
 public class CmdRankCmds implements RankCmd {
     public boolean commandUse(CommandSender sender, String[] args) {
+        Variables var = Necessities.getInstance().getVar();
         if (args.length == 0) {
             sender.sendMessage(var.getEr() + "Error: " + var.getErMsg() + "You must enter a rank to view the commands of.");
             return true;
         }
-        Rank r = rm.getRank(Utils.capFirst(args[0]));
+        Rank r = Necessities.getInstance().getRM().getRank(Utils.capFirst(args[0]));
         if (r == null) {
             sender.sendMessage(var.getEr() + "Error: " + var.getErMsg() + "You must enter a valid rank.");
             return true;

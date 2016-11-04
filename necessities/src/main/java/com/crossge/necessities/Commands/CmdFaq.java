@@ -1,5 +1,7 @@
 package com.crossge.necessities.Commands;
 
+import com.crossge.necessities.Necessities;
+import com.crossge.necessities.Variables;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 
@@ -10,6 +12,7 @@ import java.io.FileReader;
 public class CmdFaq implements Cmd {
     public boolean commandUse(CommandSender sender, String[] args) {
         File f = new File("plugins/Necessities/faq.txt");
+        Variables var = Necessities.getInstance().getVar();
         if (!f.exists()) {
             sender.sendMessage(var.getEr() + "Error: " + var.getErMsg() + "The file does not exist somehow...");
             return true;

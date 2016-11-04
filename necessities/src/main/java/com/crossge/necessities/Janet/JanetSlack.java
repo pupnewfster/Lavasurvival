@@ -28,23 +28,22 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 public class JanetSlack {
-    private File configFile = new File("plugins/Necessities", "config.yml");
     private HashMap<String, SlackUser> userMap = new HashMap<>();
     private HashMap<Integer, ArrayList<String>> helpLists = new HashMap<>();
     private boolean isConnected = false;
     private String token;
     private URL hookURL;
     private WebSocket ws;
-    private JanetRandom r = Necessities.getInstance().getRandom();
-    private RankManager rm = Necessities.getInstance().getRM();
-    private UserManager um = Necessities.getInstance().getUM();
-    private JanetWarn warns = Necessities.getInstance().getWarns();
-    private Variables var = Necessities.getInstance().getVar();
-    private CmdHide hide = Necessities.getInstance().getHide();
-    private GetUUID get = Necessities.getInstance().getUUID();
+    private JanetRandom r;
+    private RankManager rm;
+    private UserManager um;
+    private JanetWarn warns;
+    private Variables var;
+    private CmdHide hide;
+    private GetUUID get;
 
     public void init() {
-        YamlConfiguration config = YamlConfiguration.loadConfiguration(configFile);
+        YamlConfiguration config = YamlConfiguration.loadConfiguration(new File("plugins/Necessities", "config.yml"));
         token = config.contains("Necessities.SlackToken") ? config.getString("Necessities.SlackToken") : "token";
         String hook = config.contains("Necessities.WebHook") ? config.getString("Necessities.WebHook") : "webHook";
         if (token.equals("token") || hook.equals("webHook"))
@@ -54,6 +53,13 @@ public class JanetSlack {
         } catch (Exception e) {
             return;
         }
+        r = Necessities.getInstance().getRandom();
+        rm = Necessities.getInstance().getRM();
+        um = Necessities.getInstance().getUM();
+        warns = Necessities.getInstance().getWarns();
+        var = Necessities.getInstance().getVar();
+        hide = Necessities.getInstance().getHide();
+        get = Necessities.getInstance().getUUID();
         setHelp();
         connect();
     }

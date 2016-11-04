@@ -2,6 +2,8 @@ package com.crossge.necessities.Commands;
 
 import com.crossge.necessities.Necessities;
 import com.crossge.necessities.RankManager.User;
+import com.crossge.necessities.RankManager.UserManager;
+import com.crossge.necessities.Variables;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -9,12 +11,13 @@ import java.util.UUID;
 
 public class CmdTpa implements Cmd {
     public boolean commandUse(CommandSender sender, String[] args) {
+        Variables var = Necessities.getInstance().getVar();
         if (sender instanceof Player) {
             if (args.length == 0) {
                 sender.sendMessage(var.getEr() + "Error: " + var.getErMsg() + "Format requires you enter a player to send a teleport request to.");
                 return true;
             }
-            UUID uuid = get.getID(args[0]);
+            UUID uuid = Necessities.getInstance().getUUID().getID(args[0]);
             if (uuid == null) {
                 sender.sendMessage(var.getEr() + "Error: " + var.getErMsg() + "Invalid player.");
                 return true;
@@ -26,6 +29,7 @@ public class CmdTpa implements Cmd {
                 sender.sendMessage(var.getEr() + "Error: " + var.getErMsg() + "You or the target are in the lava.");
                 return true;
             }
+            UserManager um = Necessities.getInstance().getUM();
             String tPrefix = um.getUser(uuid).getStatus(), pPrefix = um.getUser(p.getUniqueId()).getStatus();
             if (!p.hasPermission("Necessities.seehidden") && Necessities.getInstance().getHide().isHidden(target)) {
                 sender.sendMessage(var.getEr() + "Error: " + var.getErMsg() + "Invalid player.");

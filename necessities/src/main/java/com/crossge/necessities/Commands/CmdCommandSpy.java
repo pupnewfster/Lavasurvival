@@ -1,5 +1,7 @@
 package com.crossge.necessities.Commands;
 
+import com.crossge.necessities.Necessities;
+import com.crossge.necessities.Variables;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
@@ -23,11 +25,11 @@ public class CmdCommandSpy implements Cmd {
             else
                 temp.add(uuid);
         });
-        for (UUID uuid : temp)
-            spying.remove(uuid);
+        temp.forEach(uuid -> spying.remove(uuid));
     }
 
     public boolean commandUse(CommandSender sender, String[] args) {
+        Variables var = Necessities.getInstance().getVar();
         if (sender instanceof Player) {
             Player p = (Player) sender;
             p.sendMessage(var.getMessages() + (spying.contains(p.getUniqueId()) ? "No longer" : "You are now") + " spying on commands.");
@@ -42,10 +44,8 @@ public class CmdCommandSpy implements Cmd {
 
     public void unload() {
         YamlConfiguration configSpying = YamlConfiguration.loadConfiguration(configFileSpying);
-        for (String key : configSpying.getKeys(false))
-            configSpying.set(key, null);
-        for (UUID uuid : spying)
-            configSpying.set(uuid.toString(), true);
+        configSpying.getKeys(false).forEach(key -> configSpying.set(key, null));
+        spying.forEach(uuid -> configSpying.set(uuid.toString(), true));
         try {
             configSpying.save(configFileSpying);
         } catch (Exception ignored) {

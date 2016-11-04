@@ -2,15 +2,16 @@ package com.crossge.necessities.Commands;
 
 import com.crossge.necessities.Necessities;
 import com.crossge.necessities.Teleports;
+import com.crossge.necessities.Variables;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import java.util.UUID;
 
 public class CmdTpdeny implements Cmd {
-    private Teleports tps = Necessities.getInstance().getTPs();
-
     public boolean commandUse(CommandSender sender, String[] args) {
+        Variables var = Necessities.getInstance().getVar();
+        Teleports tps = Necessities.getInstance().getTPs();
         if (sender instanceof Player) {
             Player p = (Player) sender;
             UUID uuid = null;
@@ -22,7 +23,7 @@ public class CmdTpdeny implements Cmd {
                 }
             }
             if (args.length > 0)
-                uuid = get.getID(args[0]);
+                uuid = Necessities.getInstance().getUUID().getID(args[0]);
             if (uuid == null) {
                 sender.sendMessage(var.getEr() + "Error: " + var.getErMsg() + "Invalid player.");
                 return true;

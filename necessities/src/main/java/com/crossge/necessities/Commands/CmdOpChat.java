@@ -1,6 +1,8 @@
 package com.crossge.necessities.Commands;
 
+import com.crossge.necessities.Necessities;
 import com.crossge.necessities.RankManager.User;
+import com.crossge.necessities.Variables;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
@@ -19,9 +21,10 @@ public class CmdOpChat implements Cmd {
             for (String arg : args)
                 message += arg + " ";
         message = message.trim();
+        Variables var = Necessities.getInstance().getVar();
         if (sender instanceof Player) {
             Player p = (Player) sender;
-            User u = um.getUser(p.getUniqueId());
+            User u = Necessities.getInstance().getUM().getUser(p.getUniqueId());
             if (args.length > 0)
                 sendOps(p.getUniqueId(), message);
             else {
@@ -39,11 +42,11 @@ public class CmdOpChat implements Cmd {
         YamlConfiguration config = YamlConfiguration.loadConfiguration(configFile);
         Player player = Bukkit.getPlayer(uuid);
         String send = ChatColor.translateAlternateColorCodes('&', config.getString("Necessities.ChatFormat"));
-        send = var.getMessages() + "To Ops - " + ChatColor.WHITE + send;
+        send = Necessities.getInstance().getVar().getMessages() + "To Ops - " + ChatColor.WHITE + send;
         send = send.replaceAll("\\{WORLD\\} ", "");
         send = send.replaceAll("\\{GUILD\\} ", "");
         send = send.replaceAll("\\{TITLE\\} ", "");
-        send = send.replaceAll("\\{RANK\\}", ChatColor.translateAlternateColorCodes('&', um.getUser(uuid).getRank().getTitle()));
+        send = send.replaceAll("\\{RANK\\}", ChatColor.translateAlternateColorCodes('&', Necessities.getInstance().getUM().getUser(uuid).getRank().getTitle()));
         send = send.replaceAll("\\{NAME\\}", player.getDisplayName());
         send = send.replaceAll("\\{MESSAGE\\}", "");
         if (player.hasPermission("Necessities.colorchat"))
@@ -52,6 +55,6 @@ public class CmdOpChat implements Cmd {
     }
 
     private void consoleToOps(String message) {
-        Bukkit.broadcast(var.getMessages() + "To Ops - " + console.getName() + ChatColor.WHITE + " " + ChatColor.translateAlternateColorCodes('&', message.trim()), "Necessities.opBroadcast");
+        Bukkit.broadcast(Necessities.getInstance().getVar().getMessages() + "To Ops - " + Necessities.getInstance().getConsole().getName() + ChatColor.WHITE + " " + ChatColor.translateAlternateColorCodes('&', message.trim()), "Necessities.opBroadcast");
     }
 }

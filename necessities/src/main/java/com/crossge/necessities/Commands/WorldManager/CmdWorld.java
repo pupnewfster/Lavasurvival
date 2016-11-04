@@ -1,5 +1,7 @@
 package com.crossge.necessities.Commands.WorldManager;
 
+import com.crossge.necessities.Necessities;
+import com.crossge.necessities.Variables;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.command.CommandSender;
@@ -9,6 +11,7 @@ import java.util.UUID;
 
 public class CmdWorld implements WorldCmd {
     public boolean commandUse(CommandSender sender, String[] args) {
+        Variables var = Necessities.getInstance().getVar();
         if (args.length == 0) {
             sender.sendMessage(var.getEr() + "Error: " + var.getErMsg() + "You must enter a worldname.");
             return true;
@@ -22,7 +25,7 @@ public class CmdWorld implements WorldCmd {
                 return true;
             }
             if (args.length > 1) {
-                UUID uuid = get.getID(args[0]);
+                UUID uuid = Necessities.getInstance().getUUID().getID(args[0]);
                 if (uuid == null) {
                     sender.sendMessage(var.getEr() + "Error: " + var.getErMsg() + "Invalid player.");
                     return true;
@@ -36,7 +39,7 @@ public class CmdWorld implements WorldCmd {
         } else {
             if (args.length > 1) {
                 World dim = sender.getServer().getWorld(args[1]);
-                UUID uuid = get.getID(args[0]);
+                UUID uuid = Necessities.getInstance().getUUID().getID(args[0]);
                 if (uuid == null) {
                     sender.sendMessage(var.getEr() + "Error: " + var.getErMsg() + "Invalid player.");
                     return true;

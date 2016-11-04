@@ -2,15 +2,18 @@ package com.crossge.necessities.Commands;
 
 import com.crossge.necessities.Hats.Hat;
 import com.crossge.necessities.Hats.HatType;
+import com.crossge.necessities.Necessities;
 import com.crossge.necessities.RankManager.User;
+import com.crossge.necessities.Variables;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 public class CmdHat implements Cmd {
     public boolean commandUse(CommandSender sender, String[] args) {
+        Variables var = Necessities.getInstance().getVar();
         if (sender instanceof Player) {
             Player p = (Player) sender;
-            User u = um.getUser(p.getUniqueId());
+            User u = Necessities.getInstance().getUM().getUser(p.getUniqueId());
             if (args.length == 0) {
                 if (u.getHat() == null) {
                     p.sendMessage(var.getEr() + "Error: " + var.getErMsg() + "You must enter a valid hat type.");

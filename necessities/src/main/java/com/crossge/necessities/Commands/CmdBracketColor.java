@@ -1,5 +1,8 @@
 package com.crossge.necessities.Commands;
 
+import com.crossge.necessities.GetUUID;
+import com.crossge.necessities.Necessities;
+import com.crossge.necessities.Variables;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
@@ -15,11 +18,13 @@ public class CmdBracketColor implements Cmd {
     private File configFileTitles = new File("plugins/Necessities", "titles.yml");
 
     public boolean commandUse(CommandSender sender, String[] args) {
+        Variables var = Necessities.getInstance().getVar();
         if (args.length == 0 || (args.length > 1 && args[1].length() > 1) || (args.length == 1 && args[0].length() > 1)) {
             sender.sendMessage(var.getEr() + "Error: " + var.getErMsg() + "You must enter a player and the color for their brackets.");
             sender.sendMessage(var.getMessages() + "Valid colors are: " + ChatColor.translateAlternateColorCodes('&', "&00&11&22&33&44&55&66&77&88&99&aa&bb&cc&dd&ee&ff"));
             return true;
         }
+        GetUUID get = Necessities.getInstance().getUUID();
         UUID uuid = get.getID(args[0]);
         if (uuid == null) {
             sender.sendMessage(var.getEr() + "Error: " + var.getErMsg() + "Invalid player.");

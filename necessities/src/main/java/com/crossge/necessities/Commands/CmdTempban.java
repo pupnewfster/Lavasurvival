@@ -1,5 +1,8 @@
 package com.crossge.necessities.Commands;
 
+import com.crossge.necessities.GetUUID;
+import com.crossge.necessities.Necessities;
+import com.crossge.necessities.Variables;
 import org.bukkit.BanList;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -12,10 +15,12 @@ import java.util.UUID;
 
 public class CmdTempban implements Cmd {
     public boolean commandUse(CommandSender sender, String[] args) {
+        Variables var = Necessities.getInstance().getVar();
         if (args.length <= 1) {
             sender.sendMessage(var.getEr() + "Error: " + var.getErMsg() + "You must enter a player to ban and a duration in minutes.");
             return true;
         }
+        GetUUID get = Necessities.getInstance().getUUID();
         UUID uuid = get.getID(args[0]);
         if (uuid == null)
             uuid = get.getOfflineID(args[0]);
@@ -24,7 +29,7 @@ public class CmdTempban implements Cmd {
             return true;
         }
         OfflinePlayer target = Bukkit.getOfflinePlayer(uuid);
-        String name = console.getName().replaceAll(":", "");
+        String name = Necessities.getInstance().getConsole().getName().replaceAll(":", "");
         if (sender instanceof Player) {
             Player p = (Player) sender;
             if (target.getPlayer() != null && target.getPlayer().hasPermission("Necessities.antiBan")) {

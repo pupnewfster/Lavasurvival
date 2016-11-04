@@ -1,6 +1,9 @@
 package com.crossge.necessities.Commands;
 
+import com.crossge.necessities.Necessities;
 import com.crossge.necessities.RankManager.User;
+import com.crossge.necessities.RankManager.UserManager;
+import com.crossge.necessities.Variables;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
@@ -10,6 +13,8 @@ import java.util.UUID;
 
 public class CmdNick implements Cmd {
     public boolean commandUse(CommandSender sender, String[] args) {
+        Variables var = Necessities.getInstance().getVar();
+        UserManager um = Necessities.getInstance().getUM();
         if (sender instanceof Player) {
             Player p = (Player) sender;
             if (args.length == 0) {
@@ -19,7 +24,7 @@ public class CmdNick implements Cmd {
                 p.sendMessage(var.getMessages() + "Nickname removed.");
                 return true;
             } else if (args.length == 1) {
-                UUID uuid = get.getID(args[0]);
+                UUID uuid = Necessities.getInstance().getUUID().getID(args[0]);
                 if (ChatColor.stripColor(ChatColor.translateAlternateColorCodes('&', args[0] + "&r")).trim().length() > 16 ||
                         ChatColor.stripColor(ChatColor.translateAlternateColorCodes('&', args[0] + "&r")).trim().length() < 1) {
                     p.sendMessage(var.getEr() + "Error: " + var.getErMsg() + "Nicks have a maximum of 16 characters.");
@@ -48,7 +53,7 @@ public class CmdNick implements Cmd {
             sender.sendMessage(var.getEr() + "Error: " + var.getErMsg() + "The console cannot have a nickname.");
             return true;
         }
-        UUID uuid = get.getID(args[0]);
+        UUID uuid = Necessities.getInstance().getUUID().getID(args[0]);
         if (uuid == null) {
             sender.sendMessage(var.getEr() + "Error: " + var.getErMsg() + "Invalid player.");
             return true;

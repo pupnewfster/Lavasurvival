@@ -12,10 +12,10 @@ public class ScoreBoards {
     private String[] ALPHABET = new String[]{"a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z"};
     private ScoreboardManager man;
     private Scoreboard b;
-    private RankManager rm = Necessities.getInstance().getRM();
 
     void createScoreboard() {
         man = Bukkit.getScoreboardManager();
+        RankManager rm = Necessities.getInstance().getRM();
         b = man.getMainScoreboard();//Use main scoreboard instead of a new one for better compatability with other plugins
         for (Rank r : rm.getOrder()) {
             Team t = b.getTeam(fromInt(rm.getOrder().size() - rm.getOrder().indexOf(r)));
@@ -28,6 +28,7 @@ public class ScoreBoards {
     public void addPlayer(User u) {
         if (u.getRank() == null || u.getPlayer() == null)
             return;
+        RankManager rm = Necessities.getInstance().getRM();
         Team t = b.getTeam(fromInt(rm.getOrder().size() - rm.getOrder().indexOf(u.getRank())));
         if (t == null)
             return;
@@ -40,8 +41,10 @@ public class ScoreBoards {
         if (u.getRank() == null || u.getPlayer() == null)
             return;
         Team t = b.getTeam(u.getPlayer().getName());
-        if (t == null)
+        if (t == null) {
+            RankManager rm = Necessities.getInstance().getRM();
             t = b.getTeam(fromInt(rm.getOrder().size() - rm.getOrder().indexOf(u.getRank())));
+        }
         if (t == null)
             return;
         t.removeEntry(u.getPlayer().getName());

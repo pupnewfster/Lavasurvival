@@ -41,13 +41,12 @@ public class Necessities extends JavaPlugin {
     private Tracker googleAnalyticsTracker;
     private Property skin;
     private UUID janetID;
-    private DonationReader dr = new DonationReader();
+    //private DonationReader dr = new DonationReader();
     private CmdCommandSpy spy = new CmdCommandSpy();
     private PortalManager pm = new PortalManager();
     private JanetRandom random = new JanetRandom();
     private WarpManager warps = new WarpManager();
     private WorldManager wm = new WorldManager();
-    private JanetSlack slack = new JanetSlack();
     private UserManager um = new UserManager();
     private RankManager rm = new RankManager();
     private ScoreBoards sb = new ScoreBoards();
@@ -58,79 +57,80 @@ public class Necessities extends JavaPlugin {
     private JanetLog log = new JanetLog();
     private CmdHide hide = new CmdHide();
     private GetUUID get = new GetUUID();
-    private JanetAI ai = new JanetAI();
     private Janet bot = new Janet();
+    private JanetAI ai = new JanetAI();
+    private JanetSlack slack = new JanetSlack();
 
     public UserManager getUM() {
-        return this.um;
+        return this.um == null ? this.um = new UserManager() : this.um;
     }
 
     public CmdCommandSpy getSpy() {
-        return this.spy;
+        return this.spy == null ? this.spy = new CmdCommandSpy() : this.spy;
     }
 
     public RankManager getRM() {
-        return this.rm;
+        return this.rm == null ? this.rm = new RankManager() : this.rm;
     }
 
     public PortalManager getPM() {
-        return this.pm;
+        return this.pm == null ? this.pm = new PortalManager() : this.pm;
     }
 
     public JanetSlack getSlack() {
-        return this.slack;
+        return this.slack == null ? this.slack = new JanetSlack() : this.slack;
     }
 
     public Console getConsole() {
-        return this.console;
+        return this.console == null ? this.console = new Console() : this.console;
     }
 
     public Variables getVar() {
-        return this.var;
+        return this.var == null ? this.var = new Variables() : this.var;
     }
 
     public Teleports getTPs() {
-        return this.tps;
+        return this.tps == null ? this.tps = new Teleports() : this.tps;
     }
 
     public JanetWarn getWarns() {
-        return this.warns;
+        return this.warns == null ? this.warns = new JanetWarn() : this.warns;
     }
 
     public ScoreBoards getSBs() {
-        return this.sb;
+        return this.sb == null ? this.sb = new ScoreBoards() : this.sb;
     }
 
     public CmdHide getHide() {
-        return this.hide;
+        return this.hide == null ? this.hide = new CmdHide() : this.hide;
     }
 
     public JanetAI getAI() {
-        return this.ai;
+        return this.ai == null ? this.ai = new JanetAI() : this.ai;
     }
 
     public Janet getBot() {
-        return this.bot;
+        return this.bot == null ? this.bot = new Janet() : this.bot;
     }
 
     public GetUUID getUUID() {
-        return this.get;
+        return this.get == null ? this.get = new GetUUID() : this.get;
     }
 
     public WarpManager getWarps() {
-        return this.warps;
+        return this.warps == null ? this.warps = new WarpManager() : this.warps;
     }
 
     public WorldManager getWM() {
-        return this.wm;
+        return this.wm == null ? this.wm = new WorldManager() : this.wm;
     }
 
     public JanetLog getLog() {
-        return this.log;
+        return this.log == null ? this.log = new JanetLog() : this.log;
     }
 
     public JanetRandom getRandom() {
-        return this.random;
+        return this.random == null ? this.random = new JanetRandom() : this.random;
     }
 
     public static Necessities getInstance() {
@@ -147,7 +147,7 @@ public class Necessities extends JavaPlugin {
         Initialization init = new Initialization();
         init.initiateFiles();
         getServer().getPluginManager().registerEvents(new Listeners(), this);
-        this.dr.init();
+        //this.dr.init();
         getLogger().info("Necessities enabled.");
     }
 
@@ -164,7 +164,7 @@ public class Necessities extends JavaPlugin {
     }
 
     private static Tracker getTracker() {
-        return getInstance().googleAnalyticsTracker;
+        return INSTANCE == null ? null : getInstance().googleAnalyticsTracker;
     }
 
     public boolean isDev(String name) {
@@ -455,7 +455,7 @@ public class Necessities extends JavaPlugin {
         this.hide.unload();
         this.slack.disconnect();
         this.bot.unload();
-        this.dr.disconnect();
+        //this.dr.disconnect();
         getLogger().info("Necessities disabled.");
     }
 

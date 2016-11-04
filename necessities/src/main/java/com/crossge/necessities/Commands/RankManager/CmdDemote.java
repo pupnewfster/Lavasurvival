@@ -1,6 +1,10 @@
 package com.crossge.necessities.Commands.RankManager;
 
+import com.crossge.necessities.GetUUID;
+import com.crossge.necessities.Necessities;
 import com.crossge.necessities.RankManager.User;
+import com.crossge.necessities.RankManager.UserManager;
+import com.crossge.necessities.Variables;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -9,10 +13,12 @@ import java.util.UUID;
 
 public class CmdDemote implements RankCmd {
     public boolean commandUse(CommandSender sender, String[] args) {
+        Variables var = Necessities.getInstance().getVar();
         if (args.length != 1) {
             sender.sendMessage(var.getEr() + "Error: " + var.getErMsg() + "You must enter a user to demote.");
             return true;
         }
+        GetUUID get = Necessities.getInstance().getUUID();
         UUID uuid = get.getID(args[0]);
         Player target;
         if (uuid == null) {
@@ -24,6 +30,7 @@ public class CmdDemote implements RankCmd {
             target = Bukkit.getOfflinePlayer(uuid).getPlayer();
         } else
             target = Bukkit.getPlayer(uuid);
+        UserManager um = Necessities.getInstance().getUM();
         User u = um.getUser(uuid);
         if (u.getRank().getPrevious() == null) {
             sender.sendMessage(var.getEr() + "Error: " + var.getErMsg() + target.getName() + " is already the lowest rank.");
@@ -32,7 +39,7 @@ public class CmdDemote implements RankCmd {
         String name = "Console";
         if (sender instanceof Player) {
             Player player = (Player) sender;
-            if (!player.hasPermission("Necessities.rankmanager.setranksame") && rm.hasRank(um.getUser(player.getUniqueId()).getRank(), u.getRank())) {
+            if (!player.hasPermission("Necessities.rankmanager.setranksame") && Necessities.getInstance().getRM().hasRank(um.getUser(player.getUniqueId()).getRank(), u.getRank())) {
                 player.sendMessage(var.getEr() + "Error: " + var.getErMsg() + "You may not demote people a higher or equal rank.");
                 return true;
             }

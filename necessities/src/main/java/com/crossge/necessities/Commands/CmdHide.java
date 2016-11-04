@@ -3,6 +3,8 @@ package com.crossge.necessities.Commands;
 import com.crossge.necessities.Necessities;
 import com.crossge.necessities.RankManager.RankManager;
 import com.crossge.necessities.RankManager.User;
+import com.crossge.necessities.RankManager.UserManager;
+import com.crossge.necessities.Variables;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
@@ -21,6 +23,8 @@ public class CmdHide implements Cmd {
     private File configFileLogIn = new File("plugins/Necessities", "loginmessages.yml");
 
     public boolean commandUse(CommandSender sender, String[] args) {
+        UserManager um = Necessities.getInstance().getUM();
+        Variables var = Necessities.getInstance().getVar();
         if (sender instanceof Player) {
             Player p = (Player) sender;
             User u = um.getUser(p.getUniqueId());
