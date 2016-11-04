@@ -687,6 +687,7 @@ public abstract class Gamemode {
         player.setGameMode(GameMode.SURVIVAL);
         player.setMaxHealth(getHealth(Lavasurvival.INSTANCE.getNecessitiesUserManager().getUser(player.getUniqueId()).getRank()));
         player.setHealth(player.getMaxHealth());
+        player.setGlowing(true);
         UserManager um = Lavasurvival.INSTANCE.getUserManager();
         UserInfo u = um.getUser(player.getUniqueId());
         u.resetGenerosity();
@@ -759,6 +760,7 @@ public abstract class Gamemode {
         if (player == null)
             return;
         UUID uuid = player.getUniqueId();
+        player.setGlowing(false);
         if (alive.contains(uuid))
             alive.remove(uuid);
         if (!dead.contains(uuid))
