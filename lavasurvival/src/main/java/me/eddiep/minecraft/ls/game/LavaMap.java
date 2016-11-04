@@ -101,7 +101,7 @@ public class LavaMap {
         return this.world.getBlockAt(this.lavax + xoffset, this.lavay + yoffset, this.lavaz + zoffet).getLocation();
     }
 
-    public void prepare() {
+    void prepare() {
         restoreBackup();
         this.world = loadOrGetWorld(this.worldName);
         this.world.setAutoSave(false);
@@ -122,19 +122,19 @@ public class LavaMap {
         if (!this.time.isEnabled())
             this.world.setGameRuleValue("doDaylightCycle", "false");
         this.world.getEntities().forEach(Entity::remove);
-        try {
-            Lavasurvival.log("Backing up " + this.world.getName() + "...");
-            FileUtils.copyDirectory(this.world.getWorldFolder(), new File(Lavasurvival.INSTANCE.getDataFolder(), this.world.getName()));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        File backupFile = new File(Lavasurvival.INSTANCE.getDataFolder(), this.world.getName());
+        if (!backupFile.exists()) //Make it so that only makes a backup if there is not already a backup
+            try {
+                Lavasurvival.log("Backing up " + this.world.getName() + "...");
+                FileUtils.copyDirectory(this.world.getWorldFolder(), backupFile);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
     }
 
     private World loadOrGetWorld(String worldName) {
         World world = Bukkit.getWorld(worldName);
-        if (world == null)
-            world = Bukkit.getServer().createWorld(new WorldCreator(worldName));
-        return world;
+        return world == null ? Bukkit.getServer().createWorld(new WorldCreator(worldName)) : world;
     }
 
     public World getWorld() {

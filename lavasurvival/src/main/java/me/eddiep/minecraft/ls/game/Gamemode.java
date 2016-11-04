@@ -706,7 +706,7 @@ public abstract class Gamemode {
         ShopFactory.validateInventory(inv);
         u.giveBoughtBlocks();
         if (!getCurrentMap().getCreator().equals("")) {
-            IChatBaseComponent titleJSON = IChatBaseComponent.ChatSerializer.a("{'text': '\"§6Map created by \"" + getCurrentMap().getCreator() + "\"}");
+            IChatBaseComponent titleJSON = IChatBaseComponent.ChatSerializer.a("{\"text\": \"§6Map created by " + getCurrentMap().getCreator() + "\"}");
             PacketPlayOutTitle titlePacket = new PacketPlayOutTitle(PacketPlayOutTitle.EnumTitleAction.TITLE, titleJSON, 0, 60, 0);
             ((CraftPlayer) player).getHandle().playerConnection.sendPacket(titlePacket);
         }
