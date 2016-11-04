@@ -1,13 +1,13 @@
 package com.crossge.necessities.Janet;
 
 import com.crossge.necessities.Commands.CmdHide;
-import com.crossge.necessities.Utils;
 import com.crossge.necessities.GetUUID;
 import com.crossge.necessities.Necessities;
 import com.crossge.necessities.RankManager.Rank;
 import com.crossge.necessities.RankManager.RankManager;
 import com.crossge.necessities.RankManager.User;
 import com.crossge.necessities.RankManager.UserManager;
+import com.crossge.necessities.Utils;
 import com.crossge.necessities.Variables;
 import com.neovisionaries.ws.client.WebSocket;
 import com.neovisionaries.ws.client.WebSocketAdapter;

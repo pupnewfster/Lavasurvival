@@ -36,7 +36,7 @@ import java.util.UUID;
 
 public class Necessities extends JavaPlugin {
     private static Necessities INSTANCE;
-    private final List<String> devs = Arrays.asList("pupnewfster", "Mod_Chris", "hypereddie10"); //TODO 1.10.2: Update to UUIDS
+    private final List<String> devs = Arrays.asList("pupnewfster", "Mod_Chris", "hypereddie10");
     private File configFile = new File("plugins/Necessities", "config.yml");
     private Tracker googleAnalyticsTracker;
     private Property skin;
@@ -65,7 +65,7 @@ public class Necessities extends JavaPlugin {
         return this.um == null ? this.um = new UserManager() : this.um;
     }
 
-    public CmdCommandSpy getSpy() {
+    CmdCommandSpy getSpy() {
         return this.spy == null ? this.spy = new CmdCommandSpy() : this.spy;
     }
 
@@ -109,7 +109,7 @@ public class Necessities extends JavaPlugin {
         return this.ai == null ? this.ai = new JanetAI() : this.ai;
     }
 
-    public Janet getBot() {
+    Janet getBot() {
         return this.bot == null ? this.bot = new Janet() : this.bot;
     }
 
