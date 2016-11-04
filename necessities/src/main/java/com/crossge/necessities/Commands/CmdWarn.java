@@ -1,6 +1,7 @@
 package com.crossge.necessities.Commands;
 
 import com.crossge.necessities.Necessities;
+import com.crossge.necessities.Variables;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
@@ -10,17 +11,18 @@ import java.util.UUID;
 
 public class CmdWarn implements Cmd {
     public boolean commandUse(CommandSender sender, String[] args) {
+        Variables var = Necessities.getInstance().getVar();
         if (args.length < 2) {
             sender.sendMessage(var.getEr() + "Error: " + var.getErMsg() + "You must enter a player to warn and a reason.");
             return true;
         }
-        UUID uuid = get.getID(args[0]);
+        UUID uuid = Necessities.getInstance().getUUID().getID(args[0]);
         if (uuid == null) {
             sender.sendMessage(var.getEr() + "Error: " + var.getErMsg() + "Invalid player.");
             return true;
         }
         Player target = Bukkit.getPlayer(uuid);
-        String name = (sender instanceof Player ? sender.getName() : console.getName().replaceAll(":", ""));
+        String name = (sender instanceof Player ? sender.getName() : Necessities.getInstance().getConsole().getName().replaceAll(":", ""));
         if (sender instanceof Player && target.hasPermission("Necessities.antiPWarn")) {
             sender.sendMessage(var.getEr() + "Error: " + var.getErMsg() + "You may not warn someone who has Necessities.antiPWarn.");
             return true;

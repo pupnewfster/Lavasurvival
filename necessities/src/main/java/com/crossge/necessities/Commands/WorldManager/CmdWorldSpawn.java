@@ -1,10 +1,13 @@
 package com.crossge.necessities.Commands.WorldManager;
 
+import com.crossge.necessities.Necessities;
+import com.crossge.necessities.Variables;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 public class CmdWorldSpawn implements WorldCmd {
     public boolean commandUse(CommandSender sender, String[] args) {
+        Variables var = Necessities.getInstance().getVar();
         if (sender instanceof Player) {
             Player p = (Player) sender;
             p.teleport(p.getWorld().getSpawnLocation());

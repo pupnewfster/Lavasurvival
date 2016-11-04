@@ -21,10 +21,12 @@ public class Janet {
     private static ArrayList<String> badwords = new ArrayList<>(), goodwords = new ArrayList<>(), ips = new ArrayList<>();
     private static HashMap<UUID, Long[]> lastChat = new HashMap<>(), lastCmd = new HashMap<>();
     private File configFile = new File("plugins/Necessities", "config.yml");
-    private JanetWarn warns = Necessities.getInstance().getWarns();
-    private JanetLog log = Necessities.getInstance().getLog();
+    private JanetWarn warns;
+    private JanetLog log;
 
     public void initiate() {//now has its own function instead of reading them all every time Janet was re-initiated
+        this.warns = Necessities.getInstance().getWarns();
+        this.log = Necessities.getInstance().getLog();
         Bukkit.getConsoleSender().sendMessage(ChatColor.AQUA + "Janet initiating...");
         File customConfigFileCensors = new File("plugins/Necessities", "censors.yml");
         YamlConfiguration customConfigCensors = YamlConfiguration.loadConfiguration(customConfigFileCensors);

@@ -12,7 +12,6 @@ import java.util.*;
 public class UserManager {
     private File configFileUsers = new File("plugins/Necessities/RankManager", "users.yml");
     private static HashMap<UUID, User> players = new HashMap<>();
-    private RankManager rm = Necessities.getInstance().getRM();
 
     void readUsers() {
         Bukkit.getOnlinePlayers().forEach(this::parseUser);
@@ -53,26 +52,26 @@ public class UserManager {
     void addRankPerm(Rank r, String node) {
         if (players == null)
             return;
-        players.keySet().stream().filter(uuid -> rm.hasRank(players.get(uuid).getRank(), r)).forEach(uuid -> players.get(uuid).addPerm(node));
+        players.keySet().stream().filter(uuid -> Necessities.getInstance().getRM().hasRank(players.get(uuid).getRank(), r)).forEach(uuid -> players.get(uuid).addPerm(node));
     }
 
     void delRankPerm(Rank r, String node) {
         if (players == null)
             return;
-        players.keySet().stream().filter(uuid -> rm.hasRank(players.get(uuid).getRank(), r)).forEach(uuid -> players.get(uuid).removePerm(node));
+        players.keySet().stream().filter(uuid -> Necessities.getInstance().getRM().hasRank(players.get(uuid).getRank(), r)).forEach(uuid -> players.get(uuid).removePerm(node));
     }
 
     void refreshRankPerm(Rank r) {
         if (players == null)
             return;
-        players.keySet().stream().filter(uuid -> rm.hasRank(players.get(uuid).getRank(), r)).forEach(uuid -> players.get(uuid).refreshPerms());
+        players.keySet().stream().filter(uuid -> Necessities.getInstance().getRM().hasRank(players.get(uuid).getRank(), r)).forEach(uuid -> players.get(uuid).refreshPerms());
     }
 
     public void addUser(Player player) {
         YamlConfiguration configUsers = YamlConfiguration.loadConfiguration(this.configFileUsers);
         if (configUsers.contains(player.getUniqueId().toString()))
             return;
-        configUsers.set(player.getUniqueId().toString() + ".rank", rm.getRank(0).getName());
+        configUsers.set(player.getUniqueId().toString() + ".rank", Necessities.getInstance().getRM().getRank(0).getName());
         configUsers.set(player.getUniqueId().toString() + ".permissions", Collections.singletonList(""));
         configUsers.set(player.getUniqueId().toString() + ".subranks", Collections.singletonList(""));
         try {

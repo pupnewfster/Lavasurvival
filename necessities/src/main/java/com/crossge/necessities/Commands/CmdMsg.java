@@ -1,6 +1,11 @@
 package com.crossge.necessities.Commands;
 
+import com.crossge.necessities.Console;
+import com.crossge.necessities.GetUUID;
+import com.crossge.necessities.Necessities;
 import com.crossge.necessities.RankManager.User;
+import com.crossge.necessities.RankManager.UserManager;
+import com.crossge.necessities.Variables;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
@@ -10,10 +15,14 @@ import java.util.UUID;
 
 public class CmdMsg implements Cmd {
     public boolean commandUse(CommandSender sender, String[] args) {
+        Variables var = Necessities.getInstance().getVar();
         if (args.length < 2) {
             sender.sendMessage(var.getEr() + "Error: " + var.getErMsg() + "You must enter a player to message and a message to send.");
             return true;
         }
+        GetUUID get = Necessities.getInstance().getUUID();
+        Console console = Necessities.getInstance().getConsole();
+        UserManager um = Necessities.getInstance().getUM();
         if (sender instanceof Player) {
             Player p = (Player) sender;
             User self = um.getUser(p.getUniqueId());

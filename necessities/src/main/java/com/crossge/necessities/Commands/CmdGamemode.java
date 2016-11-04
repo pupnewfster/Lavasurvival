@@ -1,5 +1,7 @@
 package com.crossge.necessities.Commands;
 
+import com.crossge.necessities.Necessities;
+import com.crossge.necessities.Variables;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.command.CommandSender;
@@ -9,6 +11,7 @@ import java.util.UUID;
 
 public class CmdGamemode implements Cmd {
     public boolean commandUse(CommandSender sender, String[] args) {
+        Variables var = Necessities.getInstance().getVar();
         if (args.length == 0) {
             sender.sendMessage(var.getEr() + "Error: " + var.getErMsg() + "Must enter a gamemode.");
             return true;
@@ -19,7 +22,7 @@ public class CmdGamemode implements Cmd {
             sender.sendMessage(var.getMessages() + "Set gamemode to " + var.getObj() + gamemode.toString().toLowerCase());
             return true;
         }
-        UUID uuid = get.getID(args[0]);
+        UUID uuid = Necessities.getInstance().getUUID().getID(args[0]);
         if (uuid == null) {
             sender.sendMessage(var.getEr() + "Error: " + var.getErMsg() + "Invalid player.");
             return true;

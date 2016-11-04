@@ -1,5 +1,8 @@
 package com.crossge.necessities.Commands;
 
+import com.crossge.necessities.GetUUID;
+import com.crossge.necessities.Necessities;
+import com.crossge.necessities.Variables;
 import org.bukkit.BanList;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -13,11 +16,13 @@ import java.util.regex.Pattern;
 
 public class CmdBanIP implements Cmd {
     public boolean commandUse(CommandSender sender, String[] args) {
+        Variables var = Necessities.getInstance().getVar();
         if (args.length == 0) {
             sender.sendMessage(var.getEr() + "Error: " + var.getErMsg() + "You must enter an player to ban.");
             return true;
         }
-        String name = console.getName().replaceAll(":", "");
+        GetUUID get = Necessities.getInstance().getUUID();
+        String name = Necessities.getInstance().getConsole().getName().replaceAll(":", "");
         UUID uuid = get.getID(args[0]);
         if (uuid != null) {
             Player target = Bukkit.getPlayer(uuid);

@@ -1,6 +1,7 @@
 package com.crossge.necessities.Commands;
 
 import com.crossge.necessities.Necessities;
+import com.crossge.necessities.Variables;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 
@@ -8,6 +9,7 @@ import java.util.List;
 
 public class CmdDevs implements Cmd {
     public boolean commandUse(CommandSender sender, String[] args) {
+        Variables var = Necessities.getInstance().getVar();
         String d = var.getMessages() + "The Devs for Necessities are: ";
         List<String> devs = Necessities.getInstance().getDevs();
         for (int i = 0; i < devs.size(); i++)

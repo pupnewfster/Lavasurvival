@@ -20,10 +20,10 @@ public class JanetAI {//TODO: Upgrade
     private static String[] drunkMessages = new String[10];
     private static String[] tiltMessages = new String[8];
     private static String JanetName = "";
-    private JanetRandom r = Necessities.getInstance().getRandom();
-    private JanetSlack slack = Necessities.getInstance().getSlack();
-    private Variables var = Necessities.getInstance().getVar();
-    private GetUUID get = Necessities.getInstance().getUUID();
+    private JanetRandom r;
+    private JanetSlack slack;
+    private Variables var;
+    private GetUUID get;
 
     public void parseMessage(String name, String message, Source s, boolean isPM, JanetSlack.SlackUser user) {
         UUID uuid = get.getID(name);
@@ -247,6 +247,11 @@ public class JanetAI {//TODO: Upgrade
         tiltMessages[5] = "You are tilting me.";
         tiltMessages[6] = "I'm tilted.";
         tiltMessages[7] = "I am tilted.";
+
+        this.r = Necessities.getInstance().getRandom();
+        this.slack = Necessities.getInstance().getSlack();
+        this.var = Necessities.getInstance().getVar();
+        this.get = Necessities.getInstance().getUUID();
     }
 
     private String corTime(String time) {
