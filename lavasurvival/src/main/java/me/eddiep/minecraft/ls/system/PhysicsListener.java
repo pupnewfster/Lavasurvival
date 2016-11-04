@@ -26,6 +26,7 @@ public class PhysicsListener implements Listener {
         setup();
     }
 
+    @SuppressWarnings("deprecation")
     private static void setup() {
         if (lavaTicksToMelt.size() > 0 && waterTicksToMelt.size() > 0)
             return;
@@ -366,7 +367,7 @@ public class PhysicsListener implements Listener {
         }
     };
 
-    public static void cancelLocation(Location loc) {
+    static void cancelLocation(Location loc) {
         if (toTasks.containsKey(loc))
             toTasks.remove(loc);
     }
@@ -415,7 +416,7 @@ public class PhysicsListener implements Listener {
         private Material logicFor;
         private Block oldBlock;
 
-        public BlockTaskInfo(Material logicFor, Location from, Block oldBlock, long ticksToMelt) {
+        BlockTaskInfo(Material logicFor, Location from, Block oldBlock, long ticksToMelt) {
             this.startTick = tickCount;
             this.from = from;
             this.logicFor = logicFor;
@@ -423,11 +424,11 @@ public class PhysicsListener implements Listener {
             this.ticksToMelt = ticksToMelt;
         }
 
-        public long getStartTick() {
+        long getStartTick() {
             return this.startTick;
         }
 
-        public long getTicksToMelt() {
+        long getTicksToMelt() {
             return this.ticksToMelt;
         }
 
@@ -435,11 +436,11 @@ public class PhysicsListener implements Listener {
             return this.from;
         }
 
-        public Material getLogicFor() {
+        Material getLogicFor() {
             return this.logicFor;
         }
 
-        public Block getOldBlock() {
+        Block getOldBlock() {
             return this.oldBlock;
         }
     }

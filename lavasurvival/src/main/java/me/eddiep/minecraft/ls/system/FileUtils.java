@@ -20,13 +20,9 @@ public class FileUtils {
         filePath.mkdirs();
         if (!fileFile.exists()) {
             fileFile.createNewFile();
-            PrintWriter writer = new PrintWriter(fileFile);
-            writer.write(contents);
-            try {
+            try (PrintWriter writer = new PrintWriter(fileFile)) {
+                writer.write(contents);
                 writer.close();
-                writer.flush();
-            } finally {
-                writer = null;
             }
         }
     }
@@ -38,7 +34,7 @@ public class FileUtils {
      * @param filepath The full filepath to create child directories for
      */
     public static void createChildDirectories(String filepath) {
-        String[] dirs = filepath.split("\\/");
+        String[] dirs = filepath.split("/");
         String path = "";
         for (String directory : dirs) {
             path += (path.equals("") ? directory : "/" + directory);
@@ -152,8 +148,8 @@ public class FileUtils {
      * @return Returns true if the copy was successful, returns false if an error occurred.
      */
     public static boolean copyFile(String sourcePath, String newPath) {
-        InputStream inStream = null;
-        OutputStream outStream = null;
+        InputStream inStream;
+        OutputStream outStream;
         try {
             File afile = new File(sourcePath);
             File bfile = new File(newPath);
