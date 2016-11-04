@@ -686,7 +686,8 @@ public class JanetSlack {
                 return;
             } else if (message.startsWith("!restart") && info.isAdmin()) {
                 sendMessage("Restarting...", isPM, info);
-                Bukkit.getScheduler().scheduleSyncDelayedTask(Necessities.getInstance(), () -> Bukkit.spigot().restart());
+                Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "endgame");
+                Bukkit.getScheduler().scheduleSyncDelayedTask(Necessities.getInstance(), () -> Bukkit.spigot().restart(), 200);
                 return;
             } else if ((message.startsWith("!consolecmd") || message.startsWith("!ccmd") || message.startsWith("!consolecommand")) && info.isAdmin()) {//TODO Make it show the result to slack
                 final String command = message.replaceFirst(message.split(" ")[0], "").trim();
