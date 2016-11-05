@@ -55,16 +55,11 @@ public final class ClassicPhysicsHandler implements Listener {
             this.x = x;
             this.y = y;
             this.z = z;
-            int blockX = x % 16;
-            int blockZ = z % 16;
+            int blockX = x % 16, blockZ = z % 16;
             if (blockX < 0)
                 blockX += 16;
-            if (blockX > 15)
-                blockX = blockX % 16;
             if (blockZ < 0)
                 blockZ += 16;
-            if (blockZ > 15)
-                blockZ = blockZ % 16;
             short loc = (short) ((blockX << 12) | (blockZ << 8) | (y));
             if (!this.changes.contains(loc))
                 this.changes.add(loc);
@@ -120,12 +115,10 @@ public final class ClassicPhysicsHandler implements Listener {
         @Override
         public void run() {
             tickCount++;
-            for (LogicContainerHolder holder : logicContainers) {
-                if (tickCount - holder.lastTick >= holder.container.updateRate()) {
-                    holder.container.tick();
-                    holder.lastTick = tickCount;
-                }
-            }
+            logicContainers.stream().filter(holder -> tickCount - holder.lastTick >= holder.container.updateRate()).forEach(holder -> {
+                holder.container.tick();
+                holder.lastTick = tickCount;
+            });
         }
     };
 
@@ -212,19 +205,12 @@ public final class ClassicPhysicsHandler implements Listener {
                     WorldCount count = chunks.get(l);
                     World world = count.getWorld();
                     if (world != null) {
-                        int x = (int) (l >> 32), z = (int) l;
-                        net.minecraft.server.v1_10_R1.World w = ((CraftWorld) world).getHandle();
-                        Chunk c = w.getChunkAt(x, z);
-                        /*if (count.getCount() >= 64) {
-                            WorldServer s = w.getWorld().getHandle();
-                            PlayerChunkMap m = s.getPlayerChunkMap();
-                            PlayerChunk ch = m.b(x, z);
-                            ch.d();
-                        } else*/
-                        if (count.getCount() > 1)
-                            packets.add(new PacketPlayOutMultiBlockChange(count.getCount(), count.getChanged(), c));
+                        if (count.getCount() == 64)
+                            packets.add(new PacketPlayOutMapChunk(((CraftWorld) world).getHandle().getChunkAt((int) (l >> 32), (int) l), count.getCount()));
+                        else if (count.getCount() > 1)
+                            packets.add(new PacketPlayOutMultiBlockChange(count.getCount(), count.getChanged(), ((CraftWorld) world).getHandle().getChunkAt((int) (l >> 32), (int) l)));
                         else
-                            packets.add(new PacketPlayOutBlockChange(w, new BlockPosition(count.getX(), count.getY(), count.getZ())));
+                            packets.add(new PacketPlayOutBlockChange(((CraftWorld) world).getHandle(), new BlockPosition(count.getX(), count.getY(), count.getZ())));
                     }
                     chunks.remove(l);
                 }
@@ -245,7 +231,7 @@ public final class ClassicPhysicsHandler implements Listener {
                 }
             if (removePrevious)
                 removePrevious = false;
-            sendingPackets = false;//*/
+            sendingPackets = false;
         }
     };
 
@@ -286,8 +272,7 @@ public final class ClassicPhysicsHandler implements Listener {
         if (event.isCancelled())
             return;
 
-        for (LogicContainerHolder holder : logicContainers)
-            holder.container.unloadFor(event.getWorld());
+        logicContainers.forEach(holder -> holder.container.unloadFor(event.getWorld()));
 
         this.toFroms.clear();//Because we don't call block placing in multiple worlds. If we ever start we need to make it check that it removes correct worlds
         this.chunks.clear();
@@ -318,58 +303,49 @@ public final class ClassicPhysicsHandler implements Listener {
 
     @EventHandler(priority = EventPriority.MONITOR)
     public void onBlockBreak(BlockBreakEvent event) {
-        if (ClassicPhysics.TYPE.equals(PhysicsType.DEFAULT))
-            return;
-        requestUpdateAround(event.getBlock().getLocation());
+        if (!ClassicPhysics.TYPE.equals(PhysicsType.DEFAULT))
+            requestUpdateAround(event.getBlock().getLocation());
     }
 
     @EventHandler
     public void onIceMelt(BlockFadeEvent event) {
-        if (ClassicPhysics.TYPE.equals(PhysicsType.DEFAULT))
-            return;
-        event.setCancelled(true);
+        if (!ClassicPhysics.TYPE.equals(PhysicsType.DEFAULT))
+            event.setCancelled(true);
     }
 
     @EventHandler
     public void onCactusGrow(BlockGrowEvent event) {
-        if (ClassicPhysics.TYPE.equals(PhysicsType.DEFAULT))
-            return;
-        event.setCancelled(true);
+        if (!ClassicPhysics.TYPE.equals(PhysicsType.DEFAULT))
+            event.setCancelled(true);
     }
 
     @EventHandler
     public void onBlockForm(BlockFormEvent event) {
-        if (ClassicPhysics.TYPE.equals(PhysicsType.DEFAULT))
-            return;
-        event.setCancelled(true);
+        if (!ClassicPhysics.TYPE.equals(PhysicsType.DEFAULT))
+            event.setCancelled(true);
     }
 
     @EventHandler
     public void onBlockSpread(BlockSpreadEvent event) {
-        if (ClassicPhysics.TYPE.equals(PhysicsType.DEFAULT))
-            return;
-        event.setCancelled(true);
+        if (!ClassicPhysics.TYPE.equals(PhysicsType.DEFAULT))
+            event.setCancelled(true);
     }
 
     @EventHandler
     public void onBlockBurn(BlockBurnEvent event) {
-        if (ClassicPhysics.TYPE.equals(PhysicsType.DEFAULT))
-            return;
-        event.setCancelled(true);
+        if (!ClassicPhysics.TYPE.equals(PhysicsType.DEFAULT))
+            event.setCancelled(true);
     }
 
     @EventHandler
     public void fireSpread(BlockIgniteEvent event) {
-        if (ClassicPhysics.TYPE.equals(PhysicsType.DEFAULT))
-            return;
-        event.setCancelled(true);
+        if (!ClassicPhysics.TYPE.equals(PhysicsType.DEFAULT))
+            event.setCancelled(true);
     }
 
     @EventHandler
     public void blockFall(EntityChangeBlockEvent event) {
-        if (ClassicPhysics.TYPE.equals(PhysicsType.DEFAULT))
-            return;
-        if (event.getEntity() instanceof FallingBlock) {
+        if (!ClassicPhysics.TYPE.equals(PhysicsType.DEFAULT) && event.getEntity() instanceof FallingBlock) {
             event.setCancelled(true);
             event.getBlock().getState().update(true, false);
         }
@@ -377,9 +353,8 @@ public final class ClassicPhysicsHandler implements Listener {
 
     @EventHandler
     public void onLeafDecay(LeavesDecayEvent event) {
-        if (ClassicPhysics.TYPE.equals(PhysicsType.DEFAULT))
-            return;
-        event.setCancelled(true);
+        if (!ClassicPhysics.TYPE.equals(PhysicsType.DEFAULT))
+            event.setCancelled(true);
     }
 
     @EventHandler

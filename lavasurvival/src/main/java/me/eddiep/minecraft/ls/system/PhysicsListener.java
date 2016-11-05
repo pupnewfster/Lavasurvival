@@ -3,7 +3,6 @@ package me.eddiep.minecraft.ls.system;
 import me.eddiep.handles.ClassicPhysicsEvent;
 import me.eddiep.minecraft.ls.Lavasurvival;
 import me.eddiep.minecraft.ls.game.Gamemode;
-import me.eddiep.minecraft.ls.game.LavaMap;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -300,15 +299,7 @@ public class PhysicsListener implements Listener {
                     !event.getLocation().getChunk().isLoaded() || event.getLocation().getBlock() == null)
                 return;
 
-            HashMap<MaterialData, Integer> ticksToMelt;
-            Material type = event.getLogicContainer().logicFor();
-            if (type == Material.LAVA || type == Material.STATIONARY_LAVA)
-                ticksToMelt = lavaTicksToMelt;
-            else
-                ticksToMelt = waterTicksToMelt;
-
-            LavaMap map = Gamemode.getCurrentMap();
-            if (map.isInSafeZone(event.getLocation())) {
+            if (Gamemode.getCurrentMap().isInSafeZone(event.getLocation())) {
                 event.setCancelled(true); //Do not allow physics inside the safezone!
                 return;
             }
@@ -316,6 +307,13 @@ public class PhysicsListener implements Listener {
             Block blockChecking = event.getOldBlock();
             if (blockChecking.getType().equals(Material.AIR) || blockChecking.hasMetadata("classic_block") || blockChecking.isLiquid())
                 return;
+
+            HashMap<MaterialData, Integer> ticksToMelt;
+            Material type = event.getLogicContainer().logicFor();
+            if (type == Material.LAVA || type == Material.STATIONARY_LAVA)
+                ticksToMelt = lavaTicksToMelt;
+            else
+                ticksToMelt = waterTicksToMelt;
 
             MaterialData dat = new MaterialData(blockChecking.getType(), blockChecking.getData());
             if (!ticksToMelt.containsKey(dat))
@@ -330,10 +328,12 @@ public class PhysicsListener implements Listener {
                 if (meltTicks <= 0)
                     return;
                 event.setCancelled(true);
-                ConcurrentLinkedQueue<BlockTaskInfo> temp = new ConcurrentLinkedQueue<>();
+                ConcurrentLinkedQueue<BlockTaskInfo> temp;
                 Location location = event.getLocation();
                 if (toTasks.containsKey(location) && toTasks.get(location) != null && toTasks.get(location).size() > 0)
                     temp = toTasks.get(location);
+                else
+                    temp = new ConcurrentLinkedQueue<>();
                 temp.add(new BlockTaskInfo(event.getLogicContainer().logicFor(), event.getFrom(), blockChecking, meltTicks));
                 toTasks.put(event.getLocation(), temp);
             }
@@ -349,19 +349,17 @@ public class PhysicsListener implements Listener {
                 ConcurrentLinkedQueue<BlockTaskInfo> queue = toTasks.get(loc);
                 if (queue != null)
                     for (BlockTaskInfo b : queue)
-                        if (b != null) {
-                            if (tickCount - b.getStartTick() >= b.getTicksToMelt()) {
-                                synchronized (toTasks) {
-                                    final Block blockChecking = b.getOldBlock();
-                                    if (blockChecking.getType().equals(Material.AIR))
-                                        return;
-                                    if (blockChecking.hasMetadata("player_placed"))
-                                        blockChecking.removeMetadata("player_placed", Lavasurvival.INSTANCE);
-                                    Lavasurvival.INSTANCE.getPhysicsHandler().placeClassicBlockAt(loc, b.getLogicFor(), b.getFrom());
-                                    cancelLocation(loc);
-                                }
-                                break;
+                        if (b != null && tickCount - b.getStartTick() >= b.getTicksToMelt()) {
+                            synchronized (toTasks) {
+                                final Block blockChecking = b.getOldBlock();
+                                if (blockChecking.getType().equals(Material.AIR))
+                                    return;
+                                if (blockChecking.hasMetadata("player_placed"))
+                                    blockChecking.removeMetadata("player_placed", Lavasurvival.INSTANCE);
+                                Lavasurvival.INSTANCE.getPhysicsHandler().placeClassicBlockAt(loc, b.getLogicFor(), b.getFrom());
+                                cancelLocation(loc);
                             }
+                            break;
                         }
             }
         }
@@ -395,8 +393,7 @@ public class PhysicsListener implements Listener {
     }
 
     private static void cancelAllTasks() {
-        for (Location l : toTasks.keySet())
-            cancelLocation(l);
+        toTasks.keySet().forEach(PhysicsListener::cancelLocation);
     }
 
     public void cleanup() {

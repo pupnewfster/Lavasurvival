@@ -10,36 +10,19 @@ public class ChunkEdit {
 
     public ChunkEdit(World w) {
         this.world = w;
-        WorldServer s = w.getWorld().getHandle();
+        //WorldServer s = w.getWorld().getHandle();
         //this.playerChunkMap = s.getPlayerChunkMap();
     }
 
     private void setBlock(int x, int y, int z, Material type, byte data) {
-        int columnX = x >> 4;
-        int columnZ = z >> 4;
-        int chunkY = y >> 4;
-        int blockX = x % 16;
-        int blockY = y % 16;
-        int blockZ = z % 16;
+        int columnX = x >> 4, columnZ = z >> 4, chunkY = y >> 4, blockX = x % 16, blockY = y % 16, blockZ = z % 16;
         if (blockX < 0)
             blockX += 16;
-        if (blockX > 15) {
-            blockX = blockX % 16;
-            columnX++;
-        }
         if (blockY < 0)
             blockY += 16;
-        if (blockY > 15) {
-            blockY = blockY % 16;
-            chunkY++;
-        }
         if (blockZ < 0)
             blockZ += 16;
-        if (blockZ > 15) {
-            blockZ = blockZ % 16;
-            columnZ++;
-        }
-        if (chunkY < 0 || chunkY > 15 || blockX < 0 || blockX > 15 || blockY < 0 || blockY > 15 || blockZ < 0 || blockZ > 15)
+        if (chunkY < 0 || chunkY > 15)
             return;//It is a bad location
         Chunk c = this.world.getChunkIfLoaded(columnX, columnZ);
         if (c == null)
@@ -53,8 +36,7 @@ public class ChunkEdit {
         }
         if (section == null)
             section = new ChunkSection(chunkY, true);
-        NibbleArray blockLight;
-        NibbleArray skyLight;
+        NibbleArray blockLight, skyLight;
         try {
             blockLight = section.getEmittedLightArray();
         } catch (Exception e) {
@@ -180,30 +162,13 @@ public class ChunkEdit {
     }
 
     private void setLight(int x, int y, int z, int value) {
-        int columnX = x >> 4;
-        int columnZ = z >> 4;
-        int chunkY = y >> 4;
-        int blockX = x % 16;
-        int blockY = y % 16;
-        int blockZ = z % 16;
+        int columnX = x >> 4, columnZ = z >> 4, chunkY = y >> 4, blockX = x % 16, blockY = y % 16, blockZ = z % 16;
         if (blockX < 0)
             blockX += 16;
-        if (blockX > 15) {
-            blockX = blockX % 16;
-            columnX++;
-        }
         if (blockY < 0)
             blockY += 16;
-        if (blockY > 15) {
-            blockY = blockY % 16;
-            chunkY++;
-        }
         if (blockZ < 0)
             blockZ += 16;
-        if (blockZ > 15) {
-            blockZ = blockZ % 16;
-            columnZ++;
-        }
         Chunk c = this.world.getChunkAt(columnX, columnZ);
         ChunkSection[] sections = c.getSections();
         ChunkSection section = sections[chunkY];

@@ -23,8 +23,13 @@ import net.njay.MenuRegistry;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
+import org.bukkit.boss.BarColor;
+import org.bukkit.boss.BarFlag;
+import org.bukkit.boss.BarStyle;
+import org.bukkit.boss.BossBar;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
+import org.bukkit.craftbukkit.v1_10_R1.boss.CraftBossBar;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
@@ -42,6 +47,7 @@ import java.util.*;
 public class Lavasurvival extends JavaPlugin {
     public static final Gson GSON = new Gson();
     public static Lavasurvival INSTANCE;
+    public static final BossBar GGBAR = new CraftBossBar(ChatColor.GOLD + "Welcome to " + ChatColor.AQUA + "Galaxy Gaming", BarColor.GREEN, BarStyle.SOLID, new BarFlag[0]);
     public final Runnable MONEY_VIEWER = () -> {
         Collection<? extends Player> players = Bukkit.getOnlinePlayers();
         players.forEach(this::updateMoneyView);
@@ -148,6 +154,7 @@ public class Lavasurvival extends JavaPlugin {
             this.userManager.saveAll();
             log("Disabled");
         }
+        GGBAR.removeAll();
         this.running = false;
     }
 

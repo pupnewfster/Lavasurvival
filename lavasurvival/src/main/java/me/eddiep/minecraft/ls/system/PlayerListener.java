@@ -226,7 +226,6 @@ public class PlayerListener implements Listener {
     @EventHandler(priority = EventPriority.LOW)
     public void inventoryClosed(InventoryCloseEvent e) {
         final Player p = (Player) e.getPlayer();
-
         BankInventory view = BankInventory.from(p);
         if (view != null) {
             view.end(p);
@@ -237,7 +236,6 @@ public class PlayerListener implements Listener {
     public void inventoryClicked(InventoryClickEvent e) {
         final Player p = (Player) e.getWhoClicked();
         int clickedSlot = e.getView().convertSlot(e.getRawSlot());
-
         BankInventory view = BankInventory.from(p);
         if (view != null) {
             if (e.getCurrentItem() == null)
@@ -290,6 +288,7 @@ public class PlayerListener implements Listener {
     @EventHandler(priority = EventPriority.HIGHEST)
     public void playerQuit(PlayerQuitEvent event) {
         this.um.getUser(event.getPlayer().getUniqueId()).logOut();
+        Lavasurvival.GGBAR.removePlayer(event.getPlayer());
         if (Gamemode.getCurrentGame().allDead() && !Gamemode.getCurrentGame().hasEnded())
             Gamemode.getCurrentGame().endRound();
         Gamemode.getCurrentGame().removeBars(event.getPlayer());
@@ -311,6 +310,8 @@ public class PlayerListener implements Listener {
 
         if (!Lavasurvival.INSTANCE.getEconomy().hasAccount(player))
             Lavasurvival.INSTANCE.getEconomy().createPlayerAccount(player);
+
+        Lavasurvival.GGBAR.addPlayer(player);
 
         if (Gamemode.getCurrentGame() != null) {
             if (!Gamemode.getCurrentGame().isInGame(player)) {

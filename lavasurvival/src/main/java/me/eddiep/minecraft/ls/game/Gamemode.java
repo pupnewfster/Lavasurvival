@@ -197,7 +197,7 @@ public abstract class Gamemode {
         this.bars.clear();
         BarFlag[] flags = new BarFlag[0];
         //TODO: Make it so that it does not have to recreate the welcome bar just the other bars (put this in necessities?) onplayerjoin
-        addBar(new CraftBossBar(ChatColor.GOLD + "Welcome to " + ChatColor.AQUA + "Galaxy Gaming", BarColor.GREEN, BarStyle.SOLID, flags));
+        //addBar(new CraftBossBar(ChatColor.GOLD + "Welcome to " + ChatColor.AQUA + "Galaxy Gaming", BarColor.GREEN, BarStyle.SOLID, flags));
         addBar(new CraftBossBar(ChatColor.GOLD + "Gamemode: " + (LAVA ? ChatColor.RED : ChatColor.BLUE) + this.type, LAVA ? BarColor.RED : BarColor.BLUE, BarStyle.SEGMENTED_6, flags));
         addBar(new CraftBossBar(ChatColor.GOLD + "Reward is " + (isRewardDoubled() ? "double" : "normal"), BarColor.WHITE, BarStyle.SEGMENTED_20, flags));
         alive = new ArrayList<>();
@@ -713,13 +713,11 @@ public abstract class Gamemode {
     }
 
     public void addBars(Player p) {
-        for (CraftBossBar bar : this.bars)
-            bar.addPlayer(p);
+        this.bars.forEach(bar -> bar.addPlayer(p));
     }
 
     public void removeBars(Player p) {
-        for (CraftBossBar bar : this.bars)
-            bar.removePlayer(p);
+        this.bars.forEach(bar -> bar.removePlayer(p));
     }
 
     private double getHealth(Rank r) {
@@ -743,7 +741,7 @@ public abstract class Gamemode {
         }
     }
 
-    public void setAlive(Player player) {
+    private void setAlive(Player player) {
         if (player == null)
             return;
         UUID uuid = player.getUniqueId();
