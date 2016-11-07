@@ -28,6 +28,7 @@ import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
@@ -46,9 +47,11 @@ public final class ClassicPhysicsHandler implements Listener {
         private ArrayList<Short> changes = new ArrayList<>();
         private World world;
         private int x, y, z;
+        private long l;
 
-        WorldCount(World world) {
+        WorldCount(World world, long l) {
             this.world = world;
+            this.l = l;
         }
 
         void addChange(int x, int y, int z) {
@@ -65,19 +68,37 @@ public final class ClassicPhysicsHandler implements Listener {
                 this.changes.add(loc);
         }
 
-        int getCount() {
-            return this.changes.size();
-        }
-
         public World getWorld() {
             return this.world;
         }
 
-        short[] getChanged() {
-            short[] temp = new short[this.changes.size()];
-            for (int i = 0; i < this.changes.size(); i++)
-                temp[i] = this.changes.get(i);
+        private short[] getChanged(List<Short> changes) {
+            short[] temp = new short[changes.size()];
+            for (int i = 0; i < changes.size(); i++)
+                temp[i] = changes.get(i);
             return temp;
+        }
+
+        List<Packet> getPackets() {
+            List<Packet> packets = new ArrayList<>();
+            if (this.world == null || this.changes.size() == 0)
+                return null;
+            int size = this.changes.size();
+            if (size == 1)
+                packets.add(new PacketPlayOutBlockChange(((CraftWorld) this.world).getHandle(), new BlockPosition(this.x, this.y, this.z)));
+            else if (size == 64)
+                packets.add(new PacketPlayOutMapChunk(((CraftWorld) this.world).getHandle().getChunkAt((int) (this.l >> 32), (int) this.l), size));
+            else if (size < 64)
+                packets.add(new PacketPlayOutMultiBlockChange(size, getChanged(this.changes.subList(0, 64 > size ? size : 64)), ((CraftWorld) this.world).getHandle().getChunkAt((int) (this.l >> 32), (int) this.l)));
+            else {
+                int i = 0, end;
+                while (i < size) {
+                    end = i + 64 > size ? size : i + 64;
+                    packets.add(new PacketPlayOutMultiBlockChange(end - i, getChanged(this.changes.subList(i, end)), ((CraftWorld) this.world).getHandle().getChunkAt((int) (this.l >> 32), (int) this.l)));
+                    i += 64;
+                }
+            }
+            return packets;
         }
 
         int getX() {
@@ -169,7 +190,7 @@ public final class ClassicPhysicsHandler implements Listener {
                 e.setBlock(blc.getX(), blc.getY(), blc.getZ(), type);
                 long xz = (long) blc.getChunk().getX() << 32 | blc.getChunk().getZ() & 0xFFFFFFFFL;
                 if (!chunks.containsKey(xz))
-                    chunks.put(xz, new WorldCount(l.getWorld()));
+                    chunks.put(xz, new WorldCount(l.getWorld(), xz));
                 chunks.get(xz).addChange(l.getBlockX(), l.getBlockY(), l.getBlockZ());
                 if (!blc.isLiquid() && !blc.hasMetadata("fusion_block")) {
                     type = Material.STATIONARY_WATER;
@@ -202,16 +223,7 @@ public final class ClassicPhysicsHandler implements Listener {
                 for (long l : chunks.keySet()) {
                     if (!sendingPackets)
                         break;
-                    WorldCount count = chunks.get(l);
-                    World world = count.getWorld();
-                    if (world != null) {
-                        if (count.getCount() == 64)
-                            packets.add(new PacketPlayOutMapChunk(((CraftWorld) world).getHandle().getChunkAt((int) (l >> 32), (int) l), count.getCount()));
-                        else if (count.getCount() > 1)
-                            packets.add(new PacketPlayOutMultiBlockChange(count.getCount(), count.getChanged(), ((CraftWorld) world).getHandle().getChunkAt((int) (l >> 32), (int) l)));
-                        else
-                            packets.add(new PacketPlayOutBlockChange(((CraftWorld) world).getHandle(), new BlockPosition(count.getX(), count.getY(), count.getZ())));
-                    }
+                    packets.addAll(chunks.get(l).getPackets());
                     chunks.remove(l);
                 }
             else
