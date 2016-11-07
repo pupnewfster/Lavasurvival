@@ -12,6 +12,7 @@ import me.eddiep.minecraft.ls.system.bank.BankInventory;
 import net.minecraft.server.v1_10_R1.DamageSource;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
@@ -152,7 +153,7 @@ public class UserInfo implements Rankable {
         if (value && getPlayer() != null && Gamemode.getCurrentGame() != null && Gamemode.DAMAGE != 0 && Gamemode.getCurrentGame().isAlive(getPlayer()))
             this.taskID = Bukkit.getScheduler().scheduleSyncDelayedTask(Lavasurvival.INSTANCE, () -> {
                 if (isInWater() && getPlayer() != null) {
-                    if (!PlayerStatusManager.isInvincible(getPlayer()))
+                    if (!PlayerStatusManager.isInvincible(getPlayer())  && !getPlayer().getGameMode().equals(GameMode.CREATIVE))
                         ((CraftPlayer) getPlayer()).getHandle().damageEntity(DamageSource.OUT_OF_WORLD, (float) Gamemode.DAMAGE);
                     Block b = getPlayer().getLocation().getBlock();
                     setInWater(((b.getType().equals(Material.WATER) || b.getType().equals(Material.STATIONARY_WATER)) && b.hasMetadata("classic_block")) ||

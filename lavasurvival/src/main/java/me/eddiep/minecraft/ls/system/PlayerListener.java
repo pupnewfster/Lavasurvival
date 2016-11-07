@@ -353,7 +353,7 @@ public class PlayerListener implements Listener {
                     ((to.getBlock().getRelative(BlockFace.UP).getType().equals(Material.WATER) || to.getBlock().getRelative(BlockFace.UP).getType().equals(Material.STATIONARY_WATER)) &&
                             to.getBlock().getRelative(BlockFace.UP).hasMetadata("classic_block"))) {
                 if (!u.isInWater()) {
-                    if (!PlayerStatusManager.isInvincible(event.getPlayer()))
+                    if (!PlayerStatusManager.isInvincible(event.getPlayer()) && !event.getPlayer().getGameMode().equals(GameMode.CREATIVE))
                         ((CraftPlayer) event.getPlayer()).getHandle().damageEntity(DamageSource.OUT_OF_WORLD, (float) Gamemode.DAMAGE);
                     u.setInWater(true);
                 }
@@ -371,7 +371,7 @@ public class PlayerListener implements Listener {
         Bukkit.getOnlinePlayers().stream().filter(p -> Gamemode.getCurrentGame().isAlive(p) && (p.getLocation().getBlock().getLocation().equals(loc) || p.getLocation().getBlock().getRelative(BlockFace.UP).getLocation().equals(loc))).forEach(p -> {
             UserInfo u = this.um.getUser(p.getUniqueId());
             if (!u.isInWater()) {
-                if (!PlayerStatusManager.isInvincible(p))
+                if (!PlayerStatusManager.isInvincible(p) && !p.getGameMode().equals(GameMode.CREATIVE))
                     ((CraftPlayer) p).getHandle().damageEntity(DamageSource.OUT_OF_WORLD, (float) Gamemode.DAMAGE);
                 u.setInWater(true);
             }
