@@ -3,6 +3,7 @@ package me.eddiep.minecraft.ls.game;
 import com.crossge.necessities.Commands.CmdHide;
 import com.crossge.necessities.Necessities;
 import com.crossge.necessities.RankManager.Rank;
+import com.mysql.jdbc.jdbc2.optional.MysqlDataSource;
 import me.eddiep.minecraft.ls.Lavasurvival;
 import me.eddiep.minecraft.ls.game.impl.Flood;
 import me.eddiep.minecraft.ls.game.impl.Fusion;
@@ -37,8 +38,10 @@ import org.bukkit.scoreboard.Scoreboard;
 
 import java.io.File;
 import java.io.IOException;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.Statement;
 import java.util.*;
-import java.sql.*;
 
 public abstract class Gamemode {
     private static final Material[] DEFAULT_BLOCKS = new Material[]{
@@ -429,14 +432,13 @@ public abstract class Gamemode {
             }
             avgs.clear();
             calculateGlicko(winners, um);
-            ArrayList<Player> losers = New ArrayList<>();
+            ArrayList<Player> losers = new ArrayList<>();
             for (UUID id : dead) {
                 Player p = Bukkit.getPlayer(id);
-                if (p == null)
-                    continue;
-                losers.add(p);
+                if (p != null)
+                    losers.add(p);
             }
-            recordMatch(winners, losers, um);
+            recordMatch(winners, losers);
         }
 
         Lavasurvival.INSTANCE.MONEY_VIEWER.run();
@@ -475,39 +477,38 @@ public abstract class Gamemode {
         }
     }
 
-    private void recordMatch(HashMap<Player, Integer> winners, ArrayList<Player> losers, UserManager um) {
-        string mode = this.getType();
-        string winnerList = "{";
-        string scoreList = "{";
-        string loserList = "{";
+    private String getType() {
+        return this.type;
+    }
 
+    private void recordMatch(HashMap<Player, Integer> winners, ArrayList<Player> losers) {
+        String mode = this.getType();
+        String winnerList = "{";
+        String scoreList = "{";
+        String loserList = "{";
         for (Player player : winners.keySet()) {
             winnerList += player.getUniqueId().toString() + ",";
             scoreList += winners.get(player).toString() + ",";
         }
-        for (Player player : losers) {
-            loserList += player.getUniqueID().toString() + ",";
-        }
-        winnerList = winnerList.substring(0, winnerList.length()-1) + "}";
-        scoreList = scoreList.substring(0, scoreList.length()-1) + "}";
-        loserList = loserList.substring(0, loserList.length()-1) + "}";
-
+        for (Player player : losers)
+            loserList += player.getUniqueId().toString() + ",";
+        winnerList = winnerList.substring(0, winnerList.length() - 1) + "}";
+        scoreList = scoreList.substring(0, scoreList.length() - 1) + "}";
+        loserList = loserList.substring(0, loserList.length() - 1) + "}";
         MysqlDataSource dataSource = new MysqlDataSource();
         dataSource.setUser("lsuser");
         dataSource.setPassword("F0rWEotrux4SQqHv@");
         dataSource.setServerName("localhost");
-
-        Connection conn = dataSource.getConnection();
-        Statement stmt = conn.createStatement();
-
-        String query = "INSERT INTO 'lavasurvival'.'matches' ('id', 'time', 'gamemode', 'winners', 'scores', 'losers') " +
-                "VALUES (" +
-                "'" + mode + "', " +
-                "'" + winnerList + "', " +
-                "'" + scoreList + "', " +
-                "'" + loserList + "'"
-                + ")";
-        ResultSet rs = stmt.executeQuery(query);
+        try {
+            Connection conn = dataSource.getConnection();
+            Statement stmt = conn.createStatement();
+            String query = "INSERT INTO 'lavasurvival'.'matches' ('id', 'time', 'gamemode', 'winners', 'scores', 'losers') VALUES ('" + mode + "', '" + winnerList + "', '" + scoreList + "', '" + loserList + "')";
+            ResultSet rs = stmt.executeQuery(query);
+            rs.close();
+            stmt.close();
+            conn.close();
+        } catch (Exception ignored) {
+        }
     }
 
     private void calculateGlicko(HashMap<Player, Integer> winners, UserManager um) {
