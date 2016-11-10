@@ -162,7 +162,7 @@ public class Lavasurvival extends JavaPlugin {
         rules = new ItemStack(Material.WRITTEN_BOOK);
         BookMeta meta = (BookMeta) rules.getItemMeta();
         meta.setTitle("Rules");
-        meta.setAuthor(ChatColor.GREEN + "GamezGalaxy");
+        meta.setAuthor(ChatColor.GREEN + "GalaxyGaming");
         meta.addPage("1. No griefing." + "\n" +
                 "2. Any form of hacked client is forbidden." + "\n" +
                 "3. No cursing or offensive language." + "\n" +

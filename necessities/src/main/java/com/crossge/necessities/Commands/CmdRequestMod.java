@@ -26,8 +26,8 @@ public class CmdRequestMod implements Cmd {
             }
             JanetSlack slack = Necessities.getInstance().getSlack();
             if (args.length > 0) {
-                slack.sendMessage(p.getName() + " requested a mod. With the reason " + reason);
-                Bukkit.broadcast(var.getMessages() + "To Slack - " + ChatColor.WHITE + ChatColor.translateAlternateColorCodes('&', p.getName() + " requested a mod. With the reason " + reason), "Necessities.slack");
+                slack.sendMessage(p.getName() + " requested a mod with the reason: " + reason);
+                Bukkit.broadcast(var.getMessages() + "To Slack - " + ChatColor.WHITE + ChatColor.translateAlternateColorCodes('&', p.getName() + " requested a mod with the reason: " + reason), "Necessities.slack");
             } else {
                 slack.sendMessage(p.getName() + " requested a mod.");
                 Bukkit.broadcast(var.getMessages() + "To Slack - " + ChatColor.WHITE + ChatColor.translateAlternateColorCodes('&', p.getName() + " requested a mod."), "Necessities.slack");
