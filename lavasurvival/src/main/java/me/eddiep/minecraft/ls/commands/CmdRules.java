@@ -2,6 +2,7 @@ package me.eddiep.minecraft.ls.commands;
 
 import me.eddiep.minecraft.ls.Lavasurvival;
 import org.bukkit.ChatColor;
+import org.bukkit.Material;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -12,7 +13,7 @@ public class CmdRules implements Cmd {
     public boolean commandUse(CommandSender sender, String[] args) {
         if (sender instanceof Player) {
             Player p = (Player) sender;
-            if (!p.getInventory().contains(Lavasurvival.INSTANCE.getRules())) {
+            if (!p.getInventory().contains(Material.WRITTEN_BOOK)) {
                 p.getInventory().addItem(Lavasurvival.INSTANCE.getRules());
                 sender.sendMessage(ChatColor.GOLD + "You have been given the rules.");
             } else

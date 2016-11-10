@@ -745,7 +745,7 @@ public abstract class Gamemode {
             toGive.setItemMeta(im);
             player.getInventory().addItem(toGive);
         }
-        if (!player.getInventory().containsAtLeast(Lavasurvival.INSTANCE.getRules(), 1))
+        if (!player.getInventory().contains(Material.WRITTEN_BOOK))
             player.getInventory().addItem(Lavasurvival.INSTANCE.getRules());
         ShopFactory.validateInventory(inv);
         u.giveBoughtBlocks();
