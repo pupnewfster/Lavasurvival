@@ -111,7 +111,7 @@ class Initialization {
                 config.set("Necessities.DonationServer", 9);
                 config.set("Necessities.SlackToken", "token");
                 config.set("Necessities.WebHook", "webHook");
-                config.set("Lavasurvival.DBHost", "localhost");
+                config.set("Lavasurvival.DBHost", "127.0.0.1");
                 config.set("Lavasurvival.DBTable", "lavasurvival");
                 config.set("Lavasurvival.DBUser", "lsuser");
                 config.set("Lavasurvival.DBPassword", "password");
@@ -155,7 +155,7 @@ class Initialization {
             if (!config.contains("Necessities.WebHook"))
                 config.set("Necessities.WebHook", "webHook");
             if (!config.contains("Lavasurvival.DBHost"))
-                config.set("Lavasurvival.DBHost", "localhost");
+                config.set("Lavasurvival.DBHost", "127.0.0.1");
             if (!config.contains("Lavasurvival.DBTable"))
                 config.set("Lavasurvival.DBTable", "lavasurvival");
             if (!config.contains("Lavasurvival.DBUser"))
