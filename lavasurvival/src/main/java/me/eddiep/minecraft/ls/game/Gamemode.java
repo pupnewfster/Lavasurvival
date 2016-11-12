@@ -3,7 +3,6 @@ package me.eddiep.minecraft.ls.game;
 import com.crossge.necessities.Commands.CmdHide;
 import com.crossge.necessities.Necessities;
 import com.crossge.necessities.RankManager.Rank;
-import com.mysql.jdbc.jdbc2.optional.MysqlDataSource;
 import me.eddiep.minecraft.ls.Lavasurvival;
 import me.eddiep.minecraft.ls.game.impl.Flood;
 import me.eddiep.minecraft.ls.game.impl.Fusion;
@@ -26,6 +25,7 @@ import org.bukkit.block.BlockFace;
 import org.bukkit.boss.BarColor;
 import org.bukkit.boss.BarFlag;
 import org.bukkit.boss.BarStyle;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.craftbukkit.v1_10_R1.boss.CraftBossBar;
 import org.bukkit.craftbukkit.v1_10_R1.entity.CraftPlayer;
 import org.bukkit.entity.Player;
@@ -39,6 +39,7 @@ import org.bukkit.scoreboard.Scoreboard;
 import java.io.File;
 import java.io.IOException;
 import java.sql.Connection;
+import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.*;
@@ -200,8 +201,6 @@ public abstract class Gamemode {
         }
         this.bars.clear();
         BarFlag[] flags = new BarFlag[0];
-        //TODO: Make it so that it does not have to recreate the welcome bar just the other bars (put this in necessities?) onplayerjoin
-        //addBar(new CraftBossBar(ChatColor.GOLD + "Welcome to " + ChatColor.AQUA + "Galaxy Gaming", BarColor.GREEN, BarStyle.SOLID, flags));
         addBar(new CraftBossBar(ChatColor.GOLD + "Gamemode: " + (LAVA ? ChatColor.RED : ChatColor.BLUE) + getType(), LAVA ? BarColor.RED : BarColor.BLUE, BarStyle.SEGMENTED_6, flags));
         addBar(new CraftBossBar(ChatColor.GOLD + "Reward is " + (isRewardDoubled() ? "double" : "normal"), BarColor.WHITE, BarStyle.SEGMENTED_20, flags));
         alive = new ArrayList<>();
@@ -498,19 +497,18 @@ public abstract class Gamemode {
         winnerList = winnerList.substring(0, winnerList.length() - 1) + "}";
         scoreList = scoreList.substring(0, scoreList.length() - 1) + "}";
         loserList = loserList.substring(0, loserList.length() - 1) + "}";
-        MysqlDataSource dataSource = new MysqlDataSource();
-        dataSource.setUser("lsuser");
-        dataSource.setPassword("F0rWEotrux4SQqHv@");
-        dataSource.setServerName("localhost");
+        YamlConfiguration config = YamlConfiguration.loadConfiguration(new File("plugins/Necessities", "config.yml"));
+        String url = "jdbc:mariadb://" + config.getString("Lavasurvival.DBHost") + "/" + config.getString("Lavasurvival.DBTable"), user = config.getString("Lavasurvival.DBUser"),
+                pass = config.getString("Lavasurvival.DBPassword");
         try {
-            Connection conn = dataSource.getConnection();
+            Connection conn = DriverManager.getConnection(url, user, pass);
             Statement stmt = conn.createStatement();
-            String query = "INSERT INTO 'lavasurvival'.'matches' ('id', 'time', 'gamemode', 'winners', 'scores', 'losers') VALUES ('" + mode + "', '" + winnerList + "', '" + scoreList + "', '" + loserList + "')";
-            ResultSet rs = stmt.executeQuery(query);
+            ResultSet rs = stmt.executeQuery("INSERT INTO matches (id, time, gamemode, winners, score, losers) VALUES (\"" + mode + "\", \"" + winnerList + "\", \"" + scoreList + "\", \"" + loserList + "\")");
             rs.close();
             stmt.close();
             conn.close();
-        } catch (Exception ignored) {
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
