@@ -484,26 +484,36 @@ public abstract class Gamemode {
     }
 
     private void recordMatch(HashMap<Player, Integer> winners, ArrayList<Player> losers) {
+        if ((winners == null || winners.isEmpty()) && (losers == null || losers.isEmpty()))
+            return; //Do not record a match that no one is in
         String mode = this.getType();
         String winnerList = "{";
         String scoreList = "{";
         String loserList = "{";
-        for (Player player : winners.keySet()) {
-            winnerList += player.getUniqueId().toString() + ",";
-            scoreList += winners.get(player).toString() + ",";
-        }
+        if (winners != null)
+            for (Player player : winners.keySet()) {
+                winnerList += player.getUniqueId().toString() + ",";
+                scoreList += winners.get(player).toString() + ",";
+            }
         for (Player player : losers)
             loserList += player.getUniqueId().toString() + ",";
         winnerList = winnerList.substring(0, winnerList.length() - 1) + "}";
         scoreList = scoreList.substring(0, scoreList.length() - 1) + "}";
         loserList = loserList.substring(0, loserList.length() - 1) + "}";
+        if (winnerList.length() == 1)
+            winnerList = "{}";
+        if (scoreList.length() == 1)
+            scoreList = "{}";
+        if (loserList.length() == 1)
+            loserList = "{}";
         YamlConfiguration config = YamlConfiguration.loadConfiguration(new File("plugins/Necessities", "config.yml"));
         String url = "jdbc:mariadb://" + config.getString("Lavasurvival.DBHost") + "/" + config.getString("Lavasurvival.DBTable"), user = config.getString("Lavasurvival.DBUser"),
                 pass = config.getString("Lavasurvival.DBPassword");
         try {
+            Class.forName("org.mariadb.jdbc.Driver");
             Connection conn = DriverManager.getConnection(url, user, pass);
             Statement stmt = conn.createStatement();
-            ResultSet rs = stmt.executeQuery("INSERT INTO matches (id, time, gamemode, winners, score, losers) VALUES (\"" + mode + "\", \"" + winnerList + "\", \"" + scoreList + "\", \"" + loserList + "\")");
+            ResultSet rs = stmt.executeQuery("INSERT INTO matches (gamemode, winners, scores, losers) VALUES (\"" + mode + "\", \"" + winnerList + "\", \"" + scoreList + "\", \"" + loserList + "\")");
             rs.close();
             stmt.close();
             conn.close();
