@@ -377,7 +377,10 @@ public abstract class Gamemode {
                 globalMessage("Congratulations to the survivors!");
                 String survivors = "";
                 for (UUID id : alive) {
-                    if (id == null || Bukkit.getPlayer(id) == null || hide.isHidden(Bukkit.getPlayer(id)) || isInSpawn(Bukkit.getPlayer(id)))
+                    if (id == null)
+                        continue;
+                    Player p = Bukkit.getPlayer(id);
+                    if (p == null || hide.isHidden(p) || isInSpawn(p) || p.getGameMode().equals(GameMode.CREATIVE) || p.getGameMode().equals(GameMode.SPECTATOR))
                         continue;
                     if (survivors.equals(""))
                         survivors += Bukkit.getPlayer(id).getName();
