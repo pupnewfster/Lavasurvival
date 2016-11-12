@@ -31,6 +31,7 @@ import org.bukkit.event.inventory.CraftItemEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.player.*;
+import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
@@ -259,7 +260,7 @@ public class PlayerListener implements Listener {
         if (event.getPlayer().getGameMode().equals(GameMode.CREATIVE))//Allows players in creative to edit maps
             return;
         if (Gamemode.getCurrentGame() != null && Gamemode.getCurrentGame().isAlive(event.getPlayer()) &&
-                ((event.getBlock().getType().equals(Material.WOODEN_DOOR) && event.getPlayer().getInventory().contains(Material.WOOD_DOOR)) ||
+                ((event.getBlock().getType().equals(Material.WOODEN_DOOR) && event.getPlayer().getInventory().contains(Material.WOOD_DOOR)) || event.getBlock().getType() != null ||
                         event.getPlayer().getInventory().contains(event.getBlock().getType()) || event.getPlayer().getInventory().contains(Material.getMaterial(event.getBlock().getType().toString() + "_ITEM")) ||
                         event.getPlayer().getInventory().contains(Material.getMaterial(event.getBlock().getType().toString().replaceAll("DOOR_BLOCK", "DOOR"))))) {
             if (event.getBlock().getLocation().getBlockY() >= Gamemode.getCurrentMap().getLavaY()) {
@@ -277,8 +278,10 @@ public class PlayerListener implements Listener {
             if (event.getBlock().getType().toString().contains("DOOR") && event.getBlock().getRelative(BlockFace.UP).getType().equals(event.getBlock().getType()))
                 event.getBlock().getRelative(BlockFace.UP).setMetadata("player_placed", new FixedMetadataValue(Lavasurvival.INSTANCE, event.getPlayer().getUniqueId()));
             if (!this.survival) {
-                int index = event.getPlayer().getInventory().first(event.getItemInHand());
-                event.getPlayer().getInventory().setItem(index, event.getPlayer().getInventory().getItem(index).clone());
+                if (event.getHand().equals(EquipmentSlot.OFF_HAND))
+                    event.getPlayer().getInventory().setItemInOffHand(event.getPlayer().getInventory().getItemInOffHand().clone());
+                else
+                    event.getPlayer().getInventory().setItemInMainHand(event.getPlayer().getInventory().getItemInMainHand().clone());
             }
         }
         UserInfo u = this.um.getUser(event.getPlayer().getUniqueId());
