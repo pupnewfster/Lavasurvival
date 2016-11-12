@@ -202,7 +202,7 @@ public abstract class Gamemode {
         BarFlag[] flags = new BarFlag[0];
         //TODO: Make it so that it does not have to recreate the welcome bar just the other bars (put this in necessities?) onplayerjoin
         //addBar(new CraftBossBar(ChatColor.GOLD + "Welcome to " + ChatColor.AQUA + "Galaxy Gaming", BarColor.GREEN, BarStyle.SOLID, flags));
-        addBar(new CraftBossBar(ChatColor.GOLD + "Gamemode: " + (LAVA ? ChatColor.RED : ChatColor.BLUE) + this.type, LAVA ? BarColor.RED : BarColor.BLUE, BarStyle.SEGMENTED_6, flags));
+        addBar(new CraftBossBar(ChatColor.GOLD + "Gamemode: " + (LAVA ? ChatColor.RED : ChatColor.BLUE) + getType(), LAVA ? BarColor.RED : BarColor.BLUE, BarStyle.SEGMENTED_6, flags));
         addBar(new CraftBossBar(ChatColor.GOLD + "Reward is " + (isRewardDoubled() ? "double" : "normal"), BarColor.WHITE, BarStyle.SEGMENTED_20, flags));
         alive = new ArrayList<>();
         dead = new ArrayList<>();
@@ -213,6 +213,7 @@ public abstract class Gamemode {
             p.setLevel(info.getRanking().getRating());
         });
         currentGame = this;
+        Bukkit.getOnlinePlayers().forEach(this::addBars);
         if (lastMap != null) {
             Lavasurvival.log("Unloading " + lastMap.getWorld().getName() + "..");
             boolean success = Bukkit.unloadWorld(lastMap.getWorld(), false);
@@ -475,6 +476,8 @@ public abstract class Gamemode {
                 System.out.println("Updated " + count + " in " + (System.currentTimeMillis() - start) + "ms !");
             }).start();
         }
+
+        Bukkit.getOnlinePlayers().forEach(this::removeBars);
     }
 
     private String getType() {
