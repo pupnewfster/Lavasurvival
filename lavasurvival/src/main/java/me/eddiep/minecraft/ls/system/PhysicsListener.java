@@ -13,6 +13,7 @@ import org.bukkit.material.MaterialData;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.HashMap;
+import java.util.Random;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
@@ -20,6 +21,7 @@ public class PhysicsListener implements Listener {
     private static final HashMap<MaterialData, Integer> lavaTicksToMelt = new HashMap<>();
     private static final HashMap<MaterialData, Integer> waterTicksToMelt = new HashMap<>();
     private static final ConcurrentHashMap<Location, ConcurrentLinkedQueue<BlockTaskInfo>> toTasks = new ConcurrentHashMap<>();
+    protected static final Random RANDOM = new Random();
 
     public PhysicsListener() {
         setup();
@@ -323,6 +325,16 @@ public class PhysicsListener implements Listener {
                 long meltTicks = ticksToMelt.get(dat);
                 if (meltTicks < 0) //It's unburnable
                     return;
+
+                double percent = Gamemode.getCurrentMap().getMeltRange() / 100.0;
+                int range = (int) (meltTicks * percent + 0.5); //Round normally
+                long bonus = RANDOM.nextInt(range + 1);
+
+                if (RANDOM.nextBoolean())
+                    meltTicks += bonus;
+                else
+                    meltTicks -= bonus;
+
                 if (!blockChecking.hasMetadata("player_placed"))
                     meltTicks *= Gamemode.getCurrentMap().getMeltMultiplier();
                 if (meltTicks <= 0)
@@ -330,9 +342,12 @@ public class PhysicsListener implements Listener {
                 event.setCancelled(true);
                 ConcurrentLinkedQueue<BlockTaskInfo> temp;
                 Location location = event.getLocation();
-                if (toTasks.containsKey(location) && toTasks.get(location) != null && toTasks.get(location).size() > 0)
+                if (toTasks.containsKey(location) && toTasks.get(location) != null && toTasks.get(location).size() > 0) {
                     temp = toTasks.get(location);
-                else
+                    long lticks = temp.isEmpty() ? 0 : ((BlockTaskInfo) temp.toArray()[0]).getTicksToMelt();
+                    if (lticks != 0)
+                        meltTicks = lticks;
+                } else
                     temp = new ConcurrentLinkedQueue<>();
                 temp.add(new BlockTaskInfo(event.getLogicContainer().logicFor(), event.getFrom(), blockChecking, meltTicks));
                 toTasks.put(event.getLocation(), temp);

@@ -178,11 +178,35 @@ public class PlayerListener implements Listener {
         if (event.getClickedBlock() == null)
             return;
         Material type = event.getClickedBlock().getType();
-        if (event.getAction() == Action.RIGHT_CLICK_BLOCK && !event.getPlayer().isSneaking() && (event.getClickedBlock() instanceof InventoryHolder || type.equals(Material.WORKBENCH) ||
-                type.equals(Material.ANVIL) || type.equals(Material.ENCHANTMENT_TABLE) || type.equals(Material.ENDER_CHEST) || type.equals(Material.BEACON)) || type.equals(Material.BED_BLOCK) ||
-                type.equals(Material.CHEST) || type.equals(Material.TRAPPED_CHEST) || type.equals(Material.FURNACE) || type.equals(Material.BEACON) || type.equals(Material.BREWING_STAND) ||
-                type.equals(Material.DISPENSER) || type.equals(Material.DROPPER) || type.equals(Material.HOPPER))
-            event.setCancelled(true);//Disable opening block's with inventories
+        if (event.getAction() == Action.RIGHT_CLICK_BLOCK) {
+            if (!event.getPlayer().isSneaking() && (event.getClickedBlock() instanceof InventoryHolder || type.equals(Material.WORKBENCH) ||
+                    type.equals(Material.ANVIL) || type.equals(Material.ENCHANTMENT_TABLE) || type.equals(Material.ENDER_CHEST) || type.equals(Material.BEACON)) || type.equals(Material.BED_BLOCK) ||
+                    type.equals(Material.CHEST) || type.equals(Material.TRAPPED_CHEST) || type.equals(Material.FURNACE) || type.equals(Material.BEACON) || type.equals(Material.BREWING_STAND) ||
+                    type.equals(Material.DISPENSER) || type.equals(Material.DROPPER) || type.equals(Material.HOPPER))
+                event.setCancelled(true);//Disable opening block's with inventories
+            /*else if (event.getClickedBlock().getType().equals(Material.GLASS)) { //TODO check colored glass
+                //TODO make sure not in spawn
+                if (event.getItem() != null && event.getItem().getType().equals(Material.TORCH)) {
+                    BlockFace face = event.getBlockFace();
+                    Block relative = event.getClickedBlock().getRelative(face);
+                    relative.setType(Material.TORCH);
+                    if (face.equals(BlockFace.NORTH))
+                        relative.setData((byte) 4);
+                    else if (face.equals(BlockFace.EAST))
+                        relative.setData((byte) 1);
+                    else if (face.equals(BlockFace.SOUTH))
+                        relative.setData((byte) 3);
+                    else if (face.equals(BlockFace.WEST))
+                        relative.setData((byte) 2);
+                    if (!this.survival) {
+                        if (event.getHand().equals(EquipmentSlot.OFF_HAND))
+                            event.getPlayer().getInventory().setItemInOffHand(event.getPlayer().getInventory().getItemInOffHand().clone());
+                        else
+                            event.getPlayer().getInventory().setItemInMainHand(event.getPlayer().getInventory().getItemInMainHand().clone());
+                    }
+                }
+            }*/
+        }
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
