@@ -8,6 +8,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.boss.BarColor;
 import org.bukkit.entity.Player;
 import org.bukkit.scoreboard.DisplaySlot;
 import org.bukkit.scoreboard.Objective;
@@ -143,6 +144,14 @@ public class Fusion extends Gamemode {
         getCurrentWorld().strikeLightningEffect(locs.get(RANDOM.nextInt(locs.size()))); //Actions are better than words :3
         this.lvl += getCurrentMap().getFusionOptions().getLayerCount();
         this.layersLeft.setScore(lavaY - highestCurrentY);
+        BarColor cur = this.bars.get(0).getColor();
+        if (cur.equals(BarColor.RED)) {
+            this.bars.get(0).setTitle(ChatColor.GOLD + "Gamemode: " + ChatColor.RED + "Fusion");
+            this.bars.get(0).setColor(BarColor.BLUE);
+        } else if (cur.equals(BarColor.BLUE)) {
+            this.bars.get(0).setTitle(ChatColor.GOLD + "Gamemode: " + ChatColor.BLUE + "Fusion");
+            this.bars.get(0).setColor(BarColor.RED);
+        }
         if (highestCurrentY <= lavaY)
             liquidUp(time); //Only advance up if we are still less than the actual lava spawn or if we are at the lava spawn (the next check will end the game, see above)
     }
@@ -155,7 +164,7 @@ public class Fusion extends Gamemode {
         return (super.getDefaultReward(player, blockCount) + this.bonus) * multiplier;
     }
 
-    public boolean isRoundEnding() {
+    private boolean isRoundEnding() {
         return isEnding;
     }
 

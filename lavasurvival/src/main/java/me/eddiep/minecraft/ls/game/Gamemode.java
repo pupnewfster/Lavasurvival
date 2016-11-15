@@ -75,7 +75,7 @@ public abstract class Gamemode {
     protected static boolean LAVA = true;
     private static boolean voting = false;
     private LavaMap[] nextMaps = new LavaMap[VOTE_COUNT];
-    private ArrayList<CraftBossBar> bars = new ArrayList<>();
+    protected ArrayList<CraftBossBar> bars = new ArrayList<>();
     private int[] votes = new int[VOTE_COUNT];
     private int voteCount;
     private static LavaMap lastMap, currentMap;
@@ -520,8 +520,7 @@ public abstract class Gamemode {
             rs.close();
             stmt.close();
             conn.close();
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (Exception ignored) {
         }
     }
 
