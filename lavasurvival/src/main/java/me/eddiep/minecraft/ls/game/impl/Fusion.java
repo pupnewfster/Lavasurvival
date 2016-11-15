@@ -149,7 +149,7 @@ public class Fusion extends Gamemode {
             this.bars.get(0).setTitle(ChatColor.GOLD + "Gamemode: " + ChatColor.RED + "Fusion");
             this.bars.get(0).setColor(BarColor.BLUE);
         } else if (cur.equals(BarColor.BLUE)) {
-            this.bars.get(0).setTitle(ChatColor.GOLD + "Gamemode: " + ChatColor.BLUE + "Fusion");
+            this.bars.get(0).setTitle(ChatColor.GOLD + "Gamemode: " + ChatColor.AQUA + "Fusion");
             this.bars.get(0).setColor(BarColor.RED);
         }
         if (highestCurrentY <= lavaY)
