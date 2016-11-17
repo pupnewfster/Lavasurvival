@@ -9,12 +9,12 @@ import me.eddiep.minecraft.ls.game.status.PlayerStatusManager;
 import me.eddiep.minecraft.ls.ranks.UserInfo;
 import me.eddiep.minecraft.ls.ranks.UserManager;
 import me.eddiep.minecraft.ls.system.bank.BankInventory;
-import net.minecraft.server.v1_10_R1.*;
+import net.minecraft.server.v1_11_R1.*;
 import org.bukkit.*;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
-import org.bukkit.craftbukkit.v1_10_R1.entity.CraftPlayer;
+import org.bukkit.craftbukkit.v1_11_R1.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -121,6 +121,15 @@ public class PlayerListener implements Listener {
                     event.getEntity().setFireTicks(0);
             }
         }
+    }
+
+    @EventHandler
+    public void itemHeldSlot(PlayerItemHeldEvent event) {
+        ItemStack is = event.getPlayer().getInventory().getItemInMainHand();
+        String lavaTime = "Lava MeltTime: " + PhysicsListener.getLavaMeltRangeTimeAsString(is.getData()), waterTime = "Water MeltTime: " + PhysicsListener.getWaterMeltRangeTimeAsString(is.getData());
+        IChatBaseComponent meltJSON = IChatBaseComponent.ChatSerializer.a("{\"text\": \"" + lavaTime + "    " + waterTime + "\"}");
+        PacketPlayOutTitle meltPacket = new PacketPlayOutTitle(PacketPlayOutTitle.EnumTitleAction.ACTIONBAR, meltJSON, 0, 60, 0);
+        ((CraftPlayer) event.getPlayer()).getHandle().playerConnection.sendPacket(meltPacket);
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)

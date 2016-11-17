@@ -19,6 +19,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.Arrays;
+import java.util.Collections;
 
 @MenuInventory(slots = 18, name = "Advanced Block Shop")
 public class AdvancedBlockShop extends Menu {
@@ -199,7 +200,7 @@ public class AdvancedBlockShop extends Menu {
         ItemStack stack = new ItemStack(Material.EMERALD, 1);
         ItemMeta meta = stack.getItemMeta();
         meta.setDisplayName("Back to block shop");
-        meta.setLore(Arrays.asList(ChatColor.GOLD + "" + ChatColor.ITALIC + "Buy more blocks!"));
+        meta.setLore(Collections.singletonList(ChatColor.GOLD + "" + ChatColor.ITALIC + "Buy more blocks!"));
         stack.setItemMeta(meta);
         stack = ShopFactory.addGlow(stack);
         inv.setItem(0, stack);
@@ -207,14 +208,18 @@ public class AdvancedBlockShop extends Menu {
             ItemStack is = inv.getItem(i);
             if (is == null)
                 continue;
-            ItemMeta m = is.getItemMeta();
-            m.setLore(Arrays.asList(price(is.getType()) + " ggs", "Lava MeltTime: " + PhysicsListener.getLavaMeltTimeAsString(is.getData()), "Water MeltTime: " + PhysicsListener.getWaterMeltTimeAsString(is.getData())));
-            is.setItemMeta(m);
-            inv.setItem(i, is);
+            try {
+                ItemMeta m = is.getItemMeta();
+                m.setLore(Arrays.asList(price(is.getType()) + " ggs", "Lava MeltTime: " + PhysicsListener.getLavaMeltTimeAsString(is.getData()), "Water MeltTime: " + PhysicsListener.getWaterMeltTimeAsString(is.getData())));
+                is.setItemMeta(m);
+                inv.setItem(i, is);
+            } catch (Exception ignored) {
+
+            }
         }
     }
 
-    protected int price(Material type) {
+    private int price(Material type) {
         /*switch (type) {
             case STEP:
                 return 1500;
@@ -231,7 +236,6 @@ public class AdvancedBlockShop extends Menu {
             default:
                 return 0;
         }*/
-
         return 1500;
     }
 }

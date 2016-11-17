@@ -45,11 +45,8 @@ public class MenuShopManager implements ShopManager {
     @Override
     public boolean isShopInventory(Inventory inventory, Player owner) {
         MenuPlayer player = MenuFramework.getPlayerManager().getPlayer(owner);
-        if (player.getActiveMenu() != null) {
-            return player.getActiveMenu().getInventory().equals(inventory);
-        }
+        return player.getActiveMenu() != null && player.getActiveMenu().getInventory().equals(inventory);
 
-        return false;
     }
 
     @Override

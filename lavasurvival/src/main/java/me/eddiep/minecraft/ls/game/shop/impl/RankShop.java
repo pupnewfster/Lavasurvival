@@ -65,7 +65,7 @@ public class RankShop extends Menu {
         buyRank(player, "Elder", 300000);
     }
 
-    public void buyRank(MenuPlayer player, String RANK, double price) {
+    private void buyRank(MenuPlayer player, String RANK, double price) {
         RankManager manager = Lavasurvival.INSTANCE.getRankManager();
         User user = Lavasurvival.INSTANCE.getNecessitiesUserManager().getUser(player.getBukkit().getUniqueId());
         int curNum = manager.getOrder().indexOf(user.getRank());

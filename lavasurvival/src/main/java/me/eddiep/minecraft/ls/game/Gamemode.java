@@ -17,8 +17,8 @@ import me.eddiep.minecraft.ls.system.FileUtils;
 import me.eddiep.minecraft.ls.system.PhysicsListener;
 import me.eddiep.minecraft.ls.system.PlayerListener;
 import mkremins.fanciful.FancyMessage;
-import net.minecraft.server.v1_10_R1.IChatBaseComponent;
-import net.minecraft.server.v1_10_R1.PacketPlayOutTitle;
+import net.minecraft.server.v1_11_R1.IChatBaseComponent;
+import net.minecraft.server.v1_11_R1.PacketPlayOutTitle;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
@@ -26,8 +26,8 @@ import org.bukkit.boss.BarColor;
 import org.bukkit.boss.BarFlag;
 import org.bukkit.boss.BarStyle;
 import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.craftbukkit.v1_10_R1.boss.CraftBossBar;
-import org.bukkit.craftbukkit.v1_10_R1.entity.CraftPlayer;
+import org.bukkit.craftbukkit.v1_11_R1.boss.CraftBossBar;
+import org.bukkit.craftbukkit.v1_11_R1.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
@@ -396,32 +396,34 @@ public abstract class Gamemode {
             int avgAir = 0;
             double avgReward = 0;*/
             for (UUID id : alive) {
-                Player player = Bukkit.getPlayer(id);
-                if (id == null || player == null || hide.isHidden(player) || isInSpawn(Bukkit.getPlayer(id)))
+                if (id == null)
                     continue;
-                Rank rank = Lavasurvival.INSTANCE.getNecessitiesUserManager().getUser(player.getUniqueId()).getRank();
+                Player p = Bukkit.getPlayer(id);
+                if (p == null || hide.isHidden(p) || isInSpawn(Bukkit.getPlayer(id)) || p.getGameMode().equals(GameMode.CREATIVE) || p.getGameMode().equals(GameMode.SPECTATOR))
+                    continue;
+                Rank rank = Lavasurvival.INSTANCE.getNecessitiesUserManager().getUser(p.getUniqueId()).getRank();
                 Double[] array;
                 if (!avgs.containsKey(rank))
                     array = new Double[]{0.0, 0.0, 0.0};
                 else
                     array = avgs.get(rank);
-                int blockCount = countAirBlocksAround(player, 10);
+                int blockCount = countAirBlocksAround(p, 10);
                 //avgAir += blockCount;
                 array[0] += blockCount;
-                double reward = calculateReward(player, blockCount);
+                double reward = calculateReward(p, blockCount);
                 //avgReward += reward;
                 array[1] += reward;
                 array[2]++;
                 avgs.put(rank, array);
-                winners.put(player, blockCount);
-                Lavasurvival.INSTANCE.depositPlayer(player, reward);
-                player.getPlayer().sendMessage(ChatColor.GREEN + "+ " + ChatColor.GOLD + "You won " + ChatColor.BOLD + reward + ChatColor.RESET + "" + ChatColor.GOLD + " GGs!");
+                winners.put(p, blockCount);
+                Lavasurvival.INSTANCE.depositPlayer(p, reward);
+                p.getPlayer().sendMessage(ChatColor.GREEN + "+ " + ChatColor.GOLD + "You won " + ChatColor.BOLD + reward + ChatColor.RESET + "" + ChatColor.GOLD + " GGs!");
                 IChatBaseComponent titleJSON = IChatBaseComponent.ChatSerializer.a("{\"text\": \"You won!\"}");
                 IChatBaseComponent subtitleJSON = IChatBaseComponent.ChatSerializer.a("{\"text\": \"§6§l" + reward + "§6 GGs!\"}");
                 PacketPlayOutTitle titlePacket = new PacketPlayOutTitle(PacketPlayOutTitle.EnumTitleAction.TITLE, titleJSON, 0, 60, 0);
                 PacketPlayOutTitle subtitlePacket = new PacketPlayOutTitle(PacketPlayOutTitle.EnumTitleAction.SUBTITLE, subtitleJSON);
-                ((CraftPlayer) player).getHandle().playerConnection.sendPacket(titlePacket);
-                ((CraftPlayer) player).getHandle().playerConnection.sendPacket(subtitlePacket);
+                ((CraftPlayer) p).getHandle().playerConnection.sendPacket(titlePacket);
+                ((CraftPlayer) p).getHandle().playerConnection.sendPacket(subtitlePacket);
             }
 
             if (Necessities.isTracking()) {

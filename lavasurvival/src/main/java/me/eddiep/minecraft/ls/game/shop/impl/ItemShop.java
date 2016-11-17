@@ -62,7 +62,7 @@ public class ItemShop extends Menu {
         buyItem(player, LavaItem.MAJOR_INVINCIBILITY);
     }
 
-    public void buyItem(MenuPlayer player, LavaItem item) {
+    private void buyItem(MenuPlayer player, LavaItem item) {
         ItemStack is = item.createItem();
         Player p = player.getBukkit();
         if (!Lavasurvival.INSTANCE.getEconomy().hasAccount(p) || Lavasurvival.INSTANCE.getEconomy().getBalance(p) < item.getPrice())

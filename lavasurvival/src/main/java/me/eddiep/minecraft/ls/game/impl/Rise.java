@@ -83,7 +83,8 @@ public class Rise extends Gamemode {
 
     @Override
     public void endRound() {
-        this.objective.unregister();
+        if (this.objective != null)
+            this.objective.unregister();
         this.objective = null;
         Bukkit.getScheduler().cancelTask(this.sched);
         super.endRound();

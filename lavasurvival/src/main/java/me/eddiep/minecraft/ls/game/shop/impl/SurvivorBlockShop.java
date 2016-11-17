@@ -19,6 +19,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.Arrays;
+import java.util.Collections;
 
 @MenuInventory(slots = 36, name = "Survivor Block Shop")
 public class SurvivorBlockShop extends Menu {
@@ -286,6 +287,15 @@ public class SurvivorBlockShop extends Menu {
             getUser(player).buyBlock(Material.TRAP_DOOR, price(Material.TRAP_DOOR));
     }
 
+    @MenuItem(
+            slot = 29,
+            item = @ItemStackAnnotation(material = Material.NETHER_WART_BLOCK, name = "")
+    )
+    public void buyNetherWartBlock(MenuPlayer player) {
+        if (canBuy(player))
+            getUser(player).buyBlock(Material.NETHER_WART_BLOCK, price(Material.NETHER_WART_BLOCK));
+    }
+
     private UserInfo getUser(MenuPlayer player) {
         return Lavasurvival.INSTANCE.getUserManager().getUser(player.getBukkit().getUniqueId());
     }
@@ -307,7 +317,7 @@ public class SurvivorBlockShop extends Menu {
         ItemStack stack = new ItemStack(Material.EMERALD, 1);
         ItemMeta meta = stack.getItemMeta();
         meta.setDisplayName("Back to block shop");
-        meta.setLore(Arrays.asList(ChatColor.GOLD + "" + ChatColor.ITALIC + "Buy more blocks!"));
+        meta.setLore(Collections.singletonList(ChatColor.GOLD + "" + ChatColor.ITALIC + "Buy more blocks!"));
         stack.setItemMeta(meta);
         stack = ShopFactory.addGlow(stack);
         inv.setItem(0, stack);
@@ -315,14 +325,17 @@ public class SurvivorBlockShop extends Menu {
             ItemStack is = inv.getItem(i);
             if (is == null)
                 continue;
-            ItemMeta m = is.getItemMeta();
-            m.setLore(Arrays.asList(price(is.getType()) + " ggs", "Lava MeltTime: " + PhysicsListener.getLavaMeltTimeAsString(is.getData()), "Water MeltTime: " + PhysicsListener.getWaterMeltTimeAsString(is.getData())));
-            is.setItemMeta(m);
-            inv.setItem(i, is);
+            try {
+                ItemMeta m = is.getItemMeta();
+                m.setLore(Arrays.asList(price(is.getType()) + " ggs", "Lava MeltTime: " + PhysicsListener.getLavaMeltTimeAsString(is.getData()), "Water MeltTime: " + PhysicsListener.getWaterMeltTimeAsString(is.getData())));
+                is.setItemMeta(m);
+                inv.setItem(i, is);
+            } catch (Exception ignored) {
+            }
         }
     }
 
-    protected int price(Material type) {
+    private int price(Material type) {
         /*switch (type) {
             case ICE:
                 return 600;

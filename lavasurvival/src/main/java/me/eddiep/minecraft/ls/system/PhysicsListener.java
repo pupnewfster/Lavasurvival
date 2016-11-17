@@ -147,6 +147,7 @@ public class PhysicsListener implements Listener {
         addMeltTime(new MaterialData(Material.WOOL, (byte) 13), 20 * 20);//Green wool
         addMeltTime(new MaterialData(Material.WOOL, (byte) 14), 20 * 20);//Red wool
         addMeltTime(new MaterialData(Material.WOOL, (byte) 15), 20 * 20);//Black wool
+        addMeltTime(new MaterialData(Material.NETHER_WART_BLOCK), 150 * 20);
 
         //Trusted blocks
         addMeltTime(new MaterialData(Material.WOOD_DOOR), 30 * 20, 120 * 20);
@@ -204,14 +205,22 @@ public class PhysicsListener implements Listener {
 
         //Elder blocks
         addMeltTime(new MaterialData(Material.GLOWSTONE), 225 * 20);
+        addMeltTime(new MaterialData(Material.NETHERRACK), 240 * 20);
+        addMeltTime(new MaterialData(Material.NETHER_BRICK), 240 * 20);
+        addMeltTime(new MaterialData(Material.RED_NETHER_BRICK), 240 * 20);
+        addMeltTime(new MaterialData(Material.NETHER_FENCE), 240 * 20);
         addMeltTime(new MaterialData(Material.STEP, (byte) 6), 240 * 20);//Nether brick slab
         addMeltTime(new MaterialData(Material.STEP, (byte) 14), 240 * 20);//Upper Nether brick slab
         addMeltTime(new MaterialData(Material.DOUBLE_STEP, (byte) 6), 240 * 20);//Double Nether brick slab
-        addMeltTime(new MaterialData(Material.NETHER_FENCE), 240 * 20);
-        addMeltTime(new MaterialData(Material.NETHERRACK), 240 * 20);
-        addMeltTime(new MaterialData(Material.NETHER_BRICK), 240 * 20);
         addMeltTime(new MaterialData(Material.NETHER_BRICK_STAIRS), 240 * 20);
+        addMeltTime(new MaterialData(Material.PURPUR_BLOCK), 240 * 20);
+        addMeltTime(new MaterialData(Material.PURPUR_PILLAR), 240 * 20);
+        addMeltTime(new MaterialData(Material.PURPUR_STAIRS), 240 * 20);
+        addMeltTime(new MaterialData(Material.PURPUR_SLAB), 240 * 20);
+        addMeltTime(new MaterialData(Material.PURPUR_DOUBLE_SLAB), 240 * 20);
         addMeltTime(new MaterialData(Material.ENDER_STONE), 270 * 20);
+        addMeltTime(new MaterialData(Material.END_BRICKS), 270 * 20);
+        addMeltTime(new MaterialData(Material.END_ROD), 270 * 20);//TODO SET THIS
 
         //Donnor blocks Instant melt)
         addMeltTime(new MaterialData(Material.WOOD, (byte) 1), 0);//Spruce planks
@@ -271,6 +280,8 @@ public class PhysicsListener implements Listener {
         addMeltTime(new MaterialData(Material.RED_ROSE, (byte) 6), 0);//White Tulip
         addMeltTime(new MaterialData(Material.RED_ROSE, (byte) 7), 0);//Pink Tulip
         addMeltTime(new MaterialData(Material.RED_ROSE, (byte) 8), 0);//Oxeye Daisy
+        addMeltTime(new MaterialData(Material.BONE_BLOCK), 0);
+        addMeltTime(new MaterialData(Material.GRASS_PATH), 0);
 
         //Unmeltable
         addMeltTime(new MaterialData(Material.BEDROCK), -1);
@@ -386,25 +397,40 @@ public class PhysicsListener implements Listener {
     }
 
     public static String getLavaMeltTimeAsString(MaterialData data) {
-        int seconds = lavaTicksToMelt.containsKey(data) ? lavaTicksToMelt.get(data) : 0;
-        if (seconds < 0)
-            return "Never";
-        seconds = seconds / 20;
-        if (seconds == 0)
-            return "Immediately";
-        else
-            return seconds + " Second" + (seconds == 1 ? "" : "s");
+        return getMeltTimeAsString(lavaTicksToMelt.containsKey(data) ? lavaTicksToMelt.get(data) : 0);
     }
 
     public static String getWaterMeltTimeAsString(MaterialData data) {
-        int seconds = waterTicksToMelt.containsKey(data) ? waterTicksToMelt.get(data) : 0;
+        return getMeltTimeAsString(waterTicksToMelt.containsKey(data) ? waterTicksToMelt.get(data) : 0);
+    }
+
+    private static String getMeltTimeAsString(int seconds) {
         if (seconds < 0)
             return "Never";
         seconds = seconds / 20;
         if (seconds == 0)
             return "Immediately";
-        else
-            return seconds + " Second" + (seconds == 1 ? "" : "s");
+        return seconds + " Second" + (seconds == 1 ? "" : "s");
+    }
+
+    public static String getLavaMeltRangeTimeAsString(MaterialData data) {
+        return getMeltRangeAsString(lavaTicksToMelt.containsKey(data) ? lavaTicksToMelt.get(data) : 0);
+    }
+
+    private static String getMeltRangeAsString(int seconds) {
+        if (seconds < 0)
+            return "Never";
+        seconds = seconds / 20;
+        if (seconds == 0)
+            return "Immediately";
+        double percent = Gamemode.getCurrentMap().getMeltRange() / 100.0;
+        int range = (int) (seconds * percent);
+        int min = seconds - range, max = seconds + range;
+        return (min == max ? max : min + " to " + max) + " Second" + (max == 1 ? "" : "s");
+    }
+
+    public static String getWaterMeltRangeTimeAsString(MaterialData data) {
+        return getMeltRangeAsString(waterTicksToMelt.containsKey(data) ? waterTicksToMelt.get(data) : 0);
     }
 
     private static void cancelAllTasks() {

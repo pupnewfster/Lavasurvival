@@ -18,6 +18,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.Arrays;
+import java.util.Collections;
 
 @MenuInventory(slots = 54, name = "Donator Block Shop")
 public class DonatorBlockShop extends Menu {
@@ -483,6 +484,24 @@ public class DonatorBlockShop extends Menu {
             getUser(player).buyBlock(Material.RED_ROSE, price(Material.RED_ROSE), (byte) 8);
     }
 
+    @MenuItem(
+            slot = 51,
+            item = @ItemStackAnnotation(material = Material.BONE_BLOCK, durability = 7, name = "")
+    )
+    public void buyBoneBlock(MenuPlayer player) {
+        if (canBuy(player))
+            getUser(player).buyBlock(Material.BONE_BLOCK, price(Material.BONE_BLOCK), (byte) 7);
+    }
+
+    @MenuItem(
+            slot = 52,
+            item = @ItemStackAnnotation(material = Material.GRASS_PATH, durability = 8, name = "")
+    )
+    public void buyGrassPath(MenuPlayer player) {
+        if (canBuy(player))
+            getUser(player).buyBlock(Material.GRASS_PATH, price(Material.GRASS_PATH), (byte) 8);
+    }
+
     private UserInfo getUser(MenuPlayer player) {
         return Lavasurvival.INSTANCE.getUserManager().getUser(player.getBukkit().getUniqueId());
     }
@@ -496,7 +515,7 @@ public class DonatorBlockShop extends Menu {
         ItemStack stack = new ItemStack(Material.EMERALD, 1);
         ItemMeta meta = stack.getItemMeta();
         meta.setDisplayName("Back to block shop");
-        meta.setLore(Arrays.asList(ChatColor.GOLD + "" + ChatColor.ITALIC + "Buy more blocks!"));
+        meta.setLore(Collections.singletonList(ChatColor.GOLD + "" + ChatColor.ITALIC + "Buy more blocks!"));
         stack.setItemMeta(meta);
         stack = ShopFactory.addGlow(stack);
         inv.setItem(0, stack);
@@ -504,14 +523,17 @@ public class DonatorBlockShop extends Menu {
             ItemStack is = inv.getItem(i);
             if (is == null)
                 continue;
-            ItemMeta m = is.getItemMeta();
-            m.setLore(Arrays.asList(price(is.getType()) + " ggs", "Lava MeltTime: " + PhysicsListener.getLavaMeltTimeAsString(is.getData()), "Water MeltTime: " + PhysicsListener.getWaterMeltTimeAsString(is.getData())));
-            is.setItemMeta(m);
-            inv.setItem(i, is);
+            try {
+                ItemMeta m = is.getItemMeta();
+                m.setLore(Arrays.asList(price(is.getType()) + " ggs", "Lava MeltTime: " + PhysicsListener.getLavaMeltTimeAsString(is.getData()), "Water MeltTime: " + PhysicsListener.getWaterMeltTimeAsString(is.getData())));
+                is.setItemMeta(m);
+                inv.setItem(i, is);
+            } catch (Exception ignored) {
+            }
         }
     }
 
-    protected int price(Material type) {
+    private int price(Material type) {
         if (type == Material.YELLOW_FLOWER || type == Material.RED_ROSE)
             return 600;
         return 1500;
