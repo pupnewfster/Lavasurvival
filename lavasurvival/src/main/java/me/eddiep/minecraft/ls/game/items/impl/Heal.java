@@ -34,7 +34,7 @@ abstract class Heal extends LavaItem {
         }
         if (tag == null)
             tag = nmsStack.getTag();
-        tag.setInt("HideFlags", 32);
+        tag.setInt("HideFlags", 63);
         tag.setString("Potion", "minecraft:healing");
         nmsStack.setTag(tag);
         return CraftItemStack.asCraftMirror(nmsStack);

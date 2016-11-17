@@ -27,7 +27,7 @@ abstract class Invincibility extends LavaItem {
         }
         if (tag == null)
             tag = nmsStack.getTag();
-        tag.setInt("HideFlags", 32);
+        tag.setInt("HideFlags", 63);
         tag.setString("Potion", "minecraft:invisibility");
         nmsStack.setTag(tag);
         return CraftItemStack.asCraftMirror(nmsStack);
