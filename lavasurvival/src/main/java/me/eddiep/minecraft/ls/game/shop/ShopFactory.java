@@ -1,9 +1,9 @@
 package me.eddiep.minecraft.ls.game.shop;
 
 import net.minecraft.server.v1_11_R1.NBTTagCompound;
-import net.minecraft.server.v1_11_R1.NBTTagList;
 import org.bukkit.Material;
 import org.bukkit.craftbukkit.v1_11_R1.inventory.CraftItemStack;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
@@ -56,6 +56,7 @@ public class ShopFactory {
     }
 
     public static ItemStack addGlow(ItemStack item) {
+        item.addUnsafeEnchantment(Enchantment.DURABILITY, 1);
         net.minecraft.server.v1_11_R1.ItemStack nmsStack = CraftItemStack.asNMSCopy(item);
         NBTTagCompound tag = null;
         if (!nmsStack.hasTag()) {
@@ -64,8 +65,7 @@ public class ShopFactory {
         }
         if (tag == null)
             tag = nmsStack.getTag();
-        NBTTagList ench = new NBTTagList();
-        tag.set("ench", ench);
+        tag.setInt("HideFlags", 63);
         nmsStack.setTag(tag);
         return CraftItemStack.asCraftMirror(nmsStack);
     }
