@@ -3,7 +3,6 @@ package me.eddiep.minecraft.ls.game;
 import com.crossge.necessities.Commands.CmdHide;
 import com.crossge.necessities.Necessities;
 import com.crossge.necessities.RankManager.Rank;
-import com.mysql.jdbc.jdbc2.optional.MysqlDataSource;
 import me.eddiep.minecraft.ls.Lavasurvival;
 import me.eddiep.minecraft.ls.game.impl.Flood;
 import me.eddiep.minecraft.ls.game.impl.Fusion;
@@ -18,16 +17,17 @@ import me.eddiep.minecraft.ls.system.FileUtils;
 import me.eddiep.minecraft.ls.system.PhysicsListener;
 import me.eddiep.minecraft.ls.system.PlayerListener;
 import mkremins.fanciful.FancyMessage;
-import net.minecraft.server.v1_10_R1.IChatBaseComponent;
-import net.minecraft.server.v1_10_R1.PacketPlayOutTitle;
+import net.minecraft.server.v1_11_R1.IChatBaseComponent;
+import net.minecraft.server.v1_11_R1.PacketPlayOutTitle;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.boss.BarColor;
 import org.bukkit.boss.BarFlag;
 import org.bukkit.boss.BarStyle;
-import org.bukkit.craftbukkit.v1_10_R1.boss.CraftBossBar;
-import org.bukkit.craftbukkit.v1_10_R1.entity.CraftPlayer;
+import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.craftbukkit.v1_11_R1.boss.CraftBossBar;
+import org.bukkit.craftbukkit.v1_11_R1.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
@@ -39,6 +39,7 @@ import org.bukkit.scoreboard.Scoreboard;
 import java.io.File;
 import java.io.IOException;
 import java.sql.Connection;
+import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.*;
@@ -74,7 +75,7 @@ public abstract class Gamemode {
     protected static boolean LAVA = true;
     private static boolean voting = false;
     private LavaMap[] nextMaps = new LavaMap[VOTE_COUNT];
-    private ArrayList<CraftBossBar> bars = new ArrayList<>();
+    protected ArrayList<CraftBossBar> bars = new ArrayList<>();
     private int[] votes = new int[VOTE_COUNT];
     private int voteCount;
     private static LavaMap lastMap, currentMap;
@@ -200,9 +201,7 @@ public abstract class Gamemode {
         }
         this.bars.clear();
         BarFlag[] flags = new BarFlag[0];
-        //TODO: Make it so that it does not have to recreate the welcome bar just the other bars (put this in necessities?) onplayerjoin
-        //addBar(new CraftBossBar(ChatColor.GOLD + "Welcome to " + ChatColor.AQUA + "Galaxy Gaming", BarColor.GREEN, BarStyle.SOLID, flags));
-        addBar(new CraftBossBar(ChatColor.GOLD + "Gamemode: " + (LAVA ? ChatColor.RED : ChatColor.BLUE) + getType(), LAVA ? BarColor.RED : BarColor.BLUE, BarStyle.SEGMENTED_6, flags));
+        addBar(new CraftBossBar(ChatColor.GOLD + "Gamemode: " + (LAVA ? ChatColor.RED : ChatColor.AQUA) + getType(), LAVA ? BarColor.RED : BarColor.BLUE, BarStyle.SEGMENTED_6, flags));
         addBar(new CraftBossBar(ChatColor.GOLD + "Reward is " + (isRewardDoubled() ? "double" : "normal"), BarColor.WHITE, BarStyle.SEGMENTED_20, flags));
         alive = new ArrayList<>();
         dead = new ArrayList<>();
@@ -378,7 +377,10 @@ public abstract class Gamemode {
                 globalMessage("Congratulations to the survivors!");
                 String survivors = "";
                 for (UUID id : alive) {
-                    if (id == null || Bukkit.getPlayer(id) == null || hide.isHidden(Bukkit.getPlayer(id)) || isInSpawn(Bukkit.getPlayer(id)))
+                    if (id == null)
+                        continue;
+                    Player p = Bukkit.getPlayer(id);
+                    if (p == null || hide.isHidden(p) || isInSpawn(p) || p.getGameMode().equals(GameMode.CREATIVE) || p.getGameMode().equals(GameMode.SPECTATOR))
                         continue;
                     if (survivors.equals(""))
                         survivors += Bukkit.getPlayer(id).getName();
@@ -394,32 +396,34 @@ public abstract class Gamemode {
             int avgAir = 0;
             double avgReward = 0;*/
             for (UUID id : alive) {
-                Player player = Bukkit.getPlayer(id);
-                if (id == null || player == null || hide.isHidden(player) || isInSpawn(Bukkit.getPlayer(id)))
+                if (id == null)
                     continue;
-                Rank rank = Lavasurvival.INSTANCE.getNecessitiesUserManager().getUser(player.getUniqueId()).getRank();
+                Player p = Bukkit.getPlayer(id);
+                if (p == null || hide.isHidden(p) || isInSpawn(Bukkit.getPlayer(id)) || p.getGameMode().equals(GameMode.CREATIVE) || p.getGameMode().equals(GameMode.SPECTATOR))
+                    continue;
+                Rank rank = Lavasurvival.INSTANCE.getNecessitiesUserManager().getUser(p.getUniqueId()).getRank();
                 Double[] array;
                 if (!avgs.containsKey(rank))
                     array = new Double[]{0.0, 0.0, 0.0};
                 else
                     array = avgs.get(rank);
-                int blockCount = countAirBlocksAround(player, 10);
+                int blockCount = countAirBlocksAround(p, 10);
                 //avgAir += blockCount;
                 array[0] += blockCount;
-                double reward = calculateReward(player, blockCount);
+                double reward = calculateReward(p, blockCount);
                 //avgReward += reward;
                 array[1] += reward;
                 array[2]++;
                 avgs.put(rank, array);
-                winners.put(player, blockCount);
-                Lavasurvival.INSTANCE.depositPlayer(player, reward);
-                player.getPlayer().sendMessage(ChatColor.GREEN + "+ " + ChatColor.GOLD + "You won " + ChatColor.BOLD + reward + ChatColor.RESET + "" + ChatColor.GOLD + " GGs!");
+                winners.put(p, blockCount);
+                Lavasurvival.INSTANCE.depositPlayer(p, reward);
+                p.getPlayer().sendMessage(ChatColor.GREEN + "+ " + ChatColor.GOLD + "You won " + ChatColor.BOLD + reward + ChatColor.RESET + "" + ChatColor.GOLD + " GGs!");
                 IChatBaseComponent titleJSON = IChatBaseComponent.ChatSerializer.a("{\"text\": \"You won!\"}");
                 IChatBaseComponent subtitleJSON = IChatBaseComponent.ChatSerializer.a("{\"text\": \"§6§l" + reward + "§6 GGs!\"}");
                 PacketPlayOutTitle titlePacket = new PacketPlayOutTitle(PacketPlayOutTitle.EnumTitleAction.TITLE, titleJSON, 0, 60, 0);
                 PacketPlayOutTitle subtitlePacket = new PacketPlayOutTitle(PacketPlayOutTitle.EnumTitleAction.SUBTITLE, subtitleJSON);
-                ((CraftPlayer) player).getHandle().playerConnection.sendPacket(titlePacket);
-                ((CraftPlayer) player).getHandle().playerConnection.sendPacket(subtitlePacket);
+                ((CraftPlayer) p).getHandle().playerConnection.sendPacket(titlePacket);
+                ((CraftPlayer) p).getHandle().playerConnection.sendPacket(subtitlePacket);
             }
 
             if (Necessities.isTracking()) {
@@ -485,28 +489,36 @@ public abstract class Gamemode {
     }
 
     private void recordMatch(HashMap<Player, Integer> winners, ArrayList<Player> losers) {
+        if ((winners == null || winners.isEmpty()) && (losers == null || losers.isEmpty()))
+            return; //Do not record a match that no one is in
         String mode = this.getType();
         String winnerList = "{";
         String scoreList = "{";
         String loserList = "{";
-        for (Player player : winners.keySet()) {
-            winnerList += player.getUniqueId().toString() + ",";
-            scoreList += winners.get(player).toString() + ",";
-        }
+        if (winners != null)
+            for (Player player : winners.keySet()) {
+                winnerList += player.getUniqueId().toString() + ",";
+                scoreList += winners.get(player).toString() + ",";
+            }
         for (Player player : losers)
             loserList += player.getUniqueId().toString() + ",";
         winnerList = winnerList.substring(0, winnerList.length() - 1) + "}";
         scoreList = scoreList.substring(0, scoreList.length() - 1) + "}";
         loserList = loserList.substring(0, loserList.length() - 1) + "}";
-        MysqlDataSource dataSource = new MysqlDataSource();
-        dataSource.setUser("lsuser");
-        dataSource.setPassword("F0rWEotrux4SQqHv@");
-        dataSource.setServerName("localhost");
+        if (winnerList.length() == 1)
+            winnerList = "{}";
+        if (scoreList.length() == 1)
+            scoreList = "{}";
+        if (loserList.length() == 1)
+            loserList = "{}";
+        YamlConfiguration config = YamlConfiguration.loadConfiguration(new File("plugins/Necessities", "config.yml"));
+        String url = "jdbc:mariadb://" + config.getString("Lavasurvival.DBHost") + "/" + config.getString("Lavasurvival.DBTable"), user = config.getString("Lavasurvival.DBUser"),
+                pass = config.getString("Lavasurvival.DBPassword");
         try {
-            Connection conn = dataSource.getConnection();
+            Class.forName("org.mariadb.jdbc.Driver");
+            Connection conn = DriverManager.getConnection(url, user, pass);
             Statement stmt = conn.createStatement();
-            String query = "INSERT INTO 'lavasurvival'.'matches' ('id', 'time', 'gamemode', 'winners', 'scores', 'losers') VALUES ('" + mode + "', '" + winnerList + "', '" + scoreList + "', '" + loserList + "')";
-            ResultSet rs = stmt.executeQuery(query);
+            ResultSet rs = stmt.executeQuery("INSERT INTO matches (gamemode, winners, scores, losers) VALUES (\"" + mode + "\", \"" + winnerList + "\", \"" + scoreList + "\", \"" + loserList + "\")");
             rs.close();
             stmt.close();
             conn.close();

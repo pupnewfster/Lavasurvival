@@ -19,8 +19,9 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.Arrays;
+import java.util.Collections;
 
-@MenuInventory(slots = 9, name = "Elder Block Shop")
+@MenuInventory(slots = 18, name = "Elder Block Shop")
 public class ElderBlockShop extends Menu {
     public ElderBlockShop(MenuManager manager, Inventory inv) {
         super(manager, inv);
@@ -63,15 +64,6 @@ public class ElderBlockShop extends Menu {
 
     @MenuItem(
             slot = 4,
-            item = @ItemStackAnnotation(material = Material.NETHER_BRICK_STAIRS, name = "")
-    )
-    public void buyNetherStairs(MenuPlayer player) {
-        if (canBuy(player))
-            getUser(player).buyBlock(Material.NETHER_BRICK_STAIRS, price(Material.NETHER_BRICK_STAIRS));
-    }
-
-    @MenuItem(
-            slot = 5,
             item = @ItemStackAnnotation(material = Material.NETHER_BRICK, name = "")
     )
     public void buyNetherBrick(MenuPlayer player) {
@@ -80,7 +72,25 @@ public class ElderBlockShop extends Menu {
     }
 
     @MenuItem(
+            slot = 5,
+            item = @ItemStackAnnotation(material = Material.RED_NETHER_BRICK, name = "")
+    )
+    public void buyRedNetherBrick(MenuPlayer player) {
+        if (canBuy(player))
+            getUser(player).buyBlock(Material.RED_NETHER_BRICK, price(Material.RED_NETHER_BRICK));
+    }
+
+    @MenuItem(
             slot = 6,
+            item = @ItemStackAnnotation(material = Material.NETHER_BRICK_STAIRS, name = "")
+    )
+    public void buyNetherStairs(MenuPlayer player) {
+        if (canBuy(player))
+            getUser(player).buyBlock(Material.NETHER_BRICK_STAIRS, price(Material.NETHER_BRICK_STAIRS));
+    }
+
+    @MenuItem(
+            slot = 7,
             item = @ItemStackAnnotation(material = Material.STEP, durability = 6, name = "")
     )
     public void buyNetherBrickSlab(MenuPlayer player) {
@@ -89,12 +99,75 @@ public class ElderBlockShop extends Menu {
     }
 
     @MenuItem(
-            slot = 7,
+            slot = 8,
+            item = @ItemStackAnnotation(material = Material.MAGMA, name = "")
+    )
+    public void buyMagmaBlock(MenuPlayer player) {
+        if (canBuy(player))
+            getUser(player).buyBlock(Material.MAGMA, price(Material.MAGMA));
+    }
+
+    @MenuItem(
+            slot = 9,
+            item = @ItemStackAnnotation(material = Material.PURPUR_BLOCK, name = "")
+    )
+    public void buyPurPurBlock(MenuPlayer player) {
+        if (canBuy(player))
+            getUser(player).buyBlock(Material.PURPUR_BLOCK, price(Material.PURPUR_BLOCK));
+    }
+
+    @MenuItem(
+            slot = 10,
+            item = @ItemStackAnnotation(material = Material.PURPUR_PILLAR, name = "")
+    )
+    public void buyPurPurPillar(MenuPlayer player) {
+        if (canBuy(player))
+            getUser(player).buyBlock(Material.PURPUR_PILLAR, price(Material.PURPUR_PILLAR));
+    }
+
+    @MenuItem(
+            slot = 11,
+            item = @ItemStackAnnotation(material = Material.PURPUR_STAIRS, name = "")
+    )
+    public void buyPurPurStairs(MenuPlayer player) {
+        if (canBuy(player))
+            getUser(player).buyBlock(Material.PURPUR_STAIRS, price(Material.PURPUR_STAIRS));
+    }
+
+    @MenuItem(
+            slot = 12,
+            item = @ItemStackAnnotation(material = Material.PURPUR_SLAB, name = "")
+    )
+    public void buyPurPurSlab(MenuPlayer player) {
+        if (canBuy(player))
+            getUser(player).buyBlock(Material.PURPUR_SLAB, price(Material.PURPUR_SLAB));
+    }
+
+    @MenuItem(
+            slot = 13,
             item = @ItemStackAnnotation(material = Material.ENDER_STONE, name = "")
     )
     public void buyEndstone(MenuPlayer player) {
         if (canBuy(player))
             getUser(player).buyBlock(Material.ENDER_STONE, price(Material.ENDER_STONE));
+    }
+
+    @MenuItem(
+            slot = 14,
+            item = @ItemStackAnnotation(material = Material.END_BRICKS, name = "")
+    )
+    public void buyEndBricks(MenuPlayer player) {
+        if (canBuy(player))
+            getUser(player).buyBlock(Material.END_BRICKS, price(Material.END_BRICKS));
+    }
+
+    @MenuItem(
+            slot = 15,
+            item = @ItemStackAnnotation(material = Material.END_ROD, name = "")
+    )
+    public void buyEndRod(MenuPlayer player) {
+        if (canBuy(player))
+            getUser(player).buyBlock(Material.END_ROD, price(Material.END_ROD));
     }
 
     private UserInfo getUser(MenuPlayer player) {
@@ -118,7 +191,7 @@ public class ElderBlockShop extends Menu {
         ItemStack stack = new ItemStack(Material.EMERALD, 1);
         ItemMeta meta = stack.getItemMeta();
         meta.setDisplayName("Back to block shop");
-        meta.setLore(Arrays.asList(ChatColor.GOLD + "" + ChatColor.ITALIC + "Buy more blocks!"));
+        meta.setLore(Collections.singletonList(ChatColor.GOLD + "" + ChatColor.ITALIC + "Buy more blocks!"));
         stack.setItemMeta(meta);
         stack = ShopFactory.addGlow(stack);
         inv.setItem(0, stack);
@@ -126,14 +199,18 @@ public class ElderBlockShop extends Menu {
             ItemStack is = inv.getItem(i);
             if (is == null)
                 continue;
-            ItemMeta m = is.getItemMeta();
-            m.setLore(Arrays.asList(price(is.getType()) + " ggs", "Lava MeltTime: " + PhysicsListener.getLavaMeltTimeAsString(is.getData()), "Water MeltTime: " + PhysicsListener.getWaterMeltTimeAsString(is.getData())));
-            is.setItemMeta(m);
-            inv.setItem(i, is);
+            try {
+                ItemMeta m = is.getItemMeta();
+                m.setLore(Arrays.asList(price(is.getType()) + " ggs", "Lava MeltTime: " + PhysicsListener.getLavaMeltTimeAsString(is.getData()), "Water MeltTime: " + PhysicsListener.getWaterMeltTimeAsString(is.getData())));
+                is.setItemMeta(m);
+                inv.setItem(i, is);
+            } catch (Exception ignored) {
+
+            }
         }
     }
 
-    protected int price(Material type) {
+    private int price(Material type) {
         switch (type) {
             case GLOWSTONE:
                 return 3250;
@@ -141,13 +218,29 @@ public class ElderBlockShop extends Menu {
                 return 3500;
             case NETHERRACK:
                 return 3500;
-            case NETHER_BRICK_STAIRS:
-                return 3500;
             case NETHER_BRICK:
+                return 3500;
+            case RED_NETHER_BRICK:
+                return 3500;
+            case NETHER_BRICK_STAIRS:
                 return 3500;
             case STEP:
                 return 3500;
+            case MAGMA:
+                return 3500;
+            case PURPUR_BLOCK:
+                return 3500;
+            case PURPUR_PILLAR:
+                return 3500;
+            case PURPUR_STAIRS:
+                return 3500;
+            case PURPUR_SLAB:
+                return 3500;
             case ENDER_STONE:
+                return 5000;
+            case END_BRICKS:
+                return 5000;
+            case END_ROD:
                 return 5000;
             default:
                 return 0;

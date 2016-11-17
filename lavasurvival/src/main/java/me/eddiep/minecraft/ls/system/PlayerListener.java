@@ -9,12 +9,12 @@ import me.eddiep.minecraft.ls.game.status.PlayerStatusManager;
 import me.eddiep.minecraft.ls.ranks.UserInfo;
 import me.eddiep.minecraft.ls.ranks.UserManager;
 import me.eddiep.minecraft.ls.system.bank.BankInventory;
-import net.minecraft.server.v1_10_R1.*;
+import net.minecraft.server.v1_11_R1.*;
 import org.bukkit.*;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
-import org.bukkit.craftbukkit.v1_10_R1.entity.CraftPlayer;
+import org.bukkit.craftbukkit.v1_11_R1.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -123,6 +123,15 @@ public class PlayerListener implements Listener {
         }
     }
 
+    @EventHandler
+    public void itemHeldSlot(PlayerItemHeldEvent event) {
+        ItemStack is = event.getPlayer().getInventory().getItemInMainHand();
+        String lavaTime = "Lava MeltTime: " + PhysicsListener.getLavaMeltRangeTimeAsString(is.getData()), waterTime = "Water MeltTime: " + PhysicsListener.getWaterMeltRangeTimeAsString(is.getData());
+        IChatBaseComponent meltJSON = IChatBaseComponent.ChatSerializer.a("{\"text\": \"" + lavaTime + "    " + waterTime + "\"}");
+        PacketPlayOutTitle meltPacket = new PacketPlayOutTitle(PacketPlayOutTitle.EnumTitleAction.ACTIONBAR, meltJSON, 0, 60, 0);
+        ((CraftPlayer) event.getPlayer()).getHandle().playerConnection.sendPacket(meltPacket);
+    }
+
     @EventHandler(priority = EventPriority.HIGHEST)
     public void blockInteract(PlayerInteractEvent event) {
         if (Lavasurvival.INSTANCE.getSetups().containsKey(event.getPlayer().getUniqueId()))
@@ -178,11 +187,35 @@ public class PlayerListener implements Listener {
         if (event.getClickedBlock() == null)
             return;
         Material type = event.getClickedBlock().getType();
-        if (event.getAction() == Action.RIGHT_CLICK_BLOCK && !event.getPlayer().isSneaking() && (event.getClickedBlock() instanceof InventoryHolder || type.equals(Material.WORKBENCH) ||
-                type.equals(Material.ANVIL) || type.equals(Material.ENCHANTMENT_TABLE) || type.equals(Material.ENDER_CHEST) || type.equals(Material.BEACON)) || type.equals(Material.BED_BLOCK) ||
-                type.equals(Material.CHEST) || type.equals(Material.TRAPPED_CHEST) || type.equals(Material.FURNACE) || type.equals(Material.BEACON) || type.equals(Material.BREWING_STAND) ||
-                type.equals(Material.DISPENSER) || type.equals(Material.DROPPER) || type.equals(Material.HOPPER))
-            event.setCancelled(true);//Disable opening block's with inventories
+        if (event.getAction() == Action.RIGHT_CLICK_BLOCK) {
+            if (!event.getPlayer().isSneaking() && (event.getClickedBlock() instanceof InventoryHolder || type.equals(Material.WORKBENCH) ||
+                    type.equals(Material.ANVIL) || type.equals(Material.ENCHANTMENT_TABLE) || type.equals(Material.ENDER_CHEST) || type.equals(Material.BEACON)) || type.equals(Material.BED_BLOCK) ||
+                    type.equals(Material.CHEST) || type.equals(Material.TRAPPED_CHEST) || type.equals(Material.FURNACE) || type.equals(Material.BEACON) || type.equals(Material.BREWING_STAND) ||
+                    type.equals(Material.DISPENSER) || type.equals(Material.DROPPER) || type.equals(Material.HOPPER))
+                event.setCancelled(true);//Disable opening block's with inventories
+            /*else if (event.getClickedBlock().getType().equals(Material.GLASS)) { //TODO check colored glass
+                //TODO make sure not in spawn
+                if (event.getItem() != null && event.getItem().getType().equals(Material.TORCH)) {
+                    BlockFace face = event.getBlockFace();
+                    Block relative = event.getClickedBlock().getRelative(face);
+                    relative.setType(Material.TORCH);
+                    if (face.equals(BlockFace.NORTH))
+                        relative.setData((byte) 4);
+                    else if (face.equals(BlockFace.EAST))
+                        relative.setData((byte) 1);
+                    else if (face.equals(BlockFace.SOUTH))
+                        relative.setData((byte) 3);
+                    else if (face.equals(BlockFace.WEST))
+                        relative.setData((byte) 2);
+                    if (!this.survival) {
+                        if (event.getHand().equals(EquipmentSlot.OFF_HAND))
+                            event.getPlayer().getInventory().setItemInOffHand(event.getPlayer().getInventory().getItemInOffHand().clone());
+                        else
+                            event.getPlayer().getInventory().setItemInMainHand(event.getPlayer().getInventory().getItemInMainHand().clone());
+                    }
+                }
+            }*/
+        }
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
@@ -356,7 +389,7 @@ public class PlayerListener implements Listener {
                     ((to.getBlock().getRelative(BlockFace.UP).getType().equals(Material.WATER) || to.getBlock().getRelative(BlockFace.UP).getType().equals(Material.STATIONARY_WATER)) &&
                             to.getBlock().getRelative(BlockFace.UP).hasMetadata("classic_block"))) {
                 if (!u.isInWater()) {
-                    if (!PlayerStatusManager.isInvincible(event.getPlayer()) && !event.getPlayer().getGameMode().equals(GameMode.CREATIVE))
+                    if (!PlayerStatusManager.isInvincible(event.getPlayer()) && !event.getPlayer().getGameMode().equals(GameMode.CREATIVE) && !event.getPlayer().getGameMode().equals(GameMode.SPECTATOR))
                         ((CraftPlayer) event.getPlayer()).getHandle().damageEntity(DamageSource.OUT_OF_WORLD, (float) Gamemode.DAMAGE);
                     u.setInWater(true);
                 }
@@ -374,7 +407,7 @@ public class PlayerListener implements Listener {
         Bukkit.getOnlinePlayers().stream().filter(p -> Gamemode.getCurrentGame().isAlive(p) && (p.getLocation().getBlock().getLocation().equals(loc) || p.getLocation().getBlock().getRelative(BlockFace.UP).getLocation().equals(loc))).forEach(p -> {
             UserInfo u = this.um.getUser(p.getUniqueId());
             if (!u.isInWater()) {
-                if (!PlayerStatusManager.isInvincible(p) && !p.getGameMode().equals(GameMode.CREATIVE))
+                if (!PlayerStatusManager.isInvincible(p) && !p.getGameMode().equals(GameMode.CREATIVE) && !p.getGameMode().equals(GameMode.SPECTATOR))
                     ((CraftPlayer) p).getHandle().damageEntity(DamageSource.OUT_OF_WORLD, (float) Gamemode.DAMAGE);
                 u.setInWater(true);
             }

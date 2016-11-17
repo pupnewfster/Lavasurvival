@@ -15,6 +15,6 @@ public class BaseOptions {
     }
 
     public boolean isEnabled() {
-        return isEnabled;
+        return this.isEnabled;
     }
 }

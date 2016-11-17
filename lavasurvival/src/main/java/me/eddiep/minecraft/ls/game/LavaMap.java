@@ -22,10 +22,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class LavaMap {
-    private static final int CONFIG_VERSION = 8;
+    private static final int CONFIG_VERSION = 9;
 
     private String name, worldName, filePath;
-    private int lavax, lavay, lavaz, mapHeight;
+    private int lavax, lavay, lavaz, mapHeight, percent = 25;
     private Vector minSafeZone, maxSafeZone, mapSpawn;
     private int configVersion = 1; //Default version
     private boolean isThundering = false;
@@ -176,6 +176,14 @@ public class LavaMap {
     @Deprecated
     public int getLavaZ() {
         return this.lavaz;
+    }
+
+    public int getMeltRange() {
+        return this.percent;
+    }
+
+    public void setMeltRange(int percent) {
+        this.percent = percent;
     }
 
     public int getHeight() {
