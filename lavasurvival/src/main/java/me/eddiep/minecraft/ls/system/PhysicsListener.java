@@ -223,50 +223,50 @@ public class PhysicsListener implements Listener {
         addMeltTime(new MaterialData(Material.END_ROD), 270 * 20);//TODO SET THIS
 
         //Donnor blocks Instant melt)
-        addMeltTime(new MaterialData(Material.WOOD, (byte) 1), 0);//Spruce planks
-        addMeltTime(new MaterialData(Material.WOOD, (byte) 2), 0);//Birch planks
-        addMeltTime(new MaterialData(Material.WOOD, (byte) 3), 0);//Jungle planks
-        addMeltTime(new MaterialData(Material.WOOD, (byte) 4), 0);//Acacia planks
-        addMeltTime(new MaterialData(Material.WOOD, (byte) 5), 0);//Dark oak planks
-        addMeltTime(new MaterialData(Material.SAND, (byte) 1), 0);//Red sand
-        addMeltTime(new MaterialData(Material.SPRUCE_FENCE), 0);
-        addMeltTime(new MaterialData(Material.BIRCH_FENCE), 0);
-        addMeltTime(new MaterialData(Material.JUNGLE_FENCE), 0);
-        addMeltTime(new MaterialData(Material.ACACIA_FENCE), 0);
-        addMeltTime(new MaterialData(Material.DARK_OAK_FENCE), 0);
-        addMeltTime(new MaterialData(Material.FENCE_GATE), 0);
-        addMeltTime(new MaterialData(Material.SPRUCE_FENCE_GATE), 0);
-        addMeltTime(new MaterialData(Material.BIRCH_FENCE_GATE), 0);
-        addMeltTime(new MaterialData(Material.JUNGLE_FENCE_GATE), 0);
-        addMeltTime(new MaterialData(Material.ACACIA_FENCE_GATE), 0);
-        addMeltTime(new MaterialData(Material.DARK_OAK_FENCE_GATE), 0);
-        addMeltTime(new MaterialData(Material.SPRUCE_DOOR), 0);
-        addMeltTime(new MaterialData(Material.SPRUCE_DOOR_ITEM), 0);
-        addMeltTime(new MaterialData(Material.BIRCH_DOOR), 0);
-        addMeltTime(new MaterialData(Material.BIRCH_DOOR_ITEM), 0);
-        addMeltTime(new MaterialData(Material.JUNGLE_DOOR), 0);
-        addMeltTime(new MaterialData(Material.JUNGLE_DOOR_ITEM), 0);
-        addMeltTime(new MaterialData(Material.ACACIA_DOOR), 0);
-        addMeltTime(new MaterialData(Material.ACACIA_DOOR_ITEM), 0);
-        addMeltTime(new MaterialData(Material.DARK_OAK_DOOR), 0);
-        addMeltTime(new MaterialData(Material.DARK_OAK_DOOR_ITEM), 0);
+        addMeltTime(new MaterialData(Material.WOOD, (byte) 1), 30 * 20, 120 * 20);//Spruce planks
+        addMeltTime(new MaterialData(Material.WOOD, (byte) 2), 30 * 20, 120 * 20);//Birch planks
+        addMeltTime(new MaterialData(Material.WOOD, (byte) 3), 30 * 20, 120 * 20);//Jungle planks
+        addMeltTime(new MaterialData(Material.WOOD, (byte) 4), 30 * 20, 120 * 20);//Acacia planks
+        addMeltTime(new MaterialData(Material.WOOD, (byte) 5), 30 * 20, 120 * 20);//Dark oak planks
+        addMeltTime(new MaterialData(Material.SAND, (byte) 1), 90 * 20, 30 * 20);//Red sand
+        addMeltTime(new MaterialData(Material.SPRUCE_FENCE), 30 * 20, 120 * 20);
+        addMeltTime(new MaterialData(Material.BIRCH_FENCE), 30 * 20, 120 * 20);
+        addMeltTime(new MaterialData(Material.JUNGLE_FENCE), 30 * 20, 120 * 20);
+        addMeltTime(new MaterialData(Material.ACACIA_FENCE), 30 * 20, 120 * 20);
+        addMeltTime(new MaterialData(Material.DARK_OAK_FENCE), 30 * 20, 120 * 20);
+        addMeltTime(new MaterialData(Material.FENCE_GATE), 30 * 20, 120 * 20);
+        addMeltTime(new MaterialData(Material.SPRUCE_FENCE_GATE), 30 * 20, 120 * 20);
+        addMeltTime(new MaterialData(Material.BIRCH_FENCE_GATE), 30 * 20, 120 * 20);
+        addMeltTime(new MaterialData(Material.JUNGLE_FENCE_GATE), 30 * 20, 120 * 20);
+        addMeltTime(new MaterialData(Material.ACACIA_FENCE_GATE), 30 * 20, 120 * 20);
+        addMeltTime(new MaterialData(Material.DARK_OAK_FENCE_GATE), 30 * 20, 120 * 20);
+        addMeltTime(new MaterialData(Material.SPRUCE_DOOR), 30 * 20, 120 * 20);
+        addMeltTime(new MaterialData(Material.SPRUCE_DOOR_ITEM), 30 * 20, 120 * 20);
+        addMeltTime(new MaterialData(Material.BIRCH_DOOR), 30 * 20, 120 * 20);
+        addMeltTime(new MaterialData(Material.BIRCH_DOOR_ITEM), 30 * 20, 120 * 20);
+        addMeltTime(new MaterialData(Material.JUNGLE_DOOR), 30 * 20, 120 * 20);
+        addMeltTime(new MaterialData(Material.JUNGLE_DOOR_ITEM), 30 * 20, 120 * 20);
+        addMeltTime(new MaterialData(Material.ACACIA_DOOR), 30 * 20, 120 * 20);
+        addMeltTime(new MaterialData(Material.ACACIA_DOOR_ITEM), 30 * 20, 120 * 20);
+        addMeltTime(new MaterialData(Material.DARK_OAK_DOOR), 30 * 20, 120 * 20);
+        addMeltTime(new MaterialData(Material.DARK_OAK_DOOR_ITEM), 30 * 20, 120 * 20);
         addMeltTime(new MaterialData(Material.SEA_LANTERN), 0);
-        addMeltTime(new MaterialData(Material.CARPET, (byte) 0), 0);//White carpet
-        addMeltTime(new MaterialData(Material.CARPET, (byte) 1), 0);//Orange carpet
-        addMeltTime(new MaterialData(Material.CARPET, (byte) 2), 0);//Magenta carpet
-        addMeltTime(new MaterialData(Material.CARPET, (byte) 3), 0);//Light blue carpet
-        addMeltTime(new MaterialData(Material.CARPET, (byte) 4), 0);//Yellow carpet
-        addMeltTime(new MaterialData(Material.CARPET, (byte) 5), 0);//Lime carpet
-        addMeltTime(new MaterialData(Material.CARPET, (byte) 6), 0);//Pink carpet
-        addMeltTime(new MaterialData(Material.CARPET, (byte) 7), 0);//Gray carpet
-        addMeltTime(new MaterialData(Material.CARPET, (byte) 8), 0);//Light gray carpet
-        addMeltTime(new MaterialData(Material.CARPET, (byte) 9), 0);//Cyan carpet
-        addMeltTime(new MaterialData(Material.CARPET, (byte) 10), 0);//Purple carpet
-        addMeltTime(new MaterialData(Material.CARPET, (byte) 11), 0);//Blue carpet
-        addMeltTime(new MaterialData(Material.CARPET, (byte) 12), 0);//Brown carpet
-        addMeltTime(new MaterialData(Material.CARPET, (byte) 13), 0);//Green carpet
-        addMeltTime(new MaterialData(Material.CARPET, (byte) 14), 0);//Red carpet
-        addMeltTime(new MaterialData(Material.CARPET, (byte) 15), 0);//Black carpet
+        addMeltTime(new MaterialData(Material.CARPET, (byte) 0), 20 * 20);//White carpet
+        addMeltTime(new MaterialData(Material.CARPET, (byte) 1), 20 * 20);//Orange carpet
+        addMeltTime(new MaterialData(Material.CARPET, (byte) 2), 20 * 20);//Magenta carpet
+        addMeltTime(new MaterialData(Material.CARPET, (byte) 3), 20 * 20);//Light blue carpet
+        addMeltTime(new MaterialData(Material.CARPET, (byte) 4), 20 * 20);//Yellow carpet
+        addMeltTime(new MaterialData(Material.CARPET, (byte) 5), 20 * 20);//Lime carpet
+        addMeltTime(new MaterialData(Material.CARPET, (byte) 6), 20 * 20);//Pink carpet
+        addMeltTime(new MaterialData(Material.CARPET, (byte) 7), 20 * 20);//Gray carpet
+        addMeltTime(new MaterialData(Material.CARPET, (byte) 8), 20 * 20);//Light gray carpet
+        addMeltTime(new MaterialData(Material.CARPET, (byte) 9), 20 * 20);//Cyan carpet
+        addMeltTime(new MaterialData(Material.CARPET, (byte) 10), 20 * 20);//Purple carpet
+        addMeltTime(new MaterialData(Material.CARPET, (byte) 11), 20 * 20);//Blue carpet
+        addMeltTime(new MaterialData(Material.CARPET, (byte) 12), 20 * 20);//Brown carpet
+        addMeltTime(new MaterialData(Material.CARPET, (byte) 13), 20 * 20);//Green carpet
+        addMeltTime(new MaterialData(Material.CARPET, (byte) 14), 20 * 20);//Red carpet
+        addMeltTime(new MaterialData(Material.CARPET, (byte) 15), 20 * 20);//Black carpet
         addMeltTime(new MaterialData(Material.FLOWER_POT_ITEM), 0);
         addMeltTime(new MaterialData(Material.FLOWER_POT), 0);
         addMeltTime(new MaterialData(Material.BOOKSHELF), 0);

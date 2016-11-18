@@ -126,7 +126,8 @@ public class PlayerListener implements Listener {
     @EventHandler
     public void itemHeldSlot(PlayerItemHeldEvent event) {
         ItemStack is = event.getPlayer().getInventory().getItem(event.getNewSlot());
-        String lavaTime = "Lava MeltTime: " + PhysicsListener.getLavaMeltRangeTimeAsString(is.getData()), waterTime = "Water MeltTime: " + PhysicsListener.getWaterMeltRangeTimeAsString(is.getData());
+        String lavaTime = ChatColor.GOLD + "Lava MeltTime" + ChatColor.RESET + ": " + PhysicsListener.getLavaMeltRangeTimeAsString(is.getData()),
+                waterTime = ChatColor.BLUE + "Water MeltTime" + ChatColor.RESET + ": " + PhysicsListener.getWaterMeltRangeTimeAsString(is.getData());
         IChatBaseComponent meltJSON = IChatBaseComponent.ChatSerializer.a("{\"text\": \"" + lavaTime + "    " + waterTime + "\"}");
         PacketPlayOutTitle meltPacket = new PacketPlayOutTitle(PacketPlayOutTitle.EnumTitleAction.ACTIONBAR, meltJSON, 0, 60, 0);
         ((CraftPlayer) event.getPlayer()).getHandle().playerConnection.sendPacket(meltPacket);
