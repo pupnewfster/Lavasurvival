@@ -217,7 +217,7 @@ public class ElderBlockShop extends Menu {
             case NETHER_FENCE:
                 return 3500;
             case NETHERRACK:
-                return 3500;
+                return 2500;
             case NETHER_BRICK:
                 return 3500;
             case RED_NETHER_BRICK:
@@ -227,7 +227,7 @@ public class ElderBlockShop extends Menu {
             case STEP:
                 return 3500;
             case MAGMA:
-                return 3500;
+                return 2500;
             case PURPUR_BLOCK:
                 return 3500;
             case PURPUR_PILLAR:
