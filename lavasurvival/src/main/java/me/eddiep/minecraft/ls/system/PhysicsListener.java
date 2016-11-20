@@ -205,7 +205,8 @@ public class PhysicsListener implements Listener {
 
         //Elder blocks
         addMeltTime(new MaterialData(Material.GLOWSTONE), 225 * 20);
-        addMeltTime(new MaterialData(Material.NETHERRACK), 240 * 20);
+        addMeltTime(new MaterialData(Material.NETHERRACK), 270 * 20, 120 * 20);
+        addMeltTime(new MaterialData(Material.MAGMA), 270 * 20, 120 * 20);//Magma block
         addMeltTime(new MaterialData(Material.NETHER_BRICK), 240 * 20);
         addMeltTime(new MaterialData(Material.RED_NETHER_BRICK), 240 * 20);
         addMeltTime(new MaterialData(Material.NETHER_FENCE), 240 * 20);
@@ -220,7 +221,7 @@ public class PhysicsListener implements Listener {
         addMeltTime(new MaterialData(Material.PURPUR_DOUBLE_SLAB), 240 * 20);
         addMeltTime(new MaterialData(Material.ENDER_STONE), 270 * 20);
         addMeltTime(new MaterialData(Material.END_BRICKS), 270 * 20);
-        addMeltTime(new MaterialData(Material.END_ROD), 270 * 20);//TODO SET THIS
+        addMeltTime(new MaterialData(Material.END_ROD), 180 * 20);
 
         //Donnor blocks Instant melt)
         addMeltTime(new MaterialData(Material.WOOD, (byte) 1), 30 * 20, 120 * 20);//Spruce planks
