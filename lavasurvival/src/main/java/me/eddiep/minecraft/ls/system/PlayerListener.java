@@ -126,6 +126,8 @@ public class PlayerListener implements Listener {
     @EventHandler
     public void itemHeldSlot(PlayerItemHeldEvent event) {
         ItemStack is = event.getPlayer().getInventory().getItem(event.getNewSlot());
+        if (is == null || is.getType().equals(Material.AIR))
+            return;
         String lavaTime = ChatColor.GOLD + "Lava MeltTime" + ChatColor.RESET + ": " + PhysicsListener.getLavaMeltRangeTimeAsString(is.getData()),
                 waterTime = ChatColor.BLUE + "Water MeltTime" + ChatColor.RESET + ": " + PhysicsListener.getWaterMeltRangeTimeAsString(is.getData());
         IChatBaseComponent meltJSON = IChatBaseComponent.ChatSerializer.a("{\"text\": \"" + lavaTime + "    " + waterTime + "\"}");
