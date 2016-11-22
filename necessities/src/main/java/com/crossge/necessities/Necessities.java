@@ -20,9 +20,13 @@ import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.craftbukkit.v1_11_R1.CraftServer;
 import org.bukkit.craftbukkit.v1_11_R1.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.json.simple.JsonArray;
+import org.json.simple.JsonObject;
+import org.json.simple.Jsoner;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -39,8 +43,7 @@ public class Necessities extends JavaPlugin {
     private final List<String> devs = Arrays.asList("pupnewfster", "Mod_Chris", "hypereddie10");
     private File configFile = new File("plugins/Necessities", "config.yml");
     private Tracker googleAnalyticsTracker;
-    private Property skin;
-    private UUID janetID;
+    private PacketPlayOutPlayerInfo janetInfo;
     //private DonationReader dr = new DonationReader();
     private CmdCommandSpy spy = new CmdCommandSpy();
     private PortalManager pm = new PortalManager();
@@ -143,12 +146,19 @@ public class Necessities extends JavaPlugin {
         INSTANCE = this;
         if (!hookGoogle())
             getLogger().warning("Could not hook into Google Analytics!");
-        this.janetID = UUID.randomUUID();
         Initialization init = new Initialization();
         init.initiateFiles();
         getServer().getPluginManager().registerEvents(new Listeners(), this);
         //this.dr.init();
         getLogger().info("Necessities enabled.");
+        GameProfile janetProfile = new GameProfile(UUID.randomUUID(), "Janet");
+        janetProfile.getProperties().put("textures", getSkin());
+        MinecraftServer server = ((CraftServer) Bukkit.getServer()).getServer();
+        WorldServer world = server.getWorldServer(0);
+        PlayerInteractManager manager = new PlayerInteractManager(world);
+        EntityPlayer player = new EntityPlayer(server, world, janetProfile, manager);
+        player.listName = formatMessage(ChatColor.translateAlternateColorCodes('&', rm.getRank(rm.getOrder().size() - 1).getTitle() + " ") + "Janet");
+        this.janetInfo = new PacketPlayOutPlayerInfo(PacketPlayOutPlayerInfo.EnumPlayerInfoAction.ADD_PLAYER, player);
     }
 
     private boolean hookGoogle() {
@@ -212,18 +222,7 @@ public class Necessities extends JavaPlugin {
     }
 
     void addJanet(Player p) {
-        GameProfile janetProfile = new GameProfile(janetID, "Janet");
-        if (this.skin == null)
-            this.skin = getSkin();
-        if (this.skin != null)
-            janetProfile.getProperties().put("textures", this.skin);
-        MinecraftServer server = MinecraftServer.getServer();
-        WorldServer world = server.getWorldServer(0);
-        PlayerInteractManager manager = new PlayerInteractManager(world);
-        EntityPlayer player = new EntityPlayer(server, world, janetProfile, manager);
-        player.listName = formatMessage(ChatColor.translateAlternateColorCodes('&', rm.getRank(rm.getOrder().size() - 1).getTitle() + " ") + "Janet");
-        PacketPlayOutPlayerInfo info = new PacketPlayOutPlayerInfo(PacketPlayOutPlayerInfo.EnumPlayerInfoAction.ADD_PLAYER, player);
-        ((CraftPlayer) p).getHandle().playerConnection.sendPacket(info);
+        ((CraftPlayer) p).getHandle().playerConnection.sendPacket(this.janetInfo);
     }
 
     void addHeader(Player p) {
@@ -241,19 +240,14 @@ public class Necessities extends JavaPlugin {
     private Property getSkin() {
         try {
             BufferedReader in = new BufferedReader(new InputStreamReader(new URL("https://sessionserver.mojang.com/session/minecraft/profile/136f2ba62be3444ca2968ec597edb57e?unsigned=false").openConnection().getInputStream()));
-            String value = "", signature = "";
-            int count = 0;
-            for (char c : in.readLine().toCharArray()) {
-                if (c == '"')
-                    count++;
-                else if (count == 17)
-                    value += c;
-                else if (count == 21)
-                    signature += c;
-                if (count > 21)
-                    break;
-            }
+            String inputLine;
+            StringBuilder response = new StringBuilder();
+            while ((inputLine = in.readLine()) != null)
+                response.append(inputLine);
             in.close();
+            JsonObject json = Jsoner.deserialize(response.toString(), new JsonObject());
+            JsonObject jo = (JsonObject) ((JsonArray) json.get("properties")).get(0);
+            String signature = jo.getString("signature"), value = jo.getString("value");
             return new Property("textures", value, signature);
         } catch (Exception ignored) {
         }
