@@ -61,11 +61,16 @@ public class Necessities extends JavaPlugin {
     private CmdHide hide = new CmdHide();
     private GetUUID get = new GetUUID();
     private Janet bot = new Janet();
+    private JanetNet net = new JanetNet();
     private JanetAI ai = new JanetAI();
     private JanetSlack slack = new JanetSlack();
 
     public UserManager getUM() {
         return this.um == null ? this.um = new UserManager() : this.um;
+    }
+
+    public JanetNet getNet() {
+        return this.net == null ? this.net = new JanetNet() : this.net;
     }
 
     CmdCommandSpy getSpy() {

@@ -1,7 +1,9 @@
 package com.crossge.necessities;
 
 import net.minecraft.server.v1_11_R1.MinecraftServer;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.craftbukkit.v1_11_R1.CraftServer;
 
 import java.lang.reflect.Field;
 import java.text.DecimalFormat;
@@ -66,17 +68,17 @@ public class Utils {
         return ((tps > 18.0) ? ChatColor.GREEN : (tps > 16.0) ? ChatColor.YELLOW : ChatColor.RED).toString() + ((tps > 20.0) ? "*" : "") + Math.min(Math.round(tps * 100.0) / 100.0, 20.0);
     }
 
-    private static final Field recentTpsField = makeField(MinecraftServer.class, "recentTps");
+    private static final Field recentTpsField = makeField(MinecraftServer.class);
 
     private static double[] getNMSRecentTps() {
         if (recentTpsField == null)
             return new double[0];
-        return getField(recentTpsField, MinecraftServer.getServer());
+        return getField(recentTpsField, ((CraftServer) Bukkit.getServer()).getServer());
     }
 
-    private static Field makeField(Class<?> clazz, String name) {
+    private static Field makeField(Class<?> clazz) {
         try {
-            return clazz.getDeclaredField(name);
+            return clazz.getDeclaredField("recentTps");
         } catch (Exception ex) {
             return null;
         }

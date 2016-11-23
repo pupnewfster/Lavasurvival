@@ -1,8 +1,8 @@
 package me.eddiep.minecraft.ls.game.items.impl;
 
 import me.eddiep.minecraft.ls.game.items.LavaItem;
-import net.md_5.bungee.api.ChatColor;
 import net.minecraft.server.v1_11_R1.NBTTagCompound;
+import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.craftbukkit.v1_11_R1.inventory.CraftItemStack;
 import org.bukkit.entity.Player;

@@ -21,6 +21,7 @@ import org.bukkit.event.block.BlockRedstoneEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.*;
 import org.bukkit.event.server.ServerCommandEvent;
+import org.bukkit.scheduler.BukkitRunnable;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -270,8 +271,16 @@ class Listeners implements Listener {
                 this.slack.handleIngameChat(status + e.getFormat().replaceAll("\\{MESSAGE\\}", "") + e.getMessage());
         }
         e.setCancelled(true);
-        if (config.contains("Necessities.AI") && config.getBoolean("Necessities.AI") && (!isop || message.startsWith("!")))
-            Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(Necessities.getInstance(), () -> ai.parseMessage(player.getName(), message, JanetAI.Source.Server, false, null));
+        if (config.contains("Necessities.AI") && config.getBoolean("Necessities.AI") && (!isop || message.startsWith("!"))) {
+            final String pname = player.getName();
+            BukkitRunnable aiTask = new BukkitRunnable() {
+                @Override
+                public void run() {
+                    ai.parseMessage(pname, message, JanetAI.Source.Server, false, null);
+                }
+            };
+            aiTask.runTaskLaterAsynchronously(Necessities.getInstance(), 1);
+        }
     }
 
     @EventHandler

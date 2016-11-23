@@ -1,6 +1,7 @@
 package com.crossge.necessities;
 
 import com.crossge.necessities.Hats.HatType;
+import org.apache.commons.io.FileUtils;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.File;
@@ -21,6 +22,13 @@ class Initialization {
         fileCreate("plugins/Necessities/motd.txt");
         fileCreate("plugins/Necessities/rules.txt");
         fileCreate("plugins/Necessities/faq.txt");
+        File cwords = new File("plugins/Necessities", "customWords.txt");
+        if (!cwords.exists())
+            try {
+                cwords.createNewFile();
+                FileUtils.copyURLToFile(getClass().getResource("/customWords.txt"), cwords);
+            } catch (Exception ignored) {
+            }
         createYaml();
         HatType.mapHats();
 
@@ -38,6 +46,7 @@ class Initialization {
             Necessities.getInstance().getPM().initiate();
         }
 
+        Necessities.getInstance().getNet().readCustom();
         Necessities.getInstance().getUUID().initiate();
         Necessities.getInstance().getBot().initiate();
         Necessities.getInstance().getSpy().init();

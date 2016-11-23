@@ -6,11 +6,9 @@ import com.crossge.necessities.RankManager.RankManager;
 import com.crossge.necessities.Variables;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.UUID;
 
 public class JanetAI {//TODO: Upgrade
     private static ArrayList<String> heyMessages = new ArrayList<>();
@@ -22,11 +20,14 @@ public class JanetAI {//TODO: Upgrade
     private static String JanetName = "";
     private JanetRandom r;
     private JanetSlack slack;
+    private JanetNet net;
     private Variables var;
     private GetUUID get;
 
     public void parseMessage(String name, String message, Source s, boolean isPM, JanetSlack.SlackUser user) {
-        UUID uuid = get.getID(name);
+        message = ChatColor.stripColor(message);
+        String result = JanetName + net.bestGuess(message);
+        /*UUID uuid = get.getID(name); //TODO see about making this async instead of a sync delayed task
         Player p = null;
         if (uuid != null)
             p = Bukkit.getPlayer(uuid);
@@ -103,7 +104,7 @@ public class JanetAI {//TODO: Upgrade
                 result = JanetName + tiltMessages[r.memeRandom(tiltMessages.length)];
             else
                 result = JanetName + janetNamed[r.memeRandom(janetNamed.length)];
-        }
+        }*/
         if (result != null)
             sendMessage(result, s, isPM, user);
     }
@@ -252,6 +253,7 @@ public class JanetAI {//TODO: Upgrade
         this.slack = Necessities.getInstance().getSlack();
         this.var = Necessities.getInstance().getVar();
         this.get = Necessities.getInstance().getUUID();
+        this.net = Necessities.getInstance().getNet();
     }
 
     private String corTime(String time) {
