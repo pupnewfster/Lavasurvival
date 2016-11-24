@@ -11,7 +11,7 @@ import org.bukkit.entity.Player;
 import java.util.UUID;
 
 public class CmdTpaccept implements Cmd {
-    private Teleports tps = Necessities.getInstance().getTPs();
+    private final Teleports tps = Necessities.getInstance().getTPs();
 
     public boolean commandUse(CommandSender sender, String[] args) {
         Variables var = Necessities.getInstance().getVar();

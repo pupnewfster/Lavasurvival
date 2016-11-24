@@ -17,6 +17,7 @@ abstract class Invincibility extends LavaItem {
         return true;
     }
 
+    @SuppressWarnings("ConstantConditions")
     @Override
     protected ItemStack displayItem() {
         net.minecraft.server.v1_11_R1.ItemStack nmsStack = CraftItemStack.asNMSCopy(new ItemStack(Material.POTION));
@@ -38,5 +39,5 @@ abstract class Invincibility extends LavaItem {
         return "Become immune to lava/water\nfor " + duration() + " seconds!";
     }
 
-    public abstract int duration();
+    protected abstract int duration();
 }

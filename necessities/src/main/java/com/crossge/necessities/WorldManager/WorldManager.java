@@ -6,7 +6,7 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import java.io.File;
 
 public class WorldManager {
-    private File configFileWM = new File("plugins/Necessities/WorldManager", "worlds.yml");
+    private final File configFileWM = new File("plugins/Necessities/WorldManager", "worlds.yml");
 
     public void initiate() {
         Bukkit.getConsoleSender().sendMessage(ChatColor.AQUA + "Loading worlds...");
@@ -15,7 +15,7 @@ public class WorldManager {
             if (!worldExists(world) && (new File(world + "/level.dat")).exists()) {
                 WorldCreator creator = new WorldCreator(world);
                 if (configWM.contains(world + ".environment"))
-                    creator.environment(getEnviroment(configWM.getString(world + ".environment")));
+                    creator.environment(getEnvironment(configWM.getString(world + ".environment")));
                 if (configWM.contains(world + ".type"))
                     creator.type(getType(configWM.getString(world + ".type")));
                 if (configWM.contains(world + ".structures"))
@@ -29,6 +29,7 @@ public class WorldManager {
         Bukkit.getConsoleSender().sendMessage(ChatColor.AQUA + "All worlds loaded.");
     }
 
+    @SuppressWarnings("unused")
     public GameMode getGameMode(String world) {
         YamlConfiguration configWM = YamlConfiguration.loadConfiguration(this.configFileWM);
         if (configWM.contains(world + ".gamemode")) {
@@ -84,10 +85,10 @@ public class WorldManager {
         return Difficulty.PEACEFUL;
     }
 
-    public World.Environment getEnviroment(String enviroment) {
-        if (enviroment.equalsIgnoreCase("nether"))
+    public World.Environment getEnvironment(String environment) {
+        if (environment.equalsIgnoreCase("nether"))
             return World.Environment.NETHER;
-        if (enviroment.equalsIgnoreCase("the_end"))
+        if (environment.equalsIgnoreCase("the_end"))
             return World.Environment.THE_END;
         return World.Environment.NORMAL;
     }
@@ -111,7 +112,7 @@ public class WorldManager {
         if (!worldExists(name) && (new File(name + "/level.dat")).exists()) {
             WorldCreator creator = new WorldCreator(name);
             if (configWM.contains(name + ".environment"))
-                creator.environment(getEnviroment(configWM.getString(name + ".environment")));
+                creator.environment(getEnvironment(configWM.getString(name + ".environment")));
             if (configWM.contains(name + ".type"))
                 creator.type(getType(configWM.getString(name + ".type")));
             if (configWM.contains(name + ".structures"))
@@ -153,11 +154,11 @@ public class WorldManager {
         }
     }
 
-    public void createWorld(String name, World.Environment enviro, String generator, WorldType type) {
+    public void createWorld(String name, World.Environment environment, String generator, WorldType type) {
         YamlConfiguration configWM = YamlConfiguration.loadConfiguration(this.configFileWM);
         configWM.set(name + ".difficulty", "EASY");
         configWM.set(name + ".gamemode", "SURVIVAL");
-        configWM.set(name + ".environment", enviro.toString());
+        configWM.set(name + ".environment", environment.toString());
         if (generator != null)
             configWM.set(name + ".generator", generator);
         configWM.set(name + ".type", type.getName().toUpperCase());
@@ -175,7 +176,7 @@ public class WorldManager {
         } catch (Exception ignored) {
         }
         WorldCreator creator = new WorldCreator(name);
-        creator.environment(enviro);
+        creator.environment(environment);
         creator.type(type);
         creator.generateStructures(true);
         creator.generator(generator);

@@ -12,14 +12,15 @@ import java.io.File;
 import java.sql.*;
 import java.util.UUID;
 
+@SuppressWarnings("unused")
 class DonationReader { //TODO 1.10.2: UPDATE
     private BukkitRunnable current;
     private String pass;
     private int server;
-    private RankManager rm = Necessities.getInstance().getRM();
-    private UserManager um = Necessities.getInstance().getUM();
-    private Variables var = Necessities.getInstance().getVar();
-    private GetUUID get = Necessities.getInstance().getUUID();
+    private final RankManager rm = Necessities.getInstance().getRM();
+    private final UserManager um = Necessities.getInstance().getUM();
+    private final Variables var = Necessities.getInstance().getVar();
+    private final GetUUID get = Necessities.getInstance().getUUID();
 
     private void check() {
         try {

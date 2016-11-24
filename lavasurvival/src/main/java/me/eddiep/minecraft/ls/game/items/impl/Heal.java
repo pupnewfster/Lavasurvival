@@ -24,6 +24,7 @@ abstract class Heal extends LavaItem {
         return true;
     }
 
+    @SuppressWarnings("ConstantConditions")
     @Override
     protected ItemStack displayItem() {
         net.minecraft.server.v1_11_R1.ItemStack nmsStack = CraftItemStack.asNMSCopy(new ItemStack(Material.POTION));
@@ -45,5 +46,5 @@ abstract class Heal extends LavaItem {
         return "Heal " + (getPercent() * 100) + "% of your total health";
     }
 
-    public abstract double getPercent();
+    protected abstract double getPercent();
 }

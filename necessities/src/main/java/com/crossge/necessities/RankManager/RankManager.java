@@ -10,11 +10,12 @@ import java.io.File;
 import java.util.*;
 
 public class RankManager {
-    private static HashMap<String, String> subranks = new HashMap<>();
-    private static HashMap<String, Rank> ranks = new HashMap<>();
-    private static ArrayList<String> names = new ArrayList<>();
-    private static ArrayList<Rank> order = new ArrayList<>();
-    private File configFileRanks = new File("plugins/Necessities/RankManager", "ranks.yml"), configFileSubranks = new File("plugins/Necessities/RankManager", "subranks.yml");
+    private static final HashMap<String, String> subranks = new HashMap<>();
+    private static final HashMap<String, Rank> ranks = new HashMap<>();
+    private static final ArrayList<String> names = new ArrayList<>();
+    private static final ArrayList<Rank> order = new ArrayList<>();
+    private final File configFileRanks = new File("plugins/Necessities/RankManager", "ranks.yml");
+    private final File configFileSubranks = new File("plugins/Necessities/RankManager", "subranks.yml");
 
     public void readRanks() {
         YamlConfiguration configRanks = YamlConfiguration.loadConfiguration(this.configFileRanks), configSubranks = YamlConfiguration.loadConfiguration(configFileSubranks);
@@ -260,6 +261,7 @@ public class RankManager {
     public void setSubranks() {//TODO: Change these to something for LS or just use the normal rank permissions spot
         if (!this.configFileSubranks.exists())
             try {
+                //noinspection ResultOfMethodCallIgnored
                 this.configFileSubranks.createNewFile();
                 YamlConfiguration configSubranks = YamlConfiguration.loadConfiguration(this.configFileSubranks);
                 configSubranks.set("Necessities.Donator", Arrays.asList("Necessities.colorchat", "lavasurvival.donator"));
@@ -271,49 +273,50 @@ public class RankManager {
     public void setRanks() {
         if (!this.configFileRanks.exists())
             try {
+                //noinspection ResultOfMethodCallIgnored
                 this.configFileRanks.createNewFile();
                 YamlConfiguration configRanks = YamlConfiguration.loadConfiguration(this.configFileRanks);
                 configRanks.set("New.permissions", Arrays.asList("bukkit.broadcast.user", "bukkit.command.plugins", "Necessities.me", "-bukkit.command.list", "-minecraft.command.list"));
-                configRanks.set("New.subranks", Arrays.asList(""));
+                configRanks.set("New.subranks", Collections.singletonList(""));
                 configRanks.set("New.rankTitle", "&4[&7New&4]&7");
-                configRanks.set("Basic.permissions", Arrays.asList(""));
-                configRanks.set("Basic.subranks", Arrays.asList(""));
+                configRanks.set("Basic.permissions", Collections.singletonList(""));
+                configRanks.set("Basic.subranks", Collections.singletonList(""));
                 configRanks.set("Basic.rankTitle", "&4[&bBasic&4]&1");
                 configRanks.set("Basic.previousRank", "New");
                 configRanks.set("Advanced.permissions", Arrays.asList("Necessities.title", "Necessities.bracket"));
-                configRanks.set("Advanced.subranks", Arrays.asList(""));
+                configRanks.set("Advanced.subranks", Collections.singletonList(""));
                 configRanks.set("Advanced.rankTitle", "&4[&3Advanced&4]&9");
                 configRanks.set("Advanced.previousRank", "Basic");
-                configRanks.set("Survivor.permissions", Arrays.asList("Necessities.nick"));
-                configRanks.set("Survivor.subranks", Arrays.asList(""));
+                configRanks.set("Survivor.permissions", Collections.singletonList("Necessities.nick"));
+                configRanks.set("Survivor.subranks", Collections.singletonList(""));
                 configRanks.set("Survivor.rankTitle", "&4[&2Survivor&4]&2");
                 configRanks.set("Survivor.previousRank", "Advanced");
-                configRanks.set("Trusted.permissions", Arrays.asList(""));
-                configRanks.set("Trusted.subranks", Arrays.asList(""));
+                configRanks.set("Trusted.permissions", Collections.singletonList(""));
+                configRanks.set("Trusted.subranks", Collections.singletonList(""));
                 configRanks.set("Trusted.rankTitle", "&4[&l&fTrusted&r&4]&f");
                 configRanks.set("Trusted.previousRank", "Survivor");
-                configRanks.set("Elder.permissions", Arrays.asList(""));
-                configRanks.set("Elder.subranks", Arrays.asList(""));
+                configRanks.set("Elder.permissions", Collections.singletonList(""));
+                configRanks.set("Elder.subranks", Collections.singletonList(""));
                 configRanks.set("Elder.rankTitle", "&4[&l&fElder&4]&d");
                 configRanks.set("Elder.previousRank", "Trusted");
                 configRanks.set("Moderator.permissions", Arrays.asList("lavasurvival.setup", "lavasurvival.voteSpeak", "Necessities.warn", "Necessities.hide", "Necessities.opchat", "Necessities.kick",
                         "Necessities.gamemode", "Necessities.teleport", "Necessities.slack"));
-                configRanks.set("Moderator.subranks", Arrays.asList(""));
+                configRanks.set("Moderator.subranks", Collections.singletonList(""));
                 configRanks.set("Moderator.rankTitle", "&4[&2Mod&4]&a");
                 configRanks.set("Moderator.previousRank", "Elder");
                 configRanks.set("Admin.permissions", Arrays.asList("Necessities.ban", "Necessities.tempban", "Necessities.unban", "Necessities.unbanip", "Necessities.banip", "lavasurvival.endGame",
                         "Necessities.promote", "Necessities.demote", "Necessities.setrank"));
-                configRanks.set("Admin.subranks", Arrays.asList(""));
+                configRanks.set("Admin.subranks", Collections.singletonList(""));
                 configRanks.set("Admin.rankTitle", "&4[&1Admin&4]&b");
                 configRanks.set("Admin.previousRank", "Moderator");
                 configRanks.set("Manager.permissions", Arrays.asList("*", "-Necessities.rankmanager.setranksame", "minecraft.command.*", "bukkit.broadcast.*", "-minecraft.command.deop",
                         "bukkit.command.whitelist.*", "bukkit.command.gamerule", "-minecraft.command.op", "-bukkit.command.op"));
-                configRanks.set("Manager.subranks", Arrays.asList("*"));
+                configRanks.set("Manager.subranks", Collections.singletonList("*"));
                 configRanks.set("Manager.rankTitle", "&4[&1Manager&4]&6b");
                 configRanks.set("Manager.previousRank", "Admin");
                 configRanks.set("Director.permissions", Arrays.asList("Necessities.rankmanager.setranksame", "minecraft.command.gamerule", "minecraft.command.deop", "minecraft.command.op",
                         "bukkit.command.op"));
-                configRanks.set("Director.subranks", Arrays.asList(""));
+                configRanks.set("Director.subranks", Collections.singletonList(""));
                 configRanks.set("Director.rankTitle", "&4[&bDirector&4]&6");
                 configRanks.set("Director.previousRank", "Manager");
                 configRanks.save(this.configFileRanks);

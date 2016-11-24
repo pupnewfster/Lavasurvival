@@ -13,7 +13,7 @@ import java.util.HashMap;
 import java.util.List;
 
 public class BankInventory {
-    private static HashMap<Player, BankInventory> INSTANCERS = new HashMap<>();
+    private static final HashMap<Player, BankInventory> INSTANCERS = new HashMap<>();
 
     private Inventory inventory;
     private int offset = 0;
@@ -89,7 +89,7 @@ public class BankInventory {
         }
     }
 
-    public void updateView() {
+    private void updateView() {
         this.inventory.clear();
 
         for (int i = this.offset; i < this.offset + 54; i++) {

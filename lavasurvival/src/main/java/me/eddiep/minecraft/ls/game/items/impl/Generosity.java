@@ -35,6 +35,7 @@ public class Generosity extends LavaItem {
         return true;
     }
 
+    @SuppressWarnings("ConstantConditions")
     @Override
     protected ItemStack displayItem() {
         net.minecraft.server.v1_11_R1.ItemStack nmsStack = CraftItemStack.asNMSCopy(new ItemStack(Material.POTION));

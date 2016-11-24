@@ -1,14 +1,14 @@
 package net.njay.player;
 
-import com.google.common.collect.Maps;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 import java.util.HashMap;
 
+@SuppressWarnings("unused")
 public class MenuPlayerManager {
-    // Mapping of Bukkit players to Menu Players
-    private HashMap<Player, MenuPlayer> players = Maps.newHashMap();
+    //Mapping of Bukkit players to Menu Players
+    private final HashMap<Player, MenuPlayer> players = new HashMap<>();
 
     /**
      * Gets the MenuPlayer by player name
@@ -27,7 +27,8 @@ public class MenuPlayerManager {
      * @return The MenuPlayer from Player
      */
     public MenuPlayer getPlayer(Player p) {
-        if (players.containsKey(p)) return players.get(p);
+        if (players.containsKey(p))
+            return players.get(p);
         MenuPlayer pl = new MenuPlayer(p);
         players.put(p, pl);
         return pl;

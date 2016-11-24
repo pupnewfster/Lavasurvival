@@ -7,9 +7,10 @@ import org.bukkit.entity.EntityType;
 
 import java.util.ArrayList;
 
+@SuppressWarnings("SameParameterValue")
 public abstract class Hat {
-    protected ArrayList<ArmorStand> armorStands = new ArrayList<>();
-    protected Location trueLoc;
+    final ArrayList<ArmorStand> armorStands = new ArrayList<>();
+    Location trueLoc;
     private HatType type;
     //private double x1, y1, z1 = 1, pitch, yaw;
 
@@ -44,7 +45,7 @@ public abstract class Hat {
             a.remove();
     }
 
-    protected void spawn(int num, Location loc) {
+    void spawn(int num, Location loc) {
         World w = loc.getWorld();
         for (int i = 0; i < num; i++) {
             ArmorStand a = (ArmorStand) w.spawnEntity(new Location(w, loc.getX(), loc.getY(), loc.getZ()), EntityType.ARMOR_STAND);
@@ -66,6 +67,7 @@ public abstract class Hat {
         }
     }
 
+    @SuppressWarnings("unused")
     public void move(double x, double y, double z, float yaw, float pitch) {
         /*this.pitch = ((90 - pitch) * Math.PI) / 180;
         this.yaw  = ((yaw + 90 + 180) * Math.PI) / 180;
@@ -86,7 +88,7 @@ public abstract class Hat {
         }
     }
 
-    public void setType(HatType type) {
+    private void setType(HatType type) {
         this.type = type;
     }
 

@@ -24,7 +24,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.boss.BarColor;
-import org.bukkit.boss.BarFlag;
 import org.bukkit.boss.BarStyle;
 import org.bukkit.boss.BossBar;
 import org.bukkit.command.Command;
@@ -44,22 +43,24 @@ import java.io.File;
 import java.io.IOException;
 import java.util.*;
 
+@SuppressWarnings("unused")
 public class Lavasurvival extends JavaPlugin {
     public static final Gson GSON = new Gson();
     public static Lavasurvival INSTANCE;
-    public static final BossBar GGBAR = new CraftBossBar(ChatColor.GOLD + "Welcome to " + ChatColor.AQUA + "Galaxy Gaming", BarColor.GREEN, BarStyle.SOLID, new BarFlag[0]);
+    public static final BossBar GGBAR = new CraftBossBar(ChatColor.GOLD + "Welcome to " + ChatColor.AQUA + "Galaxy Gaming", BarColor.GREEN, BarStyle.SOLID);
     public final Runnable MONEY_VIEWER = () -> {
         Collection<? extends Player> players = Bukkit.getOnlinePlayers();
         players.forEach(this::updateMoneyView);
     };
 
     private Cmd[] commands;
-    private HashMap<UUID, SetupMap> setups = new HashMap<>();
+    private final HashMap<UUID, SetupMap> setups = new HashMap<>();
     private Economy econ;
     private ClassicPhysics physics;
     private UserManager userManager;
     private boolean running = false;
     private ItemStack rules;
+    @SuppressWarnings("CanBeFinal")
     private CancelToken ubotCancelToken;
     public boolean updating;
 
@@ -90,7 +91,7 @@ public class Lavasurvival extends JavaPlugin {
         this.econ.withdrawPlayer(player, price);
         updateMoneyView(player);
         if (Necessities.isTracking()) {
-            Necessities.trackActionWithValue(player, "Economy", -price, -price);
+            Necessities.trackActionWithValue(player, -price, -price);
         }
     }
 
@@ -196,6 +197,7 @@ public class Lavasurvival extends JavaPlugin {
         ShopFactory.createShop(this, "Bank", new BankShopManager(), Material.CHEST, lore4, false);
     }
 
+    @SuppressWarnings("ResultOfMethodCallIgnored")
     private void init() {
         this.commands = new Cmd[]{
                 new CmdEndGame(),
@@ -308,12 +310,12 @@ public class Lavasurvival extends JavaPlugin {
     }
 
     public void changeServer(Player p, String serverName) throws IOException {
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        DataOutputStream dos = new DataOutputStream(baos);
+        ByteArrayOutputStream bs = new ByteArrayOutputStream();
+        DataOutputStream dos = new DataOutputStream(bs);
         dos.writeUTF("Connect");
         dos.writeUTF(serverName);
-        p.sendPluginMessage(this, "BungeeCord", baos.toByteArray());
-        baos.close();
+        p.sendPluginMessage(this, "BungeeCord", bs.toByteArray());
+        bs.close();
         dos.close();
     }
 
@@ -324,7 +326,7 @@ public class Lavasurvival extends JavaPlugin {
     public void depositPlayer(Player player, double reward) {
         econ.depositPlayer(player, reward);
         if (Necessities.isTracking()) {
-            Necessities.trackActionWithValue(player, "Economy", reward, reward);
+            Necessities.trackActionWithValue(player, reward, reward);
         }
     }
 }

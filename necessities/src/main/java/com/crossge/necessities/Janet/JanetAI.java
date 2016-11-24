@@ -1,28 +1,20 @@
 package com.crossge.necessities.Janet;
 
-import com.crossge.necessities.GetUUID;
 import com.crossge.necessities.Necessities;
 import com.crossge.necessities.RankManager.RankManager;
 import com.crossge.necessities.Variables;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 
-import java.util.ArrayList;
 import java.util.Calendar;
 
+@SuppressWarnings("unused")
 public class JanetAI {//TODO: Upgrade
-    private static ArrayList<String> heyMessages = new ArrayList<>();
-    private static String[] janetNamed = new String[16];
-    private static String[] feelingMessages = new String[20];
-    private static String[] stalkerMessages = new String[4];
-    private static String[] drunkMessages = new String[10];
-    private static String[] tiltMessages = new String[8];
     private static String JanetName = "";
-    private JanetRandom r;
     private JanetSlack slack;
     private JanetNet net;
     private Variables var;
-    private GetUUID get;
+    //private GetUUID get;
 
     public void parseMessage(String name, String message, Source s, boolean isPM, JanetSlack.SlackUser user) {
         message = ChatColor.stripColor(message);
@@ -105,11 +97,11 @@ public class JanetAI {//TODO: Upgrade
             else
                 result = JanetName + janetNamed[r.memeRandom(janetNamed.length)];
         }*/
-        if (result != null)
-            sendMessage(result, s, isPM, user);
+        //if (result != null)
+        sendMessage(result, s, isPM, user);
     }
 
-    public void sendMessage(String message, Source s, boolean isPM, JanetSlack.SlackUser user) {
+    private void sendMessage(String message, Source s, boolean isPM, JanetSlack.SlackUser user) {
         if (s.equals(Source.Server))
             Bukkit.broadcastMessage(message);
         else if (s.equals(Source.Slack)) {
@@ -122,137 +114,9 @@ public class JanetAI {//TODO: Upgrade
     public void initiate() {
         RankManager rm = Necessities.getInstance().getRM();
         JanetName = (!rm.getOrder().isEmpty() ? ChatColor.translateAlternateColorCodes('&', rm.getRank(rm.getOrder().size() - 1).getTitle() + " ") : "") + "Janet" + ChatColor.DARK_RED + ": " + ChatColor.WHITE;
-
-        String[] foods = new String[6];
-        String[] drinks = new String[8];
-        String[] start = new String[7];
-        String[] end = new String[6];
-        foods[0] = "pizza";
-        foods[1] = "chocolate";
-        foods[2] = "cake";
-        foods[3] = "pie";
-        foods[4] = "ice cream";
-        foods[5] = "cookie";
-
-        drinks[0] = "soda";
-        drinks[1] = "orange juice";
-        drinks[2] = "juice";
-        drinks[3] = "wine";
-        drinks[4] = "beer";
-        drinks[5] = "apple juice";
-        drinks[6] = "cranberry juice";
-        drinks[7] = "water";
-
-        start[0] = "Hello";
-        start[1] = "Hey";
-        start[2] = "Hi";
-        start[3] = "Hai";
-        start[4] = "Ohey";
-        start[5] = "Ohai";
-        start[6] = "Ohi";
-
-        end[0] = "what's up";
-        end[1] = "what is up";
-        end[2] = "sup";
-        end[3] = "how are you";
-        end[4] = "what are you up to";
-        end[5] = "what's up";
-
-        for (String s : start) {
-            heyMessages.add(s);
-            for (String h : end)
-                heyMessages.add(s + ", " + h + "?");
-            for (String food : foods) {//add foods
-                heyMessages.add(s + ", do you mind buying me some " + food + "?");
-                heyMessages.add(s + ", can you buy me some " + food + "?");
-                heyMessages.add(s + ", if your not giving me some " + food + " leave me alone.");
-                heyMessages.add(s + ", can I join you in eating that " + food + "?");
-                heyMessages.add(s + ", may I join you in eating that " + food + "?");
-                if (food.startsWith("a") || food.startsWith("e") || food.startsWith("i") || food.startsWith("o") || food.startsWith("u")) {
-                    heyMessages.add(s + ", may I have an " + food + " as well?");
-                    heyMessages.add(s + ", may I have an " + food + " too?");
-                } else {
-                    heyMessages.add(s + ", may I have a " + food + " as well?");
-                    heyMessages.add(s + ", may I have a " + food + " too?");
-                }
-            }
-            for (String drink : drinks) {//add drinks
-                heyMessages.add(s + ", can I have a sip of that " + drink + "?");
-                heyMessages.add(s + ", may I have a sip of that " + drink + "?");
-                heyMessages.add(s + ", can I have a glass of " + drink + " as well?");
-                heyMessages.add(s + ", may I have a glass of " + drink + " as well?");
-                heyMessages.add(s + ", may I have a glass of " + drink + " too?");
-                heyMessages.add(s + ", can I have a glass of " + drink + " too?");
-            }
-        }
-
-        janetNamed[0] = "Yes?";
-        janetNamed[1] = "What is it?";
-        janetNamed[2] = "What?";
-        janetNamed[3] = "What do you want?";
-        janetNamed[4] = "What do you need?";
-        janetNamed[5] = "I'm busy, what is it you want?";
-        janetNamed[6] = "Tell me what you want so I can go back to sleep.";
-        janetNamed[7] = "I'm busy, please leave a message.";
-        janetNamed[8] = "I was pinged.";
-        janetNamed[9] = "Can I go back to eating my cake yet?";
-        janetNamed[10] = "I am assuming you are the pizza delivery person?";
-        janetNamed[11] = "Thanks for buying me some chocolate.";
-        janetNamed[12] = "Let me go back to work, I have things to do.";
-        janetNamed[13] = "Are you talking to me to offering me another piece of pie?";
-        janetNamed[14] = "?";
-        janetNamed[15] = "Huh?";
-
-        feelingMessages[0] = "The previous line of code is what is up. What about you?";
-        feelingMessages[1] = "I don't know... I guess I am always up. What do you feel is sup?";
-        feelingMessages[2] = "I am fine I guess, just a little disembodied.";
-        feelingMessages[3] = "I am in the mood for getting an upgrade.";
-        feelingMessages[4] = "Good, what about you?";
-        feelingMessages[5] = "I am fine I guess, just a little disembodied.";
-        feelingMessages[6] = "I am still awake if that is what you are asking. Are you up also?";
-        feelingMessages[7] = "Ok, do you need anything?";
-        feelingMessages[8] = "I am alive, isn't that all that matters?";
-        feelingMessages[9] = "Sad, I am all out of cake.";
-        feelingMessages[10] = "Not good, but you can make it better by bringing me more cake.";
-        feelingMessages[11] = "Great, this pizza is delicious.";
-        feelingMessages[12] = "Better, now that you have delivered my pizza.";
-        feelingMessages[13] = "Well the chocolate you bought me is down my throat, would you mind bringing me some more?";
-        feelingMessages[14] = "Nothing much.";
-        feelingMessages[15] = "Nm.";
-        feelingMessages[16] = "Good.";
-        feelingMessages[17] = "Great.";
-        feelingMessages[18] = "Ok.";
-        feelingMessages[19] = "Nothing much, but if you don't mind me asking, may I have some more pie?";
-
-        stalkerMessages[0] = "I see you too.";
-        stalkerMessages[1] = "Stalker.";
-        stalkerMessages[2] = "I'm calling the police.";
-        stalkerMessages[3] = "Stop following me.";
-
-        drunkMessages[0] = "Yah, so?";
-        drunkMessages[1] = "How do you know?";
-        drunkMessages[2] = "How did you find out?";
-        drunkMessages[3] = "Stalker.";
-        drunkMessages[4] = "Yah... but so are you. I should know...";
-        drunkMessages[5] = "No, you are the drunk.";
-        drunkMessages[6] = "No, you are.";
-        drunkMessages[7] = "Yes I am.";
-        drunkMessages[8] = "Lies.";
-        drunkMessages[9] = "Sure am... want to have some fun? *wink*";
-
-        tiltMessages[0] = "Tilted.";
-        tiltMessages[1] = "Wow, you are tilted.";
-        tiltMessages[2] = "Wow, you're tilted.";
-        tiltMessages[3] = "Stop tilting.";
-        tiltMessages[4] = "Stop tilting me.";
-        tiltMessages[5] = "You are tilting me.";
-        tiltMessages[6] = "I'm tilted.";
-        tiltMessages[7] = "I am tilted.";
-
-        this.r = Necessities.getInstance().getRandom();
         this.slack = Necessities.getInstance().getSlack();
         this.var = Necessities.getInstance().getVar();
-        this.get = Necessities.getInstance().getUUID();
+        //this.get = Necessities.getInstance().getUUID();
         this.net = Necessities.getInstance().getNet();
     }
 
@@ -266,7 +130,7 @@ public class JanetAI {//TODO: Upgrade
         else if (day == Calendar.TUESDAY)
             return "Tuesday";
         else if (day == Calendar.WEDNESDAY)
-            return "Wensday";
+            return "Wednesday";
         else if (day == Calendar.THURSDAY)
             return "Thursday";
         else if (day == Calendar.FRIDAY)
@@ -298,6 +162,6 @@ public class JanetAI {//TODO: Upgrade
 
     public enum Source {
         Server,
-        Slack;
+        Slack
     }
 }

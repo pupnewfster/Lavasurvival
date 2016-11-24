@@ -18,9 +18,12 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 public class Janet {
-    private static ArrayList<String> badwords = new ArrayList<>(), goodwords = new ArrayList<>(), ips = new ArrayList<>();
-    private static HashMap<UUID, Long[]> lastChat = new HashMap<>(), lastCmd = new HashMap<>();
-    private File configFile = new File("plugins/Necessities", "config.yml");
+    private static final ArrayList<String> badwords = new ArrayList<>();
+    private static final ArrayList<String> goodwords = new ArrayList<>();
+    private static final ArrayList<String> ips = new ArrayList<>();
+    private static final HashMap<UUID, Long[]> lastChat = new HashMap<>();
+    private static final HashMap<UUID, Long[]> lastCmd = new HashMap<>();
+    private final File configFile = new File("plugins/Necessities", "config.yml");
     private JanetWarn warns;
     private JanetLog log;
 
@@ -108,6 +111,7 @@ public class Janet {
         l[1] = toPut;
     }
 
+    @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     private boolean isFull(Long[] l) {
         return !(l[0] == null || l[1] == null);
     }
@@ -165,6 +169,7 @@ public class Janet {
                 msg.replaceAll(bad, "").length() >= msg.length() * 3.0 / 5;
     }
 
+    @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     private boolean isGood(String msg) {
         for (String g : goodwords)
             if (msg.startsWith(g))

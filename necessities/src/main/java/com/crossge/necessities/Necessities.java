@@ -41,13 +41,12 @@ import java.util.UUID;
 public class Necessities extends JavaPlugin {
     private static Necessities INSTANCE;
     private final List<String> devs = Arrays.asList("pupnewfster", "Mod_Chris", "hypereddie10");
-    private File configFile = new File("plugins/Necessities", "config.yml");
+    private final File configFile = new File("plugins/Necessities", "config.yml");
     private Tracker googleAnalyticsTracker;
     private PacketPlayOutPlayerInfo janetInfo;
     //private DonationReader dr = new DonationReader();
     private CmdCommandSpy spy = new CmdCommandSpy();
     private PortalManager pm = new PortalManager();
-    private JanetRandom random = new JanetRandom();
     private WarpManager warps = new WarpManager();
     private WorldManager wm = new WorldManager();
     private UserManager um = new UserManager();
@@ -137,14 +136,11 @@ public class Necessities extends JavaPlugin {
         return this.log == null ? this.log = new JanetLog() : this.log;
     }
 
-    public JanetRandom getRandom() {
-        return this.random == null ? this.random = new JanetRandom() : this.random;
-    }
-
     public static Necessities getInstance() {
         return INSTANCE;
     }
 
+    @SuppressWarnings("ResultOfMethodCallIgnored")
     @Override
     public void onEnable() {
         getLogger().info("Enabling Necessities...");
@@ -272,8 +268,8 @@ public class Necessities extends JavaPlugin {
         return tab;
     }
 
-    private boolean isEqual(String command, String tocheck) {
-        return command.equalsIgnoreCase(tocheck);
+    private boolean isEqual(String command, String toCheck) {
+        return command.equalsIgnoreCase(toCheck);
     }
 
     private Cmd getCmd(String name) {
@@ -458,62 +454,34 @@ public class Necessities extends JavaPlugin {
         getLogger().info("Necessities disabled.");
     }
 
-    public static void trackAction(String clientId, String action, Object label) {
+    @SuppressWarnings("ConstantConditions")
+    public static void trackAction(String action, Object label) {
         String clientVersion = Bukkit.getVersion().substring("git-Bukkit".length());
         String clientName = "Minecraft " + clientVersion.substring(0, clientVersion.indexOf("-"));
-        getTracker().TrackAction(clientName, clientId, "127.0.0.1", clientId, action, label.toString());
+        getTracker().TrackAction(clientName, "LS", "127.0.0.1", "LS", action, label.toString());
     }
 
-    public static void trackActionWithValue(String clientId, String action, Object label, Object value) {
+    @SuppressWarnings("ConstantConditions")
+    public static void trackActionWithValue(String action, Object label, Object value) {
         String clientVersion = Bukkit.getVersion().substring("git-Bukkit".length());
         String clientName = "Minecraft " + clientVersion.substring(0, clientVersion.indexOf("-"));
-        getTracker().TrackActionWithValue(clientName, clientId, "127.0.0.1", clientId, action, label.toString(), value.toString());
+        getTracker().TrackActionWithValue(clientName, "LS", "127.0.0.1", "LS", action, label.toString(), value.toString());
     }
 
-    public static void trackAction(UUID uuid, String action, Object label) {
-        boolean usesPluginChannel = false;
-        String clientId, ip = "0.0.0.0";
-        Player p = Bukkit.getPlayer(uuid);
-        if (p == null)
-            clientId = Bukkit.getOfflinePlayer(uuid).getName();
-        else {
-            clientId = p.getName();
-            ip = (p.getAddress() != null ? p.getAddress().toString().substring(1) : "0.0.0.0");
-            usesPluginChannel = p.getListeningPluginChannels().size() != 0;
-        }
-        String clientVersion = Bukkit.getVersion().substring("git-Bukkit".length());
-        getTracker().TrackAction("Minecraft " + clientVersion.substring(0, clientVersion.indexOf("-")) + (usesPluginChannel ? " [Supports Plugin Channels]" : ""), clientId, ip, clientId, action, label.toString());
-    }
-
-    public static void trackAction(Player p, String action, Object label) {
+    @SuppressWarnings("ConstantConditions")
+    public static void trackAction(Player p, Object label) {
         String clientId = p.getName(), ip = (p.getAddress() != null ? p.getAddress().toString().substring(1) : "0.0.0.0");
         boolean usesPluginChannel = p.getListeningPluginChannels().size() != 0;
         String clientVersion = Bukkit.getVersion().substring("git-Bukkit".length());
-        getTracker().TrackAction("Minecraft " + clientVersion.substring(0, clientVersion.indexOf("-")) + (usesPluginChannel ? " [Supports Plugin Channels]" : ""), clientId, ip, clientId, action, label.toString());
+        getTracker().TrackAction("Minecraft " + clientVersion.substring(0, clientVersion.indexOf("-")) + (usesPluginChannel ? " [Supports Plugin Channels]" : ""), clientId, ip, clientId, "vote", label.toString());
     }
 
-    public static void trackActionWithValue(UUID uuid, String action, Object label, Object value) {
-        boolean usesPluginChannel = false;
-        String clientId, ip;
-        Player p = Bukkit.getPlayer(uuid);
-        if (p == null) {
-            clientId = Bukkit.getOfflinePlayer(uuid).getName();
-            ip = "0.0.0.0";
-        } else {
-            clientId = p.getName();
-            ip = (p.getAddress() != null ? p.getAddress().toString().substring(1) : "0.0.0.0");
-            usesPluginChannel = p.getListeningPluginChannels().size() != 0;
-        }
-        String clientVersion = Bukkit.getVersion().substring("git-Bukkit".length());
-        String clientName = "Minecraft " + clientVersion.substring(0, clientVersion.indexOf("-")) + (usesPluginChannel ? " [Supports Plugin Channels]" : "");
-        getTracker().TrackActionWithValue(clientName, clientId, ip, clientId, action, label.toString(), value.toString());
-    }
-
-    public static void trackActionWithValue(Player p, String action, Object label, Object value) {
+    @SuppressWarnings("ConstantConditions")
+    public static void trackActionWithValue(Player p, Object label, Object value) {
         String clientId = p.getName(), ip = (p.getAddress() != null ? p.getAddress().toString().substring(1) : "0.0.0.0");
         boolean usesPluginChannel = p.getListeningPluginChannels().size() != 0;
         String clientVersion = Bukkit.getVersion().substring("git-Bukkit".length());
         String clientName = "Minecraft " + clientVersion.substring(0, clientVersion.indexOf("-")) + (usesPluginChannel ? " [Supports Plugin Channels]" : "");
-        getTracker().TrackActionWithValue(clientName, clientId, ip, clientId, action, label.toString(), value.toString());
+        getTracker().TrackActionWithValue(clientName, clientId, ip, clientId, "Economy", label.toString(), value.toString());
     }
 }

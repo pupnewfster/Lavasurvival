@@ -11,8 +11,8 @@ import java.util.HashMap;
 import java.util.UUID;
 
 public class GetUUID {
-    private static HashMap<String, UUID> uuids = new HashMap<>();
-    private File configFileUUIDs = new File("plugins/Necessities/RankManager", "users.yml");
+    private static final HashMap<String, UUID> uuids = new HashMap<>();
+    private final File configFileUUIDs = new File("plugins/Necessities/RankManager", "users.yml");
 
     public UUID getID(String name) {
         UUID partial = null;
@@ -30,6 +30,7 @@ public class GetUUID {
         return partial;
     }
 
+    @SuppressWarnings("unused")
     public void addUUID(UUID uuid) {
         uuids.put(Bukkit.getPlayer(uuid).getName().toLowerCase(), uuid);
     }

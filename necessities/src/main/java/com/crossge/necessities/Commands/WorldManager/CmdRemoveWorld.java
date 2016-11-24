@@ -9,7 +9,7 @@ public class CmdRemoveWorld implements WorldCmd {
     public boolean commandUse(CommandSender sender, String[] args) {
         Variables var = Necessities.getInstance().getVar();
         if (args.length == 0) {
-            sender.sendMessage(var.getEr() + "Error: " + var.getErMsg() + "You must enter a worldname to remove from the files.");
+            sender.sendMessage(var.getEr() + "Error: " + var.getErMsg() + "You must enter a world name to remove from the files.");
             return true;
         }
         WorldManager wm = Necessities.getInstance().getWM();

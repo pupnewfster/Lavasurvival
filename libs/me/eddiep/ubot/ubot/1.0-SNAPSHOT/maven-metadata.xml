@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!--suppress XmlUnboundNsPrefix, XmlUnboundNsPrefix -->
 <metadata modelVersion="1.1.0">
     <groupId>me.eddiep.ubot</groupId>
     <artifactId>ubot</artifactId>

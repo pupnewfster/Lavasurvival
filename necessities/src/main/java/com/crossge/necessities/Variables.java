@@ -2,6 +2,7 @@ package com.crossge.necessities;
 
 import org.bukkit.ChatColor;
 
+@SuppressWarnings("SameReturnValue")
 public class Variables {
     public ChatColor getMe() {
         return ChatColor.DARK_PURPLE;

@@ -8,7 +8,6 @@ import java.lang.annotation.RetentionPolicy;
  */
 @Retention(RetentionPolicy.RUNTIME)
 public @interface MenuItem {
-
     /**
      * The slot number (in the Bukkit Inventory)
      *
@@ -22,5 +21,4 @@ public @interface MenuItem {
      * @return the slots ItemStack details
      */
     ItemStackAnnotation item();
-
 }

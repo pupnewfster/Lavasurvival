@@ -36,7 +36,7 @@ public class MenuShopManager implements ShopManager {
             else
                 menuObj = menu.newInstance(player.getMenuManager(), null);
 
-            player.setActiveMenuAndReplace(menuObj, true);
+            player.setActiveMenuAndReplace(menuObj);
         } catch (Exception e) {
             e.printStackTrace();
         }

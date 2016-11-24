@@ -13,7 +13,7 @@ public class CmdModifyWorld implements WorldCmd {
     public boolean commandUse(CommandSender sender, String[] args) {
         Variables var = Necessities.getInstance().getVar();
         if (args.length < 3) {
-            sender.sendMessage(var.getEr() + "Error: " + var.getErMsg() + "Format requires you enter a worldname a setting to modify and a value to change the setting to.");
+            sender.sendMessage(var.getEr() + "Error: " + var.getErMsg() + "Format requires you enter a world name a setting to modify and a value to change the setting to.");
             sender.sendMessage(var.getMessages() + "Valid settings are: " + ChatColor.WHITE + "difficulty, gamemode, structures, pvp, animals, and monsters.");
             return true;
         }

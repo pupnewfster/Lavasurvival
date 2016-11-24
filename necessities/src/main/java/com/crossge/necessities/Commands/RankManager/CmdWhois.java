@@ -68,7 +68,7 @@ public class CmdWhois implements RankCmd {
         }
         if (u.getPlayer() != null) {
             Player p = u.getPlayer();
-            sender.sendMessage(var.getMessages() + " - IP Adress: " + ChatColor.RESET + p.getAddress().toString().split("/")[1].split(":")[0]);
+            sender.sendMessage(var.getMessages() + " - IP Address: " + ChatColor.RESET + p.getAddress().toString().split("/")[1].split(":")[0]);
             String gamemode = "Survival";
             if (p.getGameMode().equals(GameMode.ADVENTURE))
                 gamemode = "Adventure";

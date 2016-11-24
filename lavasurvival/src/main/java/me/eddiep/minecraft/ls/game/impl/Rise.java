@@ -157,7 +157,7 @@ public class Rise extends Gamemode {
         return (super.getDefaultReward(player, blockCount) + this.bonus) * multiplier;
     }
 
-    public boolean isRoundEnding() {
+    private boolean isRoundEnding() {
         return this.isEnding;
     }
 }

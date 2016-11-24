@@ -9,22 +9,24 @@ import java.lang.reflect.Field;
 import java.text.DecimalFormat;
 
 public class Utils {
+    @SuppressWarnings({"BooleanMethodIsAlwaysInverted", "ResultOfMethodCallIgnored"})
     public static boolean legalDouble(String input) {
         try {
             Double.parseDouble(input);
-            return true;
-        } catch (Exception ignored) {
+        } catch (Exception e) {
+            return false;
         }
-        return false;
+        return true;
     }
 
+    @SuppressWarnings({"BooleanMethodIsAlwaysInverted", "ResultOfMethodCallIgnored"})
     public static boolean legalInt(String input) {
         try {
             Integer.parseInt(input);
-            return true;
-        } catch (Exception ignored) {
+        } catch (Exception e) {
+            return false;
         }
-        return false;
+        return true;
     }
 
     public static String addCommas(int i) {
@@ -38,11 +40,11 @@ public class Utils {
         matName = matName.replaceAll("_", " ").toLowerCase();
         String[] namePieces = matName.split(" ");
         for (String piece : namePieces)
-            name += upercaseFirst(piece) + " ";
+            name += uppercaseFirst(piece) + " ";
         return name.trim();
     }
 
-    private static String upercaseFirst(String word) {
+    private static String uppercaseFirst(String word) {
         if (word == null)
             return "";
         String firstCapitalized = "";
@@ -73,7 +75,7 @@ public class Utils {
     private static double[] getNMSRecentTps() {
         if (recentTpsField == null)
             return new double[0];
-        return getField(recentTpsField, ((CraftServer) Bukkit.getServer()).getServer());
+        return getField(((CraftServer) Bukkit.getServer()).getServer());
     }
 
     private static Field makeField(Class<?> clazz) {
@@ -85,11 +87,11 @@ public class Utils {
     }
 
     @SuppressWarnings("unchecked")
-    private static <T> T getField(Field field, Object instance) {
-        if (field == null) throw new RuntimeException("No such field");
-        field.setAccessible(true);
+    private static <T> T getField(Object instance) {
+        if (Utils.recentTpsField == null) throw new RuntimeException("No such field");
+        Utils.recentTpsField.setAccessible(true);
         try {
-            return (T) field.get(instance);
+            return (T) Utils.recentTpsField.get(instance);
         } catch (Exception ex) {
             return null;
         }

@@ -21,7 +21,7 @@ public class PhysicsListener implements Listener {
     private static final HashMap<MaterialData, Integer> lavaTicksToMelt = new HashMap<>();
     private static final HashMap<MaterialData, Integer> waterTicksToMelt = new HashMap<>();
     private static final ConcurrentHashMap<Location, ConcurrentLinkedQueue<BlockTaskInfo>> toTasks = new ConcurrentHashMap<>();
-    protected static final Random RANDOM = new Random();
+    private static final Random RANDOM = new Random();
 
     public PhysicsListener() {
         setup();
@@ -223,7 +223,7 @@ public class PhysicsListener implements Listener {
         addMeltTime(new MaterialData(Material.END_BRICKS), 270 * 20);
         addMeltTime(new MaterialData(Material.END_ROD), 180 * 20);
 
-        //Donnor blocks Instant melt)
+        //Donor blocks Instant melt)
         addMeltTime(new MaterialData(Material.WOOD, (byte) 1), 30 * 20, 120 * 20);//Spruce planks
         addMeltTime(new MaterialData(Material.WOOD, (byte) 2), 30 * 20, 120 * 20);//Birch planks
         addMeltTime(new MaterialData(Material.WOOD, (byte) 3), 30 * 20, 120 * 20);//Jungle planks
@@ -306,15 +306,16 @@ public class PhysicsListener implements Listener {
             waterTicksToMelt.put(data, water);
     }
 
+    @SuppressWarnings({"deprecation", "unused"})
     @EventHandler(priority = EventPriority.MONITOR)
     public void onClassicPhysics(ClassicPhysicsEvent event) {
         synchronized (toTasks) {
-            if (!event.isClassicEvent() || Gamemode.getCurrentGame().hasEnded() || event.getLocation() == null || event.getLocation().getWorld() == null ||
+            if (Gamemode.getCurrentGame().hasEnded() || event.getLocation() == null || event.getLocation().getWorld() == null ||
                     !event.getLocation().getChunk().isLoaded() || event.getLocation().getBlock() == null)
                 return;
 
             if (Gamemode.getCurrentMap().isInSafeZone(event.getLocation())) {
-                event.setCancelled(true); //Do not allow physics inside the safezone!
+                event.setCancelled(true); //Do not allow physics inside the safe zone!
                 return;
             }
 
@@ -450,10 +451,11 @@ public class PhysicsListener implements Listener {
     }
 
     private class BlockTaskInfo {
-        private long ticksToMelt, startTick;
-        private Location from;
-        private Material logicFor;
-        private Block oldBlock;
+        private final long ticksToMelt;
+        private final long startTick;
+        private final Location from;
+        private final Material logicFor;
+        private final Block oldBlock;
 
         BlockTaskInfo(Material logicFor, Location from, Block oldBlock, long ticksToMelt) {
             this.startTick = tickCount;

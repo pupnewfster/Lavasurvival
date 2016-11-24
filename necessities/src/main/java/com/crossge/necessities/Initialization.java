@@ -8,12 +8,19 @@ import java.io.File;
 import java.util.Collections;
 
 class Initialization {
-    private File configFileWarps = new File("plugins/Necessities/WorldManager", "warps.yml"), configFilePM = new File("plugins/Necessities/WorldManager", "portals.yml"),
-            configFileUsers = new File("plugins/Necessities/RankManager", "users.yml"), configFileWM = new File("plugins/Necessities/WorldManager", "worlds.yml"),
-            configFileLogOut = new File("plugins/Necessities", "logoutmessages.yml"), configFileLogIn = new File("plugins/Necessities", "loginmessages.yml"),
-            configFileCensors = new File("plugins/Necessities", "censors.yml"), configFileSpying = new File("plugins/Necessities", "spying.yml"),
-            configFileHiding = new File("plugins/Necessities", "hiding.yml"), configFileTitles = new File("plugins/Necessities", "titles.yml"), configFile = new File("plugins/Necessities", "config.yml");
+    private final File configFileWarps = new File("plugins/Necessities/WorldManager", "warps.yml");
+    private final File configFilePM = new File("plugins/Necessities/WorldManager", "portals.yml");
+    private final File configFileUsers = new File("plugins/Necessities/RankManager", "users.yml");
+    private final File configFileWM = new File("plugins/Necessities/WorldManager", "worlds.yml");
+    private final File configFileLogOut = new File("plugins/Necessities", "logoutmessages.yml");
+    private final File configFileLogIn = new File("plugins/Necessities", "loginmessages.yml");
+    private final File configFileCensors = new File("plugins/Necessities", "censors.yml");
+    private final File configFileSpying = new File("plugins/Necessities", "spying.yml");
+    private final File configFileHiding = new File("plugins/Necessities", "hiding.yml");
+    private final File configFileTitles = new File("plugins/Necessities", "titles.yml");
+    private final File configFile = new File("plugins/Necessities", "config.yml");
 
+    @SuppressWarnings("ResultOfMethodCallIgnored")
     void initiateFiles() {
         dirCreate("plugins/Necessities");
         dirCreate("plugins/Necessities/Logs");
@@ -56,12 +63,14 @@ class Initialization {
         Necessities.getInstance().getAI().initiate();
     }
 
+    @SuppressWarnings("ResultOfMethodCallIgnored")
     private void dirCreate(String directory) {
         File d = new File(directory);
         if (!d.exists())
             d.mkdir();
     }
 
+    @SuppressWarnings("ResultOfMethodCallIgnored")
     private void fileCreate(String file) {
         File f = new File(file);
         if (!f.exists())
@@ -71,6 +80,7 @@ class Initialization {
             }
     }
 
+    @SuppressWarnings("ResultOfMethodCallIgnored")
     private void addYML(File file) {
         if (!file.exists())
             try {
@@ -79,6 +89,7 @@ class Initialization {
             }
     }
 
+    @SuppressWarnings("ResultOfMethodCallIgnored")
     private void createYaml() {
         addYML(this.configFileTitles);
         addYML(this.configFileSpying);

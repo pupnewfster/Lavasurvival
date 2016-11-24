@@ -1,8 +1,6 @@
 package net.njay;
 
 import com.google.common.base.Preconditions;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import net.njay.annotation.*;
 import net.njay.listener.MenuListener;
 import net.njay.utils.ItemUtils;
@@ -14,14 +12,15 @@ import org.bukkit.plugin.Plugin;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 public class MenuRegistry {
-
-    private Map<Class<? extends Menu>, List<Method>> loadedMenus = Maps.newHashMap();
-    private Map<Class<? extends Menu>, List<Method>> loadedPreprocessors = Maps.newHashMap();
-    private Plugin plugin;
+    private final HashMap<Class<? extends Menu>, List<Method>> loadedMenus = new HashMap<>();
+    private final HashMap<Class<? extends Menu>, List<Method>> loadedPreprocessors = new HashMap<>();
+    private final Plugin plugin;
 
     /**
      * Initializes the framework
@@ -29,6 +28,7 @@ public class MenuRegistry {
      * @param plugin the plugin to initialize framework for
      * @param menus  array of menus to register
      */
+    @SuppressWarnings("unchecked")
     public MenuRegistry(Plugin plugin, Class... menus) {
         Preconditions.checkNotNull(plugin, "Plugin cannot be null");
         this.plugin = plugin;
@@ -51,25 +51,22 @@ public class MenuRegistry {
      *
      * @param clazz a class which extends Menu
      */
-    public void addMenu(Class<? extends Menu> clazz) {
-        List<Method> methods = Lists.newArrayList();
-        List<Method> preProcessors = Lists.newArrayList();
-        for (Method m : clazz.getDeclaredMethods()) {
-            if (m.isAnnotationPresent(MenuItem.class)) {
+    @SuppressWarnings("unchecked")
+    private void addMenu(Class<? extends Menu> clazz) {
+        List<Method> methods = new ArrayList<>();
+        List<Method> preProcessors = new ArrayList<>();
+        for (Method m : clazz.getDeclaredMethods())
+            if (m.isAnnotationPresent(MenuItem.class))
                 methods.add(m);
-            } else if (m.isAnnotationPresent(PreProcessor.class)) {
+            else if (m.isAnnotationPresent(PreProcessor.class))
                 preProcessors.add(m);
-            }
-        }
-
-        // If the class to add has a nested annotation
+        //If the class to add has a nested annotation
         if (clazz.isAnnotationPresent(NestedMenu.class)) {
             Annotation annotation = clazz.getAnnotation(NestedMenu.class);
             NestedMenu nestedAnnotation = (NestedMenu) annotation;
-            // iterate the array of classes and register them as well
-            for (Class clazz0 : nestedAnnotation.value()) {
+            //iterate the array of classes and register them as well
+            for (Class clazz0 : nestedAnnotation.value())
                 addMenu(clazz0);
-            }
         }
         loadedMenus.put(clazz, methods);
         loadedPreprocessors.put(clazz, preProcessors);
@@ -86,11 +83,8 @@ public class MenuRegistry {
 
     /**
      * Creates a Bukkit Inventory for a Menu class
-     *
-     * @param clazz
-     * @return
      */
-    public Inventory generateFreshMenu(Menu menu, Class clazz) {
+    Inventory generateFreshMenu(Menu menu, Class clazz) {
         MenuInventory menuInv = (MenuInventory) clazz.getAnnotation(MenuInventory.class);
         Inventory inv = Bukkit.createInventory(null, menuInv.slots(), menuInv.name());
         for (int i = 0; i < inv.getSize(); i++)
@@ -102,11 +96,9 @@ public class MenuRegistry {
         }
         if (clazz.isAnnotationPresent(IgnoreSlots.class)) {
             IgnoreSlots ignoreSlots = (IgnoreSlots) clazz.getAnnotation(IgnoreSlots.class);
-            if (ignoreSlots.slots().length == ignoreSlots.items().length) {
-                for (int i = 0; i < ignoreSlots.slots().length; i++) {
+            if (ignoreSlots.slots().length == ignoreSlots.items().length)
+                for (int i = 0; i < ignoreSlots.slots().length; i++)
                     inv.setItem(ignoreSlots.slots()[i], ItemUtils.annotationToItemStack(ignoreSlots.items()[i]));
-                }
-            }
         }
         for (Method m : loadedPreprocessors.get(clazz)) {
             try {
@@ -121,5 +113,4 @@ public class MenuRegistry {
         }
         return inv;
     }
-
 }

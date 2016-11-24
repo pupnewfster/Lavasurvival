@@ -9,7 +9,7 @@ import java.util.UUID;
 public class Console {
     private static boolean togglechat = false;
     private static UUID lastContact = null;
-    private File configFile = new File("plugins/Necessities", "config.yml");
+    private final File configFile = new File("plugins/Necessities", "config.yml");
 
     public String getName() {
         Variables var = new Variables();

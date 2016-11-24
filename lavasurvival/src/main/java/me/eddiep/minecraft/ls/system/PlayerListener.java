@@ -42,6 +42,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 
+@SuppressWarnings("unused")
 public class PlayerListener implements Listener {
     private final ArrayList<Material> invalidBlocks = new ArrayList<>(Arrays.asList(new Material[]{
             Material.OBSIDIAN,
@@ -53,7 +54,7 @@ public class PlayerListener implements Listener {
             Material.BARRIER
     }));
     private final UserManager um = Lavasurvival.INSTANCE.getUserManager();
-    private Random rand = new Random();
+    private final Random rand = new Random();
     public boolean survival = false;
 
     @EventHandler(priority = EventPriority.LOWEST)
@@ -135,6 +136,7 @@ public class PlayerListener implements Listener {
         ((CraftPlayer) event.getPlayer()).getHandle().playerConnection.sendPacket(meltPacket);
     }
 
+    @SuppressWarnings("deprecation")
     @EventHandler(priority = EventPriority.HIGHEST)
     public void blockInteract(PlayerInteractEvent event) {
         if (Lavasurvival.INSTANCE.getSetups().containsKey(event.getPlayer().getUniqueId()))
@@ -162,7 +164,7 @@ public class PlayerListener implements Listener {
                 if (System.currentTimeMillis() - u.getLastBreak() <= 100)//So that two blocks don't break instantly, may need to be adjusted
                     return;
                 u.setLastBreak(System.currentTimeMillis());
-                u.incrimentBlockCount();
+                u.incrementBlockCount();
                 if (this.survival) {
                     Inventory inventory = event.getPlayer().getInventory();
                     int index = inventory.first(block.getType());
@@ -289,6 +291,7 @@ public class PlayerListener implements Listener {
         }
     }
 
+    @SuppressWarnings("deprecation")
     @EventHandler(priority = EventPriority.HIGHEST)
     public void blockPlace(BlockPlaceEvent event) {
         if (event.getPlayer() == null || Lavasurvival.INSTANCE.getSetups().containsKey(event.getPlayer().getUniqueId()))
@@ -321,7 +324,7 @@ public class PlayerListener implements Listener {
             }
         }
         UserInfo u = this.um.getUser(event.getPlayer().getUniqueId());
-        u.incrimentBlockCount();
+        u.incrementBlockCount();
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
@@ -382,6 +385,7 @@ public class PlayerListener implements Listener {
             event.setCancelled(true);
     }
 
+    @SuppressWarnings("ConstantConditions")
     @EventHandler(priority = EventPriority.HIGHEST)
     public void playerMove(PlayerMoveEvent event) {
         Location from = event.getFrom(), to = event.getTo();
@@ -401,6 +405,7 @@ public class PlayerListener implements Listener {
         }
     }
 
+    @SuppressWarnings("ConstantConditions")
     @EventHandler(priority = EventPriority.HIGHEST)
     public void classicBlockPlace(ClassicBlockPlaceEvent event) {
         Material type = event.getLocation().getBlock().getType();
@@ -418,7 +423,7 @@ public class PlayerListener implements Listener {
     }
 
 
-    private static String[] deathMessages = new String[]{"§c§lWasted!", "§a§lBetter luck next time!", "§c§lYou died!", "§c§lrip."};
+    private static final String[] deathMessages = new String[]{"§c§lWasted!", "§a§lBetter luck next time!", "§c§lYou died!", "§c§lrip."};
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void playerDeath(PlayerDeathEvent event) {

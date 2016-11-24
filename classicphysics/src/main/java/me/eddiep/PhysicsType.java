@@ -1,5 +1,6 @@
 package me.eddiep;
 
+@SuppressWarnings("unused")
 public enum PhysicsType {
     CLASSIC("Classic"),
     REVERSE("Reverse"),
@@ -14,7 +15,7 @@ public enum PhysicsType {
             return DEFAULT;
     }
 
-    private String name;
+    private final String name;
 
     PhysicsType(String name) {
         this.name = name;

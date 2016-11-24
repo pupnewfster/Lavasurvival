@@ -8,7 +8,7 @@ import org.bukkit.event.HandlerList;
 public class ClassicBlockPlaceEvent extends Event implements Cancellable {
     private static final HandlerList handlers = new HandlerList();
     private boolean cancel;
-    private Location location;
+    private final Location location;
 
     public ClassicBlockPlaceEvent(Location location) {
         this.location = location;
@@ -18,6 +18,7 @@ public class ClassicBlockPlaceEvent extends Event implements Cancellable {
         return this.location;
     }
 
+    @SuppressWarnings("unused")
     public static HandlerList getHandlerList() {
         return handlers;
     }

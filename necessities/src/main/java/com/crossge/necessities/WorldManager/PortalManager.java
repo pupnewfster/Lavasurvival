@@ -9,9 +9,9 @@ import java.io.File;
 import java.util.HashMap;
 
 public class PortalManager {//TODO: add a method to update the things when a world is unloaded or loaded
-    private static HashMap<String, Portal> portals = new HashMap<>();
-    private static HashMap<String, String> lowerNames = new HashMap<>();
-    private File configFilePM = new File("plugins/Necessities/WorldManager", "portals.yml");
+    private static final HashMap<String, Portal> portals = new HashMap<>();
+    private static final HashMap<String, String> lowerNames = new HashMap<>();
+    private final File configFilePM = new File("plugins/Necessities/WorldManager", "portals.yml");
 
     public void initiate() {
         Bukkit.getConsoleSender().sendMessage(ChatColor.AQUA + "Loading portals...");

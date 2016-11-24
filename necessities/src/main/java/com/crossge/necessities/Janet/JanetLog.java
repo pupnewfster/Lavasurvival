@@ -36,6 +36,7 @@ public class JanetLog {
         return time.length() == 1 ? "0" + time : time;
     }
 
+    @SuppressWarnings("ResultOfMethodCallIgnored")
     private void fileCreate(String file) {
         File f = new File(file);
         try {

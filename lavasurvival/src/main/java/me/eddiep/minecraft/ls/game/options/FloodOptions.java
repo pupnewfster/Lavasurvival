@@ -9,13 +9,18 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@SuppressWarnings({"FieldCanBeLocal", "SameParameterValue", "unused"})
 public class FloodOptions extends BaseOptions {
     private transient Vector selectedSpawn;
     private transient LavaMap owner;
 
-    private List<Vector> spawnPoints = new ArrayList<>();
-    private int minPrepareTimeSeconds = 300, maxPrepareTimeSeconds = 480, minEndTimeSeconds = 180, maxEndTimeSeconds = 420;
-    private boolean enableLava = true, enableWater = true;
+    private final List<Vector> spawnPoints = new ArrayList<>();
+    private final int minPrepareTimeSeconds = 300;
+    private final int maxPrepareTimeSeconds = 480;
+    private final int minEndTimeSeconds = 180;
+    private final int maxEndTimeSeconds = 420;
+    private final boolean enableLava = true;
+    private final boolean enableWater = true;
 
     public static FloodOptions defaults(LavaMap lavaMap) {
         return new FloodOptions(lavaMap);
@@ -41,18 +46,21 @@ public class FloodOptions extends BaseOptions {
         return this.enableWater;
     }
 
+    @SuppressWarnings("deprecation")
     public List<Vector> getSpawnPoints() {
         if (!isUsingMultiSpawn())
             return Collections.singletonList(new Vector(this.owner.getLavaX(), this.owner.getLavaY(), this.owner.getLavaZ()));
         return this.spawnPoints;
     }
 
+    @SuppressWarnings("deprecation")
     public List<Location> getSpawnLocations() {
         if (!isUsingMultiSpawn())
             return Collections.singletonList(this.owner.getLavaSpawnAsLocation());
         return this.spawnPoints.stream().map(vector -> new Location(this.owner.getWorld(), vector.getX(), vector.getY(), vector.getZ())).collect(Collectors.toList());
     }
 
+    @SuppressWarnings("deprecation")
     private Vector getHighestSpawn() {
         if (!isUsingMultiSpawn())
             return this.owner.getLavaSpawnAsLocation().toVector();
@@ -68,12 +76,14 @@ public class FloodOptions extends BaseOptions {
         return new Location(this.owner.getWorld(), highest.getX(), highest.getY(), highest.getZ());
     }
 
+    @SuppressWarnings("deprecation")
     public List<Location> getSpawnLocation(int xoffset, int yoffset, int zoffet) {
         if (!isUsingMultiSpawn())
             return Collections.singletonList(this.owner.getLavaSpawnAsLocation(xoffset, yoffset, zoffet));
         return this.spawnPoints.stream().map(vector -> new Location(this.owner.getWorld(), vector.getX() + xoffset, vector.getY() + yoffset, vector.getZ() + zoffet)).collect(Collectors.toList());
     }
 
+    @SuppressWarnings("deprecation")
     private Vector getSingleSpawn() {
         if (!isUsingMultiSpawn())
             return new Vector(this.owner.getLavaX(), this.owner.getLavaY(), this.owner.getLavaZ());
@@ -89,6 +99,7 @@ public class FloodOptions extends BaseOptions {
         return new Location(this.owner.getWorld(), spawn.getX(), spawn.getY(), spawn.getZ());
     }
 
+    @SuppressWarnings({"BooleanMethodIsAlwaysInverted", "ConstantConditions"})
     private boolean isUsingMultiSpawn() {
         return this.spawnPoints != null && this.spawnPoints.size() > 0 && super.isEnabled();
     }
@@ -97,6 +108,7 @@ public class FloodOptions extends BaseOptions {
         this.owner = parent;
     }
 
+    @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     public boolean hasParent() {
         return this.owner != null;
     }

@@ -2,7 +2,6 @@ package net.njay.utils;
 
 import com.google.common.base.Splitter;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import net.njay.annotation.ItemStackAnnotation;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -10,16 +9,13 @@ import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Utils for modifying ItemMeta
  */
+@SuppressWarnings("unused")
 public class ItemUtils {
-
     /**
      * Gets an ItemStack with type type, durability durability amount amount, name name, and lore lore
      *
@@ -36,7 +32,6 @@ public class ItemUtils {
         itemMeta.setDisplayName(name);
         itemMeta.setLore(lore);
         item.setItemMeta(itemMeta);
-
         return item;
     }
 
@@ -49,13 +44,12 @@ public class ItemUtils {
      * @param lore   lore of the ItemStack
      * @return ItemStack with params
      */
-    public static ItemStack getNamedItemStack(Material type, int amount, String name, List<String> lore) {
+    private static ItemStack getNamedItemStack(Material type, int amount, String name, List<String> lore) {
         ItemStack item = new ItemStack(type, amount);
         ItemMeta itemMeta = item.getItemMeta();
         itemMeta.setDisplayName(name);
         itemMeta.setLore(lore);
         item.setItemMeta(itemMeta);
-
         return item;
     }
 
@@ -67,12 +61,11 @@ public class ItemUtils {
      * @param lore new lore of the ItemStack
      * @return ItemStack with set name and lore
      */
-    public static ItemStack getNamedItemStack(ItemStack item, String name, List<String> lore) {
+    private static ItemStack getNamedItemStack(ItemStack item, String name, List<String> lore) {
         ItemMeta itemMeta = item.getItemMeta();
         itemMeta.setDisplayName(name);
         itemMeta.setLore(lore);
         item.setItemMeta(itemMeta);
-
         return item;
     }
 
@@ -85,7 +78,7 @@ public class ItemUtils {
      * @return ItemStack with params
      */
     public static ItemStack getNamedItemStack(Material type, int amount, String name) {
-        return getNamedItemStack(type, amount, name, new ArrayList<String>());
+        return getNamedItemStack(type, amount, name, new ArrayList<>());
     }
 
     /**
@@ -96,7 +89,7 @@ public class ItemUtils {
      * @return ItemStack set name
      */
     public static ItemStack getNamedItemStack(ItemStack item, String name) {
-        return getNamedItemStack(item, name, new ArrayList<String>());
+        return getNamedItemStack(item, name, new ArrayList<>());
     }
 
     /**
@@ -105,21 +98,19 @@ public class ItemUtils {
      * @param parse The string to parse the enchantment from.
      * @return A map of one enchantment and it's corresponding level.
      */
-    public static Map<Enchantment, Integer> parseEnchantment(String parse) {
-        Map<Enchantment, Integer> result = Maps.newHashMap();
+    private static Map<Enchantment, Integer> parseEnchantment(String parse) {
+        Map<Enchantment, Integer> result = new HashMap<>();
         int level = 1;
         List<String> parts = Lists.newArrayList(Splitter.on(":").limit(2).split(parse));
         Enchantment enchant = Enchantment.getByName(parts.get(0).toUpperCase().replace(" ", "_"));
-        if (enchant == null) {
+        if (enchant == null)
             return null;
-        }
-        if (parts.size() > 1) {
+        if (parts.size() > 1)
             try {
                 level = Integer.parseInt(parts.get(1));
             } catch (NumberFormatException e) {
                 e.printStackTrace();
             }
-        }
         result.put(enchant, level);
         return result;
     }
@@ -130,6 +121,7 @@ public class ItemUtils {
      * @param annotation Annotation to be converted.
      * @return A formatted {@link org.bukkit.inventory.ItemStack} with data from the {@link ItemStackAnnotation}
      */
+    @SuppressWarnings({"ConstantConditions", "MismatchedReadAndWriteOfArray"})
     public static ItemStack annotationToItemStack(ItemStackAnnotation annotation) {
         ItemStack stack = new ItemStack(annotation.material());
         stack.setAmount(annotation.amount());
@@ -137,7 +129,7 @@ public class ItemUtils {
 
         ItemMeta meta = Bukkit.getServer().getItemFactory().getItemMeta(annotation.material());
         if (!annotation.name().equals("")) meta.setDisplayName(annotation.name());
-        String[] emptyArray = {}; // Can't put array initializer's in if's
+        String[] emptyArray = {}; //Can't put array initializer's in if's
         if (annotation.lore() != emptyArray) meta.setLore(Arrays.asList(annotation.lore()));
         if (annotation.enchantments() != emptyArray) {
             for (String enchantment : annotation.enchantments()) {

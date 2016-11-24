@@ -1,18 +1,14 @@
 package net.njay;
 
-import com.google.common.collect.Lists;
-
+import java.util.ArrayList;
 import java.util.List;
 
 public class MenuManager {
-
-    private Menu currentMenu = null; //what is this horrific formatting
-    private Menu previousMenu = null;
-
-    private List<Menu> menus;
+    private Menu currentMenu = null, previousMenu = null;
+    private final List<Menu> menus;
 
     public MenuManager() {
-        menus = Lists.newArrayList();
+        menus = new ArrayList<>();
     }
 
     /**
@@ -22,9 +18,9 @@ public class MenuManager {
      */
     public void setActiveMenu(Menu menu) {
         previousMenu = currentMenu;
-        if (hasMenu(menu.getClass())) {
+        if (hasMenu(menu.getClass()))
             currentMenu = getMenu(menu.getClass());
-        } else {
+        else {
             currentMenu = menu;
             currentMenu.setInventory(MenuFramework.getRegistry().generateFreshMenu(menu, menu.getClass()));
             menus.add(currentMenu);
@@ -34,16 +30,15 @@ public class MenuManager {
     /**
      * Sets a menu instance as the current menu and removes any other saved instances
      *
-     * @param menu       Menu instance that you which to set as the current menu
-     * @param regenerate Whether or not to regenerate the menu from scratch
+     * @param menu Menu instance that you which to set as the current menu
      */
-    public void setActiveMenuAndReplace(Menu menu, boolean regenerate) {
+    public void setActiveMenuAndReplace(Menu menu) {
         previousMenu = currentMenu;
         currentMenu = menu;
-        if (regenerate)
-            currentMenu.setInventory(MenuFramework.getRegistry().generateFreshMenu(menu, menu.getClass()));
+        currentMenu.setInventory(MenuFramework.getRegistry().generateFreshMenu(menu, menu.getClass()));
         Menu toRemove = getMenu(menu.getClass());
-        if (toRemove != null) menus.remove(toRemove);
+        if (toRemove != null)
+            menus.remove(toRemove);
         menus.add(currentMenu);
     }
 
@@ -58,17 +53,17 @@ public class MenuManager {
         if (hasMenu(clazz)) setActiveMenu(getMenu(clazz));
     }
 
-    public Menu getMenu(Class clazz) {
-        for (Menu m : menus) {
-            if (m.getClass().equals(clazz)) return m;
-        }
+    private Menu getMenu(Class clazz) {
+        for (Menu m : menus)
+            if (m.getClass().equals(clazz))
+                return m;
         return null;
     }
 
-    public boolean hasMenu(Class clazz) {
-        for (Menu m : menus) {
-            if (clazz.equals(m.getClass())) return true;
-        }
+    private boolean hasMenu(Class clazz) {
+        for (Menu m : menus)
+            if (clazz.equals(m.getClass()))
+                return true;
         return false;
     }
 
@@ -86,6 +81,7 @@ public class MenuManager {
      *
      * @return Previous menu
      */
+    @SuppressWarnings("unused")
     public Menu getPreviousMenu() {
         return this.previousMenu;
     }

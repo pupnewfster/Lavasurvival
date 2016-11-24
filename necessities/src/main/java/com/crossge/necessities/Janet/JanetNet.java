@@ -14,11 +14,12 @@ import java.io.InputStreamReader;
 import java.util.HashMap;
 import java.util.HashSet;
 
+@SuppressWarnings("unused")
 public class JanetNet {
-    private KShingling ks = new KShingling(2);
-    private MetricLCS l = new MetricLCS();
-    private HashMap<StringProfile, String> profiles = new HashMap<>();
-    private HashSet<String> words = new HashSet<>();
+    private final KShingling ks = new KShingling(2);
+    private final MetricLCS l = new MetricLCS();
+    private final HashMap<StringProfile, String> profiles = new HashMap<>();
+    private final HashSet<String> words = new HashSet<>();
 
     public JanetNet() {
         try {
@@ -61,7 +62,7 @@ public class JanetNet {
             if (isNick(m, ws))
                 result += m + " ";
             else if (ws.getWord() == null) {
-                result += m + " "; //TODO possibly figure out it should somehow be noted that it wasnt found
+                result += m + " "; //TODO possibly figure out it should somehow be noted that it wasn't found
             } else
                 result += ws.getWord() + " ";
         }

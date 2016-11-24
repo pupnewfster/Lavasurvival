@@ -16,16 +16,18 @@ import org.bukkit.plugin.Plugin;
 
 import java.util.List;
 
+@SuppressWarnings("unused")
 public class Shop implements Listener {
     private ItemStack opener;
     private String shopName;
-    private ShopManager manager;
+    private final ShopManager manager;
 
     public Shop(ShopManager manager) {
         this.manager = manager;
     }
 
-    public ItemStack createOpenItem(Material material, String ShopName, List<String> descriptions, boolean haveGlow) {
+    @SuppressWarnings("UnusedReturnValue")
+    ItemStack createOpenItem(Material material, String ShopName, List<String> descriptions, boolean haveGlow) {
         ItemStack item = new ItemStack(material);
         ItemMeta meta = item.getItemMeta();
         meta.setDisplayName(ChatColor.GREEN + ShopName + " " + ChatColor.GRAY + "(Right Click)");
@@ -42,11 +44,11 @@ public class Shop implements Listener {
         return this.opener;
     }
 
-    public void register(Plugin plugin) {
+    void register(Plugin plugin) {
         plugin.getServer().getPluginManager().registerEvents(this, plugin);
     }
 
-    public void unregister() {
+    void unregister() {
         HandlerList.unregisterAll(this);
         this.opener = null;
     }
@@ -62,12 +64,11 @@ public class Shop implements Listener {
     @EventHandler(priority = EventPriority.MONITOR)
     public void onInventoryClosed(InventoryCloseEvent event) {
         Player p = (Player) event.getPlayer();
-        if (this.manager.isShopInventory(event.getInventory(), p)) {
+        if (this.manager.isShopInventory(event.getInventory(), p))
             this.manager.shopClosed(p, event.getInventory(), this);
-        }
     }
 
-    public String getShopName() {
+    String getShopName() {
         return this.shopName;
     }
 }

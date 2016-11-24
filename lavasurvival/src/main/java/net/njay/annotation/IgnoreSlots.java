@@ -1,6 +1,5 @@
 package net.njay.annotation;
 
-
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
@@ -9,7 +8,6 @@ import java.lang.annotation.RetentionPolicy;
  */
 @Retention(RetentionPolicy.RUNTIME)
 public @interface IgnoreSlots {
-
     int[] slots();
 
     ItemStackAnnotation[] items();

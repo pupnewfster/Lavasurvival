@@ -38,7 +38,7 @@ public class CmdTempban implements Cmd {
             }
             name = p.getName();
         }
-        int minutes = 0;
+        int minutes;
         try {
             minutes = Integer.parseInt(args[1]);
         } catch (Exception e) {
