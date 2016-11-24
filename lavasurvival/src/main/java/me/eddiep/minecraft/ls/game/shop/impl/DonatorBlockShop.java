@@ -15,7 +15,7 @@ import org.bukkit.inventory.Inventory;
 @SuppressWarnings({"SameParameterValue", "unused"})
 @MenuInventory(slots = 54, name = "Donator Block Shop")
 public class DonatorBlockShop extends Menu implements BlockShop {
-    DonatorBlockShop(MenuManager manager, Inventory inv) {
+    public DonatorBlockShop(MenuManager manager, Inventory inv) {
         super(manager, inv);
     }
 

@@ -17,7 +17,7 @@ import org.bukkit.inventory.Inventory;
 @SuppressWarnings({"SameParameterValue", "unused"})
 @MenuInventory(slots = 54, name = "Trusted Block Shop")
 public class TrustedBlockShop extends Menu implements BlockShop {
-    TrustedBlockShop(MenuManager manager, Inventory inv) {
+    public TrustedBlockShop(MenuManager manager, Inventory inv) {
         super(manager, inv);
     }
 

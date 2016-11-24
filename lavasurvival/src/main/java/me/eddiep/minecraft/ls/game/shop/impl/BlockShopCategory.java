@@ -12,7 +12,7 @@ import org.bukkit.inventory.Inventory;
 @SuppressWarnings({"SameParameterValue", "unused"})
 @MenuInventory(slots = 9, name = "Block Shop")
 public class BlockShopCategory extends Menu {
-    BlockShopCategory(MenuManager manager, Inventory inv) {
+    public BlockShopCategory(MenuManager manager, Inventory inv) {
         super(manager, inv);
     }
 
