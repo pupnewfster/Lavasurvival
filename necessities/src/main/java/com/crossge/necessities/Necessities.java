@@ -63,6 +63,7 @@ public class Necessities extends JavaPlugin {
     private JanetNet net = new JanetNet();
     private JanetAI ai = new JanetAI();
     private JanetSlack slack = new JanetSlack();
+    private Announcer announcer = new Announcer();
 
     public UserManager getUM() {
         return this.um == null ? this.um = new UserManager() : this.um;
@@ -134,6 +135,10 @@ public class Necessities extends JavaPlugin {
 
     public JanetLog getLog() {
         return this.log == null ? this.log = new JanetLog() : this.log;
+    }
+
+    Announcer getAnnouncer() {
+        return this.announcer == null ? this.announcer = new Announcer() : this.announcer;
     }
 
     public static Necessities getInstance() {
@@ -450,6 +455,7 @@ public class Necessities extends JavaPlugin {
         this.hide.unload();
         this.slack.disconnect();
         this.bot.unload();
+        this.announcer.exit();
         //this.dr.disconnect();
         getLogger().info("Necessities disabled.");
     }

@@ -36,8 +36,7 @@ public class JanetNet {
     }
 
     public void readCustom() {
-        try {
-            BufferedReader read = new BufferedReader(new FileReader(new File("plugins/Necessities/customWords.txt")));
+        try (BufferedReader read = new BufferedReader(new FileReader(new File("plugins/Necessities/customWords.txt")))) {
             String line;
             while ((line = read.readLine()) != null) {
                 String lline = line.toLowerCase();
@@ -46,7 +45,6 @@ public class JanetNet {
                 this.profiles.put(this.ks.getProfile(lline), lline);
                 this.words.add(lline);
             }
-            read.close();
         } catch (Exception ignored) {
         }
     }

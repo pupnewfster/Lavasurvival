@@ -29,6 +29,7 @@ class Initialization {
         fileCreate("plugins/Necessities/motd.txt");
         fileCreate("plugins/Necessities/rules.txt");
         fileCreate("plugins/Necessities/faq.txt");
+        fileCreate("plugins/Necessities/announcements.txt");
         File cwords = new File("plugins/Necessities", "customWords.txt");
         if (!cwords.exists())
             try {
@@ -61,6 +62,7 @@ class Initialization {
         Necessities.getInstance().getWarns().initiate();
         Necessities.getInstance().getSlack().init();
         Necessities.getInstance().getAI().initiate();
+        Necessities.getInstance().getAnnouncer().init();
     }
 
     @SuppressWarnings("ResultOfMethodCallIgnored")
@@ -135,6 +137,7 @@ class Initialization {
                 config.set("Lavasurvival.DBTable", "lavasurvival");
                 config.set("Lavasurvival.DBUser", "lsuser");
                 config.set("Lavasurvival.DBPassword", "password");
+                config.set("Announcements.frequency", 5);
                 config.save(this.configFile);
             } catch (Exception ignored) {
             }
@@ -182,6 +185,8 @@ class Initialization {
                 config.set("Lavasurvival.DBUser", "lsuser");
             if (!config.contains("Lavasurvival.DBPassword"))
                 config.set("Lavasurvival.DBPassword", "password");
+            if (!config.contains("Announcements.frequency"))
+                config.set("Announcements.frequency", 5);
             try {
                 config.save(this.configFile);
             } catch (Exception ignored) {
