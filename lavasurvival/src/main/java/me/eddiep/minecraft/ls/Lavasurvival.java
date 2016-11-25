@@ -41,17 +41,17 @@ import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.File;
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.UUID;
 
 @SuppressWarnings("unused")
 public class Lavasurvival extends JavaPlugin {
     public static final Gson GSON = new Gson();
     public static Lavasurvival INSTANCE;
     public static final BossBar GGBAR = new CraftBossBar(ChatColor.GOLD + "Welcome to " + ChatColor.AQUA + "Galaxy Gaming", BarColor.GREEN, BarStyle.SOLID);
-    public final Runnable MONEY_VIEWER = () -> {
-        Collection<? extends Player> players = Bukkit.getOnlinePlayers();
-        players.forEach(this::updateMoneyView);
-    };
+    public final Runnable MONEY_VIEWER = () -> Bukkit.getOnlinePlayers().forEach(this::updateMoneyView);
 
     private Cmd[] commands;
     private final HashMap<UUID, SetupMap> setups = new HashMap<>();

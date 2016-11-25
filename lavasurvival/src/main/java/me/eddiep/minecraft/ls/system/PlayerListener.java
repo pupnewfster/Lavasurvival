@@ -126,6 +126,7 @@ public class PlayerListener implements Listener {
 
     @EventHandler
     public void itemHeldSlot(PlayerItemHeldEvent event) {
+        //TODO If it is a shop or the balane ingot show the text that gets shown when you hover over it in inventory
         ItemStack is = event.getPlayer().getInventory().getItem(event.getNewSlot());
         if (is == null || is.getType().equals(Material.AIR))
             return;

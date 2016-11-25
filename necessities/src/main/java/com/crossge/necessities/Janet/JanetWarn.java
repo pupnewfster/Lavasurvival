@@ -11,12 +11,13 @@ import java.util.UUID;
 public class JanetWarn {
     private static final HashMap<UUID, Integer> warnCount = new HashMap<>();
     private static String JanetName = "";
-    private final int warns = Necessities.getInstance().getConfig().getInt("Necessities.warns");
+    private int warns;
     private JanetLog log;
 
     public void initiate() {
         RankManager rm = Necessities.getInstance().getRM();
         JanetName = (!rm.getOrder().isEmpty() ? ChatColor.translateAlternateColorCodes('&', rm.getRank(rm.getOrder().size() - 1).getTitle() + " ") : "") + "Janet" + ChatColor.DARK_RED + ": " + ChatColor.WHITE;
+        warns = Necessities.getInstance().getConfig().getInt("Necessities.warns");
         log = Necessities.getInstance().getLog();
     }
 
