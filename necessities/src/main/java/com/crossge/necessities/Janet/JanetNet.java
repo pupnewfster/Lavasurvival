@@ -22,6 +22,7 @@ public class JanetNet {
     private final HashSet<String> words = new HashSet<>();
 
     public JanetNet() {
+        Bukkit.getConsoleSender().sendMessage(ChatColor.AQUA + "Initializing JanetNet...");
         try {
             BufferedReader read = new BufferedReader(new InputStreamReader(getClass().getResourceAsStream("/englishWords.txt")));
             String line;
@@ -33,9 +34,11 @@ public class JanetNet {
             read.close();
         } catch (Exception ignored) {
         }
+        Bukkit.getConsoleSender().sendMessage(ChatColor.AQUA + "JanetNet initialized...");
     }
 
     public void readCustom() {
+        Bukkit.getConsoleSender().sendMessage(ChatColor.AQUA + "Adding custom words to JanetNet.");
         try (BufferedReader read = new BufferedReader(new FileReader(new File("plugins/Necessities/customWords.txt")))) {
             String line;
             while ((line = read.readLine()) != null) {
@@ -47,6 +50,7 @@ public class JanetNet {
             }
         } catch (Exception ignored) {
         }
+        Bukkit.getConsoleSender().sendMessage(ChatColor.AQUA + "Custom words added.");
     }
 
     String bestGuess(String message) {

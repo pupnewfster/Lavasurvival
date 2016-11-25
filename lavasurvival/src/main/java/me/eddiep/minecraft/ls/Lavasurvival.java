@@ -290,10 +290,9 @@ public class Lavasurvival extends JavaPlugin {
     }
 
     private Cmd getCmd(String name) {
-        for (Cmd possible : this.commands) {
+        for (Cmd possible : this.commands)
             if (possible.getName().equalsIgnoreCase(name))
                 return possible;
-        }
         return null;
     }
 
@@ -325,8 +324,7 @@ public class Lavasurvival extends JavaPlugin {
 
     public void depositPlayer(Player player, double reward) {
         econ.depositPlayer(player, reward);
-        if (Necessities.isTracking()) {
+        if (Necessities.isTracking())
             Necessities.trackActionWithValue(player, reward, reward);
-        }
     }
 }

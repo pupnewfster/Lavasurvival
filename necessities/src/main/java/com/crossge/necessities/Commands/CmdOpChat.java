@@ -9,12 +9,9 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 
-import java.io.File;
 import java.util.UUID;
 
 public class CmdOpChat implements Cmd {
-    private final File configFile = new File("plugins/Necessities", "config.yml");
-
     public boolean commandUse(CommandSender sender, String[] args) {
         String message = "";
         if (args.length > 0)
@@ -39,7 +36,7 @@ public class CmdOpChat implements Cmd {
     }
 
     private void sendOps(UUID uuid, String message) {
-        YamlConfiguration config = YamlConfiguration.loadConfiguration(configFile);
+        YamlConfiguration config = Necessities.getInstance().getConfig();
         Player player = Bukkit.getPlayer(uuid);
         String send = ChatColor.translateAlternateColorCodes('&', config.getString("Necessities.ChatFormat"));
         send = Necessities.getInstance().getVar().getMessages() + "To Ops - " + ChatColor.WHITE + send;

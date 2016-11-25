@@ -493,7 +493,7 @@ public abstract class Gamemode {
             scoreList = "{}";
         if (loserList.length() == 1)
             loserList = "{}";
-        YamlConfiguration config = YamlConfiguration.loadConfiguration(new File("plugins/Necessities", "config.yml"));
+        YamlConfiguration config = Necessities.getInstance().getConfig();
         String url = "jdbc:mariadb://" + config.getString("Lavasurvival.DBHost") + "/" + config.getString("Lavasurvival.DBTable"), user = config.getString("Lavasurvival.DBUser"),
                 pass = config.getString("Lavasurvival.DBPassword");
         try {

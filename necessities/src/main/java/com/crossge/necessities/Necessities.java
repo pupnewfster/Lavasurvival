@@ -137,8 +137,16 @@ public class Necessities extends JavaPlugin {
         return this.log == null ? this.log = new JanetLog() : this.log;
     }
 
-    Announcer getAnnouncer() {
+    public Announcer getAnnouncer() {
         return this.announcer == null ? this.announcer = new Announcer() : this.announcer;
+    }
+
+    File getConfigFile() {
+        return this.configFile;
+    }
+
+    public YamlConfiguration getConfig() {
+        return YamlConfiguration.loadConfiguration(getConfigFile());
     }
 
     public static Necessities getInstance() {
@@ -365,6 +373,8 @@ public class Necessities extends JavaPlugin {
             com = new CmdSlack();
         else if (isEqual(name, "requestmod"))
             com = new CmdRequestMod();
+        else if (isEqual(name, "reloadannouncer"))
+            com = new CmdReloadAnnouncer();
             //RankManager
         else if (isEqual(name, "promote"))
             com = new CmdPromote();
@@ -442,7 +452,7 @@ public class Necessities extends JavaPlugin {
         else if (isEqual(name, "removewarp"))
             com = new CmdRemoveWarp();
 
-        YamlConfiguration config = YamlConfiguration.loadConfiguration(configFile);
+        YamlConfiguration config = getConfig();
         if (com instanceof WorldCmd && config.contains("Necessities.WorldManager") && !config.getBoolean("Necessities.WorldManager"))
             com = new DisabledCmd();
         return com == null ? (sender, args) -> false : com;

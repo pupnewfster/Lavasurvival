@@ -36,7 +36,6 @@ class Listeners implements Listener {
     private final File configFileLogOut = new File("plugins/Necessities", "logoutmessages.yml");
     private final File configFileLogIn = new File("plugins/Necessities", "loginmessages.yml");
     private final File configFileTitles = new File("plugins/Necessities", "titles.yml");
-    private final File configFile = new File("plugins/Necessities", "config.yml");
     private final CmdCommandSpy spy = Necessities.getInstance().getSpy();
     private final PortalManager pm = Necessities.getInstance().getPM();
     private final JanetSlack slack = Necessities.getInstance().getSlack();
@@ -167,7 +166,7 @@ class Listeners implements Listener {
         Hat h = u.getHat();
         if (h != null)
             h.move(to.getX() - from.getX(), to.getY() - from.getY(), to.getZ() - from.getZ(), to.getYaw() - from.getYaw(), to.getPitch() - from.getPitch());
-        YamlConfiguration config = YamlConfiguration.loadConfiguration(this.configFile);
+        YamlConfiguration config = Necessities.getInstance().getConfig();
         boolean locationChanged = Math.abs(from.getX() - to.getX()) > 0.1 || Math.abs(from.getY() - to.getY()) > 0.1 || Math.abs(from.getZ() - to.getZ()) > 0.1;
         if (config.contains("Necessities.WorldManager") && config.getBoolean("Necessities.WorldManager") && locationChanged) {
             Location destination = this.pm.portalDestination(to);
@@ -200,7 +199,7 @@ class Listeners implements Listener {
     public void onChat(AsyncPlayerChatEvent e) {
         if (e.isCancelled())
             return;
-        YamlConfiguration config = YamlConfiguration.loadConfiguration(this.configFile);
+        YamlConfiguration config = Necessities.getInstance().getConfig();
         User u = this.um.getUser(e.getPlayer().getUniqueId());
         final Player player = e.getPlayer();
         final UUID uuid = player.getUniqueId();
@@ -304,7 +303,7 @@ class Listeners implements Listener {
             e.setMessage(message);
             if (e.getMessage().startsWith("/tps"))
                 e.setMessage(e.getMessage().replaceFirst("tps", "necessities:tps"));
-            YamlConfiguration config = YamlConfiguration.loadConfiguration(this.configFile);
+            YamlConfiguration config = Necessities.getInstance().getConfig();
             if (config.contains("Necessities.customDeny") && config.getBoolean("Necessities.customDeny")) {
                 PluginCommand pc = null;
                 try {

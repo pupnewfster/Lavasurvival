@@ -8,7 +8,6 @@ import org.bukkit.ChatColor;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import java.io.File;
 import java.sql.*;
 import java.util.UUID;
 
@@ -70,8 +69,7 @@ class DonationReader { //TODO 1.10.2: UPDATE
                 check();
             }
         };
-        File configFile = new File("plugins/Necessities", "config.yml");
-        YamlConfiguration config = YamlConfiguration.loadConfiguration(configFile);
+        YamlConfiguration config = Necessities.getInstance().getConfig();
         this.pass = config.getString("Necessities.DonationPass");
         this.server = config.getInt("Necessities.DonationServer");
         this.current.runTaskTimerAsynchronously(Necessities.getInstance(), 0, 20 * 60);

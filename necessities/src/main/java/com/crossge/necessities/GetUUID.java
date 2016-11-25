@@ -14,7 +14,7 @@ public class GetUUID {
     private static final HashMap<String, UUID> uuids = new HashMap<>();
     private final File configFileUUIDs = new File("plugins/Necessities/RankManager", "users.yml");
 
-    public UUID getID(String name) {
+    public UUID getID(String name) { //TODO: make it so that if partial is null it checks against mojang's api to get the uuid
         UUID partial = null;
         boolean startsWith = false;
         for (Player p : Bukkit.getServer().getOnlinePlayers()) {

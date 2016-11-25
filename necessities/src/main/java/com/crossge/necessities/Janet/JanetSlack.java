@@ -21,7 +21,10 @@ import org.json.simple.Jsoner;
 import org.json.simple.parser.JSONParser;
 
 import javax.net.ssl.HttpsURLConnection;
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.net.URL;
 import java.util.*;
 import java.util.regex.Pattern;
@@ -42,14 +45,18 @@ public class JanetSlack {
     private GetUUID get;
 
     public void init() {
-        YamlConfiguration config = YamlConfiguration.loadConfiguration(new File("plugins/Necessities", "config.yml"));
+        Bukkit.getConsoleSender().sendMessage(ChatColor.AQUA + "Connecting to Slack...");
+        YamlConfiguration config = Necessities.getInstance().getConfig();
         token = config.contains("Necessities.SlackToken") ? config.getString("Necessities.SlackToken") : "token";
         String hook = config.contains("Necessities.WebHook") ? config.getString("Necessities.WebHook") : "webHook";
-        if (token.equals("token") || hook.equals("webHook"))
+        if (token.equals("token") || hook.equals("webHook")) {
+            Bukkit.getConsoleSender().sendMessage(ChatColor.DARK_RED + "Error:" + ChatColor.AQUA + " Failed to connect to Slack.");
             return;
+        }
         try {
             hookURL = new URL(hook);
         } catch (Exception e) {
+            Bukkit.getConsoleSender().sendMessage(ChatColor.DARK_RED + "Error:" + ChatColor.AQUA + " Failed to connect to Slack.");
             return;
         }
         rm = Necessities.getInstance().getRM();
@@ -60,6 +67,7 @@ public class JanetSlack {
         get = Necessities.getInstance().getUUID();
         setHelp();
         connect();
+        Bukkit.getConsoleSender().sendMessage(ChatColor.AQUA + "Connected to Slack.");
     }
 
     public void disconnect() {

@@ -18,7 +18,6 @@ class Initialization {
     private final File configFileSpying = new File("plugins/Necessities", "spying.yml");
     private final File configFileHiding = new File("plugins/Necessities", "hiding.yml");
     private final File configFileTitles = new File("plugins/Necessities", "titles.yml");
-    private final File configFile = new File("plugins/Necessities", "config.yml");
 
     @SuppressWarnings("ResultOfMethodCallIgnored")
     void initiateFiles() {
@@ -46,7 +45,7 @@ class Initialization {
         Necessities.getInstance().getRM().readRanks();
         Necessities.getInstance().getSBs().createScoreboard();
 
-        YamlConfiguration config = YamlConfiguration.loadConfiguration(this.configFile);
+        YamlConfiguration config = Necessities.getInstance().getConfig();
         //WorldManager
         if (config.contains("Necessities.WorldManager") && config.getBoolean("Necessities.WorldManager")) {
             Necessities.getInstance().getWM().initiate();
@@ -112,10 +111,10 @@ class Initialization {
                 config.save(this.configFileCensors);
             } catch (Exception ignored) {
             }
-        if (!configFile.exists())
+        if (!Necessities.getInstance().getConfigFile().exists())
             try {
-                this.configFile.createNewFile();
-                YamlConfiguration config = YamlConfiguration.loadConfiguration(this.configFile);
+                Necessities.getInstance().getConfigFile().createNewFile();
+                YamlConfiguration config = Necessities.getInstance().getConfig();
                 config.set("Necessities.WorldManager", true);
                 config.set("Necessities.warns", 3);
                 config.set("Necessities.caps", true);
@@ -138,11 +137,11 @@ class Initialization {
                 config.set("Lavasurvival.DBUser", "lsuser");
                 config.set("Lavasurvival.DBPassword", "password");
                 config.set("Announcements.frequency", 5);
-                config.save(this.configFile);
+                config.save(Necessities.getInstance().getConfigFile());
             } catch (Exception ignored) {
             }
         else {
-            YamlConfiguration config = YamlConfiguration.loadConfiguration(this.configFile);
+            YamlConfiguration config = Necessities.getInstance().getConfig();
             if (!config.contains("Necessities.warns"))
                 config.set("Necessities.warns", 3);
             if (!config.contains("Necessities.caps"))
@@ -188,7 +187,7 @@ class Initialization {
             if (!config.contains("Announcements.frequency"))
                 config.set("Announcements.frequency", 5);
             try {
-                config.save(this.configFile);
+                config.save(Necessities.getInstance().getConfigFile());
             } catch (Exception ignored) {
             }
         }

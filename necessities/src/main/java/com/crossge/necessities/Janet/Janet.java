@@ -17,13 +17,12 @@ import java.util.UUID;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-public class Janet {
+public class Janet {//TODO: Make the logic run async for performance reasons
     private static final ArrayList<String> badwords = new ArrayList<>();
     private static final ArrayList<String> goodwords = new ArrayList<>();
     private static final ArrayList<String> ips = new ArrayList<>();
     private static final HashMap<UUID, Long[]> lastChat = new HashMap<>();
     private static final HashMap<UUID, Long[]> lastCmd = new HashMap<>();
-    private final File configFile = new File("plugins/Necessities", "config.yml");
     private JanetWarn warns;
     private JanetLog log;
 
@@ -330,7 +329,7 @@ public class Janet {
 
     public String logChat(UUID uuid, String message) {
         Player p = Bukkit.getPlayer(uuid);
-        YamlConfiguration config = YamlConfiguration.loadConfiguration(this.configFile);
+        YamlConfiguration config = Necessities.getInstance().getConfig();
         if (config.contains("Necessities.log") && config.getBoolean("Necessities.log"))
             this.log.log(p.getName() + ": " + message);
         boolean warn = true;
@@ -351,7 +350,7 @@ public class Janet {
     public String logCom(UUID uuid, String message) {
         Player p = Bukkit.getPlayer(uuid);
         String messageOrig = message;
-        YamlConfiguration config = YamlConfiguration.loadConfiguration(this.configFile);
+        YamlConfiguration config = Necessities.getInstance().getConfig();
         if (config.contains("Necessities.log") && config.getBoolean("Necessities.log"))
             this.log.log(p.getName() + " issued server command: " + message);
         boolean warn = false;
@@ -377,26 +376,26 @@ public class Janet {
             message = "Console:" + message.replaceFirst("say", "");
         else
             message = "Console issued command: " + message;
-        YamlConfiguration config = YamlConfiguration.loadConfiguration(this.configFile);
+        YamlConfiguration config = Necessities.getInstance().getConfig();
         if (config.contains("Necessities.log") && config.getBoolean("Necessities.log"))
             this.log.log(message);
     }
 
     public void logIn(UUID uuid) {
-        YamlConfiguration config = YamlConfiguration.loadConfiguration(this.configFile);
+        YamlConfiguration config = Necessities.getInstance().getConfig();
         if (config.contains("Necessities.log") && config.getBoolean("Necessities.log"))
             this.log.log(" + " + playerInfo(Bukkit.getPlayer(uuid)) + " joined the game.");
     }
 
     public void logDeath(UUID uuid, String cause) {
-        YamlConfiguration config = YamlConfiguration.loadConfiguration(this.configFile);
+        YamlConfiguration config = Necessities.getInstance().getConfig();
         if (config.contains("Necessities.log") && config.getBoolean("Necessities.log"))
             this.log.log(playerInfo(Bukkit.getPlayer(uuid)) + " " + cause);
     }
 
     public void logOut(UUID uuid) {
         removePlayer(uuid);
-        YamlConfiguration config = YamlConfiguration.loadConfiguration(this.configFile);
+        YamlConfiguration config = Necessities.getInstance().getConfig();
         if (config.contains("Necessities.log") && config.getBoolean("Necessities.log"))
             this.log.log(" - " + playerInfo(Bukkit.getPlayer(uuid)) + " Disconnected.");
     }

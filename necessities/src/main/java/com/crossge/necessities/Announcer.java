@@ -11,12 +11,13 @@ import java.io.FileReader;
 import java.util.ArrayList;
 import java.util.Random;
 
-class Announcer { //TODO: add a command to reload the list of messages
+public class Announcer {
     private BukkitRunnable announcerTask;
     private final ArrayList<String> messages = new ArrayList<>();
     private final Random r = new Random();
 
     void init() {
+        Bukkit.getConsoleSender().sendMessage(ChatColor.AQUA + "Loading Announcer messages...");
         try (BufferedReader read = new BufferedReader(new FileReader(new File("plugins/Necessities/announcements.txt")))) {
             String line;
             while ((line = read.readLine()) != null)
@@ -31,11 +32,18 @@ class Announcer { //TODO: add a command to reload the list of messages
                 Bukkit.broadcastMessage(messages.get(r.nextInt(messages.size())));
             }
         };
-        YamlConfiguration config = YamlConfiguration.loadConfiguration(new File("plugins/Necessities", "config.yml"));
+        YamlConfiguration config = Necessities.getInstance().getConfig();
         this.announcerTask.runTaskTimerAsynchronously(Necessities.getInstance(), 0, 20 * 60 * config.getInt("Announcements.frequency"));
+        Bukkit.getConsoleSender().sendMessage(ChatColor.AQUA + "Announcer messages loaded.");
     }
 
     void exit() {
         this.announcerTask.cancel();
+    }
+
+    public void reloadAnnouncer() {
+        exit();
+        this.messages.clear();
+        init();
     }
 }
