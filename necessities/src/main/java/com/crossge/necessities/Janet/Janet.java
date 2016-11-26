@@ -17,10 +17,12 @@ import java.util.UUID;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-public class Janet {
-    private static ArrayList<String> badwords = new ArrayList<>(), goodwords = new ArrayList<>(), ips = new ArrayList<>();
-    private static HashMap<UUID, Long[]> lastChat = new HashMap<>(), lastCmd = new HashMap<>();
-    private File configFile = new File("plugins/Necessities", "config.yml");
+public class Janet {//TODO: Make the logic run async for performance reasons
+    private static final ArrayList<String> badwords = new ArrayList<>();
+    private static final ArrayList<String> goodwords = new ArrayList<>();
+    private static final ArrayList<String> ips = new ArrayList<>();
+    private static final HashMap<UUID, Long[]> lastChat = new HashMap<>();
+    private static final HashMap<UUID, Long[]> lastCmd = new HashMap<>();
     private JanetWarn warns;
     private JanetLog log;
 
@@ -108,6 +110,7 @@ public class Janet {
         l[1] = toPut;
     }
 
+    @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     private boolean isFull(Long[] l) {
         return !(l[0] == null || l[1] == null);
     }
@@ -165,6 +168,7 @@ public class Janet {
                 msg.replaceAll(bad, "").length() >= msg.length() * 3.0 / 5;
     }
 
+    @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     private boolean isGood(String msg) {
         for (String g : goodwords)
             if (msg.startsWith(g))
@@ -325,7 +329,7 @@ public class Janet {
 
     public String logChat(UUID uuid, String message) {
         Player p = Bukkit.getPlayer(uuid);
-        YamlConfiguration config = YamlConfiguration.loadConfiguration(this.configFile);
+        YamlConfiguration config = Necessities.getInstance().getConfig();
         if (config.contains("Necessities.log") && config.getBoolean("Necessities.log"))
             this.log.log(p.getName() + ": " + message);
         boolean warn = true;
@@ -346,7 +350,7 @@ public class Janet {
     public String logCom(UUID uuid, String message) {
         Player p = Bukkit.getPlayer(uuid);
         String messageOrig = message;
-        YamlConfiguration config = YamlConfiguration.loadConfiguration(this.configFile);
+        YamlConfiguration config = Necessities.getInstance().getConfig();
         if (config.contains("Necessities.log") && config.getBoolean("Necessities.log"))
             this.log.log(p.getName() + " issued server command: " + message);
         boolean warn = false;
@@ -372,26 +376,26 @@ public class Janet {
             message = "Console:" + message.replaceFirst("say", "");
         else
             message = "Console issued command: " + message;
-        YamlConfiguration config = YamlConfiguration.loadConfiguration(this.configFile);
+        YamlConfiguration config = Necessities.getInstance().getConfig();
         if (config.contains("Necessities.log") && config.getBoolean("Necessities.log"))
             this.log.log(message);
     }
 
     public void logIn(UUID uuid) {
-        YamlConfiguration config = YamlConfiguration.loadConfiguration(this.configFile);
+        YamlConfiguration config = Necessities.getInstance().getConfig();
         if (config.contains("Necessities.log") && config.getBoolean("Necessities.log"))
             this.log.log(" + " + playerInfo(Bukkit.getPlayer(uuid)) + " joined the game.");
     }
 
     public void logDeath(UUID uuid, String cause) {
-        YamlConfiguration config = YamlConfiguration.loadConfiguration(this.configFile);
+        YamlConfiguration config = Necessities.getInstance().getConfig();
         if (config.contains("Necessities.log") && config.getBoolean("Necessities.log"))
             this.log.log(playerInfo(Bukkit.getPlayer(uuid)) + " " + cause);
     }
 
     public void logOut(UUID uuid) {
         removePlayer(uuid);
-        YamlConfiguration config = YamlConfiguration.loadConfiguration(this.configFile);
+        YamlConfiguration config = Necessities.getInstance().getConfig();
         if (config.contains("Necessities.log") && config.getBoolean("Necessities.log"))
             this.log.log(" - " + playerInfo(Bukkit.getPlayer(uuid)) + " Disconnected.");
     }

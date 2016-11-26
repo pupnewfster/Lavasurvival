@@ -13,13 +13,13 @@ class Portal {
     private boolean validPortal = false;
     private Warp destination;
     private World from, to;
-    private String name;
+    private final String name;
 
-    Portal(String portalname) {
+    Portal(String portalName) {
         File configFilePM = new File("plugins/Necessities/WorldManager", "portals.yml");
         YamlConfiguration configPM = YamlConfiguration.loadConfiguration(configFilePM);
         WarpManager warps = Necessities.getInstance().getWarps();
-        this.name = portalname;
+        this.name = portalName;
         if (configPM.contains(this.name + ".world"))
             this.from = Bukkit.getWorld(configPM.getString(this.name + ".world"));
         if (configPM.contains(this.name + ".destination")) {
@@ -49,19 +49,19 @@ class Portal {
 
     private void fixCoordinates() {
         if (this.x1 > this.x2) {
-            double tempx = this.x1;
+            double tempX = this.x1;
             this.x1 = this.x2;
-            this.x2 = tempx;
+            this.x2 = tempX;
         }
         if (this.y1 > this.y2) {
-            double tempy = this.y1;
+            double tempY = this.y1;
             this.y1 = this.y2;
-            this.y2 = tempy;
+            this.y2 = tempY;
         }
         if (this.z1 > this.z2) {
-            double tempz = this.z1;
+            double tempZ = this.z1;
             this.z1 = this.z2;
-            this.z2 = tempz;
+            this.z2 = tempZ;
         }
         this.x1 -= 0.3;
         this.y1 -= 0.3;
@@ -71,6 +71,7 @@ class Portal {
         this.z2 += 0.3;
     }
 
+    @SuppressWarnings("unused")
     public String getName() {
         return this.name;
     }

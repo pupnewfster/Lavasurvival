@@ -6,20 +6,21 @@ import org.bukkit.configuration.file.FileConfiguration;
 import java.util.ArrayList;
 import java.util.List;
 
+@SuppressWarnings("unused")
 public class GlickoRank {
 
     /**
      * The amount of ranked games a player must play before getting ranked
      */
-    public static final int PLACEMENT_GAME_COUNT = 15;
+    private static final int PLACEMENT_GAME_COUNT = 15;
 
     /**
      * The amount of ranked games a player must play before calculating a new rank
      */
-    public static final int RANKED_GAME_COUNT = 10;
+    private static final int RANKED_GAME_COUNT = 10;
 
     //=== RANKING CONSTANTS ===
-    public static final double SCALING_FACTOR = 173.7378;
+    private static final double SCALING_FACTOR = 173.7378;
 
     private double tau;
 
@@ -94,7 +95,7 @@ public class GlickoRank {
         return (int) (this.rating * SCALING_FACTOR + Glicko2.getInstance().getDefaultRating());
     }
 
-    public void setRating(double rating) {
+    private void setRating(double rating) {
         this.rating = ((rating - Glicko2.getInstance().getDefaultRating()) / SCALING_FACTOR);
     }
 
@@ -102,7 +103,7 @@ public class GlickoRank {
         return rd * SCALING_FACTOR;
     }
 
-    public void setRd(double rd) {
+    private void setRd(double rd) {
         this.rd = rd / SCALING_FACTOR;
     }
 
@@ -110,7 +111,7 @@ public class GlickoRank {
         return vol;
     }
 
-    public void setVol(double vol) {
+    private void setVol(double vol) {
         this.vol = vol;
     }
 
@@ -134,7 +135,7 @@ public class GlickoRank {
         }
     }
 
-    public boolean hasPlayed() {
+    private boolean hasPlayed() {
         return outcomes.size() > 0;
     }
 
@@ -217,14 +218,9 @@ public class GlickoRank {
     }
 
     private PFunction<Double, Double> makef(final double delta, final double v, final double a) {
-        return new PFunction<Double, Double>() {
-            @Override
-            public Double run(Double x) {
-                return (Math.exp(x) * ((delta * delta) - (rd * rd) - v - Math.exp(x)) /
-                        (2.0 * Math.pow((rd * rd) + v + Math.exp(x), 2))) -
-                        ((x - a) / (tau * tau));
-            }
-        };
+        return x -> (Math.exp(x) * ((delta * delta) - (rd * rd) - v - Math.exp(x)) /
+                (2.0 * Math.pow((rd * rd) + v + Math.exp(x), 2))) -
+                ((x - a) / (tau * tau));
     }
 
     private double calculateVolatility(double v, double delta) {
@@ -274,12 +270,7 @@ public class GlickoRank {
      */
 
     public Rankable toRankable() {
-        return new Rankable() {
-            @Override
-            public GlickoRank getRanking() {
-                return GlickoRank.this;
-            }
-        };
+        return () -> GlickoRank.this;
     }
 
     public int getGameCount() {

@@ -10,8 +10,8 @@ import java.util.HashMap;
 import java.util.UUID;
 
 public class UserManager {
-    private static HashMap<UUID, UserInfo> players = new HashMap<>();
-    private File configFileUsers = new File(Lavasurvival.INSTANCE.getDataFolder(), "userinfo.yml");
+    private static final HashMap<UUID, UserInfo> players = new HashMap<>();
+    private final File configFileUsers = new File(Lavasurvival.INSTANCE.getDataFolder(), "userinfo.yml");
 
     public void readUsers() {
         Bukkit.getOnlinePlayers().forEach(this::parseUser);
@@ -37,6 +37,7 @@ public class UserManager {
         players.keySet().forEach(uuid -> players.get(uuid).save());
     }
 
+    @SuppressWarnings("unused")
     public HashMap<UUID, UserInfo> getUsers() {
         return players;
     }

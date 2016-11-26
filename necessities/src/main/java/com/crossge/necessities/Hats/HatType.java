@@ -14,8 +14,8 @@ public enum HatType {
     Trippy("TRIPPY"),
     Pot("POT");
 
-    private static HashMap<String, HatType> nameMap = new HashMap<>();
-    private String name;
+    private static final HashMap<String, HatType> nameMap = new HashMap<>();
+    private final String name;
 
     HatType(String name) {
         this.name = name;

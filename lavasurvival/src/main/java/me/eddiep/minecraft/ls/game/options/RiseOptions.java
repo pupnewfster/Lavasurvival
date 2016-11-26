@@ -3,7 +3,9 @@ package me.eddiep.minecraft.ls.game.options;
 import me.eddiep.minecraft.ls.game.LavaMap;
 
 public class RiseOptions extends FloodOptions {
-    int minRiseTimeSeconds = 15, maxRiseTimeSeconds = 30, layerCount = 1;
+    final int minRiseTimeSeconds = 15;
+    final int maxRiseTimeSeconds = 30;
+    final int layerCount = 1;
 
     public static RiseOptions defaults(LavaMap owner) {
         return new RiseOptions(owner);

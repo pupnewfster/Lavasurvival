@@ -8,16 +8,15 @@ import org.bukkit.entity.Player;
  * Class to represent a custom Player wrapper
  */
 public class MenuPlayer {
-
     /**
      * The MenuManager
      */
-    protected MenuManager menuManager;
+    private MenuManager menuManager;
 
     /**
      * The Bukkit Player
      */
-    protected Player bukkit;
+    private final Player bukkit;
 
     /**
      * Default constructor for MenuPlayer
@@ -60,18 +59,17 @@ public class MenuPlayer {
     /**
      * Sets a menu instance as the current menu and removes any other instances
      *
-     * @param menu       Menu instance that you which to set as the current menu
-     * @param regenerate Whether or not to regenerate the menu from scratch
+     * @param menu Menu instance that you which to set as the current menu
      */
-    public void setActiveMenuAndReplace(Menu menu, boolean regenerate) {
-        menuManager.setActiveMenuAndReplace(menu, regenerate);
+    public void setActiveMenuAndReplace(Menu menu) {
+        menuManager.setActiveMenuAndReplace(menu);
         getBukkit().openInventory(menuManager.getCurrentMenu().getInventory());
     }
 
     /**
      * Reset the menu manager, and erases all menu history
      */
-    public void resetManager() {
+    private void resetManager() {
         menuManager = new MenuManager();
     }
 

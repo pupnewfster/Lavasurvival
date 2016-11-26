@@ -4,13 +4,13 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 
 public interface ShopManager {
-
     /**
      * This function is called when the player clicks the shop icon
      *
      * @param owner The player who clicked
      * @param shop  The shop that was opened
      */
+    @SuppressWarnings("unused")
     void shopClicked(Player owner, Shop shop);
 
     /**

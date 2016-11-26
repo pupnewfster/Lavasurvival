@@ -25,21 +25,19 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.material.MaterialData;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
+@SuppressWarnings("unused")
 public class UserInfo implements Rankable {
-    private File configFileUsers = new File(Lavasurvival.INSTANCE.getDataFolder(), "userinfo.yml");
-    private ArrayList<MaterialData> ownedBlocks = new ArrayList<>();
+    private final File configFileUsers = new File(Lavasurvival.INSTANCE.getDataFolder(), "userinfo.yml");
+    private final ArrayList<MaterialData> ownedBlocks = new ArrayList<>();
     private long lastBreak = System.currentTimeMillis(), blockChangeCount;
     private boolean inWater = false;
     private Player bukkitPlayer;
     private int taskID = 0;
-    private UUID userUUID;
-    private List<ItemStack> BANK = new ArrayList<ItemStack>();
-    private GlickoRank rank;
+    private final UUID userUUID;
+    private List<ItemStack> BANK = new ArrayList<>();
+    private final GlickoRank rank;
     private boolean generosity;
 
     public UserInfo(Player p) {
@@ -63,14 +61,14 @@ public class UserInfo implements Rankable {
         this.blockChangeCount = 0;
     }
 
-    public void load() {
+    @SuppressWarnings({"unchecked", "deprecation"})
+    private void load() {
         YamlConfiguration configUsers = YamlConfiguration.loadConfiguration(this.configFileUsers);
         if (!configUsers.contains(getUUID().toString()))
             return;
 
-        if (configUsers.contains(getUUID() + ".bank")) {
+        if (configUsers.contains(getUUID() + ".bank"))
             this.BANK = (List<ItemStack>) configUsers.getList(getUUID() + ".bank");
-        }
 
         this.rank.load(getUUID().toString(), configUsers);
 
@@ -82,7 +80,7 @@ public class UserInfo implements Rankable {
                     this.ownedBlocks.add(new MaterialData(Material.valueOf(name), damage));
                 }
         } else {
-            configUsers.set(getUUID().toString() + ".boughtBlocks", Arrays.asList(""));
+            configUsers.set(getUUID().toString() + ".boughtBlocks", Collections.singletonList(""));
             try {
                 configUsers.save(this.configFileUsers);
             } catch (Exception e) {
@@ -91,6 +89,7 @@ public class UserInfo implements Rankable {
         }
     }
 
+    @SuppressWarnings("UnusedReturnValue")
     public Inventory createBankInventory(Player p) {
         return BankInventory.create(p, this.BANK).openFor(p);
     }
@@ -101,6 +100,7 @@ public class UserInfo implements Rankable {
             this.BANK = bank.getItems();
     }
 
+    @SuppressWarnings("deprecation")
     public void save() {
         if (this.ownedBlocks.isEmpty())
             return;
@@ -146,6 +146,7 @@ public class UserInfo implements Rankable {
         return this.inWater;
     }
 
+    @SuppressWarnings("ConstantConditions")
     public void setInWater(boolean value) {
         this.inWater = value;
         if (!isInWater())
@@ -153,7 +154,7 @@ public class UserInfo implements Rankable {
         if (value && getPlayer() != null && Gamemode.getCurrentGame() != null && Gamemode.DAMAGE != 0 && Gamemode.getCurrentGame().isAlive(getPlayer()))
             this.taskID = Bukkit.getScheduler().scheduleSyncDelayedTask(Lavasurvival.INSTANCE, () -> {
                 if (isInWater() && getPlayer() != null) {
-                    if (!PlayerStatusManager.isInvincible(getPlayer())  && !getPlayer().getGameMode().equals(GameMode.CREATIVE) && !getPlayer().getGameMode().equals(GameMode.SPECTATOR))
+                    if (!PlayerStatusManager.isInvincible(getPlayer()) && !getPlayer().getGameMode().equals(GameMode.CREATIVE) && !getPlayer().getGameMode().equals(GameMode.SPECTATOR))
                         ((CraftPlayer) getPlayer()).getHandle().damageEntity(DamageSource.OUT_OF_WORLD, (float) Gamemode.DAMAGE);
                     Block b = getPlayer().getLocation().getBlock();
                     setInWater(((b.getType().equals(Material.WATER) || b.getType().equals(Material.STATIONARY_WATER)) && b.hasMetadata("classic_block")) ||
@@ -163,7 +164,7 @@ public class UserInfo implements Rankable {
             }, (int) (20 * Gamemode.DAMAGE_FREQUENCY));
     }
 
-    public Player getPlayer() {
+    private Player getPlayer() {
         return this.bukkitPlayer;
     }
 
@@ -212,6 +213,7 @@ public class UserInfo implements Rankable {
         return this.ownedBlocks.contains(dat);
     }
 
+    @SuppressWarnings("deprecation")
     public void buyBlock(Material mat, double price, byte data) {
         buyBlock(new MaterialData(mat, data), price, true);
     }
@@ -220,6 +222,7 @@ public class UserInfo implements Rankable {
         buyBlock(new MaterialData(mat), price, false);
     }
 
+    @SuppressWarnings("deprecation")
     private void buyBlock(MaterialData dat, double price, boolean hasData) {
         if (getPlayer() == null)
             return;
@@ -237,7 +240,7 @@ public class UserInfo implements Rankable {
         }
     }
 
-    public void incrimentBlockCount() {
+    public void incrementBlockCount() {
         this.blockChangeCount++;
     }
 

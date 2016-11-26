@@ -6,6 +6,11 @@ authors: [Cross Gaming Development Team]
 softdepend: [GoogleAnalyticsPlugin]
 
 commands:
+   reloadannouncer:
+      description: Reloads the announcer.
+      usage: /<command>
+      permission: Necessities.reloadAnnouncer
+      aliases: [nreloadannouncer, rannouncer, nrannouncer, ra, nra, reloadtips, nreloadtips, rtips, nrtips]
    tps:
       description: Shows the ticks per second and memory usage.
       usage: /<command>
@@ -420,6 +425,7 @@ permissions:
     Necessities.*:
         description: The Mainframe of Necessities' command structure
         children:
+            Necessities.reloadAnnouncer: true
             Necessities.logoutmessage: true
             Necessities.loginmessage: true
             Necessities.bracketOthers: true
@@ -826,4 +832,7 @@ permissions:
         default: op
     Necessities.tps:
         description: Allows one to view the ticks per second.
+        default: op
+    Necessities.reloadAnnouncer:
+        description: Allows you to reload the announcer.
         default: op

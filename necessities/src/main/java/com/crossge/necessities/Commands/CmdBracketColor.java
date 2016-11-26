@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.UUID;
 
 public class CmdBracketColor implements Cmd {
-    private File configFileTitles = new File("plugins/Necessities", "titles.yml");
+    private final File configFileTitles = new File("plugins/Necessities", "titles.yml");
 
     public boolean commandUse(CommandSender sender, String[] args) {
         Variables var = Necessities.getInstance().getVar();

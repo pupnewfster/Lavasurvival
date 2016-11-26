@@ -11,6 +11,7 @@ public class PlayerStatusManager {
         status.keySet().forEach(p -> status.get(p).tick());
     }
 
+    @SuppressWarnings("unused")
     public static void cleanup() {
         status.clear();
     }
@@ -21,6 +22,7 @@ public class PlayerStatusManager {
         return status.get(owner);
     }
 
+    @SuppressWarnings("UnusedReturnValue")
     public static PlayerStatus makeInvincible(Player owner, int seconds) {
         PlayerStatus status = getStatus(owner);
         status.makeInvincible(seconds * 1000);

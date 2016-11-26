@@ -12,26 +12,25 @@ import java.util.Map;
  * A class containing static utility methods and caches which are intended as reflective conveniences.
  * Unless otherwise noted, upon failure methods will return {@code null}.
  */
-public final class Reflection {
-
+@SuppressWarnings("unused")
+final class Reflection {
     /**
      * Stores loaded classes from the {@code net.minecraft.server} package.
      */
-    private static final Map<String, Class<?>> _loadedNMSClasses = new HashMap<String, Class<?>>();
+    private static final Map<String, Class<?>> _loadedNMSClasses = new HashMap<>();
     /**
      * Stores loaded classes from the {@code org.bukkit.craftbukkit} package (and subpackages).
      */
-    private static final Map<String, Class<?>> _loadedOBCClasses = new HashMap<String, Class<?>>();
-    private static final Map<Class<?>, Map<String, Field>> _loadedFields = new HashMap<Class<?>, Map<String, Field>>();
+    private static final Map<String, Class<?>> _loadedOBCClasses = new HashMap<>();
+    private static final Map<Class<?>, Map<String, Field>> _loadedFields = new HashMap<>();
     /**
      * Contains loaded methods in a cache.
      * The map maps [types to maps of [method names to maps of [parameter types to method instances]]].
      */
-    private static final Map<Class<?>, Map<String, Map<ArrayWrapper<Class<?>>, Method>>> _loadedMethods = new HashMap<Class<?>, Map<String, Map<ArrayWrapper<Class<?>>, Method>>>();
+    private static final Map<Class<?>, Map<String, Map<ArrayWrapper<Class<?>>, Method>>> _loadedMethods = new HashMap<>();
     private static String _versionString;
 
     private Reflection() {
-
     }
 
     /**
@@ -40,16 +39,14 @@ public final class Reflection {
      *
      * @return The version string of the OBC and NMS packages, <em>including the trailing dot</em>.
      */
-    public synchronized static String getVersion() {
+    private synchronized static String getVersion() {
         if (_versionString == null) {
-            if (Bukkit.getServer() == null) {
-                // The server hasn't started, static initializer call?
+            if (Bukkit.getServer() == null)
+                //The server hasn't started, static initializer call?
                 return null;
-            }
             String name = Bukkit.getServer().getClass().getPackage().getName();
             _versionString = name.substring(name.lastIndexOf('.') + 1) + ".";
         }
-
         return _versionString;
     }
 
@@ -61,14 +58,11 @@ public final class Reflection {
      * @return The class instance representing the specified NMS class, or {@code null} if it could not be loaded.
      */
     public synchronized static Class<?> getNMSClass(String className) {
-        if (_loadedNMSClasses.containsKey(className)) {
+        if (_loadedNMSClasses.containsKey(className))
             return _loadedNMSClasses.get(className);
-        }
-
-        String fullName = "net.minecraft.server." + getVersion() + className;
-        Class<?> clazz = null;
+        Class<?> clazz;
         try {
-            clazz = Class.forName(fullName);
+            clazz = Class.forName("net.minecraft.server." + getVersion() + className);
         } catch (Exception e) {
             e.printStackTrace();
             _loadedNMSClasses.put(className, null);
@@ -86,14 +80,11 @@ public final class Reflection {
      * @return The class instance representing the specified OBC class, or {@code null} if it could not be loaded.
      */
     public synchronized static Class<?> getOBCClass(String className) {
-        if (_loadedOBCClasses.containsKey(className)) {
+        if (_loadedOBCClasses.containsKey(className))
             return _loadedOBCClasses.get(className);
-        }
-
-        String fullName = "org.bukkit.craftbukkit." + getVersion() + className;
-        Class<?> clazz = null;
+        Class<?> clazz;
         try {
-            clazz = Class.forName(fullName);
+            clazz = Class.forName("org.bukkit.craftbukkit." + getVersion() + className);
         } catch (Exception e) {
             e.printStackTrace();
             _loadedOBCClasses.put(className, null);
@@ -112,9 +103,10 @@ public final class Reflection {
      * @param obj The object for which to retrieve an NMS handle.
      * @return The NMS handle of the specified object, or {@code null} if it could not be retrieved using {@code getHandle()}.
      */
+    @SuppressWarnings("ConstantConditions")
     public synchronized static Object getHandle(Object obj) {
         try {
-            return getMethod(obj.getClass(), "getHandle").invoke(obj);
+            return getMethod(obj.getClass()).invoke(obj);
         } catch (Exception e) {
             e.printStackTrace();
             return null;
@@ -142,24 +134,22 @@ public final class Reflection {
     public synchronized static Field getField(Class<?> clazz, String name) {
         Map<String, Field> loaded;
         if (!_loadedFields.containsKey(clazz)) {
-            loaded = new HashMap<String, Field>();
+            loaded = new HashMap<>();
             _loadedFields.put(clazz, loaded);
-        } else {
+        } else
             loaded = _loadedFields.get(clazz);
-        }
-        if (loaded.containsKey(name)) {
-            // If the field is loaded (or cached as not existing), return the relevant value, which might be null
+        if (loaded.containsKey(name))
+            //If the field is loaded (or cached as not existing), return the relevant value, which might be null
             return loaded.get(name);
-        }
         try {
             Field field = clazz.getDeclaredField(name);
             field.setAccessible(true);
             loaded.put(name, field);
             return field;
         } catch (Exception e) {
-            // Error loading
+            //Error loading
             e.printStackTrace();
-            // Cache field as not existing
+            //Cache field as not existing
             loaded.put(name, null);
             return null;
         }
@@ -182,29 +172,24 @@ public final class Reflection {
      * Callers wishing this behavior should use {@link Class#getDeclaredMethod(String, Class...)}.
      *
      * @param clazz The class which contains the method to retrieve.
-     * @param name  The declared name of the method in the class.
      * @param args  The formal argument types of the method.
      * @return A method object with the specified name declared by the specified class.
      */
-    public synchronized static Method getMethod(Class<?> clazz, String name,
-                                                Class<?>... args) {
-        if (!_loadedMethods.containsKey(clazz)) {
-            _loadedMethods.put(clazz, new HashMap<String, Map<ArrayWrapper<Class<?>>, Method>>());
-        }
+    private synchronized static Method getMethod(Class<?> clazz, Class<?>... args) {
+        if (!_loadedMethods.containsKey(clazz))
+            _loadedMethods.put(clazz, new HashMap<>());
 
         Map<String, Map<ArrayWrapper<Class<?>>, Method>> loadedMethodNames = _loadedMethods.get(clazz);
-        if (!loadedMethodNames.containsKey(name)) {
-            loadedMethodNames.put(name, new HashMap<ArrayWrapper<Class<?>>, Method>());
-        }
+        if (!loadedMethodNames.containsKey("getHandle"))
+            loadedMethodNames.put("getHandle", new HashMap<>());
 
-        Map<ArrayWrapper<Class<?>>, Method> loadedSignatures = loadedMethodNames.get(name);
-        ArrayWrapper<Class<?>> wrappedArg = new ArrayWrapper<Class<?>>(args);
-        if (loadedSignatures.containsKey(wrappedArg)) {
+        Map<ArrayWrapper<Class<?>>, Method> loadedSignatures = loadedMethodNames.get("getHandle");
+        ArrayWrapper<Class<?>> wrappedArg = new ArrayWrapper<>(args);
+        if (loadedSignatures.containsKey(wrappedArg))
             return loadedSignatures.get(wrappedArg);
-        }
 
         for (Method m : clazz.getMethods())
-            if (m.getName().equals(name) && Arrays.equals(args, m.getParameterTypes())) {
+            if (m.getName().equals("getHandle") && Arrays.equals(args, m.getParameterTypes())) {
                 m.setAccessible(true);
                 loadedSignatures.put(wrappedArg, m);
                 return m;
@@ -212,5 +197,4 @@ public final class Reflection {
         loadedSignatures.put(wrappedArg, null);
         return null;
     }
-
 }

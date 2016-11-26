@@ -42,7 +42,7 @@ public class CmdCreateRank implements RankCmd {
         else if (previous != null && next != null && previous.getNext().equals(next))
             rm.addRank(rank, previous, next);//are consecutive
         else {
-            sender.sendMessage(var.getEr() + "Error: " + var.getErMsg() + "You must put the new rank inbetween two consecutive ranks.");
+            sender.sendMessage(var.getEr() + "Error: " + var.getErMsg() + "You must put the new rank in between two consecutive ranks.");
             return true;
         }
         sender.sendMessage(var.getObj() + rank + var.getMessages() + " created and added to list of ranks.");

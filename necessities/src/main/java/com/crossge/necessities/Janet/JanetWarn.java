@@ -4,21 +4,20 @@ import com.crossge.necessities.Necessities;
 import com.crossge.necessities.RankManager.RankManager;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.configuration.file.YamlConfiguration;
 
-import java.io.File;
 import java.util.HashMap;
 import java.util.UUID;
 
 public class JanetWarn {
-    private static HashMap<UUID, Integer> warnCount = new HashMap<>();
+    private static final HashMap<UUID, Integer> warnCount = new HashMap<>();
     private static String JanetName = "";
-    private int warns = YamlConfiguration.loadConfiguration(new File("plugins/Necessities", "config.yml")).getInt("Necessities.warns");
+    private int warns;
     private JanetLog log;
 
     public void initiate() {
         RankManager rm = Necessities.getInstance().getRM();
         JanetName = (!rm.getOrder().isEmpty() ? ChatColor.translateAlternateColorCodes('&', rm.getRank(rm.getOrder().size() - 1).getTitle() + " ") : "") + "Janet" + ChatColor.DARK_RED + ": " + ChatColor.WHITE;
+        warns = Necessities.getInstance().getConfig().getInt("Necessities.warns");
         log = Necessities.getInstance().getLog();
     }
 

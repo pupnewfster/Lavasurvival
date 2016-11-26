@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Formatter;
 import java.util.List;
 
+@SuppressWarnings({"SameParameterValue", "unused"})
 public class FileUtils {
     /**
      * Creates the directory/file if it doesn't exist.
@@ -14,6 +15,7 @@ public class FileUtils {
      * @param contents - The contents inside the file.
      * @throws IOException - Signals that an I/O exception has occurred.
      */
+    @SuppressWarnings("ResultOfMethodCallIgnored")
     private static void createIfNotExist(String path, String fileName, String contents) throws IOException {
         File filePath = new File(path);
         File fileFile = new File(path, fileName);
@@ -33,6 +35,7 @@ public class FileUtils {
      *
      * @param filepath The full filepath to create child directories for
      */
+    @SuppressWarnings("ResultOfMethodCallIgnored")
     public static void createChildDirectories(String filepath) {
         String[] dirs = filepath.split("/");
         String path = "";
@@ -60,6 +63,7 @@ public class FileUtils {
      * @param fileName - The name of the file
      * @throws IOException - If there's a problem writing the file
      */
+    @SuppressWarnings("ResultOfMethodCallIgnored")
     private static void createIfNotExist(String fileName) throws IOException {
         File file = new File(fileName);
         if (!file.exists())
@@ -71,6 +75,7 @@ public class FileUtils {
      *
      * @param filePath - The path of the file/directory to delete.
      */
+    @SuppressWarnings("ResultOfMethodCallIgnored")
     public static void deleteIfExist(String filePath) {
         File file = new File(filePath);
         if (file.exists())
@@ -84,6 +89,7 @@ public class FileUtils {
      * @param text     - The text to write to the specified file
      * @throws IOException If there's an error while writing to the file
      */
+    @SuppressWarnings("ResultOfMethodCallIgnored")
     public static void writeText(String filePath, String text) throws IOException {
         createIfNotExist(filePath);
 
@@ -171,6 +177,7 @@ public class FileUtils {
         }
     }
 
+    @SuppressWarnings("ResultOfMethodCallIgnored")
     public static void copyDirectory(File src, File dest) throws IOException {
         if (src.isDirectory()) {
             //if directory not exists, create it

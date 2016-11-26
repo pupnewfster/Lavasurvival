@@ -17,10 +17,10 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 public class CmdHide implements Cmd {
-    private ArrayList<UUID> hidden = new ArrayList<>();
-    private File configFileHiding = new File("plugins/Necessities", "hiding.yml");
-    private File configFileLogOut = new File("plugins/Necessities", "logoutmessages.yml");
-    private File configFileLogIn = new File("plugins/Necessities", "loginmessages.yml");
+    private final ArrayList<UUID> hidden = new ArrayList<>();
+    private final File configFileHiding = new File("plugins/Necessities", "hiding.yml");
+    private final File configFileLogOut = new File("plugins/Necessities", "logoutmessages.yml");
+    private final File configFileLogIn = new File("plugins/Necessities", "loginmessages.yml");
 
     public boolean commandUse(CommandSender sender, String[] args) {
         UserManager um = Necessities.getInstance().getUM();
@@ -32,7 +32,7 @@ public class CmdHide implements Cmd {
                 unhidePlayer(p);
                 YamlConfiguration configLogIn = YamlConfiguration.loadConfiguration(configFileLogIn);
                 Bukkit.broadcastMessage((ChatColor.GREEN + " + " + ChatColor.YELLOW + ChatColor.translateAlternateColorCodes('&',
-                        configLogIn.getString(p.getUniqueId().toString()).replaceAll("\\{NAME\\}", p.getDisplayName()).replaceAll("\\{RANK\\}",
+                        configLogIn.getString(p.getUniqueId().toString()).replaceAll("\\{NAME}", p.getDisplayName()).replaceAll("\\{RANK}",
                                 um.getUser(p.getUniqueId()).getRank().getTitle()))).replaceAll(ChatColor.RESET + "", ChatColor.YELLOW + ""));
                 hidden.remove(p.getUniqueId());
                 p.sendMessage(var.getMessages() + "You are now visible.");
@@ -51,7 +51,7 @@ public class CmdHide implements Cmd {
                 hidePlayer(p);
                 YamlConfiguration configLogOut = YamlConfiguration.loadConfiguration(configFileLogOut);
                 Bukkit.broadcastMessage((ChatColor.RED + " - " + ChatColor.YELLOW + ChatColor.translateAlternateColorCodes('&',
-                        configLogOut.getString(p.getUniqueId().toString()).replaceAll("\\{NAME\\}", p.getDisplayName()).replaceAll("\\{RANK\\}",
+                        configLogOut.getString(p.getUniqueId().toString()).replaceAll("\\{NAME}", p.getDisplayName()).replaceAll("\\{RANK}",
                                 um.getUser(p.getUniqueId()).getRank().getTitle()))).replaceAll(ChatColor.RESET + "", ChatColor.YELLOW + ""));
                 hidden.add(p.getUniqueId());
                 p.sendMessage(var.getMessages() + "You are now hidden.");

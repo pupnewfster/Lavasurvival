@@ -21,20 +21,22 @@ import org.json.simple.Jsoner;
 import org.json.simple.parser.JSONParser;
 
 import javax.net.ssl.HttpsURLConnection;
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.net.URL;
 import java.util.*;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 public class JanetSlack {
-    private HashMap<String, SlackUser> userMap = new HashMap<>();
-    private HashMap<Integer, ArrayList<String>> helpLists = new HashMap<>();
+    private final HashMap<String, SlackUser> userMap = new HashMap<>();
+    private final HashMap<Integer, ArrayList<String>> helpLists = new HashMap<>();
     private boolean isConnected = false;
     private String token;
     private URL hookURL;
     private WebSocket ws;
-    private JanetRandom r;
     private RankManager rm;
     private UserManager um;
     private JanetWarn warns;
@@ -43,17 +45,20 @@ public class JanetSlack {
     private GetUUID get;
 
     public void init() {
-        YamlConfiguration config = YamlConfiguration.loadConfiguration(new File("plugins/Necessities", "config.yml"));
+        Bukkit.getConsoleSender().sendMessage(ChatColor.AQUA + "Connecting to Slack...");
+        YamlConfiguration config = Necessities.getInstance().getConfig();
         token = config.contains("Necessities.SlackToken") ? config.getString("Necessities.SlackToken") : "token";
         String hook = config.contains("Necessities.WebHook") ? config.getString("Necessities.WebHook") : "webHook";
-        if (token.equals("token") || hook.equals("webHook"))
+        if (token.equals("token") || hook.equals("webHook")) {
+            Bukkit.getConsoleSender().sendMessage(ChatColor.DARK_RED + "Error:" + ChatColor.AQUA + " Failed to connect to Slack.");
             return;
+        }
         try {
             hookURL = new URL(hook);
         } catch (Exception e) {
+            Bukkit.getConsoleSender().sendMessage(ChatColor.DARK_RED + "Error:" + ChatColor.AQUA + " Failed to connect to Slack.");
             return;
         }
-        r = Necessities.getInstance().getRandom();
         rm = Necessities.getInstance().getRM();
         um = Necessities.getInstance().getUM();
         warns = Necessities.getInstance().getWarns();
@@ -62,6 +67,7 @@ public class JanetSlack {
         get = Necessities.getInstance().getUUID();
         setHelp();
         connect();
+        Bukkit.getConsoleSender().sendMessage(ChatColor.AQUA + "Connected to Slack.");
     }
 
     public void disconnect() {
@@ -76,7 +82,7 @@ public class JanetSlack {
             ws.disconnect();
     }
 
-    public void handleIngameChat(String message) {
+    public void handleInGameChat(String message) {
         userMap.values().stream().filter(SlackUser::viewingChat).forEach(u -> u.sendPrivateMessage(message));
     }
 
@@ -254,6 +260,7 @@ public class JanetSlack {
         return helpList.get(page + time);
     }
 
+    @SuppressWarnings("unchecked")
     private void setHelp() {
         ArrayList<String> temp = new ArrayList<>();
         temp.add("!help <page> ~ View the help messages on <page>.");
@@ -264,9 +271,8 @@ public class JanetSlack {
         temp.add("!devs ~ View the devs.");
         temp.add("!warn <name> <reason> ~ Warn <name> for <reason>.");
         temp.add("!worlds ~ View the loaded worlds.");
-        helpLists.put(0, (ArrayList<String>) temp.clone());//Member
-        temp.add("!meme <number> ~ Generate a number between 0 and <number>.");
-        temp.add("!say <message> ~ Sends the message <message> to the playesr on the server.");
+        this.helpLists.put(0, (ArrayList<String>) temp.clone());//Member
+        temp.add("!say <message> ~ Sends the message <message> to the players on the server.");
         temp.add("!kick <name> <reason> ~ Kicks <name> for an optional <reason>.");
         temp.add("!tempban <name> <time> <reason> ~ Tempbans <name> for <time> and an optional <reason>.");
         temp.add("!ban <name> <reason> ~ Bans <name> for an optional <reason>.");
@@ -280,9 +286,9 @@ public class JanetSlack {
         temp.add("!reload ~ Reloads the server.");
         temp.add("!restart ~ Restarts the server.");
         temp.add("!consolecmd <command> ~ Perform a command through the console.");
-        helpLists.put(1, (ArrayList<String>) temp.clone());//Admin
-        helpLists.put(2, (ArrayList<String>) temp.clone());//Owner
-        helpLists.put(3, (ArrayList<String>) temp.clone());//Primary owner
+        this.helpLists.put(1, (ArrayList<String>) temp.clone());//Admin
+        this.helpLists.put(2, (ArrayList<String>) temp.clone());//Owner
+        this.helpLists.put(3, (ArrayList<String>) temp.clone());//Primary owner
         temp.clear();
     }
 
@@ -389,7 +395,7 @@ public class JanetSlack {
                 }
                 if (u.getPlayer() != null) {
                     Player p = u.getPlayer();
-                    m += " - IP Adress: " + p.getAddress().toString().split("/")[1].split(":")[0] + "\n";
+                    m += " - IP Address: " + p.getAddress().toString().split("/")[1].split(":")[0] + "\n";
                     String gamemode = "Survival";
                     if (p.getGameMode().equals(GameMode.ADVENTURE))
                         gamemode = "Adventure";
@@ -454,13 +460,6 @@ public class JanetSlack {
             } else if (message.startsWith("!say ") && info.isAdmin()) {
                 Bukkit.broadcastMessage(ChatColor.WHITE + name + ": " + message.replaceFirst("!say ", ""));
                 return;
-            } else if (message.startsWith("!meme ") && info.isAdmin()) {
-                int applePie = 0;
-                try {
-                    applePie = Integer.parseInt(message.split(" ")[1]);
-                } catch (Exception ignored) {
-                }
-                m += r.memeRandom(applePie) + "\n";
             } else if (message.startsWith("!kick ") && info.isAdmin()) {
                 message = message.replaceFirst("!kick ", "");
                 if (message.split(" ").length == 0) {
@@ -687,7 +686,7 @@ public class JanetSlack {
             } else if (message.startsWith("!restart") && info.isAdmin()) {
                 sendMessage("Restarting...", isPM, info);
                 Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "endgame");
-                Bukkit.getScheduler().scheduleSyncDelayedTask(Necessities.getInstance(), () -> Bukkit.spigot().restart(), 200);
+                Bukkit.getScheduler().scheduleSyncDelayedTask(Necessities.getInstance(), () -> Bukkit.spigot().restart(), 20);
                 return;
             } else if ((message.startsWith("!consolecmd") || message.startsWith("!ccmd") || message.startsWith("!consolecommand")) && info.isAdmin()) {//TODO Make it show the result to slack
                 final String command = message.replaceFirst(message.split(" ")[0], "").trim();
@@ -710,9 +709,13 @@ public class JanetSlack {
         Necessities.getInstance().getAI().parseMessage(name, message, JanetAI.Source.Slack, isPM, info);
     }
 
+    @SuppressWarnings("unused")
     class SlackUser {
         private boolean justLoaded = true, viewingChat = false, isBot = false;
-        private String id, name, latest, channel;
+        private final String id;
+        private final String name;
+        private String latest;
+        private String channel;
         private int rank = 0;
 
         SlackUser(JsonObject json) {

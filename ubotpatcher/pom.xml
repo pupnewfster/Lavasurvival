@@ -10,20 +10,8 @@
 
     <repositories>
         <repository>
-            <id>vault-repo</id>
-            <url>http://nexus.theyeticave.net/content/repositories/pub_releases</url>
-        </repository>
-        <repository>
             <id>spigot-repo</id>
             <url>https://hub.spigotmc.org/nexus/content/repositories/snapshots/</url>
-        </repository>
-        <repository>
-            <id>sinndev-repo</id>
-            <url>http://repo.sinndev.com/content/repositories/snapshots</url>
-        </repository>
-        <repository>
-            <id>stealthyone-repo</id>
-            <url>http://repo.stealthyone.com/content/groups/public</url>
         </repository>
         <repository>
             <id>libs</id>
@@ -40,12 +28,12 @@
         <dependency>
             <groupId>org.spigotmc</groupId>
             <artifactId>spigot-api</artifactId>
-            <version>1.10.2-R0.1-SNAPSHOT</version>
+            <version>1.11-R0.1-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
     </dependencies>
 
-	<build>
+    <build>
         <resources>
             <resource>
                 <directory>${project.basedir}</directory>
@@ -58,7 +46,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.1</version>
+                <version>3.5.1</version>
                 <configuration>
                     <source>1.8</source>
                     <target>1.8</target>
@@ -72,7 +60,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-shade-plugin</artifactId>
-                <version>1.4</version>
+                <version>2.4.3</version>
                 <executions>
                     <execution>
                         <goals>

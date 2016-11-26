@@ -12,11 +12,11 @@ public class CmdTop implements Cmd {
         if (sender instanceof Player) {
             Player p = (Player) sender;
             Location top = p.getLocation();
-            double topy = 0;
+            double topY = 0;
             for (int i = 0; i < top.getWorld().getMaxHeight(); i++)
                 if ((new Location(top.getWorld(), top.getX(), i, top.getZ())).getBlock().getType().isSolid())
-                    topy = i + 1;
-            p.teleport(new Location(top.getWorld(), top.getX(), topy, top.getZ(), top.getYaw(), top.getPitch()));
+                    topY = i + 1;
+            p.teleport(new Location(top.getWorld(), top.getX(), topY, top.getZ(), top.getYaw(), top.getPitch()));
             p.sendMessage(var.getMessages() + "Teleporting to top.");
         } else
             sender.sendMessage(var.getEr() + "Error: " + var.getErMsg() + "The console cannot use /top soz.");

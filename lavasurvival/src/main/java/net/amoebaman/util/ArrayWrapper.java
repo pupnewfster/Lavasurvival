@@ -15,8 +15,8 @@ import java.util.Collection;
  * @author Glen Husman
  * @see Arrays
  */
-public final class ArrayWrapper<E> {
-
+@SuppressWarnings("unused")
+final class ArrayWrapper<E> {
     private E[] _array;
 
     /**
@@ -24,7 +24,8 @@ public final class ArrayWrapper<E> {
      *
      * @param elements The elements of the array.
      */
-    public ArrayWrapper(E... elements) {
+    @SafeVarargs
+    ArrayWrapper(E... elements) {
         setArray(elements);
     }
 
@@ -45,20 +46,17 @@ public final class ArrayWrapper<E> {
             size = coll.size();
         }
 
-
         if (size < 0) {
             size = 0;
-            // Ugly hack: Count it ourselves
-            for (@SuppressWarnings("unused") T element : list) {
+            //Ugly hack: Count it ourselves
+            for (@SuppressWarnings("unused") T element : list)
                 size++;
-            }
         }
 
         T[] result = (T[]) Array.newInstance(c, size);
         int i = 0;
-        for (T element : list) { // Assumes iteration order is consistent
-            result[i++] = element; // Assign array element at index THEN increment counter
-        }
+        for (T element : list)//Assumes iteration order is consistent
+            result[i++] = element;//Assign array element at index THEN increment counter
         return result;
     }
 
@@ -76,7 +74,7 @@ public final class ArrayWrapper<E> {
      *
      * @param array The new wrapped array.
      */
-    public void setArray(E[] array) {
+    private void setArray(E[] array) {
         if (array == null) throw new IllegalArgumentException("The array must not be null!");
         _array = array;
     }
@@ -89,10 +87,7 @@ public final class ArrayWrapper<E> {
     @SuppressWarnings("rawtypes")
     @Override
     public boolean equals(Object other) {
-        if (!(other instanceof ArrayWrapper)) {
-            return false;
-        }
-        return Arrays.equals(_array, ((ArrayWrapper) other)._array);
+        return other instanceof ArrayWrapper && Arrays.equals(_array, ((ArrayWrapper) other)._array);
     }
 
     /**

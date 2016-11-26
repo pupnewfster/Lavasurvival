@@ -29,25 +29,29 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
+@SuppressWarnings("unused")
 public final class ClassicPhysicsHandler implements Listener {
-    private ArrayList<LogicContainerHolder> logicContainers = new ArrayList<>();
+    private final ArrayList<LogicContainerHolder> logicContainers = new ArrayList<>();
     private final ConcurrentHashMap<ToAndFrom, Material> locations = new ConcurrentHashMap<>();
     private final ConcurrentHashMap<Long, WorldCount> chunks = new ConcurrentHashMap<>();
     private final ConcurrentHashMap<Location, ConcurrentLinkedQueue<ToAndFrom>> toFroms = new ConcurrentHashMap<>();
-    private ArrayList<Player> lplacers = new ArrayList<>(), wplacers = new ArrayList<>();
+    private final ArrayList<Player> lplacers = new ArrayList<>();
+    private final ArrayList<Player> wplacers = new ArrayList<>();
     private boolean running = false, sendingPackets = false, removePrevious = false;
     private World current = null;
     private ChunkEdit e = null;
-    private Plugin owner;
+    private final Plugin owner;
 
+    @SuppressWarnings("unused")
     private class WorldCount {
-        private ArrayList<Short> changes = new ArrayList<>();
-        private World world;
+        private final ArrayList<Short> changes = new ArrayList<>();
+        private final World world;
         private int x, y, z;
-        private long l;
+        private final long l;
 
         WorldCount(World world, long l) {
             this.world = world;
@@ -115,7 +119,8 @@ public final class ClassicPhysicsHandler implements Listener {
     }
 
     private class ToAndFrom {
-        Location from, to;
+        final Location from;
+        final Location to;
 
         ToAndFrom(Location to, Location from) {
             this.to = to;
@@ -235,7 +240,7 @@ public final class ClassicPhysicsHandler implements Listener {
                     if (p != null) {
                         final EntityPlayer ep = ((CraftPlayer) p).getHandle();
                         for (Packet packet : packets) {
-                            if (removePrevious)//Check again incase on player is mid getting sent
+                            if (removePrevious)//Check again in case player is mid getting sent
                                 break;
                             ep.playerConnection.sendPacket(packet);
                         }
@@ -420,7 +425,7 @@ public final class ClassicPhysicsHandler implements Listener {
                 break;
             }
         PacketPlayOutBlockChange packet = new PacketPlayOutBlockChange(((CraftWorld) location.getWorld()).getHandle(), new BlockPosition(location.getBlockX(), location.getBlockY(), location.getBlockZ()));
-        Bukkit.getOnlinePlayers().stream().filter(p -> p != null).forEach(p -> ((CraftPlayer) p).getHandle().playerConnection.sendPacket(packet));
+        Bukkit.getOnlinePlayers().stream().filter(Objects::nonNull).forEach(p -> ((CraftPlayer) p).getHandle().playerConnection.sendPacket(packet));
     }
 
     public void placeClassicBlockAt(Location location, Material type, Location from) {

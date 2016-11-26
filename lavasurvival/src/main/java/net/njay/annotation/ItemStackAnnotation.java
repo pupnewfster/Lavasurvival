@@ -55,5 +55,4 @@ public @interface ItemStackAnnotation {
      * @return A string representation of an Enchantment (Needs to be parsed)
      */
     String[] enchantments() default {};
-
 }

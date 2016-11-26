@@ -93,6 +93,7 @@ abstract class AbstractLogicContainer implements LogicContainer {
         unloadQueue.add(world);
     }
 
+    @SuppressWarnings("unused")
     protected abstract void tickForBlock(Block block, Location location);
 
     void placeClassicBlock(Material material, Location location, Location from) {

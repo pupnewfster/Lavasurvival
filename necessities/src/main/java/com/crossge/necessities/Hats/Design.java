@@ -6,6 +6,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.EulerAngle;
 
 class Design extends Hat {
+    @SuppressWarnings("unused")
     Design(Location loc) {
         this.trueLoc = loc;
         int turn = 5, turnV = 5;
