@@ -4,7 +4,7 @@ import me.eddiep.minecraft.ls.Lavasurvival;
 import me.eddiep.ubot.module.Logger;
 
 @SuppressWarnings("unused")
-class UBotLogger implements Logger {
+public class UBotLogger implements Logger {
     @Override
     public void log(String s) {
         Lavasurvival.log(s);
