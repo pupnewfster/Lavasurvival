@@ -12,7 +12,11 @@ public class UbotPatcher extends JavaPlugin {
     public void onEnable() {
         getLogger().info("Searching for jar files...");
 
-        File[] jars = getDataFolder().listFiles(pathname -> pathname.getName().endsWith("jar"));
+        File dataFolder = new File("plugins/ubotpatcher");
+        if (!dataFolder.exists())
+            dataFolder.mkdir();
+
+        File[] jars = dataFolder.listFiles(pathname -> pathname.getName().endsWith("jar"));
 
         if (jars == null) {
             getLogger().info("No jar files found!");
@@ -24,7 +28,7 @@ public class UbotPatcher extends JavaPlugin {
 
         for (File f : jars) {
             getLogger().info("Moving " + f.getName() + "...");
-            File target = new File(getDataFolder().getParentFile(), f.getName());
+            File target = new File(dataFolder.getParentFile(), f.getName());
             try {
                 Files.move(f.toPath(), target.toPath(), StandardCopyOption.REPLACE_EXISTING);
             } catch (IOException e) {

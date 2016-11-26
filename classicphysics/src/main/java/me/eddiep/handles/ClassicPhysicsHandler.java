@@ -384,6 +384,12 @@ public final class ClassicPhysicsHandler implements Listener {
     }
 
     private void requestUpdateAround(Location location) {
+        try {
+            if (location == null || location.getWorld() == null || location.getChunk() == null || !location.getChunk().isLoaded() || location.getBlock() == null)//World isn't loaded
+                return;
+        } catch (Exception e) {
+            return;
+        }
         for (int x = -1; x <= 1; x++)
             for (int y = -1; y <= 1; y++)
                 for (int z = -1; z <= 1; z++) {
