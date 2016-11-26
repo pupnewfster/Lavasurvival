@@ -225,7 +225,7 @@ public class Lavasurvival extends JavaPlugin {
         this.userManager.readUsers();
 
         log("Starting UBot");
-        UBot ubot = new UBot(new File("/root/ubot/ls1/Lavasurvival"), new Updater(), new UBotLogger());
+        UBot ubot = new UBot(new File("/home/minecraft/ubot/Lavasurvival"), new Updater(), new UBotLogger());
         ubotCancelToken = ubot.startAsync();
     }
 
