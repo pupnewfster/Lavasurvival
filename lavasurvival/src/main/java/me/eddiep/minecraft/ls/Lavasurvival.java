@@ -85,7 +85,7 @@ public class Lavasurvival extends JavaPlugin {
         ItemStack item = inv.getItem(index);
         ItemMeta meta = item.getItemMeta();
         ArrayList<String> lore = new ArrayList<>();
-        lore.add(ChatColor.ITALIC + "Current Balance: " + ChatColor.RESET + this.econ.format(this.econ.getBalance(player)));
+        lore.add(ChatColor.GREEN + "" + ChatColor.ITALIC + "Current Balance: " + ChatColor.RESET + this.econ.format(this.econ.getBalance(player)));
         meta.setLore(lore);
         item.setItemMeta(meta);
     }
