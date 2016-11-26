@@ -15,21 +15,17 @@
 	    </repository>
         <repository>
             <id>vault-repo</id>
-            <url>http://nexus.theyeticave.net/content/repositories/pub_releases</url>
+            <url>http://nexus.hc.to/content/repositories/pub_releases</url>
         </repository>
         <repository>
             <id>spigot-repo</id>
             <url>https://hub.spigotmc.org/nexus/content/repositories/snapshots/</url>
         </repository>
         <repository>
-            <id>sinndev-repo</id>
-            <url>http://repo.sinndev.com/content/repositories/snapshots</url>
-        </repository>
-        <repository>
             <id>stealthyone-repo</id>
             <url>http://repo.stealthyone.com/content/groups/public</url>
         </repository>
-		<repository>
+        <repository>
             <id>libs</id>
             <name>libs</name>
             <releases>
@@ -57,19 +53,18 @@
             <groupId>mkremins</groupId>
             <artifactId>fanciful</artifactId>
             <version>0.4.0-SNAPSHOT</version>
-			<scope>provided</scope>
-        </dependency>
-		<dependency>
-            <groupId>net.milkbowl.vault</groupId>
-            <artifactId>VaultAPI</artifactId>
-            <version>1.6</version>
             <scope>provided</scope>
         </dependency>
-		<dependency>
+        <dependency>
+            <groupId>info.debatty</groupId>
+            <artifactId>java-string-similarity</artifactId>
+            <version>0.18</version>
+        </dependency>
+        <dependency>
             <groupId>com.tentaclelabs</groupId>
             <artifactId>googleanalytics</artifactId>
             <version>1.0.0</version>
-			<scope>provided</scope>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.bukkit</groupId>
@@ -87,12 +82,14 @@
             <version>2.1.2</version>
         </dependency>
     </dependencies>
-	<build>
+    <build>
         <resources>
             <resource>
                 <directory>${project.basedir}</directory>
                 <includes>
                     <include>plugin.yml</include>
+                    <include>englishWords.txt</include>
+                    <include>customWords.txt</include>
                 </includes>
             </resource>
         </resources>
@@ -100,7 +97,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.1</version>
+                <version>3.5.1</version>
                 <configuration>
                     <source>1.8</source>
                     <target>1.8</target>
@@ -114,7 +111,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-shade-plugin</artifactId>
-                <version>1.4</version>
+                <version>2.4.3</version>
                 <executions>
                     <execution>
                         <goals>

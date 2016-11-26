@@ -171,7 +171,7 @@ public class Fusion extends Gamemode {
     private int switchADoodle;
 
     @Override
-    public Material getMat() {
+    protected Material getMat() {
         Material mat = this.switchADoodle % 2 == 0 ? Material.STATIONARY_LAVA : Material.STATIONARY_WATER;
         this.switchADoodle++;
         return mat;

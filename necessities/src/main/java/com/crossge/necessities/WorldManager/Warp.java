@@ -20,6 +20,7 @@ public class Warp {
                     Float.parseFloat(configWarps.getString(this.name + ".yaw")), Float.parseFloat(configWarps.getString(this.name + ".pitch")));
     }
 
+    @SuppressWarnings("unused")
     public String getName() {
         return this.name;
     }

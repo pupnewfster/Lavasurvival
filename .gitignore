@@ -1,3 +1,6 @@
+ubotpatcher/target/*
+
+*.DS_STORE
 classicphysics/target/*
 lavasurvival/target/*
 

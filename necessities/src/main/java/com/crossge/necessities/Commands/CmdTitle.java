@@ -12,7 +12,7 @@ import java.io.File;
 import java.util.UUID;
 
 public class CmdTitle implements Cmd {
-    private File configFileTitles = new File("plugins/Necessities", "titles.yml");
+    private final File configFileTitles = new File("plugins/Necessities", "titles.yml");
 
     public boolean commandUse(CommandSender sender, String[] args) {
         Variables var = Necessities.getInstance().getVar();

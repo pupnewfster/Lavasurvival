@@ -44,6 +44,7 @@ import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.*;
 
+@SuppressWarnings({"SameParameterValue", "unused"})
 public abstract class Gamemode {
     private static final Material[] DEFAULT_BLOCKS = new Material[]{
             Material.TORCH,
@@ -71,12 +72,13 @@ public abstract class Gamemode {
     }
 
     protected static final Random RANDOM = new Random();
-    public static double DAMAGE = 3, DAMAGE_FREQUENCY = 0.5;
+    public static final double DAMAGE = 3;
+    public static final double DAMAGE_FREQUENCY = 0.5;
     protected static boolean LAVA = true;
     private static boolean voting = false;
-    private LavaMap[] nextMaps = new LavaMap[VOTE_COUNT];
-    protected ArrayList<CraftBossBar> bars = new ArrayList<>();
-    private int[] votes = new int[VOTE_COUNT];
+    private final LavaMap[] nextMaps = new LavaMap[VOTE_COUNT];
+    protected final ArrayList<CraftBossBar> bars = new ArrayList<>();
+    private final int[] votes = new int[VOTE_COUNT];
     private int voteCount;
     private static LavaMap lastMap, currentMap;
     private static ArrayList<UUID> alive, dead;
@@ -189,8 +191,8 @@ public abstract class Gamemode {
         Lavasurvival.log("New game on " + getCurrentWorld().getName());
         if (Necessities.isTracking()) {
             if (isRewardDoubled())
-                Necessities.trackAction("LS", "DoubleRound", getCurrentMap().getName());
-            Necessities.trackAction("LS", "RoundStart", getCurrentMap().getName());
+                Necessities.trackAction("DoubleRound", getCurrentMap().getName());
+            Necessities.trackAction("RoundStart", getCurrentMap().getName());
         }
         this.isEnding = false;
         this.hasEnded = false;
@@ -235,6 +237,7 @@ public abstract class Gamemode {
         this.tickTask.runTaskTimer(Lavasurvival.INSTANCE, 0, 1);
     }
 
+    @SuppressWarnings("ResultOfMethodCallIgnored")
     private void restoreBackup(World world) {
         Lavasurvival.log("Restoring backup of " + world.getName());
         try {
@@ -320,28 +323,6 @@ public abstract class Gamemode {
         return count;
     }
 
-    @Deprecated
-    private int __INVALID_airBlocksAround(Location original, Location location, int limit, List<Block> alreadyChecked) {
-        if (original.toVector().distance(location.toVector()) >= limit)
-            return 1;
-        int total = 0;
-        for (int x = -1; x <= 1; x++) {
-            for (int y = -1; y <= 1; y++) {
-                for (int z = -1; z <= 1; z++) {
-                    Block check = location.clone().add(x, y, z).getBlock();
-                    if (alreadyChecked.contains(check))
-                        continue;
-                    if (!check.getType().isSolid() && !check.isLiquid()) {
-                        alreadyChecked.add(check);
-                        if (!getCurrentMap().isInSafeZone(check.getLocation()))
-                            total += __INVALID_airBlocksAround(original, check.getLocation(), limit, alreadyChecked) + 1;
-                    }
-                }
-            }
-        }
-        return total;
-    }
-
     protected boolean isEnding;
     private boolean hasEnded;
 
@@ -360,6 +341,7 @@ public abstract class Gamemode {
         endRound(false, true);
     }
 
+    @SuppressWarnings("ConstantConditions")
     public void endRound(boolean skipVote, boolean giveRewards) {
         if (this.hasEnded)
             return;
@@ -431,8 +413,8 @@ public abstract class Gamemode {
                     Double[] array = avgs.get(rank);
                     array[0] = array[0] / array[2];
                     array[1] = array[1] / array[2];
-                    Necessities.trackActionWithValue("LS", "AverageReward", rank.getName(), array[1]);
-                    Necessities.trackActionWithValue("LS", "AverageAir", rank.getName(), array[0]);
+                    Necessities.trackActionWithValue("AverageReward", rank.getName(), array[1]);
+                    Necessities.trackActionWithValue("AverageAir", rank.getName(), array[0]);
                 }
             }
             avgs.clear();
@@ -511,7 +493,7 @@ public abstract class Gamemode {
             scoreList = "{}";
         if (loserList.length() == 1)
             loserList = "{}";
-        YamlConfiguration config = YamlConfiguration.loadConfiguration(new File("plugins/Necessities", "config.yml"));
+        YamlConfiguration config = Necessities.getInstance().getConfig();
         String url = "jdbc:mariadb://" + config.getString("Lavasurvival.DBHost") + "/" + config.getString("Lavasurvival.DBTable"), user = config.getString("Lavasurvival.DBUser"),
                 pass = config.getString("Lavasurvival.DBPassword");
         try {
@@ -568,7 +550,7 @@ public abstract class Gamemode {
         this.voteCount++;
     }
 
-    private ArrayList<OfflinePlayer> voted = new ArrayList<>();
+    private final ArrayList<OfflinePlayer> voted = new ArrayList<>();
 
     public void voteFor(int number, Player player) {
         if (number >= this.nextMaps.length) {
@@ -580,7 +562,7 @@ public abstract class Gamemode {
         this.voteCount++;
         player.sendMessage(ChatColor.GREEN + "+ " + ChatColor.RESET + "" + ChatColor.BOLD + "You voted for " + this.nextMaps[number].getName() + "!");
         if (Necessities.isTracking()) {
-            Necessities.trackAction(player, "vote", this.nextMaps[number].getName());
+            Necessities.trackAction(player, this.nextMaps[number].getName());
         }
     }
 
@@ -588,6 +570,7 @@ public abstract class Gamemode {
         return voting;
     }
 
+    @SuppressWarnings("ConstantConditions")
     private void startVoting() {
         if (voting)
             return;
@@ -675,7 +658,7 @@ public abstract class Gamemode {
 
     protected void setIsLava(FloodOptions option) {
         if (option.isLavaEnabled() && option.isWaterEnabled())
-            LAVA = RANDOM.nextInt(100) < 75; //Have water/lava check be in here instead of as arguement
+            LAVA = RANDOM.nextInt(100) < 75; //Have water/lava check be in here instead of as argument
         else
             LAVA = option.isLavaEnabled() || !option.isWaterEnabled() && RANDOM.nextInt(100) < 75;
     }
@@ -880,7 +863,7 @@ public abstract class Gamemode {
 
     public abstract void addToBonus(double takeOut);
 
-    public abstract boolean isRewardDoubled();
+    protected abstract boolean isRewardDoubled();
 
     public static void restartNextGame(String serverToJoin) {
         restart = true;

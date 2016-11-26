@@ -5,7 +5,7 @@ import org.bukkit.entity.Player;
 import java.lang.ref.WeakReference;
 
 class PlayerStatus {
-    private WeakReference<Player> owner;
+    private final WeakReference<Player> owner;
     private boolean isInvincible;
     private long invincibleStart, invincibleDuration;
 

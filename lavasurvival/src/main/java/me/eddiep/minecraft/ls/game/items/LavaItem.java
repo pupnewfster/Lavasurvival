@@ -9,6 +9,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 import java.util.Arrays;
 
 public abstract class LavaItem {
+    @SuppressWarnings("StaticInitializerReferencesSubClass")
     public static final LavaItem[] ITEMS = new LavaItem[]{
             new Generosity(),
             new MinorHeal(),
@@ -28,7 +29,7 @@ public abstract class LavaItem {
 
     public abstract String name();
 
-    public abstract String description();
+    protected abstract String description();
 
     public ItemStack createItem() {
         ItemStack item = displayItem();
@@ -43,6 +44,7 @@ public abstract class LavaItem {
         return item.getItemMeta().getDisplayName().equals(name());
     }
 
+    @SuppressWarnings("unused")
     public boolean giveItem(Player player) {
         Inventory inventory = player.getInventory();
         int index = inventory.firstEmpty();

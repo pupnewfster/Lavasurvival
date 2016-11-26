@@ -3,7 +3,6 @@ package net.njay;
 import net.njay.player.MenuPlayerManager;
 
 public class MenuFramework {
-
     private static MenuRegistry registry;
     private static MenuPlayerManager playerManager;
 
@@ -23,6 +22,7 @@ public class MenuFramework {
      * @param registry      Registry to initialize MenuFramework
      * @param playerManager Custom Player Manager
      */
+    @SuppressWarnings("unused")
     public static void enable(MenuRegistry registry, MenuPlayerManager playerManager) {
         MenuFramework.registry = registry;
         MenuFramework.playerManager = playerManager;
@@ -41,5 +41,4 @@ public class MenuFramework {
     public static MenuPlayerManager getPlayerManager() {
         return playerManager;
     }
-
 }

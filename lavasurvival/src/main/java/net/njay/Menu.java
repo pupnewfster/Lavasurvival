@@ -9,12 +9,13 @@ public class Menu {
     /**
      * The Bukkit Inventory for this Menu
      */
-    protected Inventory inv;
+    private Inventory inv;
 
     /**
      * The MenuManager for this Menu
      */
-    protected MenuManager manager;
+    @SuppressWarnings({"FieldCanBeLocal", "unused"})
+    private final MenuManager manager;
 
     public Menu(MenuManager manager, Inventory inv) {
         this.manager = manager;

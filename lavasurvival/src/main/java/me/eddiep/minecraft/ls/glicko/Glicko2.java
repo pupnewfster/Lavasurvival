@@ -6,6 +6,7 @@ import org.bukkit.configuration.file.FileConfiguration;
 import java.io.File;
 
 public class Glicko2 {
+    @SuppressWarnings("unused")
     private static final File CONFIG_FILE = new File("ranking.conf");
 
     private double tau;

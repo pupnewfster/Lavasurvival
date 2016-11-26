@@ -11,6 +11,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.List;
 
+@SuppressWarnings("unused")
 public class ClassicPhysics extends JavaPlugin {
     public static final Object Sync = new Object();
     public static ClassicPhysics INSTANCE;

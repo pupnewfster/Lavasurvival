@@ -19,48 +19,34 @@ import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.Arrays;
 
+@SuppressWarnings("unused")
 @MenuInventory(slots = 9, name = "Rank Shop")
 public class RankShop extends Menu {
     public RankShop(MenuManager manager, Inventory inv) {
         super(manager, inv);
     }
 
-    @MenuItem(
-            slot = 2,
-            item = @ItemStackAnnotation(material = Material.WOOD, name = "")
-    )
+    @MenuItem(slot = 2, item = @ItemStackAnnotation(material = Material.WOOD, name = ""))
     public void BasicRank(MenuPlayer player) {
         buyRank(player, "Basic", 7000);
     }
 
-    @MenuItem(
-            slot = 3,
-            item = @ItemStackAnnotation(material = Material.IRON_BLOCK, name = "")
-    )
+    @MenuItem(slot = 3, item = @ItemStackAnnotation(material = Material.IRON_BLOCK, name = ""))
     public void AdvanceRank(MenuPlayer player) {
         buyRank(player, "Advanced", 30000);
     }
 
-    @MenuItem(
-            slot = 4,
-            item = @ItemStackAnnotation(material = Material.LAVA_BUCKET, name = "")
-    )
+    @MenuItem(slot = 4, item = @ItemStackAnnotation(material = Material.LAVA_BUCKET, name = ""))
     public void SurvivorRank(MenuPlayer player) {
         buyRank(player, "Survivor", 90000);
     }
 
-    @MenuItem(
-            slot = 5,
-            item = @ItemStackAnnotation(material = Material.APPLE, name = "")
-    )
+    @MenuItem(slot = 5, item = @ItemStackAnnotation(material = Material.APPLE, name = ""))
     public void TrustedRank(MenuPlayer player) {
         buyRank(player, "Trusted", 180000);
     }
 
-    @MenuItem(
-            slot = 6,
-            item = @ItemStackAnnotation(material = Material.GOLDEN_APPLE, name = "")
-    )
+    @MenuItem(slot = 6, item = @ItemStackAnnotation(material = Material.GOLDEN_APPLE, name = ""))
     public void ElderRank(MenuPlayer player) {
         buyRank(player, "Elder", 300000);
     }

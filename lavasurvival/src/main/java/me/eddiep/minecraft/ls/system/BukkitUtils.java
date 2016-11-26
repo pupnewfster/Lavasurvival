@@ -5,6 +5,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.material.MaterialData;
 
 public class BukkitUtils {
+    @SuppressWarnings("unused")
     public static boolean isInventoryEmpty(Inventory inv) {
         for (ItemStack item : inv.getContents())
             if (item != null)

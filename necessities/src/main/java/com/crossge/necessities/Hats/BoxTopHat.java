@@ -8,7 +8,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.EulerAngle;
 
 class BoxTopHat extends Hat {
-    private double dist = 0.22;
+    private final double dist = 0.22;
 
     BoxTopHat(Location loc) {
         this.trueLoc = loc;

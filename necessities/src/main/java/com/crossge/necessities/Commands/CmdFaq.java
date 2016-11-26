@@ -17,8 +17,7 @@ public class CmdFaq implements Cmd {
             sender.sendMessage(var.getEr() + "Error: " + var.getErMsg() + "The file does not exist somehow...");
             return true;
         }
-        try {
-            BufferedReader read = new BufferedReader(new FileReader(f));
+        try (BufferedReader read = new BufferedReader(new FileReader(f))) {
             String line;
             boolean hasText = false;
             while ((line = read.readLine()) != null)
@@ -28,7 +27,6 @@ public class CmdFaq implements Cmd {
                 }
             if (!hasText)
                 sender.sendMessage(var.getEr() + "Error: " + var.getErMsg() + "No server faq set.");
-            read.close();
         } catch (Exception ignored) {
         }
         return true;

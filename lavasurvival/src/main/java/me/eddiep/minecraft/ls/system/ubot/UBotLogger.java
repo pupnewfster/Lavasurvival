@@ -3,6 +3,7 @@ package me.eddiep.minecraft.ls.system.ubot;
 import me.eddiep.minecraft.ls.Lavasurvival;
 import me.eddiep.ubot.module.Logger;
 
+@SuppressWarnings("unused")
 public class UBotLogger implements Logger {
     @Override
     public void log(String s) {
