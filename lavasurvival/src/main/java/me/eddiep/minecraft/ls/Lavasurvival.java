@@ -15,8 +15,9 @@ import me.eddiep.minecraft.ls.game.shop.ShopFactory;
 import me.eddiep.minecraft.ls.game.shop.impl.*;
 import me.eddiep.minecraft.ls.ranks.UserManager;
 import me.eddiep.minecraft.ls.system.PlayerListener;
-import me.eddiep.minecraft.ls.system.ubot.*;
 import me.eddiep.minecraft.ls.system.setup.SetupMap;
+import me.eddiep.minecraft.ls.system.ubot.UBotLogger;
+import me.eddiep.minecraft.ls.system.ubot.Updater;
 import me.eddiep.ubot.UBot;
 import me.eddiep.ubot.utils.CancelToken;
 import net.milkbowl.vault.economy.Economy;
@@ -74,7 +75,7 @@ public class Lavasurvival extends JavaPlugin {
             ItemMeta meta = item.getItemMeta();
             meta.setDisplayName(ChatColor.GOLD + "Balance");
             ArrayList<String> lore = new ArrayList<>();
-            lore.add(ChatColor.ITALIC + "Current Balance: " + ChatColor.RESET + this.econ.format(this.econ.getBalance(player)));
+            lore.add(ChatColor.GREEN + "" + ChatColor.ITALIC + "Current Balance: " + ChatColor.RESET + this.econ.format(this.econ.getBalance(player)));
             meta.setLore(lore);
             item.setItemMeta(meta);
             inv.setItem(inv.firstEmpty(), item);
@@ -225,8 +226,12 @@ public class Lavasurvival extends JavaPlugin {
         this.userManager.readUsers();
 
         log("Starting UBot");
-        UBot ubot = new UBot(new File("/home/minecraft/ubot/Lavasurvival"), new Updater(), new UBotLogger());
-        ubotCancelToken = ubot.startAsync();
+        try {
+            UBot ubot = new UBot(new File("/home/minecraft/ubot/Lavasurvival"), new Updater(), new UBotLogger());
+            ubotCancelToken = ubot.startAsync();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     private boolean setupEcon() {
