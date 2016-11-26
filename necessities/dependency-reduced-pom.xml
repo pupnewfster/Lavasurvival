@@ -10,6 +10,8 @@
         <directory>${project.basedir}</directory>
         <includes>
           <include>plugin.yml</include>
+          <include>englishWords.txt</include>
+          <include>customWords.txt</include>
         </includes>
       </resource>
     </resources>
