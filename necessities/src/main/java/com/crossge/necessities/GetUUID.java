@@ -30,11 +30,6 @@ public class GetUUID {
         return partial;
     }
 
-    @SuppressWarnings("unused")
-    public void addUUID(UUID uuid) {
-        uuids.put(Bukkit.getPlayer(uuid).getName().toLowerCase(), uuid);
-    }
-
     public UUID getOfflineID(String name) {
         if (uuids.containsKey(name.toLowerCase()))
             return uuids.get(name.toLowerCase());
