@@ -50,13 +50,13 @@ public class JanetSlack {
         token = config.contains("Necessities.SlackToken") ? config.getString("Necessities.SlackToken") : "token";
         String hook = config.contains("Necessities.WebHook") ? config.getString("Necessities.WebHook") : "webHook";
         if (token.equals("token") || hook.equals("webHook")) {
-            Bukkit.getConsoleSender().sendMessage(ChatColor.DARK_RED + "Error:" + ChatColor.AQUA + " Failed to connect to Slack.");
+            Bukkit.getConsoleSender().sendMessage(ChatColor.AQUA + " Failed to connect to Slack.");
             return;
         }
         try {
             hookURL = new URL(hook);
         } catch (Exception e) {
-            Bukkit.getConsoleSender().sendMessage(ChatColor.DARK_RED + "Error:" + ChatColor.AQUA + " Failed to connect to Slack.");
+            Bukkit.getConsoleSender().sendMessage(ChatColor.AQUA + " Failed to connect to Slack.");
             return;
         }
         rm = Necessities.getInstance().getRM();

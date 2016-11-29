@@ -8,17 +8,6 @@ import java.io.File;
 import java.util.Collections;
 
 class Initialization {
-    private final File configFileWarps = new File("plugins/Necessities/WorldManager", "warps.yml");
-    private final File configFilePM = new File("plugins/Necessities/WorldManager", "portals.yml");
-    private final File configFileUsers = new File("plugins/Necessities/RankManager", "users.yml");
-    private final File configFileWM = new File("plugins/Necessities/WorldManager", "worlds.yml");
-    private final File configFileLogOut = new File("plugins/Necessities", "logoutmessages.yml");
-    private final File configFileLogIn = new File("plugins/Necessities", "loginmessages.yml");
-    private final File configFileCensors = new File("plugins/Necessities", "censors.yml");
-    private final File configFileSpying = new File("plugins/Necessities", "spying.yml");
-    private final File configFileHiding = new File("plugins/Necessities", "hiding.yml");
-    private final File configFileTitles = new File("plugins/Necessities", "titles.yml");
-
     @SuppressWarnings("ResultOfMethodCallIgnored")
     void initiateFiles() {
         dirCreate("plugins/Necessities");
@@ -92,23 +81,24 @@ class Initialization {
 
     @SuppressWarnings("ResultOfMethodCallIgnored")
     private void createYaml() {
-        addYML(this.configFileTitles);
-        addYML(this.configFileSpying);
-        addYML(this.configFileHiding);
-        addYML(this.configFileWarps);
-        addYML(this.configFileLogOut);
-        addYML(this.configFileLogIn);
-        addYML(this.configFileUsers);
-        addYML(this.configFileWM);
-        addYML(this.configFilePM);
-        if (!this.configFileCensors.exists())
+        addYML(new File("plugins/Necessities", "titles.yml"));
+        addYML(new File("plugins/Necessities", "spying.yml"));
+        addYML(new File("plugins/Necessities", "hiding.yml"));
+        addYML(new File("plugins/Necessities/WorldManager", "warps.yml"));
+        addYML(new File("plugins/Necessities", "loginmessages.yml"));
+        addYML(new File("plugins/Necessities", "logoutmessages.yml"));
+        addYML(new File("plugins/Necessities/RankManager", "users.yml"));
+        addYML(new File("plugins/Necessities/WorldManager", "worlds.yml"));
+        addYML(new File("plugins/Necessities/WorldManager", "portals.yml"));
+        File configFileCensors = new File("plugins/Necessities", "censors.yml");
+        if (!configFileCensors.exists())
             try {
-                this.configFileCensors.createNewFile();
-                YamlConfiguration config = YamlConfiguration.loadConfiguration(this.configFileCensors);
+                configFileCensors.createNewFile();
+                YamlConfiguration config = YamlConfiguration.loadConfiguration(configFileCensors);
                 config.set("badwords", Collections.singletonList(""));
                 config.set("goodwords", Collections.singletonList(""));
                 config.set("ips", Collections.singletonList(""));
-                config.save(this.configFileCensors);
+                config.save(configFileCensors);
             } catch (Exception ignored) {
             }
         if (!Necessities.getInstance().getConfigFile().exists())
