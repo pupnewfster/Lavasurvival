@@ -271,9 +271,8 @@ public class PlayerListener implements Listener {
     public void inventoryClosed(InventoryCloseEvent e) {
         final Player p = (Player) e.getPlayer();
         BankInventory view = BankInventory.from(p);
-        if (view != null) {
+        if (view != null)
             view.end(p);
-        }
     }
 
     @EventHandler(priority = EventPriority.LOW)
@@ -284,7 +283,6 @@ public class PlayerListener implements Listener {
         if (view != null) {
             if (e.getCurrentItem() == null)
                 return;
-
             ItemStack currentItem = e.getCurrentItem();
             if (view.isNextPageButton(currentItem)) {
                 view.nextPage();
@@ -292,6 +290,10 @@ public class PlayerListener implements Listener {
             } else if (view.isPreviousPageButton(currentItem)) {
                 view.previousPage();
                 e.setCancelled(true);
+            } else { //Only let blocks that can be placed be stored in the bank
+                Material type = currentItem.getType();
+                if (type != null && !type.equals(Material.AIR) && (!currentItem.hasItemMeta() || !currentItem.getItemMeta().hasLore() || !currentItem.getItemMeta().getLore().get(0).contains("MeltTime")))
+                    e.setCancelled(true);
             }
         }
     }

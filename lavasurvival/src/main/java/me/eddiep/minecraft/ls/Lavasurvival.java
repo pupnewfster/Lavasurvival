@@ -31,6 +31,7 @@ import org.bukkit.boss.BarStyle;
 import org.bukkit.boss.BossBar;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.craftbukkit.v1_11_R1.boss.CraftBossBar;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
@@ -63,6 +64,7 @@ public class Lavasurvival extends JavaPlugin {
     private UserManager userManager;
     private boolean running = false;
     private ItemStack rules;
+    private String dburl, dbpass, dbuser;
     @SuppressWarnings("CanBeFinal")
     private CancelToken ubotCancelToken;
     public boolean updating;
@@ -223,7 +225,6 @@ public class Lavasurvival extends JavaPlugin {
                 e.printStackTrace();
             }
         this.userManager = new UserManager();
-        this.userManager.readUsers();
 
         log("Starting UBot");
         try {
@@ -232,6 +233,11 @@ public class Lavasurvival extends JavaPlugin {
         } catch (Exception e) {
             e.printStackTrace();
         }
+
+        YamlConfiguration config = Necessities.getInstance().getConfig();
+        this.dburl = "jdbc:mariadb://" + config.getString("Lavasurvival.DBHost") + "/" + config.getString("Lavasurvival.DBTable");
+        this.dbuser = config.getString("Lavasurvival.DBUser");
+        this.dbpass = config.getString("Lavasurvival.DBPassword");
     }
 
     private boolean setupEcon() {
@@ -266,6 +272,18 @@ public class Lavasurvival extends JavaPlugin {
 
     public com.crossge.necessities.RankManager.UserManager getNecessitiesUserManager() {
         return Necessities.getInstance().getUM();
+    }
+
+    public String getDBURL() {
+        return this.dburl;
+    }
+
+    public String getDBPass() {
+        return this.dbpass;
+    }
+
+    public String getDBUser() {
+        return this.dbuser;
     }
 
     public RankManager getRankManager() {

@@ -23,6 +23,6 @@ public class BankShopManager implements ShopManager {
             inventory.remove(shop.getOpener());
             inventory.setItem(owner.getInventory().firstEmpty(), shop.getOpener());
         }
-        Lavasurvival.INSTANCE.getUserManager().getUser(owner.getUniqueId()).saveBank(owner);
+        Lavasurvival.INSTANCE.getUserManager().getUser(owner.getUniqueId()).saveBank();
     }
 }
