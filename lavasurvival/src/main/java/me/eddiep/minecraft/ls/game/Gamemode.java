@@ -208,11 +208,6 @@ public abstract class Gamemode {
         alive = new ArrayList<>();
         dead = new ArrayList<>();
         Bukkit.getOnlinePlayers().forEach(this::playerJoin);
-        UserManager um = new UserManager();
-        Bukkit.getOnlinePlayers().stream().filter(p -> p.hasPermission("lavasurvival.seemmr")).forEach(p -> {
-            UserInfo info = um.getUser(p.getUniqueId());
-            p.setLevel(info.getRanking().getRating());
-        });
         currentGame = this;
         Bukkit.getOnlinePlayers().forEach(this::addBars);
         if (lastMap != null) {
@@ -418,7 +413,7 @@ public abstract class Gamemode {
                 }
             }
             avgs.clear();
-            calculateGlicko(winners, um);
+            //calculateGlicko(winners, um);
             ArrayList<Player> losers = new ArrayList<>();
             for (UUID id : dead) {
                 Player p = Bukkit.getPlayer(id);
@@ -447,7 +442,7 @@ public abstract class Gamemode {
                 e.printStackTrace();
             }
         }
-        if (giveRewards) {
+        /*if (giveRewards) {
             new Thread(() -> {
                 System.out.println("Updating ratings..");
                 int count = 0;
@@ -461,7 +456,7 @@ public abstract class Gamemode {
                 }
                 System.out.println("Updated " + count + " in " + (System.currentTimeMillis() - start) + "ms !");
             }).start();
-        }
+        }*/
 
         Bukkit.getOnlinePlayers().forEach(this::removeBars);
     }
@@ -508,7 +503,7 @@ public abstract class Gamemode {
         }
     }
 
-    private void calculateGlicko(HashMap<Player, Integer> winners, UserManager um) {
+    /*private void calculateGlicko(HashMap<Player, Integer> winners, UserManager um) {
         for (Player player : winners.keySet()) {
             int reward = winners.get(player);
             UserInfo info = um.getUser(player.getUniqueId());
@@ -535,7 +530,7 @@ public abstract class Gamemode {
                 otherInfo.getRanking().addResult(info, 0.0);
             }
         }
-    }
+    }*/
 
     public List<LavaMap> getMapsInVote() {
         return Collections.unmodifiableList(Arrays.asList(this.nextMaps));

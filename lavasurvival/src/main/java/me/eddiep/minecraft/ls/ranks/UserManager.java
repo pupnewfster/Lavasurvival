@@ -2,24 +2,26 @@ package me.eddiep.minecraft.ls.ranks;
 
 import me.eddiep.minecraft.ls.Lavasurvival;
 import org.bukkit.Bukkit;
-import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
+import org.bukkit.scheduler.BukkitRunnable;
 
-import java.io.File;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.Statement;
 import java.util.HashMap;
 import java.util.UUID;
 
 public class UserManager {
-    private static final HashMap<UUID, UserInfo> players = new HashMap<>();
-    private final File configFileUsers = new File(Lavasurvival.INSTANCE.getDataFolder(), "userinfo.yml");
+    private final HashMap<UUID, UserInfo> players = new HashMap<>();
 
-    public void readUsers() {
+    public UserManager() {
         Bukkit.getOnlinePlayers().forEach(this::parseUser);
     }
 
     private void parseUser(final Player p) {
         Bukkit.getScheduler().scheduleSyncDelayedTask(Lavasurvival.INSTANCE, () -> {
-            if (players.containsKey(p.getUniqueId()))
+            if (players.containsKey(p.getUniqueId())) //This should never be true
                 players.get(p.getUniqueId()).setPlayer(p);
             else
                 players.put(p.getUniqueId(), new UserInfo(p));
@@ -33,28 +35,32 @@ public class UserManager {
             players.put(p.getUniqueId(), new UserInfo(p));
     }
 
-    public void saveAll() {
-        players.keySet().forEach(uuid -> players.get(uuid).save());
-    }
-
-    @SuppressWarnings("unused")
-    public HashMap<UUID, UserInfo> getUsers() {
-        return players;
-    }
-
     public UserInfo getUser(UUID uuid) {
-        if (!players.containsKey(uuid))
-            return new UserInfo(uuid);
-        return players.get(uuid);
+        return !players.containsKey(uuid) ? new UserInfo(uuid) : players.get(uuid);
     }
 
-    public void addUser(Player player) {
-        YamlConfiguration configUsers = YamlConfiguration.loadConfiguration(configFileUsers);
-        configUsers.set(player.getUniqueId().toString() + ".lastName", player.getName());
-        try {
-            configUsers.save(configFileUsers);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+    public void saveAll() {
+        players.values().forEach(UserInfo::saveBank);
+    }
+
+    public void addUser(Player p) {
+        final UUID uuid = p.getUniqueId();
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+                try {
+                    Class.forName("org.mariadb.jdbc.Driver");
+                    Connection conn = DriverManager.getConnection(Lavasurvival.INSTANCE.getDBURL(), Lavasurvival.INSTANCE.getDBUser(), Lavasurvival.INSTANCE.getDBPass());
+                    Statement stmt = conn.createStatement();
+                    ResultSet rs = stmt.executeQuery("SELECT * FROM users WHERE uuid = \"" + uuid + "\"");
+                    if (!rs.next())
+                        stmt.execute("INSERT INTO users (uuid, matches, ownedBlocks, bank, addToBank) VALUES (\"" + uuid + "\", \"\", \"\", \"\", \"\")");
+                    rs.close();
+                    stmt.close();
+                    conn.close();
+                } catch (Exception ignored) {
+                }
+            }
+        }.runTaskAsynchronously(Lavasurvival.INSTANCE);
     }
 }

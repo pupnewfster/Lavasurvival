@@ -174,10 +174,6 @@ public class User {
         return this.bukkitPlayer == null ? Bukkit.getOfflinePlayer(this.userUUID).getName() : this.bukkitPlayer.getName();
     }
 
-    public String getDispName() {
-        return this.bukkitPlayer == null ? Bukkit.getOfflinePlayer(this.userUUID).getName() : ChatColor.translateAlternateColorCodes('&', getRank().getTitle() + this.bukkitPlayer.getDisplayName());
-    }
-
     public long getLastRequest() {
         return this.lastRequest == 0 ? System.currentTimeMillis() : this.lastRequest;
     }

@@ -38,7 +38,10 @@ public class Announcer {
     }
 
     void exit() {
-        this.announcerTask.cancel();
+        try {
+            this.announcerTask.cancel();
+        } catch (Exception ignored) {
+        }
     }
 
     public void reloadAnnouncer() {
