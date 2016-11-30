@@ -2,19 +2,18 @@ package com.crossge.necessities;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.craftbukkit.libs.jline.internal.InputStreamReader;
 import org.bukkit.entity.Player;
+import org.json.simple.JsonArray;
+import org.json.simple.JsonObject;
+import org.json.simple.Jsoner;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.io.BufferedReader;
+import java.net.URL;
 import java.util.UUID;
 
 public class GetUUID {
-    private static final HashMap<String, UUID> uuids = new HashMap<>();
-    private final File configFileUUIDs = new File("plugins/Necessities/RankManager", "users.yml");
-
-    public UUID getID(String name) { //TODO: make it so that if partial is null it checks against mojang's api to get the uuid
+    public UUID getID(String name) {
         UUID partial = null;
         boolean startsWith = false;
         for (Player p : Bukkit.getServer().getOnlinePlayers()) {
@@ -31,50 +30,35 @@ public class GetUUID {
     }
 
     public UUID getOfflineID(String name) {
-        if (uuids.containsKey(name.toLowerCase()))
-            return uuids.get(name.toLowerCase());
+        if (name == null)
+            return null;
+        try {
+            BufferedReader in = new BufferedReader(new InputStreamReader(new URL("https://api.mojang.com/users/profiles/minecraft/" + name).openConnection().getInputStream()));
+            String inputLine;
+            StringBuilder response = new StringBuilder();
+            while ((inputLine = in.readLine()) != null)
+                response.append(inputLine);
+            in.close();
+            return UUID.fromString(((String) Jsoner.deserialize(response.toString(), new JsonObject()).get("id")).replaceAll("(\\w{8})(\\w{4})(\\w{4})(\\w{4})(\\w{12})", "$1-$2-$3-$4-$5"));
+        } catch (Exception ignored) {
+        }
         return null;
     }
 
-    void initiate() {
-        Bukkit.getConsoleSender().sendMessage(ChatColor.AQUA + "Retrieving all stored UUIDs.");
-        YamlConfiguration configUUIDs = YamlConfiguration.loadConfiguration(configFileUUIDs);
-        ArrayList<String> invalidKeys = new ArrayList<>();
-        for (String key : configUUIDs.getKeys(false))
-            if (nameFromString(key) != null) {
-                UUID uuid = null;
-                try {
-                    uuid = UUID.fromString(key);
-                } catch (Exception e) {
-                    invalidKeys.add(key);
-                }
-                if (uuid != null)
-                    uuids.put(nameFromString(key).toLowerCase(), UUID.fromString(key));
-            } else
-                invalidKeys.add(key);
-        if (!invalidKeys.isEmpty() && invalidKeys.size() < 3) {
-            Bukkit.broadcast("Invalid keys found.", "Necessities.opBroadcast");
-            invalidKeys.forEach(key -> Bukkit.broadcast("Invalid key: " + key, "Necessities.opBroadcast"));
-        }
-        Bukkit.getConsoleSender().sendMessage(ChatColor.AQUA + "All stored UUIDs retrieved.");
-    }
-
-    boolean hasJoined(UUID uuid) {
-        return uuids.containsValue(uuid);
-    }
-
     public String nameFromString(String message) {
-        UUID uuid;
-        try {
-            uuid = UUID.fromString(message);
-        } catch (Exception e) {
+        if (message == null)
             return null;
+        try {
+            BufferedReader in = new BufferedReader(new InputStreamReader(new URL("https://api.mojang.com/user/profiles/" + message.replaceAll("-", "") + "/names").openConnection().getInputStream()));
+            String inputLine;
+            StringBuilder response = new StringBuilder();
+            while ((inputLine = in.readLine()) != null)
+                response.append(inputLine);
+            in.close();
+            JsonArray json = Jsoner.deserialize(response.toString(), new JsonArray());
+            return ((JsonObject) json.get(json.size() - 1)).getString("name");
+        } catch (Exception ignored) {
         }
-        if (Bukkit.getPlayer(uuid) == null) {
-            if (Bukkit.getOfflinePlayer(uuid) == null)
-                return null; //What did you do this time
-            return Bukkit.getOfflinePlayer(uuid).getName();
-        }
-        return Bukkit.getPlayer(uuid).getName();
+        return null;
     }
 }

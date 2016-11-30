@@ -44,7 +44,6 @@ public class Necessities extends JavaPlugin {
     private final File configFile = new File("plugins/Necessities", "config.yml");
     private Tracker googleAnalyticsTracker;
     private PacketPlayOutPlayerInfo janetInfo;
-    //private DonationReader dr = new DonationReader();
     private CmdCommandSpy spy = new CmdCommandSpy();
     private PortalManager pm = new PortalManager();
     private WarpManager warps = new WarpManager();
@@ -163,7 +162,6 @@ public class Necessities extends JavaPlugin {
         Initialization init = new Initialization();
         init.initiateFiles();
         getServer().getPluginManager().registerEvents(new Listeners(), this);
-        //this.dr.init();
         getLogger().info("Necessities enabled.");
         GameProfile janetProfile = new GameProfile(UUID.randomUUID(), "Janet");
         janetProfile.getProperties().put("textures", getSkin());
@@ -466,7 +464,6 @@ public class Necessities extends JavaPlugin {
         this.slack.disconnect();
         this.bot.unload();
         this.announcer.exit();
-        //this.dr.disconnect();
         getLogger().info("Necessities disabled.");
     }
 

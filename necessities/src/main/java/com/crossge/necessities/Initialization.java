@@ -43,7 +43,6 @@ class Initialization {
         }
 
         Necessities.getInstance().getNet().readCustom();
-        Necessities.getInstance().getUUID().initiate();
         Necessities.getInstance().getBot().initiate();
         Necessities.getInstance().getSpy().init();
         Necessities.getInstance().getHide().init();
