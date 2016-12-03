@@ -156,20 +156,28 @@ public class UserInfo {
                 empty = false;
             }
         String finalBanked = banked;
-        new BukkitRunnable() {
-            @Override
-            public void run() {
-                try {
-                    Class.forName("org.mariadb.jdbc.Driver");
-                    Connection conn = DriverManager.getConnection(Lavasurvival.INSTANCE.getDBURL(), Lavasurvival.INSTANCE.getDBUser(), Lavasurvival.INSTANCE.getDBPass());
-                    Statement stmt = conn.createStatement();
-                    stmt.execute("UPDATE users SET bank = \"" + finalBanked + "\" WHERE uuid = \"" + UserInfo.this.userUUID + "\"");
-                    stmt.close();
-                    conn.close();
-                } catch (Exception ignored) {
+        try {
+            new BukkitRunnable() {
+                @Override
+                public void run() {
+                    saveBank(finalBanked);
                 }
-            }
-        }.runTaskAsynchronously(Lavasurvival.INSTANCE);
+            }.runTaskAsynchronously(Lavasurvival.INSTANCE);
+        } catch (Exception e) {
+            saveBank(finalBanked);
+        }
+    }
+
+    private void saveBank(String banked) {
+        try {
+            Class.forName("org.mariadb.jdbc.Driver");
+            Connection conn = DriverManager.getConnection(Lavasurvival.INSTANCE.getDBURL(), Lavasurvival.INSTANCE.getDBUser(), Lavasurvival.INSTANCE.getDBPass());
+            Statement stmt = conn.createStatement();
+            stmt.execute("UPDATE users SET bank = \"" + banked + "\" WHERE uuid = \"" + this.userUUID + "\"");
+            stmt.close();
+            conn.close();
+        } catch (Exception ignored) {
+        }
     }
 
     public void logOut() {
