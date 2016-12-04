@@ -16,6 +16,7 @@ import me.eddiep.minecraft.ls.system.BukkitUtils;
 import me.eddiep.minecraft.ls.system.FileUtils;
 import me.eddiep.minecraft.ls.system.PhysicsListener;
 import me.eddiep.minecraft.ls.system.PlayerListener;
+import me.eddiep.minecraft.ls.game.lsrating.LSRating;
 import mkremins.fanciful.FancyMessage;
 import net.minecraft.server.v1_10_R1.IChatBaseComponent;
 import net.minecraft.server.v1_10_R1.PacketPlayOutTitle;
@@ -441,7 +442,7 @@ public abstract class Gamemode {
                 if (p != null)
                     losers.add(p);
             }
-            recordMatch(winners, losers);
+            recordMatch(winners, losers, um);
         }
 
         Lavasurvival.INSTANCE.MONEY_VIEWER.run();
@@ -486,7 +487,7 @@ public abstract class Gamemode {
         return this.type;
     }
 
-    private void recordMatch(HashMap<Player, Integer> winners, ArrayList<Player> losers) {
+    private void recordMatch(HashMap<Player, Integer> winners, ArrayList<Player> losers, UserManager um) {
         if ((winners == null || winners.isEmpty()) && (losers == null || losers.isEmpty()))
             return; //Do not record a match that no one is in
         String mode = this.getType();
@@ -522,6 +523,16 @@ public abstract class Gamemode {
             conn.close();
         } catch (Exception e) {
             e.printStackTrace();
+        }
+        for (Player winner : winners.keySet()) {
+            //Rating calculated off of avg blocks around, NOT reward since this is based on rank too
+            int blockCount = countAirBlocksAround(winner, 10);
+            UserInfo user = um.getUser(winner.getUniqueId());
+            user.getRanking().addMatch(blockCount, winner.getUniqueId().toString());
+        }
+        for (Player loser : losers) {
+            UserInfo loserUser = um.getUser(loser.getUniqueId());
+            loserUser.getRanking().addMatch(0, loser.getUniqueId().toString());
         }
     }
 

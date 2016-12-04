@@ -3,9 +3,11 @@ package me.eddiep.minecraft.ls.ranks;
 import me.eddiep.minecraft.ls.Lavasurvival;
 import me.eddiep.minecraft.ls.game.Gamemode;
 import me.eddiep.minecraft.ls.game.status.PlayerStatusManager;
-import me.eddiep.minecraft.ls.glicko.Glicko2;
-import me.eddiep.minecraft.ls.glicko.GlickoRank;
+//import me.eddiep.minecraft.ls.glicko.Glicko2;
+//import me.eddiep.minecraft.ls.glicko.GlickoRank;
 import me.eddiep.minecraft.ls.glicko.Rankable;
+//import me.eddiep.minecraft.ls.glicko.GlickoRank;
+import me.eddiep.minecraft.ls.lsrating.LSRating;
 import me.eddiep.minecraft.ls.system.BukkitUtils;
 import me.eddiep.minecraft.ls.system.PhysicsListener;
 import me.eddiep.minecraft.ls.system.bank.BankInventory;
@@ -39,7 +41,8 @@ public class UserInfo implements Rankable {
     private int taskID = 0;
     private UUID userUUID;
     private List<ItemStack> BANK = new ArrayList<ItemStack>();
-    private GlickoRank rank;
+    //private GlickoRank rank;
+    private LSRating rank;
     private boolean generosity;
 
     public UserInfo(Player p) {
@@ -242,7 +245,7 @@ public class UserInfo implements Rankable {
     }
 
     @Override
-    public GlickoRank getRanking() {
+    public LSRating getRanking() {
         return this.rank;
     }
 
