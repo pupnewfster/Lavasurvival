@@ -5,22 +5,14 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.Statement;
+import java.util.*;
 
 public class LSRating {
     private int rating;
-    private int avgAir;
-    private double variance;
-    private int matchesPlayed;
-    private int[] matches; //Match rewards
-
-    private static final double LOSS_MULTIPLIER = .875;
-
-    public static final int DEFAULT_RATING = 1000;
 
     public LRSating() {}
 
     public void addMatch(int blockCount, String uuid) {
-        this.matchesPlayed++;
         String url = "jdbc:mariadb://" + config.getString("Lavasurvival.DBHost") + "/" + config.getString("Lavasurvival.DBTable"), user = config.getString("Lavasurvival.DBUser"),
                 pass = config.getString("Lavasurvival.DBPassword");
         try {
@@ -28,14 +20,7 @@ public class LSRating {
             Connection conn = DriverManager.getConnection(url, user, pass);
             Statement stmt = conn.createStatement();
             ResultSet rs = stmt.executeQuery(
-                    "IF NOT EXISTS (SELECT 1 FROM users WHERE uuid='" + uuid + "') " +
-                            "BEGIN " +
-                                "INSERT INTO users (uuid, rating, matches, matchCount) VALUES ('" + uuid + "', '" + this.DEFAULT_RATING + "', '" + blockCount + "', '1');" +
-                            "END" +
-                    "ELSE " +
-                            "BEGIN " +
-                                "UPDATE users SET matches=CONCAT('," + blockCount + "',matches) WHERE uuid='" + uuid + "';" +
-                            "END ;"
+                    "UPDATE users SET matches=CONCAT('," + blockCount + "',matches) WHERE uuid='" + uuid + "';"
             );
             rs.close();
             stmt.close();
