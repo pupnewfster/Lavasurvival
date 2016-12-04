@@ -9,18 +9,19 @@ import org.bukkit.event.Cancellable;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 
+@SuppressWarnings("unused")
 public class ClassicPhysicsEvent extends Event implements Cancellable {
     private static final HandlerList handlers = new HandlerList();
-    private boolean cancel, isClassicEvent;
-    private LogicContainer container;
+    private boolean cancel;
+    private final LogicContainer container;
     private Material newBlock;
-    private Location location, from;
-    private Block oldBlock;
+    private final Location location;
+    private final Location from;
+    private final Block oldBlock;
 
-    public ClassicPhysicsEvent(Block oldBlock, Material newBlock, boolean isClassicEvent, Location location, LogicContainer logicContainer, Location from) {
+    public ClassicPhysicsEvent(Block oldBlock, Material newBlock, Location location, LogicContainer logicContainer, Location from) {
         this.oldBlock = oldBlock;
         this.newBlock = newBlock;
-        this.isClassicEvent = isClassicEvent;
         this.location = location;
         this.container = logicContainer;
         this.from = from;
@@ -64,10 +65,6 @@ public class ClassicPhysicsEvent extends Event implements Cancellable {
 
     public HandlerList getHandlers() {
         return handlers;
-    }
-
-    public boolean isClassicEvent() {
-        return this.isClassicEvent;
     }
 
     @Override

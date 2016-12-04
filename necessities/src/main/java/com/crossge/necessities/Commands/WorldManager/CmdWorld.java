@@ -13,7 +13,7 @@ public class CmdWorld implements WorldCmd {
     public boolean commandUse(CommandSender sender, String[] args) {
         Variables var = Necessities.getInstance().getVar();
         if (args.length == 0) {
-            sender.sendMessage(var.getEr() + "Error: " + var.getErMsg() + "You must enter a worldname.");
+            sender.sendMessage(var.getEr() + "Error: " + var.getErMsg() + "You must enter a world name.");
             return true;
         }
         if (sender instanceof Player) {

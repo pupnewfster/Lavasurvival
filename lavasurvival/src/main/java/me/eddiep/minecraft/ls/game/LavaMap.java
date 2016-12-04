@@ -21,20 +21,21 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+@SuppressWarnings({"FieldCanBeLocal", "DeprecatedIsStillUsed", "unused"})
 public class LavaMap {
-    private static final int CONFIG_VERSION = 8;
+    private static final int CONFIG_VERSION = 9;
 
     private String name, worldName, filePath;
-    private int lavax, lavay, lavaz, mapHeight;
+    private int lavax, lavay, lavaz, mapHeight, percent = 25;
     private Vector minSafeZone, maxSafeZone, mapSpawn;
     private int configVersion = 1; //Default version
-    private boolean isThundering = false;
-    private String creator = "";
-    private double meltMultiplier = 0.5;
-    private RiseOptions riseOptions = RiseOptions.defaults(this);
-    private FloodOptions floodOptions = FloodOptions.defaults(this);
-    private FusionOptions fusionOptions = FusionOptions.defaults(this, riseOptions);
-    private TimeOptions time = TimeOptions.defaults();
+    private final boolean isThundering = false;
+    private final String creator = "";
+    private final double meltMultiplier = 0.5;
+    private final RiseOptions riseOptions = RiseOptions.defaults(this);
+    private final FloodOptions floodOptions = FloodOptions.defaults(this);
+    private final FusionOptions fusionOptions = FusionOptions.defaults(this, riseOptions);
+    private final TimeOptions time = TimeOptions.defaults();
 
     private volatile World world;
     private volatile boolean poured;
@@ -178,6 +179,14 @@ public class LavaMap {
         return this.lavaz;
     }
 
+    public int getMeltRange() {
+        return this.percent;
+    }
+
+    public void setMeltRange(int percent) {
+        this.percent = percent;
+    }
+
     public int getHeight() {
         return this.mapHeight;
     }
@@ -201,6 +210,7 @@ public class LavaMap {
         return minX <= loc.getX() && minY <= loc.getY() && minZ <= loc.getZ() && loc.getX() <= maxX && loc.getY() <= maxY && loc.getZ() <= maxZ;
     }
 
+    @SuppressWarnings("unchecked")
     Class<? extends Gamemode>[] getEnabledGames() {
         List<Class<? extends Gamemode>> games = new ArrayList<>();
         if (this.riseOptions.isEnabled())

@@ -1,18 +1,14 @@
 package com.crossge.necessities;
 
 import com.crossge.necessities.Hats.HatType;
+import org.apache.commons.io.FileUtils;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.File;
 import java.util.Collections;
 
 class Initialization {
-    private File configFileWarps = new File("plugins/Necessities/WorldManager", "warps.yml"), configFilePM = new File("plugins/Necessities/WorldManager", "portals.yml"),
-            configFileUsers = new File("plugins/Necessities/RankManager", "users.yml"), configFileWM = new File("plugins/Necessities/WorldManager", "worlds.yml"),
-            configFileLogOut = new File("plugins/Necessities", "logoutmessages.yml"), configFileLogIn = new File("plugins/Necessities", "loginmessages.yml"),
-            configFileCensors = new File("plugins/Necessities", "censors.yml"), configFileSpying = new File("plugins/Necessities", "spying.yml"),
-            configFileHiding = new File("plugins/Necessities", "hiding.yml"), configFileTitles = new File("plugins/Necessities", "titles.yml"), configFile = new File("plugins/Necessities", "config.yml");
-
+    @SuppressWarnings("ResultOfMethodCallIgnored")
     void initiateFiles() {
         dirCreate("plugins/Necessities");
         dirCreate("plugins/Necessities/Logs");
@@ -21,6 +17,14 @@ class Initialization {
         fileCreate("plugins/Necessities/motd.txt");
         fileCreate("plugins/Necessities/rules.txt");
         fileCreate("plugins/Necessities/faq.txt");
+        fileCreate("plugins/Necessities/announcements.txt");
+        File cwords = new File("plugins/Necessities", "customWords.txt");
+        if (!cwords.exists())
+            try {
+                cwords.createNewFile();
+                FileUtils.copyURLToFile(getClass().getResource("/customWords.txt"), cwords);
+            } catch (Exception ignored) {
+            }
         createYaml();
         HatType.mapHats();
 
@@ -30,7 +34,7 @@ class Initialization {
         Necessities.getInstance().getRM().readRanks();
         Necessities.getInstance().getSBs().createScoreboard();
 
-        YamlConfiguration config = YamlConfiguration.loadConfiguration(this.configFile);
+        YamlConfiguration config = Necessities.getInstance().getConfig();
         //WorldManager
         if (config.contains("Necessities.WorldManager") && config.getBoolean("Necessities.WorldManager")) {
             Necessities.getInstance().getWM().initiate();
@@ -38,21 +42,24 @@ class Initialization {
             Necessities.getInstance().getPM().initiate();
         }
 
-        Necessities.getInstance().getUUID().initiate();
+        Necessities.getInstance().getNet().readCustom();
         Necessities.getInstance().getBot().initiate();
         Necessities.getInstance().getSpy().init();
         Necessities.getInstance().getHide().init();
         Necessities.getInstance().getWarns().initiate();
         Necessities.getInstance().getSlack().init();
         Necessities.getInstance().getAI().initiate();
+        Necessities.getInstance().getAnnouncer().init();
     }
 
+    @SuppressWarnings("ResultOfMethodCallIgnored")
     private void dirCreate(String directory) {
         File d = new File(directory);
         if (!d.exists())
             d.mkdir();
     }
 
+    @SuppressWarnings("ResultOfMethodCallIgnored")
     private void fileCreate(String file) {
         File f = new File(file);
         if (!f.exists())
@@ -62,6 +69,7 @@ class Initialization {
             }
     }
 
+    @SuppressWarnings("ResultOfMethodCallIgnored")
     private void addYML(File file) {
         if (!file.exists())
             try {
@@ -70,30 +78,32 @@ class Initialization {
             }
     }
 
+    @SuppressWarnings("ResultOfMethodCallIgnored")
     private void createYaml() {
-        addYML(this.configFileTitles);
-        addYML(this.configFileSpying);
-        addYML(this.configFileHiding);
-        addYML(this.configFileWarps);
-        addYML(this.configFileLogOut);
-        addYML(this.configFileLogIn);
-        addYML(this.configFileUsers);
-        addYML(this.configFileWM);
-        addYML(this.configFilePM);
-        if (!this.configFileCensors.exists())
+        addYML(new File("plugins/Necessities", "titles.yml"));
+        addYML(new File("plugins/Necessities", "spying.yml"));
+        addYML(new File("plugins/Necessities", "hiding.yml"));
+        addYML(new File("plugins/Necessities/WorldManager", "warps.yml"));
+        addYML(new File("plugins/Necessities", "loginmessages.yml"));
+        addYML(new File("plugins/Necessities", "logoutmessages.yml"));
+        addYML(new File("plugins/Necessities/RankManager", "users.yml"));
+        addYML(new File("plugins/Necessities/WorldManager", "worlds.yml"));
+        addYML(new File("plugins/Necessities/WorldManager", "portals.yml"));
+        File configFileCensors = new File("plugins/Necessities", "censors.yml");
+        if (!configFileCensors.exists())
             try {
-                this.configFileCensors.createNewFile();
-                YamlConfiguration config = YamlConfiguration.loadConfiguration(this.configFileCensors);
+                configFileCensors.createNewFile();
+                YamlConfiguration config = YamlConfiguration.loadConfiguration(configFileCensors);
                 config.set("badwords", Collections.singletonList(""));
                 config.set("goodwords", Collections.singletonList(""));
                 config.set("ips", Collections.singletonList(""));
-                config.save(this.configFileCensors);
+                config.save(configFileCensors);
             } catch (Exception ignored) {
             }
-        if (!configFile.exists())
+        if (!Necessities.getInstance().getConfigFile().exists())
             try {
-                this.configFile.createNewFile();
-                YamlConfiguration config = YamlConfiguration.loadConfiguration(this.configFile);
+                Necessities.getInstance().getConfigFile().createNewFile();
+                YamlConfiguration config = Necessities.getInstance().getConfig();
                 config.set("Necessities.WorldManager", true);
                 config.set("Necessities.warns", 3);
                 config.set("Necessities.caps", true);
@@ -115,11 +125,12 @@ class Initialization {
                 config.set("Lavasurvival.DBTable", "lavasurvival");
                 config.set("Lavasurvival.DBUser", "lsuser");
                 config.set("Lavasurvival.DBPassword", "password");
-                config.save(this.configFile);
+                config.set("Announcements.frequency", 5);
+                config.save(Necessities.getInstance().getConfigFile());
             } catch (Exception ignored) {
             }
         else {
-            YamlConfiguration config = YamlConfiguration.loadConfiguration(this.configFile);
+            YamlConfiguration config = Necessities.getInstance().getConfig();
             if (!config.contains("Necessities.warns"))
                 config.set("Necessities.warns", 3);
             if (!config.contains("Necessities.caps"))
@@ -162,8 +173,10 @@ class Initialization {
                 config.set("Lavasurvival.DBUser", "lsuser");
             if (!config.contains("Lavasurvival.DBPassword"))
                 config.set("Lavasurvival.DBPassword", "password");
+            if (!config.contains("Announcements.frequency"))
+                config.set("Announcements.frequency", 5);
             try {
-                config.save(this.configFile);
+                config.save(Necessities.getInstance().getConfigFile());
             } catch (Exception ignored) {
             }
         }

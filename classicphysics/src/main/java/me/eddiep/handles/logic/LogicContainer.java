@@ -24,6 +24,7 @@ public interface LogicContainer {
      *
      * @return How often the {@link LogicContainer#tick()} method should be called, in minecraft ticks
      */
+    @SuppressWarnings("SameReturnValue")
     int updateRate();
 
     /**

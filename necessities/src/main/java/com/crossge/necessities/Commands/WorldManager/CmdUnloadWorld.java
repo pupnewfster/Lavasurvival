@@ -10,7 +10,7 @@ public class CmdUnloadWorld implements WorldCmd {
     public boolean commandUse(CommandSender sender, String[] args) {
         Variables var = Necessities.getInstance().getVar();
         if (args.length == 0) {
-            sender.sendMessage(var.getEr() + "Error: " + var.getErMsg() + "You must enter a worldname to unload.");
+            sender.sendMessage(var.getEr() + "Error: " + var.getErMsg() + "You must enter a world name to unload.");
             return true;
         }
         WorldManager wm = Necessities.getInstance().getWM();

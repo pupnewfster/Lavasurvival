@@ -13,6 +13,7 @@ import org.bukkit.material.MaterialData;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.HashMap;
+import java.util.Random;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
@@ -20,6 +21,7 @@ public class PhysicsListener implements Listener {
     private static final HashMap<MaterialData, Integer> lavaTicksToMelt = new HashMap<>();
     private static final HashMap<MaterialData, Integer> waterTicksToMelt = new HashMap<>();
     private static final ConcurrentHashMap<Location, ConcurrentLinkedQueue<BlockTaskInfo>> toTasks = new ConcurrentHashMap<>();
+    private static final Random RANDOM = new Random();
 
     public PhysicsListener() {
         setup();
@@ -145,6 +147,7 @@ public class PhysicsListener implements Listener {
         addMeltTime(new MaterialData(Material.WOOL, (byte) 13), 20 * 20);//Green wool
         addMeltTime(new MaterialData(Material.WOOL, (byte) 14), 20 * 20);//Red wool
         addMeltTime(new MaterialData(Material.WOOL, (byte) 15), 20 * 20);//Black wool
+        addMeltTime(new MaterialData(Material.NETHER_WART_BLOCK), 150 * 20);
 
         //Trusted blocks
         addMeltTime(new MaterialData(Material.WOOD_DOOR), 30 * 20, 120 * 20);
@@ -202,60 +205,69 @@ public class PhysicsListener implements Listener {
 
         //Elder blocks
         addMeltTime(new MaterialData(Material.GLOWSTONE), 225 * 20);
+        addMeltTime(new MaterialData(Material.NETHERRACK), 270 * 20, 120 * 20);
+        addMeltTime(new MaterialData(Material.MAGMA), 270 * 20, 120 * 20);//Magma block
+        addMeltTime(new MaterialData(Material.NETHER_BRICK), 240 * 20);
+        addMeltTime(new MaterialData(Material.RED_NETHER_BRICK), 240 * 20);
+        addMeltTime(new MaterialData(Material.NETHER_FENCE), 240 * 20);
         addMeltTime(new MaterialData(Material.STEP, (byte) 6), 240 * 20);//Nether brick slab
         addMeltTime(new MaterialData(Material.STEP, (byte) 14), 240 * 20);//Upper Nether brick slab
         addMeltTime(new MaterialData(Material.DOUBLE_STEP, (byte) 6), 240 * 20);//Double Nether brick slab
-        addMeltTime(new MaterialData(Material.NETHER_FENCE), 240 * 20);
-        addMeltTime(new MaterialData(Material.NETHERRACK), 240 * 20);
-        addMeltTime(new MaterialData(Material.NETHER_BRICK), 240 * 20);
         addMeltTime(new MaterialData(Material.NETHER_BRICK_STAIRS), 240 * 20);
+        addMeltTime(new MaterialData(Material.PURPUR_BLOCK), 240 * 20);
+        addMeltTime(new MaterialData(Material.PURPUR_PILLAR), 240 * 20);
+        addMeltTime(new MaterialData(Material.PURPUR_STAIRS), 240 * 20);
+        addMeltTime(new MaterialData(Material.PURPUR_SLAB), 240 * 20);
+        addMeltTime(new MaterialData(Material.PURPUR_DOUBLE_SLAB), 240 * 20);
         addMeltTime(new MaterialData(Material.ENDER_STONE), 270 * 20);
+        addMeltTime(new MaterialData(Material.END_BRICKS), 270 * 20);
+        addMeltTime(new MaterialData(Material.END_ROD), 180 * 20);
 
-        //Donnor blocks Instant melt)
-        addMeltTime(new MaterialData(Material.WOOD, (byte) 1), 0);//Spruce planks
-        addMeltTime(new MaterialData(Material.WOOD, (byte) 2), 0);//Birch planks
-        addMeltTime(new MaterialData(Material.WOOD, (byte) 3), 0);//Jungle planks
-        addMeltTime(new MaterialData(Material.WOOD, (byte) 4), 0);//Acacia planks
-        addMeltTime(new MaterialData(Material.WOOD, (byte) 5), 0);//Dark oak planks
-        addMeltTime(new MaterialData(Material.SAND, (byte) 1), 0);//Red sand
-        addMeltTime(new MaterialData(Material.SPRUCE_FENCE), 0);
-        addMeltTime(new MaterialData(Material.BIRCH_FENCE), 0);
-        addMeltTime(new MaterialData(Material.JUNGLE_FENCE), 0);
-        addMeltTime(new MaterialData(Material.ACACIA_FENCE), 0);
-        addMeltTime(new MaterialData(Material.DARK_OAK_FENCE), 0);
-        addMeltTime(new MaterialData(Material.FENCE_GATE), 0);
-        addMeltTime(new MaterialData(Material.SPRUCE_FENCE_GATE), 0);
-        addMeltTime(new MaterialData(Material.BIRCH_FENCE_GATE), 0);
-        addMeltTime(new MaterialData(Material.JUNGLE_FENCE_GATE), 0);
-        addMeltTime(new MaterialData(Material.ACACIA_FENCE_GATE), 0);
-        addMeltTime(new MaterialData(Material.DARK_OAK_FENCE_GATE), 0);
-        addMeltTime(new MaterialData(Material.SPRUCE_DOOR), 0);
-        addMeltTime(new MaterialData(Material.SPRUCE_DOOR_ITEM), 0);
-        addMeltTime(new MaterialData(Material.BIRCH_DOOR), 0);
-        addMeltTime(new MaterialData(Material.BIRCH_DOOR_ITEM), 0);
-        addMeltTime(new MaterialData(Material.JUNGLE_DOOR), 0);
-        addMeltTime(new MaterialData(Material.JUNGLE_DOOR_ITEM), 0);
-        addMeltTime(new MaterialData(Material.ACACIA_DOOR), 0);
-        addMeltTime(new MaterialData(Material.ACACIA_DOOR_ITEM), 0);
-        addMeltTime(new MaterialData(Material.DARK_OAK_DOOR), 0);
-        addMeltTime(new MaterialData(Material.DARK_OAK_DOOR_ITEM), 0);
+        //Donor blocks Instant melt)
+        addMeltTime(new MaterialData(Material.WOOD, (byte) 1), 30 * 20, 120 * 20);//Spruce planks
+        addMeltTime(new MaterialData(Material.WOOD, (byte) 2), 30 * 20, 120 * 20);//Birch planks
+        addMeltTime(new MaterialData(Material.WOOD, (byte) 3), 30 * 20, 120 * 20);//Jungle planks
+        addMeltTime(new MaterialData(Material.WOOD, (byte) 4), 30 * 20, 120 * 20);//Acacia planks
+        addMeltTime(new MaterialData(Material.WOOD, (byte) 5), 30 * 20, 120 * 20);//Dark oak planks
+        addMeltTime(new MaterialData(Material.SAND, (byte) 1), 90 * 20, 30 * 20);//Red sand
+        addMeltTime(new MaterialData(Material.SPRUCE_FENCE), 30 * 20, 120 * 20);
+        addMeltTime(new MaterialData(Material.BIRCH_FENCE), 30 * 20, 120 * 20);
+        addMeltTime(new MaterialData(Material.JUNGLE_FENCE), 30 * 20, 120 * 20);
+        addMeltTime(new MaterialData(Material.ACACIA_FENCE), 30 * 20, 120 * 20);
+        addMeltTime(new MaterialData(Material.DARK_OAK_FENCE), 30 * 20, 120 * 20);
+        addMeltTime(new MaterialData(Material.FENCE_GATE), 30 * 20, 120 * 20);
+        addMeltTime(new MaterialData(Material.SPRUCE_FENCE_GATE), 30 * 20, 120 * 20);
+        addMeltTime(new MaterialData(Material.BIRCH_FENCE_GATE), 30 * 20, 120 * 20);
+        addMeltTime(new MaterialData(Material.JUNGLE_FENCE_GATE), 30 * 20, 120 * 20);
+        addMeltTime(new MaterialData(Material.ACACIA_FENCE_GATE), 30 * 20, 120 * 20);
+        addMeltTime(new MaterialData(Material.DARK_OAK_FENCE_GATE), 30 * 20, 120 * 20);
+        addMeltTime(new MaterialData(Material.SPRUCE_DOOR), 30 * 20, 120 * 20);
+        addMeltTime(new MaterialData(Material.SPRUCE_DOOR_ITEM), 30 * 20, 120 * 20);
+        addMeltTime(new MaterialData(Material.BIRCH_DOOR), 30 * 20, 120 * 20);
+        addMeltTime(new MaterialData(Material.BIRCH_DOOR_ITEM), 30 * 20, 120 * 20);
+        addMeltTime(new MaterialData(Material.JUNGLE_DOOR), 30 * 20, 120 * 20);
+        addMeltTime(new MaterialData(Material.JUNGLE_DOOR_ITEM), 30 * 20, 120 * 20);
+        addMeltTime(new MaterialData(Material.ACACIA_DOOR), 30 * 20, 120 * 20);
+        addMeltTime(new MaterialData(Material.ACACIA_DOOR_ITEM), 30 * 20, 120 * 20);
+        addMeltTime(new MaterialData(Material.DARK_OAK_DOOR), 30 * 20, 120 * 20);
+        addMeltTime(new MaterialData(Material.DARK_OAK_DOOR_ITEM), 30 * 20, 120 * 20);
         addMeltTime(new MaterialData(Material.SEA_LANTERN), 0);
-        addMeltTime(new MaterialData(Material.CARPET, (byte) 0), 0);//White carpet
-        addMeltTime(new MaterialData(Material.CARPET, (byte) 1), 0);//Orange carpet
-        addMeltTime(new MaterialData(Material.CARPET, (byte) 2), 0);//Magenta carpet
-        addMeltTime(new MaterialData(Material.CARPET, (byte) 3), 0);//Light blue carpet
-        addMeltTime(new MaterialData(Material.CARPET, (byte) 4), 0);//Yellow carpet
-        addMeltTime(new MaterialData(Material.CARPET, (byte) 5), 0);//Lime carpet
-        addMeltTime(new MaterialData(Material.CARPET, (byte) 6), 0);//Pink carpet
-        addMeltTime(new MaterialData(Material.CARPET, (byte) 7), 0);//Gray carpet
-        addMeltTime(new MaterialData(Material.CARPET, (byte) 8), 0);//Light gray carpet
-        addMeltTime(new MaterialData(Material.CARPET, (byte) 9), 0);//Cyan carpet
-        addMeltTime(new MaterialData(Material.CARPET, (byte) 10), 0);//Purple carpet
-        addMeltTime(new MaterialData(Material.CARPET, (byte) 11), 0);//Blue carpet
-        addMeltTime(new MaterialData(Material.CARPET, (byte) 12), 0);//Brown carpet
-        addMeltTime(new MaterialData(Material.CARPET, (byte) 13), 0);//Green carpet
-        addMeltTime(new MaterialData(Material.CARPET, (byte) 14), 0);//Red carpet
-        addMeltTime(new MaterialData(Material.CARPET, (byte) 15), 0);//Black carpet
+        addMeltTime(new MaterialData(Material.CARPET, (byte) 0), 20 * 20);//White carpet
+        addMeltTime(new MaterialData(Material.CARPET, (byte) 1), 20 * 20);//Orange carpet
+        addMeltTime(new MaterialData(Material.CARPET, (byte) 2), 20 * 20);//Magenta carpet
+        addMeltTime(new MaterialData(Material.CARPET, (byte) 3), 20 * 20);//Light blue carpet
+        addMeltTime(new MaterialData(Material.CARPET, (byte) 4), 20 * 20);//Yellow carpet
+        addMeltTime(new MaterialData(Material.CARPET, (byte) 5), 20 * 20);//Lime carpet
+        addMeltTime(new MaterialData(Material.CARPET, (byte) 6), 20 * 20);//Pink carpet
+        addMeltTime(new MaterialData(Material.CARPET, (byte) 7), 20 * 20);//Gray carpet
+        addMeltTime(new MaterialData(Material.CARPET, (byte) 8), 20 * 20);//Light gray carpet
+        addMeltTime(new MaterialData(Material.CARPET, (byte) 9), 20 * 20);//Cyan carpet
+        addMeltTime(new MaterialData(Material.CARPET, (byte) 10), 20 * 20);//Purple carpet
+        addMeltTime(new MaterialData(Material.CARPET, (byte) 11), 20 * 20);//Blue carpet
+        addMeltTime(new MaterialData(Material.CARPET, (byte) 12), 20 * 20);//Brown carpet
+        addMeltTime(new MaterialData(Material.CARPET, (byte) 13), 20 * 20);//Green carpet
+        addMeltTime(new MaterialData(Material.CARPET, (byte) 14), 20 * 20);//Red carpet
+        addMeltTime(new MaterialData(Material.CARPET, (byte) 15), 20 * 20);//Black carpet
         addMeltTime(new MaterialData(Material.FLOWER_POT_ITEM), 0);
         addMeltTime(new MaterialData(Material.FLOWER_POT), 0);
         addMeltTime(new MaterialData(Material.BOOKSHELF), 0);
@@ -269,6 +281,8 @@ public class PhysicsListener implements Listener {
         addMeltTime(new MaterialData(Material.RED_ROSE, (byte) 6), 0);//White Tulip
         addMeltTime(new MaterialData(Material.RED_ROSE, (byte) 7), 0);//Pink Tulip
         addMeltTime(new MaterialData(Material.RED_ROSE, (byte) 8), 0);//Oxeye Daisy
+        addMeltTime(new MaterialData(Material.BONE_BLOCK), 0);
+        addMeltTime(new MaterialData(Material.GRASS_PATH), 0);
 
         //Unmeltable
         addMeltTime(new MaterialData(Material.BEDROCK), -1);
@@ -292,15 +306,16 @@ public class PhysicsListener implements Listener {
             waterTicksToMelt.put(data, water);
     }
 
+    @SuppressWarnings({"deprecation", "unused"})
     @EventHandler(priority = EventPriority.MONITOR)
     public void onClassicPhysics(ClassicPhysicsEvent event) {
         synchronized (toTasks) {
-            if (!event.isClassicEvent() || Gamemode.getCurrentGame().hasEnded() || event.getLocation() == null || event.getLocation().getWorld() == null ||
+            if (Gamemode.getCurrentGame().hasEnded() || event.getLocation() == null || event.getLocation().getWorld() == null ||
                     !event.getLocation().getChunk().isLoaded() || event.getLocation().getBlock() == null)
                 return;
 
             if (Gamemode.getCurrentMap().isInSafeZone(event.getLocation())) {
-                event.setCancelled(true); //Do not allow physics inside the safezone!
+                event.setCancelled(true); //Do not allow physics inside the safe zone!
                 return;
             }
 
@@ -323,6 +338,16 @@ public class PhysicsListener implements Listener {
                 long meltTicks = ticksToMelt.get(dat);
                 if (meltTicks < 0) //It's unburnable
                     return;
+
+                double percent = Gamemode.getCurrentMap().getMeltRange() / 100.0;
+                int range = (int) (meltTicks * percent + 0.5); //Round normally
+                long bonus = RANDOM.nextInt(range + 1);
+
+                if (RANDOM.nextBoolean())
+                    meltTicks += bonus;
+                else
+                    meltTicks -= bonus;
+
                 if (!blockChecking.hasMetadata("player_placed"))
                     meltTicks *= Gamemode.getCurrentMap().getMeltMultiplier();
                 if (meltTicks <= 0)
@@ -330,9 +355,12 @@ public class PhysicsListener implements Listener {
                 event.setCancelled(true);
                 ConcurrentLinkedQueue<BlockTaskInfo> temp;
                 Location location = event.getLocation();
-                if (toTasks.containsKey(location) && toTasks.get(location) != null && toTasks.get(location).size() > 0)
+                if (toTasks.containsKey(location) && toTasks.get(location) != null && toTasks.get(location).size() > 0) {
                     temp = toTasks.get(location);
-                else
+                    long lticks = temp.isEmpty() ? 0 : ((BlockTaskInfo) temp.toArray()[0]).getTicksToMelt();
+                    if (lticks != 0)
+                        meltTicks = lticks;
+                } else
                     temp = new ConcurrentLinkedQueue<>();
                 temp.add(new BlockTaskInfo(event.getLogicContainer().logicFor(), event.getFrom(), blockChecking, meltTicks));
                 toTasks.put(event.getLocation(), temp);
@@ -371,25 +399,40 @@ public class PhysicsListener implements Listener {
     }
 
     public static String getLavaMeltTimeAsString(MaterialData data) {
-        int seconds = lavaTicksToMelt.containsKey(data) ? lavaTicksToMelt.get(data) : 0;
-        if (seconds < 0)
-            return "Never";
-        seconds = seconds / 20;
-        if (seconds == 0)
-            return "Immediately";
-        else
-            return seconds + " Second" + (seconds == 1 ? "" : "s");
+        return getMeltTimeAsString(lavaTicksToMelt.containsKey(data) ? lavaTicksToMelt.get(data) : 0);
     }
 
     public static String getWaterMeltTimeAsString(MaterialData data) {
-        int seconds = waterTicksToMelt.containsKey(data) ? waterTicksToMelt.get(data) : 0;
+        return getMeltTimeAsString(waterTicksToMelt.containsKey(data) ? waterTicksToMelt.get(data) : 0);
+    }
+
+    private static String getMeltTimeAsString(int seconds) {
         if (seconds < 0)
             return "Never";
         seconds = seconds / 20;
         if (seconds == 0)
             return "Immediately";
-        else
-            return seconds + " Second" + (seconds == 1 ? "" : "s");
+        return seconds + " Second" + (seconds == 1 ? "" : "s");
+    }
+
+    public static String getLavaMeltRangeTimeAsString(MaterialData data) {
+        return getMeltRangeAsString(lavaTicksToMelt.containsKey(data) ? lavaTicksToMelt.get(data) : 0);
+    }
+
+    private static String getMeltRangeAsString(int seconds) {
+        if (seconds < 0)
+            return "Never";
+        seconds = seconds / 20;
+        if (seconds == 0)
+            return "Immediately";
+        double percent = Gamemode.getCurrentMap().getMeltRange() / 100.0;
+        int range = (int) (seconds * percent);
+        int min = seconds - range, max = seconds + range;
+        return (min == max ? max : min + " to " + max) + " Second" + (max == 1 ? "" : "s");
+    }
+
+    public static String getWaterMeltRangeTimeAsString(MaterialData data) {
+        return getMeltRangeAsString(waterTicksToMelt.containsKey(data) ? waterTicksToMelt.get(data) : 0);
     }
 
     private static void cancelAllTasks() {
@@ -408,10 +451,11 @@ public class PhysicsListener implements Listener {
     }
 
     private class BlockTaskInfo {
-        private long ticksToMelt, startTick;
-        private Location from;
-        private Material logicFor;
-        private Block oldBlock;
+        private final long ticksToMelt;
+        private final long startTick;
+        private final Location from;
+        private final Material logicFor;
+        private final Block oldBlock;
 
         BlockTaskInfo(Material logicFor, Location from, Block oldBlock, long ticksToMelt) {
             this.startTick = tickCount;

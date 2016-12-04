@@ -16,53 +16,39 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
+@SuppressWarnings("unused")
 @MenuInventory(slots = 9, name = "Item Shop")
 public class ItemShop extends Menu {
     public ItemShop(MenuManager manager, Inventory inv) {
         super(manager, inv);
     }
 
-    @MenuItem(
-            slot = 0,
-            item = @ItemStackAnnotation(material = Material.WOOD, name = "")
-    )
+    @MenuItem(slot = 0, item = @ItemStackAnnotation(material = Material.WOOD, name = ""))
     public void generosity(MenuPlayer player) {
         buyItem(player, LavaItem.GENEROSITY);
     }
 
-    @MenuItem(
-            slot = 1,
-            item = @ItemStackAnnotation(material = Material.WOOD, name = "")
-    )
+    @MenuItem(slot = 1, item = @ItemStackAnnotation(material = Material.WOOD, name = ""))
     public void minorHeal(MenuPlayer player) {
         buyItem(player, LavaItem.MINOR_HEAL);
     }
 
-    @MenuItem(
-            slot = 2,
-            item = @ItemStackAnnotation(material = Material.WOOD, name = "")
-    )
+    @MenuItem(slot = 2, item = @ItemStackAnnotation(material = Material.WOOD, name = ""))
     public void majorHeal(MenuPlayer player) {
         buyItem(player, LavaItem.MAJOR_HEAL);
     }
 
-    @MenuItem(
-            slot = 3,
-            item = @ItemStackAnnotation(material = Material.WOOD, name = "")
-    )
+    @MenuItem(slot = 3, item = @ItemStackAnnotation(material = Material.WOOD, name = ""))
     public void minorInvincibility(MenuPlayer player) {
         buyItem(player, LavaItem.MINOR_INVINCIBILITY);
     }
 
-    @MenuItem(
-            slot = 4,
-            item = @ItemStackAnnotation(material = Material.WOOD, name = "")
-    )
+    @MenuItem(slot = 4, item = @ItemStackAnnotation(material = Material.WOOD, name = ""))
     public void majorInvincibility(MenuPlayer player) {
         buyItem(player, LavaItem.MAJOR_INVINCIBILITY);
     }
 
-    public void buyItem(MenuPlayer player, LavaItem item) {
+    private void buyItem(MenuPlayer player, LavaItem item) {
         ItemStack is = item.createItem();
         Player p = player.getBukkit();
         if (!Lavasurvival.INSTANCE.getEconomy().hasAccount(p) || Lavasurvival.INSTANCE.getEconomy().getBalance(p) < item.getPrice())

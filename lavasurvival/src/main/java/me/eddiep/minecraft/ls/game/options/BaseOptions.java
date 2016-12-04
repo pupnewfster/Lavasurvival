@@ -3,10 +3,12 @@ package me.eddiep.minecraft.ls.game.options;
 import java.util.Random;
 
 public class BaseOptions {
-    protected static final Random RANDOM = new Random();
+    static final Random RANDOM = new Random();
 
-    private boolean isEnabled = true;
+    @SuppressWarnings("FieldCanBeLocal")
+    private final boolean isEnabled = true;
 
+    @SuppressWarnings("unused")
     public static BaseOptions defaults() {
         return new BaseOptions();
     }
@@ -15,6 +17,6 @@ public class BaseOptions {
     }
 
     public boolean isEnabled() {
-        return isEnabled;
+        return this.isEnabled;
     }
 }

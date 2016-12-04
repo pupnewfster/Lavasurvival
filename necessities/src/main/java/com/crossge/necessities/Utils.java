@@ -1,28 +1,32 @@
 package com.crossge.necessities;
 
-import net.minecraft.server.v1_10_R1.MinecraftServer;
+import net.minecraft.server.v1_11_R1.MinecraftServer;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.craftbukkit.v1_11_R1.CraftServer;
 
 import java.lang.reflect.Field;
 import java.text.DecimalFormat;
 
 public class Utils {
+    @SuppressWarnings({"BooleanMethodIsAlwaysInverted", "ResultOfMethodCallIgnored"})
     public static boolean legalDouble(String input) {
         try {
             Double.parseDouble(input);
-            return true;
-        } catch (Exception ignored) {
+        } catch (Exception e) {
+            return false;
         }
-        return false;
+        return true;
     }
 
+    @SuppressWarnings({"BooleanMethodIsAlwaysInverted", "ResultOfMethodCallIgnored"})
     public static boolean legalInt(String input) {
         try {
             Integer.parseInt(input);
-            return true;
-        } catch (Exception ignored) {
+        } catch (Exception e) {
+            return false;
         }
-        return false;
+        return true;
     }
 
     public static String addCommas(int i) {
@@ -36,11 +40,11 @@ public class Utils {
         matName = matName.replaceAll("_", " ").toLowerCase();
         String[] namePieces = matName.split(" ");
         for (String piece : namePieces)
-            name += upercaseFirst(piece) + " ";
+            name += uppercaseFirst(piece) + " ";
         return name.trim();
     }
 
-    private static String upercaseFirst(String word) {
+    private static String uppercaseFirst(String word) {
         if (word == null)
             return "";
         String firstCapitalized = "";
@@ -66,28 +70,28 @@ public class Utils {
         return ((tps > 18.0) ? ChatColor.GREEN : (tps > 16.0) ? ChatColor.YELLOW : ChatColor.RED).toString() + ((tps > 20.0) ? "*" : "") + Math.min(Math.round(tps * 100.0) / 100.0, 20.0);
     }
 
-    private static final Field recentTpsField = makeField(MinecraftServer.class, "recentTps");
+    private static final Field recentTpsField = makeField(MinecraftServer.class);
 
     private static double[] getNMSRecentTps() {
         if (recentTpsField == null)
             return new double[0];
-        return getField(recentTpsField, MinecraftServer.getServer());
+        return getField(((CraftServer) Bukkit.getServer()).getServer());
     }
 
-    private static Field makeField(Class<?> clazz, String name) {
+    private static Field makeField(Class<?> clazz) {
         try {
-            return clazz.getDeclaredField(name);
+            return clazz.getDeclaredField("recentTps");
         } catch (Exception ex) {
             return null;
         }
     }
 
     @SuppressWarnings("unchecked")
-    private static <T> T getField(Field field, Object instance) {
-        if (field == null) throw new RuntimeException("No such field");
-        field.setAccessible(true);
+    private static <T> T getField(Object instance) {
+        if (Utils.recentTpsField == null) throw new RuntimeException("No such field");
+        Utils.recentTpsField.setAccessible(true);
         try {
-            return (T) field.get(instance);
+            return (T) Utils.recentTpsField.get(instance);
         } catch (Exception ex) {
             return null;
         }

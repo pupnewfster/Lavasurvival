@@ -9,12 +9,12 @@ import me.eddiep.minecraft.ls.game.status.PlayerStatusManager;
 import me.eddiep.minecraft.ls.ranks.UserInfo;
 import me.eddiep.minecraft.ls.ranks.UserManager;
 import me.eddiep.minecraft.ls.system.bank.BankInventory;
-import net.minecraft.server.v1_10_R1.*;
+import net.minecraft.server.v1_11_R1.*;
 import org.bukkit.*;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
-import org.bukkit.craftbukkit.v1_10_R1.entity.CraftPlayer;
+import org.bukkit.craftbukkit.v1_11_R1.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -42,6 +42,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 
+@SuppressWarnings("unused")
 public class PlayerListener implements Listener {
     private final ArrayList<Material> invalidBlocks = new ArrayList<>(Arrays.asList(new Material[]{
             Material.OBSIDIAN,
@@ -53,7 +54,7 @@ public class PlayerListener implements Listener {
             Material.BARRIER
     }));
     private final UserManager um = Lavasurvival.INSTANCE.getUserManager();
-    private Random rand = new Random();
+    private final Random rand = new Random();
     public boolean survival = false;
 
     @EventHandler(priority = EventPriority.LOWEST)
@@ -123,6 +124,24 @@ public class PlayerListener implements Listener {
         }
     }
 
+    @EventHandler
+    public void itemHeldSlot(PlayerItemHeldEvent event) {
+        ItemStack is = event.getPlayer().getInventory().getItem(event.getNewSlot());
+        if (is == null || is.getType().equals(Material.AIR))
+            return;
+        IChatBaseComponent infoJSON;
+        if (is.hasItemMeta() && is.getItemMeta().hasLore() && is.getItemMeta().getLore().size() == 1)
+            infoJSON = IChatBaseComponent.ChatSerializer.a("{\"text\": \"" + is.getItemMeta().getLore().get(0) + "\"}");
+        else {
+            String lavaTime = ChatColor.GOLD + "Lava MeltTime" + ChatColor.RESET + ": " + PhysicsListener.getLavaMeltRangeTimeAsString(is.getData()),
+                    waterTime = ChatColor.BLUE + "Water MeltTime" + ChatColor.RESET + ": " + PhysicsListener.getWaterMeltRangeTimeAsString(is.getData());
+            infoJSON = IChatBaseComponent.ChatSerializer.a("{\"text\": \"" + lavaTime + "    " + waterTime + "\"}");
+        }
+        PacketPlayOutTitle meltPacket = new PacketPlayOutTitle(PacketPlayOutTitle.EnumTitleAction.ACTIONBAR, infoJSON, 0, 60, 0);
+        ((CraftPlayer) event.getPlayer()).getHandle().playerConnection.sendPacket(meltPacket);
+    }
+
+    @SuppressWarnings("deprecation")
     @EventHandler(priority = EventPriority.HIGHEST)
     public void blockInteract(PlayerInteractEvent event) {
         if (Lavasurvival.INSTANCE.getSetups().containsKey(event.getPlayer().getUniqueId()))
@@ -150,7 +169,7 @@ public class PlayerListener implements Listener {
                 if (System.currentTimeMillis() - u.getLastBreak() <= 100)//So that two blocks don't break instantly, may need to be adjusted
                     return;
                 u.setLastBreak(System.currentTimeMillis());
-                u.incrimentBlockCount();
+                u.incrementBlockCount();
                 if (this.survival) {
                     Inventory inventory = event.getPlayer().getInventory();
                     int index = inventory.first(block.getType());
@@ -178,11 +197,35 @@ public class PlayerListener implements Listener {
         if (event.getClickedBlock() == null)
             return;
         Material type = event.getClickedBlock().getType();
-        if (event.getAction() == Action.RIGHT_CLICK_BLOCK && !event.getPlayer().isSneaking() && (event.getClickedBlock() instanceof InventoryHolder || type.equals(Material.WORKBENCH) ||
-                type.equals(Material.ANVIL) || type.equals(Material.ENCHANTMENT_TABLE) || type.equals(Material.ENDER_CHEST) || type.equals(Material.BEACON)) || type.equals(Material.BED_BLOCK) ||
-                type.equals(Material.CHEST) || type.equals(Material.TRAPPED_CHEST) || type.equals(Material.FURNACE) || type.equals(Material.BEACON) || type.equals(Material.BREWING_STAND) ||
-                type.equals(Material.DISPENSER) || type.equals(Material.DROPPER) || type.equals(Material.HOPPER))
-            event.setCancelled(true);//Disable opening block's with inventories
+        if (event.getAction() == Action.RIGHT_CLICK_BLOCK) {
+            if (!event.getPlayer().isSneaking() && (event.getClickedBlock() instanceof InventoryHolder || type.equals(Material.WORKBENCH) ||
+                    type.equals(Material.ANVIL) || type.equals(Material.ENCHANTMENT_TABLE) || type.equals(Material.ENDER_CHEST) || type.equals(Material.BEACON)) || type.equals(Material.BED_BLOCK) ||
+                    type.equals(Material.CHEST) || type.equals(Material.TRAPPED_CHEST) || type.equals(Material.FURNACE) || type.equals(Material.BEACON) || type.equals(Material.BREWING_STAND) ||
+                    type.equals(Material.DISPENSER) || type.equals(Material.DROPPER) || type.equals(Material.HOPPER))
+                event.setCancelled(true);//Disable opening block's with inventories
+            /*else if (event.getClickedBlock().getType().equals(Material.GLASS)) { //TODO check colored glass
+                //TODO make sure not in spawn
+                if (event.getItem() != null && event.getItem().getType().equals(Material.TORCH)) {
+                    BlockFace face = event.getBlockFace();
+                    Block relative = event.getClickedBlock().getRelative(face);
+                    relative.setType(Material.TORCH);
+                    if (face.equals(BlockFace.NORTH))
+                        relative.setData((byte) 4);
+                    else if (face.equals(BlockFace.EAST))
+                        relative.setData((byte) 1);
+                    else if (face.equals(BlockFace.SOUTH))
+                        relative.setData((byte) 3);
+                    else if (face.equals(BlockFace.WEST))
+                        relative.setData((byte) 2);
+                    if (!this.survival) {
+                        if (event.getHand().equals(EquipmentSlot.OFF_HAND))
+                            event.getPlayer().getInventory().setItemInOffHand(event.getPlayer().getInventory().getItemInOffHand().clone());
+                        else
+                            event.getPlayer().getInventory().setItemInMainHand(event.getPlayer().getInventory().getItemInMainHand().clone());
+                    }
+                }
+            }*/
+        }
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
@@ -228,9 +271,8 @@ public class PlayerListener implements Listener {
     public void inventoryClosed(InventoryCloseEvent e) {
         final Player p = (Player) e.getPlayer();
         BankInventory view = BankInventory.from(p);
-        if (view != null) {
+        if (view != null)
             view.end(p);
-        }
     }
 
     @EventHandler(priority = EventPriority.LOW)
@@ -241,7 +283,6 @@ public class PlayerListener implements Listener {
         if (view != null) {
             if (e.getCurrentItem() == null)
                 return;
-
             ItemStack currentItem = e.getCurrentItem();
             if (view.isNextPageButton(currentItem)) {
                 view.nextPage();
@@ -249,10 +290,15 @@ public class PlayerListener implements Listener {
             } else if (view.isPreviousPageButton(currentItem)) {
                 view.previousPage();
                 e.setCancelled(true);
+            } else { //Only let blocks that can be placed be stored in the bank
+                Material type = currentItem.getType();
+                if (type != null && !type.equals(Material.AIR) && (!currentItem.hasItemMeta() || !currentItem.getItemMeta().hasLore() || !currentItem.getItemMeta().getLore().get(0).contains("MeltTime")))
+                    e.setCancelled(true);
             }
         }
     }
 
+    @SuppressWarnings("deprecation")
     @EventHandler(priority = EventPriority.HIGHEST)
     public void blockPlace(BlockPlaceEvent event) {
         if (event.getPlayer() == null || Lavasurvival.INSTANCE.getSetups().containsKey(event.getPlayer().getUniqueId()))
@@ -285,7 +331,7 @@ public class PlayerListener implements Listener {
             }
         }
         UserInfo u = this.um.getUser(event.getPlayer().getUniqueId());
-        u.incrimentBlockCount();
+        u.incrementBlockCount();
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
@@ -346,6 +392,7 @@ public class PlayerListener implements Listener {
             event.setCancelled(true);
     }
 
+    @SuppressWarnings("ConstantConditions")
     @EventHandler(priority = EventPriority.HIGHEST)
     public void playerMove(PlayerMoveEvent event) {
         Location from = event.getFrom(), to = event.getTo();
@@ -356,7 +403,7 @@ public class PlayerListener implements Listener {
                     ((to.getBlock().getRelative(BlockFace.UP).getType().equals(Material.WATER) || to.getBlock().getRelative(BlockFace.UP).getType().equals(Material.STATIONARY_WATER)) &&
                             to.getBlock().getRelative(BlockFace.UP).hasMetadata("classic_block"))) {
                 if (!u.isInWater()) {
-                    if (!PlayerStatusManager.isInvincible(event.getPlayer()) && !event.getPlayer().getGameMode().equals(GameMode.CREATIVE))
+                    if (!PlayerStatusManager.isInvincible(event.getPlayer()) && !event.getPlayer().getGameMode().equals(GameMode.CREATIVE) && !event.getPlayer().getGameMode().equals(GameMode.SPECTATOR))
                         ((CraftPlayer) event.getPlayer()).getHandle().damageEntity(DamageSource.OUT_OF_WORLD, (float) Gamemode.DAMAGE);
                     u.setInWater(true);
                 }
@@ -365,6 +412,7 @@ public class PlayerListener implements Listener {
         }
     }
 
+    @SuppressWarnings("ConstantConditions")
     @EventHandler(priority = EventPriority.HIGHEST)
     public void classicBlockPlace(ClassicBlockPlaceEvent event) {
         Material type = event.getLocation().getBlock().getType();
@@ -374,7 +422,7 @@ public class PlayerListener implements Listener {
         Bukkit.getOnlinePlayers().stream().filter(p -> Gamemode.getCurrentGame().isAlive(p) && (p.getLocation().getBlock().getLocation().equals(loc) || p.getLocation().getBlock().getRelative(BlockFace.UP).getLocation().equals(loc))).forEach(p -> {
             UserInfo u = this.um.getUser(p.getUniqueId());
             if (!u.isInWater()) {
-                if (!PlayerStatusManager.isInvincible(p) && !p.getGameMode().equals(GameMode.CREATIVE))
+                if (!PlayerStatusManager.isInvincible(p) && !p.getGameMode().equals(GameMode.CREATIVE) && !p.getGameMode().equals(GameMode.SPECTATOR))
                     ((CraftPlayer) p).getHandle().damageEntity(DamageSource.OUT_OF_WORLD, (float) Gamemode.DAMAGE);
                 u.setInWater(true);
             }
@@ -382,7 +430,7 @@ public class PlayerListener implements Listener {
     }
 
 
-    private static String[] deathMessages = new String[]{"§c§lWasted!", "§a§lBetter luck next time!", "§c§lYou died!", "§c§lrip."};
+    private static final String[] deathMessages = new String[]{"§c§lWasted!", "§a§lBetter luck next time!", "§c§lYou died!", "§c§lrip."};
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void playerDeath(PlayerDeathEvent event) {

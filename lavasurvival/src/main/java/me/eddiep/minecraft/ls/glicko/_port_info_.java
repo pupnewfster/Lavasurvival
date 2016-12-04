@@ -3,9 +3,6 @@ package me.eddiep.minecraft.ls.glicko;
 /*
 The code in this package (with the exception of Glicko2Config) was ported from:
 https://github.com/mmai/glicko2js
-*/
-
-/**
  * The MIT License (MIT)
  * <p>
  * Copyright (c) <year> <copyright holders>

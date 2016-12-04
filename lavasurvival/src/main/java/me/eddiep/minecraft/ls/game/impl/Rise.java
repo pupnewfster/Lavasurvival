@@ -83,7 +83,8 @@ public class Rise extends Gamemode {
 
     @Override
     public void endRound() {
-        this.objective.unregister();
+        if (this.objective != null)
+            this.objective.unregister();
         this.objective = null;
         Bukkit.getScheduler().cancelTask(this.sched);
         super.endRound();
@@ -156,7 +157,7 @@ public class Rise extends Gamemode {
         return (super.getDefaultReward(player, blockCount) + this.bonus) * multiplier;
     }
 
-    public boolean isRoundEnding() {
+    private boolean isRoundEnding() {
         return this.isEnding;
     }
 }

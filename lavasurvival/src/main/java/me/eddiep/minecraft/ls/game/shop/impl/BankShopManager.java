@@ -3,19 +3,13 @@ package me.eddiep.minecraft.ls.game.shop.impl;
 import me.eddiep.minecraft.ls.Lavasurvival;
 import me.eddiep.minecraft.ls.game.shop.Shop;
 import me.eddiep.minecraft.ls.game.shop.ShopManager;
-import me.eddiep.minecraft.ls.ranks.UserInfo;
-import me.eddiep.minecraft.ls.ranks.UserManager;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 
 public class BankShopManager implements ShopManager {
     @Override
     public void shopClicked(Player owner, Shop shop) {
-        UserManager um = Lavasurvival.INSTANCE.getUserManager();
-
-        UserInfo user = um.getUser(owner.getUniqueId());
-
-        user.createBankInventory(owner);
+        Lavasurvival.INSTANCE.getUserManager().getUser(owner.getUniqueId()).createBankInventory(owner);
     }
 
     @Override
@@ -29,11 +23,6 @@ public class BankShopManager implements ShopManager {
             inventory.remove(shop.getOpener());
             inventory.setItem(owner.getInventory().firstEmpty(), shop.getOpener());
         }
-
-        UserManager um = Lavasurvival.INSTANCE.getUserManager();
-
-        UserInfo user = um.getUser(owner.getUniqueId());
-
-        user.saveBank(owner);
+        Lavasurvival.INSTANCE.getUserManager().getUser(owner.getUniqueId()).saveBank();
     }
 }

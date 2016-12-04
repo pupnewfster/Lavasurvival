@@ -16,6 +16,9 @@ import me.eddiep.minecraft.ls.game.shop.impl.*;
 import me.eddiep.minecraft.ls.ranks.UserManager;
 import me.eddiep.minecraft.ls.system.PlayerListener;
 import me.eddiep.minecraft.ls.system.setup.SetupMap;
+import me.eddiep.minecraft.ls.system.ubot.UBotLogger;
+import me.eddiep.minecraft.ls.system.ubot.Updater;
+import me.eddiep.ubot.UBot;
 import me.eddiep.ubot.utils.CancelToken;
 import net.milkbowl.vault.economy.Economy;
 import net.njay.MenuFramework;
@@ -24,12 +27,12 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.boss.BarColor;
-import org.bukkit.boss.BarFlag;
 import org.bukkit.boss.BarStyle;
 import org.bukkit.boss.BossBar;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
-import org.bukkit.craftbukkit.v1_10_R1.boss.CraftBossBar;
+import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.craftbukkit.v1_11_R1.boss.CraftBossBar;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
@@ -42,24 +45,27 @@ import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.File;
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.UUID;
 
+@SuppressWarnings("unused")
 public class Lavasurvival extends JavaPlugin {
     public static final Gson GSON = new Gson();
     public static Lavasurvival INSTANCE;
-    public static final BossBar GGBAR = new CraftBossBar(ChatColor.GOLD + "Welcome to " + ChatColor.AQUA + "Galaxy Gaming", BarColor.GREEN, BarStyle.SOLID, new BarFlag[0]);
-    public final Runnable MONEY_VIEWER = () -> {
-        Collection<? extends Player> players = Bukkit.getOnlinePlayers();
-        players.forEach(this::updateMoneyView);
-    };
+    public static final BossBar GGBAR = new CraftBossBar(ChatColor.GOLD + "Welcome to " + ChatColor.AQUA + "Galaxy Gaming", BarColor.GREEN, BarStyle.SOLID);
+    public final Runnable MONEY_VIEWER = () -> Bukkit.getOnlinePlayers().forEach(this::updateMoneyView);
 
     private Cmd[] commands;
-    private HashMap<UUID, SetupMap> setups = new HashMap<>();
+    private final HashMap<UUID, SetupMap> setups = new HashMap<>();
     private Economy econ;
     private ClassicPhysics physics;
     private UserManager userManager;
     private boolean running = false;
     private ItemStack rules;
+    private String dburl, dbpass, dbuser;
+    @SuppressWarnings("CanBeFinal")
     private CancelToken ubotCancelToken;
     public boolean updating;
 
@@ -71,7 +77,7 @@ public class Lavasurvival extends JavaPlugin {
             ItemMeta meta = item.getItemMeta();
             meta.setDisplayName(ChatColor.GOLD + "Balance");
             ArrayList<String> lore = new ArrayList<>();
-            lore.add(ChatColor.ITALIC + "Current Balance: " + ChatColor.RESET + this.econ.format(this.econ.getBalance(player)));
+            lore.add(ChatColor.GREEN + "" + ChatColor.ITALIC + "Current Balance: " + ChatColor.RESET + this.econ.format(this.econ.getBalance(player)));
             meta.setLore(lore);
             item.setItemMeta(meta);
             inv.setItem(inv.firstEmpty(), item);
@@ -81,7 +87,7 @@ public class Lavasurvival extends JavaPlugin {
         ItemStack item = inv.getItem(index);
         ItemMeta meta = item.getItemMeta();
         ArrayList<String> lore = new ArrayList<>();
-        lore.add(ChatColor.ITALIC + "Current Balance: " + ChatColor.RESET + this.econ.format(this.econ.getBalance(player)));
+        lore.add(ChatColor.GREEN + "" + ChatColor.ITALIC + "Current Balance: " + ChatColor.RESET + this.econ.format(this.econ.getBalance(player)));
         meta.setLore(lore);
         item.setItemMeta(meta);
     }
@@ -90,7 +96,7 @@ public class Lavasurvival extends JavaPlugin {
         this.econ.withdrawPlayer(player, price);
         updateMoneyView(player);
         if (Necessities.isTracking()) {
-            Necessities.trackActionWithValue(player, "Economy", -price, -price);
+            Necessities.trackActionWithValue(player, -price, -price);
         }
     }
 
@@ -146,7 +152,7 @@ public class Lavasurvival extends JavaPlugin {
             log("Stopping game..");
             Gamemode.getCurrentGame().forceEnd();
             log("Cleaning up..");
-            //ubotCancelToken.cancel();
+            ubotCancelToken.cancel();
             Gamemode.cleanup();
             ShopFactory.cleanup();
             this.setups.keySet().forEach(uuid -> this.setups.get(uuid).end());
@@ -196,6 +202,7 @@ public class Lavasurvival extends JavaPlugin {
         ShopFactory.createShop(this, "Bank", new BankShopManager(), Material.CHEST, lore4, false);
     }
 
+    @SuppressWarnings("ResultOfMethodCallIgnored")
     private void init() {
         this.commands = new Cmd[]{
                 new CmdEndGame(),
@@ -218,11 +225,19 @@ public class Lavasurvival extends JavaPlugin {
                 e.printStackTrace();
             }
         this.userManager = new UserManager();
-        this.userManager.readUsers();
 
-        //log("Starting UBot");
-        //UBot ubot = new UBot(new File("/root/ubot/ls1/Lavasurvival"), new Updater(), new UBotLogger());
-        //ubotCancelToken = ubot.startAsync();
+        log("Starting UBot");
+        try {
+            UBot ubot = new UBot(new File("/home/minecraft/ubot/Lavasurvival"), new Updater(), new UBotLogger());
+            ubotCancelToken = ubot.startAsync();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        YamlConfiguration config = Necessities.getInstance().getConfig();
+        this.dburl = "jdbc:mariadb://" + config.getString("Lavasurvival.DBHost") + "/" + config.getString("Lavasurvival.DBTable");
+        this.dbuser = config.getString("Lavasurvival.DBUser");
+        this.dbpass = config.getString("Lavasurvival.DBPassword");
     }
 
     private boolean setupEcon() {
@@ -259,6 +274,18 @@ public class Lavasurvival extends JavaPlugin {
         return Necessities.getInstance().getUM();
     }
 
+    public String getDBURL() {
+        return this.dburl;
+    }
+
+    public String getDBPass() {
+        return this.dbpass;
+    }
+
+    public String getDBUser() {
+        return this.dbuser;
+    }
+
     public RankManager getRankManager() {
         return Necessities.getInstance().getRM();
     }
@@ -288,10 +315,9 @@ public class Lavasurvival extends JavaPlugin {
     }
 
     private Cmd getCmd(String name) {
-        for (Cmd possible : this.commands) {
+        for (Cmd possible : this.commands)
             if (possible.getName().equalsIgnoreCase(name))
                 return possible;
-        }
         return null;
     }
 
@@ -308,12 +334,12 @@ public class Lavasurvival extends JavaPlugin {
     }
 
     public void changeServer(Player p, String serverName) throws IOException {
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        DataOutputStream dos = new DataOutputStream(baos);
+        ByteArrayOutputStream bs = new ByteArrayOutputStream();
+        DataOutputStream dos = new DataOutputStream(bs);
         dos.writeUTF("Connect");
         dos.writeUTF(serverName);
-        p.sendPluginMessage(this, "BungeeCord", baos.toByteArray());
-        baos.close();
+        p.sendPluginMessage(this, "BungeeCord", bs.toByteArray());
+        bs.close();
         dos.close();
     }
 
@@ -323,8 +349,7 @@ public class Lavasurvival extends JavaPlugin {
 
     public void depositPlayer(Player player, double reward) {
         econ.depositPlayer(player, reward);
-        if (Necessities.isTracking()) {
-            Necessities.trackActionWithValue(player, "Economy", reward, reward);
-        }
+        if (Necessities.isTracking())
+            Necessities.trackActionWithValue(player, reward, reward);
     }
 }

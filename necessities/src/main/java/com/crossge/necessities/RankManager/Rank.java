@@ -10,8 +10,9 @@ import java.io.File;
 import java.util.ArrayList;
 
 public class Rank {
-    private File configFileRanks = new File("plugins/Necessities/RankManager", "ranks.yml"), configFileSubranks = new File("plugins/Necessities/RankManager", "subranks.yml");
-    private ArrayList<String> permissions = new ArrayList<>();
+    private final File configFileRanks = new File("plugins/Necessities/RankManager", "ranks.yml");
+    private final File configFileSubranks = new File("plugins/Necessities/RankManager", "subranks.yml");
+    private final ArrayList<String> permissions = new ArrayList<>();
     private String title = "", name = "";
     private Rank previous, next;
 
@@ -83,7 +84,7 @@ public class Rank {
     }
 
     public String getColor() {
-        return this.title.split("\\]").length == 1 ? ChatColor.RESET + "" : ChatColor.translateAlternateColorCodes('&', this.title.split("\\]")[1]).trim();
+        return this.title.split("]").length == 1 ? ChatColor.RESET + "" : ChatColor.translateAlternateColorCodes('&', this.title.split("]")[1]).trim();
     }
 
     public String getCommands() {

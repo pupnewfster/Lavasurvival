@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedDeque;
 
-abstract class AbstractLogicContainer implements LogicContainer {
+abstract class AbstractLogicContainer implements LogicContainer { //TODO: Should this be with Location instead of Block
     private final HashMap<World, Queue<Block>> worldQueues = new HashMap<>();
     private final HashMap<World, List<Block>> worldToAdd = new HashMap<>();
     private final List<World> unloadQueue = new LinkedList<>();
@@ -93,6 +93,7 @@ abstract class AbstractLogicContainer implements LogicContainer {
         unloadQueue.add(world);
     }
 
+    @SuppressWarnings("unused")
     protected abstract void tickForBlock(Block block, Location location);
 
     void placeClassicBlock(Material material, Location location, Location from) {

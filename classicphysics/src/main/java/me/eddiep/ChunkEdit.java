@@ -1,11 +1,11 @@
 package me.eddiep;
 
-import net.minecraft.server.v1_10_R1.*;
+import net.minecraft.server.v1_11_R1.*;
 import org.bukkit.Material;
 import org.bukkit.block.BlockFace;
 
 public class ChunkEdit {
-    public World world;
+    private final World world;
     //private PlayerChunkMap playerChunkMap;
 
     public ChunkEdit(World w) {
@@ -14,6 +14,7 @@ public class ChunkEdit {
         //this.playerChunkMap = s.getPlayerChunkMap();
     }
 
+    @SuppressWarnings("deprecation")
     private void setBlock(int x, int y, int z, Material type, byte data) {
         int columnX = x >> 4, columnZ = z >> 4, chunkY = y >> 4, blockX = x % 16, blockY = y % 16, blockZ = z % 16;
         if (blockX < 0)
@@ -92,6 +93,7 @@ public class ChunkEdit {
             return this.world.getWorld().isThundering() ? 10 : 15;
     }
 
+    @SuppressWarnings("unused")
     private void lightAround(int x, int y, int z, int lvl) {
         //TODO: update light levels slightly around the block so no flickering if near a natural light source such as in cave with a radius of more than one
         for (int xAdd = -1; xAdd < 1; xAdd++) {

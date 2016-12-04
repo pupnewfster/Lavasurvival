@@ -1,12 +1,12 @@
 #!/bin/bash
 
 echo Patching Lavasurvival...
-cp /root/ubot/ls1/Lavasurvival/lavasurvival/target/lavasurvival-0.3.jar /root/lavasurvival/plugins/Lavasurvival.jar
+cp /home/minecraft/ubot/Lavasurvival/lavasurvival/target/lavasurvival-0.3.jar /home/minecraft/lavasurvival/plugins/ubotpatcher/Lavasurvival.jar
 
 echo Patching ClassicPhysics...
-cp /root/ubot/ls1/Lavasurvival/classicphysics/target/classicphysics-1.0.jar /root/lavasurvival/plugins/ClassicPhysics.jar
+cp /home/minecraft/ubot/Lavasurvival/classicphysics/target/classicphysics-1.0.jar /home/minecraft/lavasurvival/plugins/ubotpatcher/ClassicPhysics.jar
 
 echo Patching Necessities...
-cp /root/ubot/ls1/Lavasurvival/necessities/target/necessities-1.0.jar /root/lavasurvival/plugins/Necessities.jar
+cp /home/minecraft/ubot/Lavasurvival/necessities/target/necessities-1.0.jar /home/minecraft/lavasurvival/plugins/ubotpatcher/Necessities.jar
 
 echo Done!

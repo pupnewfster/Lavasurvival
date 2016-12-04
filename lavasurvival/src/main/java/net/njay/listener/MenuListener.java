@@ -20,7 +20,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 public class MenuListener implements Listener {
-
+    @SuppressWarnings("unused")
     @EventHandler
     public void onClick(InventoryClickEvent e) {
         MenuPlayer player = MenuFramework.getPlayerManager().getPlayer((Player) e.getWhoClicked());
@@ -42,45 +42,48 @@ public class MenuListener implements Listener {
             e.setCancelled(cancel);
             for (Method m : MenuFramework.getRegistry().getLoadedMenus().get(manager.getCurrentMenu().getClass())) {
                 MenuItem menuItem = m.getAnnotation(MenuItem.class);
-                if (e.getRawSlot() == menuItem.slot()) try {
-                    m.invoke(manager.getCurrentMenu(), player);
-                    return;
-                } catch (IllegalAccessException e1) {
-                    e1.printStackTrace();
-                } catch (InvocationTargetException e1) {
-                    e1.printStackTrace();
-                }
+                if (e.getRawSlot() == menuItem.slot())
+                    try {
+                        m.invoke(manager.getCurrentMenu(), player);
+                        return;
+                    } catch (IllegalAccessException | InvocationTargetException e1) {
+                        e1.printStackTrace();
+                    }
             }
         }
     }
 
+    @SuppressWarnings({"ConstantConditions", "unused"})
     @EventHandler
     public void onClose(InventoryCloseEvent e) {
         MenuPlayer player = MenuFramework.getPlayerManager().getPlayer((Player) e.getPlayer());
-        if (player.getMenuManager().getCurrentMenu() == null) return;
+        if (player.getMenuManager().getCurrentMenu() == null)
+            return;
         if (!player.getMenuManager().getCurrentMenu().getInventory().getName().equals(e.getInventory().getName()))
             return;
         MenuInventory menuInventory = player.getMenuManager().getCurrentMenu().getClass().getAnnotation(MenuInventory.class);
-        if (menuInventory == null || menuInventory.onClose() == null) return;
-        if (menuInventory.onClose() != Menu.class) new MenuOpener(player, menuInventory.onClose());
+        if (menuInventory == null || menuInventory.onClose() == null)
+            return;
+        if (menuInventory.onClose() != Menu.class)
+            new MenuOpener(player, menuInventory.onClose());
     }
 
     public static class MenuOpener extends BukkitRunnable {
+        private final MenuPlayer player;
+        private final Class menuClass;
 
-        private MenuPlayer player;
-        private Class menuClass;
-
-        public MenuOpener(MenuPlayer player, Class menuClass) {
+        MenuOpener(MenuPlayer player, Class menuClass) {
             this.player = player;
             this.menuClass = menuClass;
             runTaskLater(MenuFramework.getRegistry().getPlugin(), 1);
         }
 
+        @SuppressWarnings("unchecked")
         @Override
         public void run() {
-            for (HumanEntity h : player.getActiveMenu().getInventory().getViewers()) {
-                if (h.getName().equalsIgnoreCase(player.getBukkit().getName())) return;
-            }
+            for (HumanEntity h : player.getActiveMenu().getInventory().getViewers())
+                if (h.getName().equalsIgnoreCase(player.getBukkit().getName()))
+                    return;
             player.setActiveMenu(menuClass);
         }
     }

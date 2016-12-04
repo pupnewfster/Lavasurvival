@@ -20,18 +20,20 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 public class User {
-    private File configFileSubranks = new File("plugins/Necessities/RankManager", "subranks.yml"), configFileUsers = new File("plugins/Necessities/RankManager", "users.yml");
-    private ArrayList<String> permissions = new ArrayList<>(), subranks = new ArrayList<>();
+    private final File configFileSubranks = new File("plugins/Necessities/RankManager", "subranks.yml");
+    private final File configFileUsers = new File("plugins/Necessities/RankManager", "users.yml");
+    private final ArrayList<String> permissions = new ArrayList<>();
+    private final ArrayList<String> subranks = new ArrayList<>();
     private String appended = "", nick = null, lastContact, status = "dead";
     private boolean opChat = false, muted = false, slackChat = false;
-    private ArrayList<UUID> ignored = new ArrayList<>();
+    private final ArrayList<UUID> ignored = new ArrayList<>();
     private long login = 0, lastRequest = 0;
     private PermissionAttachment attachment;
     private Location right, left;
     private Player bukkitPlayer;
     private int pastTotal = 0;
     private Hat hat = null;
-    private UUID userUUID;
+    private final UUID userUUID;
     private Rank rank;
 
     public User(Player p) {
@@ -170,10 +172,6 @@ public class User {
 
     public String getName() {
         return this.bukkitPlayer == null ? Bukkit.getOfflinePlayer(this.userUUID).getName() : this.bukkitPlayer.getName();
-    }
-
-    public String getDispName() {
-        return this.bukkitPlayer == null ? Bukkit.getOfflinePlayer(this.userUUID).getName() : ChatColor.translateAlternateColorCodes('&', getRank().getTitle() + this.bukkitPlayer.getDisplayName());
     }
 
     public long getLastRequest() {

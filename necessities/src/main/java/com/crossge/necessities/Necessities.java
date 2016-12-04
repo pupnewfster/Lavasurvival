@@ -14,15 +14,19 @@ import com.crossge.necessities.WorldManager.WarpManager;
 import com.crossge.necessities.WorldManager.WorldManager;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
-import net.minecraft.server.v1_10_R1.*;
+import net.minecraft.server.v1_11_R1.*;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.craftbukkit.v1_10_R1.entity.CraftPlayer;
+import org.bukkit.craftbukkit.v1_11_R1.CraftServer;
+import org.bukkit.craftbukkit.v1_11_R1.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.json.simple.JsonArray;
+import org.json.simple.JsonObject;
+import org.json.simple.Jsoner;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -37,14 +41,11 @@ import java.util.UUID;
 public class Necessities extends JavaPlugin {
     private static Necessities INSTANCE;
     private final List<String> devs = Arrays.asList("pupnewfster", "Mod_Chris", "hypereddie10");
-    private File configFile = new File("plugins/Necessities", "config.yml");
+    private final File configFile = new File("plugins/Necessities", "config.yml");
     private Tracker googleAnalyticsTracker;
-    private Property skin;
-    private UUID janetID;
-    //private DonationReader dr = new DonationReader();
+    private PacketPlayOutPlayerInfo janetInfo;
     private CmdCommandSpy spy = new CmdCommandSpy();
     private PortalManager pm = new PortalManager();
-    private JanetRandom random = new JanetRandom();
     private WarpManager warps = new WarpManager();
     private WorldManager wm = new WorldManager();
     private UserManager um = new UserManager();
@@ -58,11 +59,17 @@ public class Necessities extends JavaPlugin {
     private CmdHide hide = new CmdHide();
     private GetUUID get = new GetUUID();
     private Janet bot = new Janet();
+    private JanetNet net = new JanetNet();
     private JanetAI ai = new JanetAI();
     private JanetSlack slack = new JanetSlack();
+    private Announcer announcer = new Announcer();
 
     public UserManager getUM() {
         return this.um == null ? this.um = new UserManager() : this.um;
+    }
+
+    public JanetNet getNet() {
+        return this.net == null ? this.net = new JanetNet() : this.net;
     }
 
     CmdCommandSpy getSpy() {
@@ -129,26 +136,41 @@ public class Necessities extends JavaPlugin {
         return this.log == null ? this.log = new JanetLog() : this.log;
     }
 
-    public JanetRandom getRandom() {
-        return this.random == null ? this.random = new JanetRandom() : this.random;
+    public Announcer getAnnouncer() {
+        return this.announcer == null ? this.announcer = new Announcer() : this.announcer;
+    }
+
+    File getConfigFile() {
+        return this.configFile;
+    }
+
+    public YamlConfiguration getConfig() {
+        return YamlConfiguration.loadConfiguration(getConfigFile());
     }
 
     public static Necessities getInstance() {
         return INSTANCE;
     }
 
+    @SuppressWarnings("ResultOfMethodCallIgnored")
     @Override
     public void onEnable() {
         getLogger().info("Enabling Necessities...");
         INSTANCE = this;
         if (!hookGoogle())
             getLogger().warning("Could not hook into Google Analytics!");
-        this.janetID = UUID.randomUUID();
         Initialization init = new Initialization();
         init.initiateFiles();
         getServer().getPluginManager().registerEvents(new Listeners(), this);
-        //this.dr.init();
         getLogger().info("Necessities enabled.");
+        GameProfile janetProfile = new GameProfile(UUID.randomUUID(), "Janet");
+        janetProfile.getProperties().put("textures", getSkin());
+        MinecraftServer server = ((CraftServer) Bukkit.getServer()).getServer();
+        WorldServer world = server.getWorldServer(0);
+        PlayerInteractManager manager = new PlayerInteractManager(world);
+        EntityPlayer player = new EntityPlayer(server, world, janetProfile, manager);
+        player.listName = formatMessage(ChatColor.translateAlternateColorCodes('&', rm.getRank(rm.getOrder().size() - 1).getTitle() + " ") + "Janet");
+        this.janetInfo = new PacketPlayOutPlayerInfo(PacketPlayOutPlayerInfo.EnumPlayerInfoAction.ADD_PLAYER, player);
     }
 
     private boolean hookGoogle() {
@@ -212,18 +234,7 @@ public class Necessities extends JavaPlugin {
     }
 
     void addJanet(Player p) {
-        GameProfile janetProfile = new GameProfile(janetID, "Janet");
-        if (this.skin == null)
-            this.skin = getSkin();
-        if (this.skin != null)
-            janetProfile.getProperties().put("textures", this.skin);
-        MinecraftServer server = MinecraftServer.getServer();
-        WorldServer world = server.getWorldServer(0);
-        PlayerInteractManager manager = new PlayerInteractManager(world);
-        EntityPlayer player = new EntityPlayer(server, world, janetProfile, manager);
-        player.listName = formatMessage(ChatColor.translateAlternateColorCodes('&', rm.getRank(rm.getOrder().size() - 1).getTitle() + " ") + "Janet");
-        PacketPlayOutPlayerInfo info = new PacketPlayOutPlayerInfo(PacketPlayOutPlayerInfo.EnumPlayerInfoAction.ADD_PLAYER, player);
-        ((CraftPlayer) p).getHandle().playerConnection.sendPacket(info);
+        ((CraftPlayer) p).getHandle().playerConnection.sendPacket(this.janetInfo);
     }
 
     void addHeader(Player p) {
@@ -241,19 +252,14 @@ public class Necessities extends JavaPlugin {
     private Property getSkin() {
         try {
             BufferedReader in = new BufferedReader(new InputStreamReader(new URL("https://sessionserver.mojang.com/session/minecraft/profile/136f2ba62be3444ca2968ec597edb57e?unsigned=false").openConnection().getInputStream()));
-            String value = "", signature = "";
-            int count = 0;
-            for (char c : in.readLine().toCharArray()) {
-                if (c == '"')
-                    count++;
-                else if (count == 17)
-                    value += c;
-                else if (count == 21)
-                    signature += c;
-                if (count > 21)
-                    break;
-            }
+            String inputLine;
+            StringBuilder response = new StringBuilder();
+            while ((inputLine = in.readLine()) != null)
+                response.append(inputLine);
             in.close();
+            JsonObject json = Jsoner.deserialize(response.toString(), new JsonObject());
+            JsonObject jo = (JsonObject) ((JsonArray) json.get("properties")).get(0);
+            String signature = jo.getString("signature"), value = jo.getString("value");
             return new Property("textures", value, signature);
         } catch (Exception ignored) {
         }
@@ -273,8 +279,8 @@ public class Necessities extends JavaPlugin {
         return tab;
     }
 
-    private boolean isEqual(String command, String tocheck) {
-        return command.equalsIgnoreCase(tocheck);
+    private boolean isEqual(String command, String toCheck) {
+        return command.equalsIgnoreCase(toCheck);
     }
 
     private Cmd getCmd(String name) {
@@ -365,6 +371,8 @@ public class Necessities extends JavaPlugin {
             com = new CmdSlack();
         else if (isEqual(name, "requestmod"))
             com = new CmdRequestMod();
+        else if (isEqual(name, "reloadannouncer"))
+            com = new CmdReloadAnnouncer();
             //RankManager
         else if (isEqual(name, "promote"))
             com = new CmdPromote();
@@ -442,7 +450,7 @@ public class Necessities extends JavaPlugin {
         else if (isEqual(name, "removewarp"))
             com = new CmdRemoveWarp();
 
-        YamlConfiguration config = YamlConfiguration.loadConfiguration(configFile);
+        YamlConfiguration config = getConfig();
         if (com instanceof WorldCmd && config.contains("Necessities.WorldManager") && !config.getBoolean("Necessities.WorldManager"))
             com = new DisabledCmd();
         return com == null ? (sender, args) -> false : com;
@@ -455,66 +463,38 @@ public class Necessities extends JavaPlugin {
         this.hide.unload();
         this.slack.disconnect();
         this.bot.unload();
-        //this.dr.disconnect();
+        this.announcer.exit();
         getLogger().info("Necessities disabled.");
     }
 
-    public static void trackAction(String clientId, String action, Object label) {
+    @SuppressWarnings("ConstantConditions")
+    public static void trackAction(String action, Object label) {
         String clientVersion = Bukkit.getVersion().substring("git-Bukkit".length());
         String clientName = "Minecraft " + clientVersion.substring(0, clientVersion.indexOf("-"));
-        getTracker().TrackAction(clientName, clientId, "127.0.0.1", clientId, action, label.toString());
+        getTracker().TrackAction(clientName, "LS", "127.0.0.1", "LS", action, label.toString());
     }
 
-    public static void trackActionWithValue(String clientId, String action, Object label, Object value) {
+    @SuppressWarnings("ConstantConditions")
+    public static void trackActionWithValue(String action, Object label, Object value) {
         String clientVersion = Bukkit.getVersion().substring("git-Bukkit".length());
         String clientName = "Minecraft " + clientVersion.substring(0, clientVersion.indexOf("-"));
-        getTracker().TrackActionWithValue(clientName, clientId, "127.0.0.1", clientId, action, label.toString(), value.toString());
+        getTracker().TrackActionWithValue(clientName, "LS", "127.0.0.1", "LS", action, label.toString(), value.toString());
     }
 
-    public static void trackAction(UUID uuid, String action, Object label) {
-        boolean usesPluginChannel = false;
-        String clientId, ip = "0.0.0.0";
-        Player p = Bukkit.getPlayer(uuid);
-        if (p == null)
-            clientId = Bukkit.getOfflinePlayer(uuid).getName();
-        else {
-            clientId = p.getName();
-            ip = (p.getAddress() != null ? p.getAddress().toString().substring(1) : "0.0.0.0");
-            usesPluginChannel = p.getListeningPluginChannels().size() != 0;
-        }
-        String clientVersion = Bukkit.getVersion().substring("git-Bukkit".length());
-        getTracker().TrackAction("Minecraft " + clientVersion.substring(0, clientVersion.indexOf("-")) + (usesPluginChannel ? " [Supports Plugin Channels]" : ""), clientId, ip, clientId, action, label.toString());
-    }
-
-    public static void trackAction(Player p, String action, Object label) {
+    @SuppressWarnings("ConstantConditions")
+    public static void trackAction(Player p, Object label) {
         String clientId = p.getName(), ip = (p.getAddress() != null ? p.getAddress().toString().substring(1) : "0.0.0.0");
         boolean usesPluginChannel = p.getListeningPluginChannels().size() != 0;
         String clientVersion = Bukkit.getVersion().substring("git-Bukkit".length());
-        getTracker().TrackAction("Minecraft " + clientVersion.substring(0, clientVersion.indexOf("-")) + (usesPluginChannel ? " [Supports Plugin Channels]" : ""), clientId, ip, clientId, action, label.toString());
+        getTracker().TrackAction("Minecraft " + clientVersion.substring(0, clientVersion.indexOf("-")) + (usesPluginChannel ? " [Supports Plugin Channels]" : ""), clientId, ip, clientId, "vote", label.toString());
     }
 
-    public static void trackActionWithValue(UUID uuid, String action, Object label, Object value) {
-        boolean usesPluginChannel = false;
-        String clientId, ip;
-        Player p = Bukkit.getPlayer(uuid);
-        if (p == null) {
-            clientId = Bukkit.getOfflinePlayer(uuid).getName();
-            ip = "0.0.0.0";
-        } else {
-            clientId = p.getName();
-            ip = (p.getAddress() != null ? p.getAddress().toString().substring(1) : "0.0.0.0");
-            usesPluginChannel = p.getListeningPluginChannels().size() != 0;
-        }
-        String clientVersion = Bukkit.getVersion().substring("git-Bukkit".length());
-        String clientName = "Minecraft " + clientVersion.substring(0, clientVersion.indexOf("-")) + (usesPluginChannel ? " [Supports Plugin Channels]" : "");
-        getTracker().TrackActionWithValue(clientName, clientId, ip, clientId, action, label.toString(), value.toString());
-    }
-
-    public static void trackActionWithValue(Player p, String action, Object label, Object value) {
+    @SuppressWarnings("ConstantConditions")
+    public static void trackActionWithValue(Player p, Object label, Object value) {
         String clientId = p.getName(), ip = (p.getAddress() != null ? p.getAddress().toString().substring(1) : "0.0.0.0");
         boolean usesPluginChannel = p.getListeningPluginChannels().size() != 0;
         String clientVersion = Bukkit.getVersion().substring("git-Bukkit".length());
         String clientName = "Minecraft " + clientVersion.substring(0, clientVersion.indexOf("-")) + (usesPluginChannel ? " [Supports Plugin Channels]" : "");
-        getTracker().TrackActionWithValue(clientName, clientId, ip, clientId, action, label.toString(), value.toString());
+        getTracker().TrackActionWithValue(clientName, clientId, ip, clientId, "Economy", label.toString(), value.toString());
     }
 }

@@ -18,7 +18,7 @@ public class LavaLogic extends AbstractLogicContainer {
         checkLocation(location.clone().add(0, -1, 0), location);
     }
 
-    protected void checkLocation(Location location, Location from) {
+    void checkLocation(Location location, Location from) {
         synchronized (ClassicPhysics.Sync) {
             try {
                 if (location == null || location.getWorld() == null || location.getChunk() == null || !location.getChunk().isLoaded() || location.getBlock() == null)//World isn't loaded
@@ -38,7 +38,7 @@ public class LavaLogic extends AbstractLogicContainer {
             else if (newBlock.equals(Material.LAVA))
                 newBlock = Material.STATIONARY_LAVA;
 
-            ClassicPhysicsEvent event = new ClassicPhysicsEvent(location.getBlock(), newBlock, true, location, this, from);
+            ClassicPhysicsEvent event = new ClassicPhysicsEvent(location.getBlock(), newBlock, location, this, from);
             ClassicPhysics.INSTANCE.getServer().getPluginManager().callEvent(event);
             if (event.isCancelled())
                 return;

@@ -1,9 +1,9 @@
 package me.eddiep.minecraft.ls.game.shop;
 
-import net.minecraft.server.v1_10_R1.NBTTagCompound;
-import net.minecraft.server.v1_10_R1.NBTTagList;
+import net.minecraft.server.v1_11_R1.NBTTagCompound;
 import org.bukkit.Material;
-import org.bukkit.craftbukkit.v1_10_R1.inventory.CraftItemStack;
+import org.bukkit.craftbukkit.v1_11_R1.inventory.CraftItemStack;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
@@ -12,9 +12,11 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+@SuppressWarnings("unused")
 public class ShopFactory {
-    private static ArrayList<Shop> shops = new ArrayList<>();
+    private static final ArrayList<Shop> shops = new ArrayList<>();
 
+    @SuppressWarnings("UnusedReturnValue")
     public static Shop createShop(Plugin plugin, String ShopName, ShopManager shopManager, Material material, List<String> description, boolean haveGlow) {
         Shop shop = new Shop(shopManager);
         shop.createOpenItem(material, ShopName, description, haveGlow);
@@ -45,6 +47,7 @@ public class ShopFactory {
         return shop;
     }
 
+    @SuppressWarnings("UnusedReturnValue")
     public static Inventory validateInventory(Inventory inventory) {
         shops.stream().filter(shop -> !inventory.contains(shop.getOpener())).forEach(shop -> inventory.setItem(inventory.firstEmpty(), shop.getOpener()));
         return inventory;
@@ -55,8 +58,10 @@ public class ShopFactory {
         shops.clear();
     }
 
+    @SuppressWarnings("ConstantConditions")
     public static ItemStack addGlow(ItemStack item) {
-        net.minecraft.server.v1_10_R1.ItemStack nmsStack = CraftItemStack.asNMSCopy(item);
+        item.addUnsafeEnchantment(Enchantment.DURABILITY, 1);
+        net.minecraft.server.v1_11_R1.ItemStack nmsStack = CraftItemStack.asNMSCopy(item);
         NBTTagCompound tag = null;
         if (!nmsStack.hasTag()) {
             tag = new NBTTagCompound();
@@ -64,8 +69,7 @@ public class ShopFactory {
         }
         if (tag == null)
             tag = nmsStack.getTag();
-        NBTTagList ench = new NBTTagList();
-        tag.set("ench", ench);
+        tag.setInt("HideFlags", 63);
         nmsStack.setTag(tag);
         return CraftItemStack.asCraftMirror(nmsStack);
     }

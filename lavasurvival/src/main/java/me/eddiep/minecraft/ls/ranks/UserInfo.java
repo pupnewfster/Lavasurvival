@@ -11,50 +11,51 @@ import me.eddiep.minecraft.ls.lsrating.LSRating;
 import me.eddiep.minecraft.ls.system.BukkitUtils;
 import me.eddiep.minecraft.ls.system.PhysicsListener;
 import me.eddiep.minecraft.ls.system.bank.BankInventory;
-import net.minecraft.server.v1_10_R1.DamageSource;
+import net.minecraft.server.v1_11_R1.DamageSource;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
-import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.craftbukkit.v1_10_R1.entity.CraftPlayer;
+import org.bukkit.craftbukkit.v1_11_R1.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.material.MaterialData;
+import org.bukkit.scheduler.BukkitRunnable;
 
-import java.io.File;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
-public class UserInfo implements Rankable {
-    private File configFileUsers = new File(Lavasurvival.INSTANCE.getDataFolder(), "userinfo.yml");
-    private ArrayList<MaterialData> ownedBlocks = new ArrayList<>();
+public class UserInfo {
+    private final ArrayList<MaterialData> ownedBlocks = new ArrayList<>();
     private long lastBreak = System.currentTimeMillis(), blockChangeCount;
     private boolean inWater = false;
     private Player bukkitPlayer;
     private int taskID = 0;
+    private final UUID userUUID;
+    private List<MaterialData> BANK = new ArrayList<>();
     private UUID userUUID;
     private List<ItemStack> BANK = new ArrayList<ItemStack>();
     //private GlickoRank rank;
-    private LSRating rank;
     private boolean generosity;
 
     public UserInfo(Player p) {
         this.bukkitPlayer = p;
         this.userUUID = p.getUniqueId();
-        this.rank = Glicko2.getInstance().defaultRank();
         load();
     }
 
     public UserInfo(UUID uuid) {
         this.userUUID = uuid;
-        this.rank = Glicko2.getInstance().defaultRank();
         load();
     }
 
@@ -66,67 +67,129 @@ public class UserInfo implements Rankable {
         this.blockChangeCount = 0;
     }
 
-    public void load() {
-        YamlConfiguration configUsers = YamlConfiguration.loadConfiguration(this.configFileUsers);
-        if (!configUsers.contains(getUUID().toString()))
-            return;
-
-        if (configUsers.contains(getUUID() + ".bank")) {
-            this.BANK = (List<ItemStack>) configUsers.getList(getUUID() + ".bank");
-        }
-
-        this.rank.load(getUUID().toString(), configUsers);
-
-        if (configUsers.contains(getUUID().toString() + ".boughtBlocks") || !this.ownedBlocks.isEmpty()) {
-            for (String key : configUsers.getStringList(getUUID().toString() + ".boughtBlocks"))
-                if (!key.equals("") && key.split("-").length == 2) {
-                    String name = key.split("-")[0];
-                    byte damage = (byte) Integer.parseInt(key.split("-")[1]);
-                    this.ownedBlocks.add(new MaterialData(Material.valueOf(name), damage));
+    @SuppressWarnings({"unchecked", "deprecation"})
+    private void load() {
+        if (this.ownedBlocks.isEmpty()) { //TODO see if this will end up ever getting called when it is not empty
+            this.BANK.clear(); //Make sure the bank is empty
+            new BukkitRunnable() {
+                @Override
+                public void run() {
+                    String curOwned = "", curBank = "";
+                    try {
+                        Class.forName("org.mariadb.jdbc.Driver");
+                        Connection conn = DriverManager.getConnection(Lavasurvival.INSTANCE.getDBURL(), Lavasurvival.INSTANCE.getDBUser(), Lavasurvival.INSTANCE.getDBPass());
+                        Statement stmt = conn.createStatement();
+                        ResultSet rs = stmt.executeQuery("SELECT * FROM users WHERE uuid = \"" + UserInfo.this.userUUID + "\"");
+                        if (rs.next()) {
+                            curOwned = rs.getString("ownedBlocks");
+                            curBank = rs.getString("bank");
+                            String toAdd = rs.getString("addToBank");
+                            if (!toAdd.equals("")) {
+                                if (curBank.equals(""))
+                                    curBank = toAdd;
+                                else
+                                    curBank += "|" + toAdd;
+                                stmt.execute("UPDATE users SET addToBank = \"\", bank = \"" + curBank + "\" WHERE uuid = \"" + UserInfo.this.userUUID + "\"");
+                            }
+                        }
+                        rs.close();
+                        stmt.close();
+                        conn.close();
+                    } catch (Exception ignored) {
+                    }
+                    if (!curOwned.equals("")) {
+                        for (String key : curOwned.split("\\|"))
+                            if (!key.equals("") && key.split(":").length == 2) { //Key should never be an empty string unless something broke
+                                String name = key.split(":")[0];
+                                byte damage = (byte) Integer.parseInt(key.split(":")[1]);
+                                UserInfo.this.ownedBlocks.add(new MaterialData(Material.valueOf(name), damage));
+                            }
+                    }
+                    if (!curBank.equals(""))
+                        for (String key : curBank.split("\\|"))
+                            if (key.split(":").length == 2)
+                                UserInfo.this.BANK.add(new MaterialData(Material.valueOf(key.split(":")[0]), (byte) Integer.parseInt(key.split(":")[1])));
                 }
-        } else {
-            configUsers.set(getUUID().toString() + ".boughtBlocks", Arrays.asList(""));
-            try {
-                configUsers.save(this.configFileUsers);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+            }.runTaskAsynchronously(Lavasurvival.INSTANCE);
         }
     }
 
+    @SuppressWarnings("UnusedReturnValue")
     public Inventory createBankInventory(Player p) {
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+                String toAdd = "";
+                try {
+                    Class.forName("org.mariadb.jdbc.Driver");
+                    Connection conn = DriverManager.getConnection(Lavasurvival.INSTANCE.getDBURL(), Lavasurvival.INSTANCE.getDBUser(), Lavasurvival.INSTANCE.getDBPass());
+                    Statement stmt = conn.createStatement();
+                    ResultSet rs = stmt.executeQuery("SELECT * FROM users WHERE uuid = \"" + UserInfo.this.userUUID + "\"");
+                    if (rs.next()) {
+                        toAdd = rs.getString("addToBank");
+                        if (!toAdd.equals("")) {
+                            String current = rs.getString("bank");
+                            if (current.equals(""))
+                                current = toAdd;
+                            else
+                                current += "|" + toAdd;
+                            stmt.execute("UPDATE users SET addToBank = \"\", bank = \"" + current + "\" WHERE uuid = \"" + UserInfo.this.userUUID + "\"");
+                        }
+                    }
+                    rs.close();
+                    stmt.close();
+                    conn.close();
+                } catch (Exception ignored) {
+                }
+                if (!toAdd.equals(""))
+                    for (String key : toAdd.split("\\|"))
+                        if (key.split(":").length == 2)
+                            UserInfo.this.BANK.add(new MaterialData(Material.valueOf(key.split(":")[0]), (byte) Integer.parseInt(key.split(":")[1])));
+            }
+        }.runTaskAsynchronously(Lavasurvival.INSTANCE);
         return BankInventory.create(p, this.BANK).openFor(p);
     }
 
-    public void saveBank(Player owner) {
-        BankInventory bank = BankInventory.from(owner);
-        if (bank != null)
-            this.BANK = bank.getItems();
+    public void saveBank() {
+        ArrayList<MaterialData> cBank = new ArrayList<>();
+        for (MaterialData e : this.BANK)
+            if (!e.getItemType().equals(Material.AIR))
+                cBank.add(e);
+        this.BANK = cBank;
+        String banked = "";
+        boolean empty = true;
+        for (MaterialData e : this.BANK)
+            if (!e.getItemType().equals(Material.AIR)) {
+                banked += (empty ? "" : "|") + e.getItemType() + ":" + e.getData();
+                empty = false;
+            }
+        String finalBanked = banked;
+        try {
+            new BukkitRunnable() {
+                @Override
+                public void run() {
+                    saveBank(finalBanked);
+                }
+            }.runTaskAsynchronously(Lavasurvival.INSTANCE);
+        } catch (Exception e) {
+            saveBank(finalBanked);
+        }
     }
 
-    public void save() {
-        if (this.ownedBlocks.isEmpty())
-            return;
-        YamlConfiguration configUsers = YamlConfiguration.loadConfiguration(this.configFileUsers);
-        if (!configUsers.contains(getUUID().toString()))
-            return;
-        List<String> bl = configUsers.getStringList(getUUID().toString() + ".boughtBlocks");
-        if (bl.contains(""))
-            bl.remove("");
-        this.ownedBlocks.stream().filter(data -> !bl.contains(data.getItemType().toString() + "-" + data.getData())).forEach(data -> bl.add(data.getItemType().toString() + "-" + data.getData()));
-        configUsers.set(getUUID().toString() + ".boughtBlocks", bl);
-        configUsers.set(getUUID() + ".bank", this.BANK);
-        rank.save(getUUID().toString(), configUsers);
+    private void saveBank(String banked) {
         try {
-            configUsers.save(this.configFileUsers);
-        } catch (Exception e) {
-            e.printStackTrace();
+            Class.forName("org.mariadb.jdbc.Driver");
+            Connection conn = DriverManager.getConnection(Lavasurvival.INSTANCE.getDBURL(), Lavasurvival.INSTANCE.getDBUser(), Lavasurvival.INSTANCE.getDBPass());
+            Statement stmt = conn.createStatement();
+            stmt.execute("UPDATE users SET bank = \"" + banked + "\" WHERE uuid = \"" + this.userUUID + "\"");
+            stmt.close();
+            conn.close();
+        } catch (Exception ignored) {
         }
     }
 
     public void logOut() {
         this.bukkitPlayer = null;
-        save();
     }
 
     public long getLastBreak() {
@@ -149,6 +212,7 @@ public class UserInfo implements Rankable {
         return this.inWater;
     }
 
+    @SuppressWarnings("ConstantConditions")
     public void setInWater(boolean value) {
         this.inWater = value;
         if (!isInWater())
@@ -156,7 +220,7 @@ public class UserInfo implements Rankable {
         if (value && getPlayer() != null && Gamemode.getCurrentGame() != null && Gamemode.DAMAGE != 0 && Gamemode.getCurrentGame().isAlive(getPlayer()))
             this.taskID = Bukkit.getScheduler().scheduleSyncDelayedTask(Lavasurvival.INSTANCE, () -> {
                 if (isInWater() && getPlayer() != null) {
-                    if (!PlayerStatusManager.isInvincible(getPlayer())  && !getPlayer().getGameMode().equals(GameMode.CREATIVE))
+                    if (!PlayerStatusManager.isInvincible(getPlayer()) && !getPlayer().getGameMode().equals(GameMode.CREATIVE) && !getPlayer().getGameMode().equals(GameMode.SPECTATOR))
                         ((CraftPlayer) getPlayer()).getHandle().damageEntity(DamageSource.OUT_OF_WORLD, (float) Gamemode.DAMAGE);
                     Block b = getPlayer().getLocation().getBlock();
                     setInWater(((b.getType().equals(Material.WATER) || b.getType().equals(Material.STATIONARY_WATER)) && b.hasMetadata("classic_block")) ||
@@ -166,7 +230,7 @@ public class UserInfo implements Rankable {
             }, (int) (20 * Gamemode.DAMAGE_FREQUENCY));
     }
 
-    public Player getPlayer() {
+    private Player getPlayer() {
         return this.bukkitPlayer;
     }
 
@@ -175,11 +239,8 @@ public class UserInfo implements Rankable {
     }
 
     public boolean isInBank(MaterialData data) {
-        for (ItemStack item : this.BANK) {
-            if (item == null)
-                continue;
-
-            if (data.equals(item.getData()))
+        for (MaterialData dat : this.BANK) {
+            if (dat != null && data.equals(dat))
                 return true;
         }
         return false;
@@ -198,8 +259,33 @@ public class UserInfo implements Rankable {
     private void addBlock(MaterialData dat) {
         if (!this.ownedBlocks.contains(dat)) {
             this.ownedBlocks.add(dat);
-            if (getPlayer() != null)
-                getPlayer().getInventory().addItem(getItem(dat));
+            final String datInfo = dat.getItemType().toString() + ":" + dat.getData();
+            new BukkitRunnable() {
+                @Override
+                public void run() {
+                    try {
+                        Class.forName("org.mariadb.jdbc.Driver");
+                        Connection conn = DriverManager.getConnection(Lavasurvival.INSTANCE.getDBURL(), Lavasurvival.INSTANCE.getDBUser(), Lavasurvival.INSTANCE.getDBPass());
+                        Statement stmt = conn.createStatement();
+                        ResultSet rs = stmt.executeQuery("SELECT * FROM users WHERE uuid = \"" + UserInfo.this.userUUID + "\"");
+                        String curOwned = "", curBank = "";
+                        if (rs.next()) {
+                            curOwned = rs.getString("ownedBlocks");
+                            if (!curOwned.equals(""))
+                                curOwned += "|";
+                            curBank = rs.getString("bank");
+                            if (!curBank.equals(""))
+                                curBank += "|";
+                        }
+                        rs.close();
+                        stmt.execute("UPDATE users SET ownedBlocks = \"" + curOwned + datInfo + "\", bank = \"" + curBank + datInfo + "\" WHERE uuid = \"" + UserInfo.this.userUUID + "\"");
+                        stmt.close();
+                        conn.close();
+                    } catch (Exception ignored) {
+                    }
+                }
+            }.runTaskAsynchronously(Lavasurvival.INSTANCE);
+            this.BANK.add(dat);
         }
     }
 
@@ -215,6 +301,7 @@ public class UserInfo implements Rankable {
         return this.ownedBlocks.contains(dat);
     }
 
+    @SuppressWarnings("deprecation")
     public void buyBlock(Material mat, double price, byte data) {
         buyBlock(new MaterialData(mat, data), price, true);
     }
@@ -223,6 +310,7 @@ public class UserInfo implements Rankable {
         buyBlock(new MaterialData(mat), price, false);
     }
 
+    @SuppressWarnings("deprecation")
     private void buyBlock(MaterialData dat, double price, boolean hasData) {
         if (getPlayer() == null)
             return;
@@ -230,23 +318,17 @@ public class UserInfo implements Rankable {
             getPlayer().sendMessage(ChatColor.RED + "You already own that block..");
         else if (!Lavasurvival.INSTANCE.getEconomy().hasAccount(getPlayer()) || Lavasurvival.INSTANCE.getEconomy().getBalance(getPlayer()) < price)
             getPlayer().sendMessage(ChatColor.RED + "You do not have enough money to buy the block type " + dat.getItemType().toString().replaceAll("_", " ").toLowerCase() +
-                    (hasData ? " with datavalue " + dat.getData() : "") + "..");
-        else if (BukkitUtils.isInventoryFull(getPlayer().getInventory()))
-            getPlayer().sendMessage(ChatColor.RED + "You do not have enough inventory space to buy any more blocks..");
+                    (hasData ? " with data value " + dat.getData() : "") + "..");
         else {
             addBlock(dat);
             Lavasurvival.INSTANCE.withdrawAndUpdate(getPlayer(), price);
-            getPlayer().sendMessage(ChatColor.GREEN + "You bought the block type " + dat.getItemType().toString().replaceAll("_", " ").toLowerCase() + (hasData ? " with datavalue " + dat.getData() : "") + "!");
+            getPlayer().sendMessage(ChatColor.GREEN + "You bought the block type " + dat.getItemType().toString().replaceAll("_", " ").toLowerCase() + (hasData ? " with data value " + dat.getData() : "") +
+                    "! It was added to your bank.");
         }
     }
 
-    public void incrimentBlockCount() {
+    public void incrementBlockCount() {
         this.blockChangeCount++;
-    }
-
-    @Override
-    public LSRating getRanking() {
-        return this.rank;
     }
 
     public void usedGenerosity() {

@@ -13,8 +13,8 @@ import java.util.List;
 import java.util.UUID;
 
 public class UserManager {
-    private File configFileUsers = new File("plugins/Necessities/RankManager", "users.yml");
-    private static HashMap<UUID, User> players = new HashMap<>();
+    private final File configFileUsers = new File("plugins/Necessities/RankManager", "users.yml");
+    private static final HashMap<UUID, User> players = new HashMap<>();
 
     void readUsers() {
         Bukkit.getOnlinePlayers().forEach(this::parseUser);
@@ -53,20 +53,14 @@ public class UserManager {
     }
 
     void addRankPerm(Rank r, String node) {
-        if (players == null)
-            return;
         players.keySet().stream().filter(uuid -> Necessities.getInstance().getRM().hasRank(players.get(uuid).getRank(), r)).forEach(uuid -> players.get(uuid).addPerm(node));
     }
 
     void delRankPerm(Rank r, String node) {
-        if (players == null)
-            return;
         players.keySet().stream().filter(uuid -> Necessities.getInstance().getRM().hasRank(players.get(uuid).getRank(), r)).forEach(uuid -> players.get(uuid).removePerm(node));
     }
 
     void refreshRankPerm(Rank r) {
-        if (players == null)
-            return;
         players.keySet().stream().filter(uuid -> Necessities.getInstance().getRM().hasRank(players.get(uuid).getRank(), r)).forEach(uuid -> players.get(uuid).refreshPerms());
     }
 

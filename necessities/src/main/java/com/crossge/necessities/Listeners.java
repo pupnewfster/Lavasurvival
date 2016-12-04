@@ -21,6 +21,7 @@ import org.bukkit.event.block.BlockRedstoneEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.*;
 import org.bukkit.event.server.ServerCommandEvent;
+import org.bukkit.scheduler.BukkitRunnable;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -30,19 +31,21 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.UUID;
 
+@SuppressWarnings("unused")
 class Listeners implements Listener {
-    private File configFileLogOut = new File("plugins/Necessities", "logoutmessages.yml"), configFileLogIn = new File("plugins/Necessities", "loginmessages.yml"),
-            configFileTitles = new File("plugins/Necessities", "titles.yml"), configFile = new File("plugins/Necessities", "config.yml");
-    private CmdCommandSpy spy = Necessities.getInstance().getSpy();
-    private PortalManager pm = Necessities.getInstance().getPM();
-    private JanetSlack slack = Necessities.getInstance().getSlack();
-    private UserManager um = Necessities.getInstance().getUM();
-    private Console console = Necessities.getInstance().getConsole();
-    private Variables var = Necessities.getInstance().getVar();
-    private Teleports tps = Necessities.getInstance().getTPs();
-    private CmdHide hide = Necessities.getInstance().getHide();
-    private JanetAI ai = Necessities.getInstance().getAI();
-    private Janet bot = Necessities.getInstance().getBot();
+    private final File configFileLogOut = new File("plugins/Necessities", "logoutmessages.yml");
+    private final File configFileLogIn = new File("plugins/Necessities", "loginmessages.yml");
+    private final File configFileTitles = new File("plugins/Necessities", "titles.yml");
+    private final CmdCommandSpy spy = Necessities.getInstance().getSpy();
+    private final PortalManager pm = Necessities.getInstance().getPM();
+    private final JanetSlack slack = Necessities.getInstance().getSlack();
+    private final UserManager um = Necessities.getInstance().getUM();
+    private final Console console = Necessities.getInstance().getConsole();
+    private final Variables var = Necessities.getInstance().getVar();
+    private final Teleports tps = Necessities.getInstance().getTPs();
+    private final CmdHide hide = Necessities.getInstance().getHide();
+    private final JanetAI ai = Necessities.getInstance().getAI();
+    private final Janet bot = Necessities.getInstance().getBot();
 
     private String corTime(String time) {
         return time.length() == 1 ? "0" + time : time;
@@ -75,7 +78,7 @@ class Listeners implements Listener {
                 return;
             e.setKickMessage("You were " + ChatColor.DARK_RED + "" + ChatColor.BOLD + "BANNED" + ChatColor.RESET + " on " + getDateAndTime(banEntry.getCreated()) + " by " +
                     banEntry.getSource() + ChatColor.RESET + ".\n" + (banEntry.getExpiration() == null ? "" : "Your ban will expire on " + getDateAndTime(banEntry.getExpiration()) + ".\n") +
-                    ChatColor.RESET + "Reason: " + banEntry.getReason() + ChatColor.RESET + "\nAppeal at smp.gamezgalaxy.com/ban");
+                    ChatColor.RESET + "Reason: " + banEntry.getReason() + ChatColor.RESET + "\nAppeal at galaxygaming.gg");
             e.setResult(PlayerLoginEvent.Result.KICK_OTHER);
         }
     }
@@ -106,7 +109,7 @@ class Listeners implements Listener {
             }
         }
         e.setJoinMessage((ChatColor.GREEN + " + " + ChatColor.YELLOW + ChatColor.translateAlternateColorCodes('&',
-                configLogIn.getString(uuid.toString()).replaceAll("\\{NAME\\}", p.getDisplayName()).replaceAll("\\{RANK\\}",
+                configLogIn.getString(uuid.toString()).replaceAll("\\{NAME}", p.getDisplayName()).replaceAll("\\{RANK}",
                         this.um.getUser(p.getUniqueId()).getRank().getTitle()))).replaceAll(ChatColor.RESET + "", ChatColor.YELLOW + ""));
         this.bot.logIn(uuid);
         this.hide.playerJoined(p);
@@ -139,7 +142,7 @@ class Listeners implements Listener {
         UUID uuid = e.getPlayer().getUniqueId();
         YamlConfiguration configLogOut = YamlConfiguration.loadConfiguration(this.configFileLogOut);
         e.setQuitMessage((ChatColor.RED + " - " + ChatColor.YELLOW + ChatColor.translateAlternateColorCodes('&',
-                configLogOut.getString(uuid.toString()).replaceAll("\\{NAME\\}", e.getPlayer().getDisplayName()).replaceAll("\\{RANK\\}",
+                configLogOut.getString(uuid.toString()).replaceAll("\\{NAME}", e.getPlayer().getDisplayName()).replaceAll("\\{RANK}",
                         this.um.getUser(e.getPlayer().getUniqueId()).getRank().getTitle()))).replaceAll(ChatColor.RESET + "", ChatColor.YELLOW + ""));
         if (this.hide.isHidden(e.getPlayer())) {
             Bukkit.broadcast(var.getMessages() + "To Ops -" + e.getQuitMessage(), "Necessities.opBroadcast");
@@ -163,7 +166,7 @@ class Listeners implements Listener {
         Hat h = u.getHat();
         if (h != null)
             h.move(to.getX() - from.getX(), to.getY() - from.getY(), to.getZ() - from.getZ(), to.getYaw() - from.getYaw(), to.getPitch() - from.getPitch());
-        YamlConfiguration config = YamlConfiguration.loadConfiguration(this.configFile);
+        YamlConfiguration config = Necessities.getInstance().getConfig();
         boolean locationChanged = Math.abs(from.getX() - to.getX()) > 0.1 || Math.abs(from.getY() - to.getY()) > 0.1 || Math.abs(from.getZ() - to.getZ()) > 0.1;
         if (config.contains("Necessities.WorldManager") && config.getBoolean("Necessities.WorldManager") && locationChanged) {
             Location destination = this.pm.portalDestination(to);
@@ -196,7 +199,7 @@ class Listeners implements Listener {
     public void onChat(AsyncPlayerChatEvent e) {
         if (e.isCancelled())
             return;
-        YamlConfiguration config = YamlConfiguration.loadConfiguration(this.configFile);
+        YamlConfiguration config = Necessities.getInstance().getConfig();
         User u = this.um.getUser(e.getPlayer().getUniqueId());
         final Player player = e.getPlayer();
         final UUID uuid = player.getUniqueId();
@@ -218,20 +221,20 @@ class Listeners implements Listener {
         }
         YamlConfiguration configTitles = YamlConfiguration.loadConfiguration(this.configFileTitles);
         e.setFormat(ChatColor.translateAlternateColorCodes('&', config.getString("Necessities.ChatFormat")));
-        boolean isop = false;
+        boolean isOp = false;
         if (u.slackChat()) {
             e.setFormat(this.var.getMessages() + "To Slack - " + ChatColor.WHITE + e.getFormat());
-            e.setFormat(e.getFormat().replaceAll("\\{TITLE\\} ", ""));
+            e.setFormat(e.getFormat().replaceAll("\\{TITLE} ", ""));
         } else if (u.opChat()) {
             e.setFormat(this.var.getMessages() + "To Ops - " + ChatColor.WHITE + e.getFormat());
-            e.setFormat(e.getFormat().replaceAll("\\{TITLE\\} ", ""));
+            e.setFormat(e.getFormat().replaceAll("\\{TITLE} ", ""));
         } else if (player.hasPermission("Necessities.opBroadcast") && e.getMessage().startsWith("#")) {
-            isop = true;
+            isOp = true;
             e.setFormat(this.var.getMessages() + "To Ops - " + ChatColor.WHITE + e.getFormat());
-            e.setFormat(e.getFormat().replaceAll("\\{TITLE\\} ", ""));
+            e.setFormat(e.getFormat().replaceAll("\\{TITLE} ", ""));
             e.setMessage(e.getMessage().replaceFirst("#", ""));
         }
-        if (this.hide.isHidden(player) || isop || u.slackChat())
+        if (this.hide.isHidden(player) || isOp || u.slackChat())
             status = "";
         String fullTitle = "";
         if (configTitles.contains(player.getUniqueId() + ".title")) {
@@ -240,10 +243,10 @@ class Listeners implements Listener {
             title = ChatColor.translateAlternateColorCodes('&', title);
             fullTitle = ChatColor.RESET + "" + brackets + "[" + ChatColor.RESET + title + ChatColor.RESET + "" + brackets + "] " + ChatColor.RESET;
         }
-        e.setFormat(e.getFormat().replaceAll("\\{TITLE\\} ", fullTitle));
-        e.setFormat(e.getFormat().replaceAll("\\{NAME\\}", player.getDisplayName()));
+        e.setFormat(e.getFormat().replaceAll("\\{TITLE} ", fullTitle));
+        e.setFormat(e.getFormat().replaceAll("\\{NAME}", player.getDisplayName()));
         String rank = ChatColor.translateAlternateColorCodes('&', this.um.getUser(uuid).getRank().getTitle());
-        e.setFormat(e.getFormat().replaceAll("\\{RANK\\}", rank));
+        e.setFormat(e.getFormat().replaceAll("\\{RANK}", rank));
         final String message = this.bot.logChat(uuid, e.getMessage());
         e.setMessage(message);//Why did it not previously setMessage?
         if (player.hasPermission("Necessities.colorchat"))
@@ -254,24 +257,32 @@ class Listeners implements Listener {
             if (!e.getRecipients().isEmpty()) {
                 ArrayList<Player> toRem = new ArrayList<>();
                 for (Player recip : e.getRecipients())
-                    if (this.um.getUser(recip.getUniqueId()).isIgnoring(player.getUniqueId()) || (isop && !recip.hasPermission("Necessities.opBroadcast")) ||
+                    if (this.um.getUser(recip.getUniqueId()).isIgnoring(player.getUniqueId()) || (isOp && !recip.hasPermission("Necessities.opBroadcast")) ||
                             (u.slackChat() && !recip.hasPermission("Necessities.slack")))
                         toRem.add(recip);
                 toRem.forEach(recip -> e.getRecipients().remove(recip));
             }
             if (!e.getRecipients().isEmpty()) {
                 String finalStatus = status;
-                e.getRecipients().forEach(recip -> recip.sendMessage(finalStatus + e.getFormat().replaceAll("\\{MESSAGE\\}", "") + e.getMessage()));
+                e.getRecipients().forEach(recip -> recip.sendMessage(finalStatus + e.getFormat().replaceAll("\\{MESSAGE}", "") + e.getMessage()));
             }
-            Bukkit.getConsoleSender().sendMessage(status + e.getFormat().replaceAll("\\{MESSAGE\\}", "") + e.getMessage());
+            Bukkit.getConsoleSender().sendMessage(status + e.getFormat().replaceAll("\\{MESSAGE}", "") + e.getMessage());
             if (u.slackChat())
-                this.slack.sendMessage((status + e.getFormat().replaceAll("\\{MESSAGE\\}", "") + e.getMessage()).replaceFirst("To Slack - ", ""));
+                this.slack.sendMessage((status + e.getFormat().replaceAll("\\{MESSAGE}", "") + e.getMessage()).replaceFirst("To Slack - ", ""));
             else
-                this.slack.handleIngameChat(status + e.getFormat().replaceAll("\\{MESSAGE\\}", "") + e.getMessage());
+                this.slack.handleInGameChat(status + e.getFormat().replaceAll("\\{MESSAGE}", "") + e.getMessage());
         }
         e.setCancelled(true);
-        if (config.contains("Necessities.AI") && config.getBoolean("Necessities.AI") && (!isop || message.startsWith("!")))
-            Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(Necessities.getInstance(), () -> ai.parseMessage(player.getName(), message, JanetAI.Source.Server, false, null));
+        if (config.contains("Necessities.AI") && config.getBoolean("Necessities.AI") && (!isOp || message.startsWith("!"))) {
+            final String pname = player.getName();
+            BukkitRunnable aiTask = new BukkitRunnable() {
+                @Override
+                public void run() {
+                    ai.parseMessage(pname, message, JanetAI.Source.Server, false, null);
+                }
+            };
+            aiTask.runTaskLaterAsynchronously(Necessities.getInstance(), 1);
+        }
     }
 
     @EventHandler
@@ -292,7 +303,7 @@ class Listeners implements Listener {
             e.setMessage(message);
             if (e.getMessage().startsWith("/tps"))
                 e.setMessage(e.getMessage().replaceFirst("tps", "necessities:tps"));
-            YamlConfiguration config = YamlConfiguration.loadConfiguration(this.configFile);
+            YamlConfiguration config = Necessities.getInstance().getConfig();
             if (config.contains("Necessities.customDeny") && config.getBoolean("Necessities.customDeny")) {
                 PluginCommand pc = null;
                 try {

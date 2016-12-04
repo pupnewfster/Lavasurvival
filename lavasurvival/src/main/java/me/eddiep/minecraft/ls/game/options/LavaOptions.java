@@ -9,11 +9,12 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@SuppressWarnings("unused")
 public class LavaOptions extends BaseOptions {
     private transient Vector selectedSpawn;
     private transient LavaMap owner;
 
-    private List<Vector> spawnPoints = new ArrayList<>();
+    private final List<Vector> spawnPoints = new ArrayList<>();
 
     public static LavaOptions defaults(LavaMap owner) {
         return new LavaOptions(owner);
@@ -23,18 +24,21 @@ public class LavaOptions extends BaseOptions {
         this.owner = owner;
     }
 
+    @SuppressWarnings("deprecation")
     public List<Vector> getSpawnPoints() {
         if (!isEnabled())
             return Collections.singletonList(new Vector(this.owner.getLavaX(), this.owner.getLavaY(), this.owner.getLavaZ()));
         return this.spawnPoints;
     }
 
+    @SuppressWarnings("deprecation")
     public List<Location> getSpawnLocations() {
         if (!isEnabled())
             return Collections.singletonList(this.owner.getLavaSpawnAsLocation());
         return this.spawnPoints.stream().map(vector -> new Location(this.owner.getWorld(), vector.getX(), vector.getY(), vector.getZ())).collect(Collectors.toList());
     }
 
+    @SuppressWarnings("deprecation")
     private Vector getHighestSpawn() {
         if (!isEnabled())
             return this.owner.getLavaSpawnAsLocation().toVector();
@@ -50,12 +54,14 @@ public class LavaOptions extends BaseOptions {
         return new Location(this.owner.getWorld(), highest.getX(), highest.getY(), highest.getZ());
     }
 
+    @SuppressWarnings("deprecation")
     public List<Location> getSpawnLocation(int xoffset, int yoffset, int zoffet) {
         if (!isEnabled())
             return Collections.singletonList(this.owner.getLavaSpawnAsLocation(xoffset, yoffset, zoffet));
         return this.spawnPoints.stream().map(vector -> new Location(this.owner.getWorld(), vector.getX() + xoffset, vector.getY() + yoffset, vector.getZ() + zoffet)).collect(Collectors.toList());
     }
 
+    @SuppressWarnings("deprecation")
     private Vector getSingleSpawn() {
         if (!isEnabled())
             return new Vector(this.owner.getLavaX(), this.owner.getLavaY(), this.owner.getLavaZ());

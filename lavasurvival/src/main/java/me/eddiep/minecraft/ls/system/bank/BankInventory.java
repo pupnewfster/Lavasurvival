@@ -1,5 +1,6 @@
 package me.eddiep.minecraft.ls.system.bank;
 
+import me.eddiep.minecraft.ls.system.PhysicsListener;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -7,22 +8,24 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.material.MaterialData;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
 public class BankInventory {
-    private static HashMap<Player, BankInventory> INSTANCERS = new HashMap<>();
+    private static final HashMap<Player, BankInventory> INSTANCERS = new HashMap<>();
 
     private Inventory inventory;
     private int offset = 0;
-    private List<ItemStack> items;
+    private List<MaterialData> items;
 
     private BankInventory() {
     }
 
-    public static BankInventory create(Player p, List<ItemStack> items) {
+    public static BankInventory create(Player p, List<MaterialData> items) {
         int slotSize = 9;
         while (items.size() > slotSize)
             slotSize += 9;
@@ -34,9 +37,17 @@ public class BankInventory {
                 break;
             if (i == 53 || i == 45)
                 continue;
-            ItemStack item = items.get(i);
+            ItemStack item = items.get(i).toItemStack(1);
             if (item != null && item.getType() == Material.EMERALD_BLOCK)
                 continue;
+            if (item != null) {
+                MaterialData dat = items.get(i);
+                if (!dat.getItemType().equals(Material.AIR)) {
+                    ItemMeta im = item.getItemMeta();
+                    im.setLore(Arrays.asList("Lava MeltTime: " + PhysicsListener.getLavaMeltTimeAsString(dat), "Water MeltTime: " + PhysicsListener.getWaterMeltTimeAsString(dat)));
+                    item.setItemMeta(im);
+                }
+            }
             inventory.setItem(i, item);
         }
         if (slotSize == 54) {
@@ -80,24 +91,32 @@ public class BankInventory {
             if (this.inventory.getItem(i % 54) != null && this.inventory.getItem(i % 54).getType() == Material.EMERALD_BLOCK)
                 continue;
             if (i >= this.items.size()) {
-                if (this.inventory.getItem(i % 54) != null) {
-                    this.items.add(this.inventory.getItem(i % 54));
-                }
-            } else {
-                this.items.set(i, this.inventory.getItem(i % 54));
-            }
+                if (this.inventory.getItem(i % 54) != null)
+                    this.items.add(this.inventory.getItem(i % 54).getData());
+            } else if (this.inventory.getItem(i % 54) != null)
+                this.items.set(i, this.inventory.getItem(i % 54).getData());
+            else
+                this.items.set(i, new MaterialData(Material.AIR));
         }
     }
 
-    public void updateView() {
+    private void updateView() {
         this.inventory.clear();
 
         for (int i = this.offset; i < this.offset + 54; i++) {
             if (i >= this.items.size())
                 break;
-            ItemStack item = this.items.get(i);
+            ItemStack item = this.items.get(i).toItemStack(1);
             if (item != null && item.getType() == Material.EMERALD_BLOCK)
                 continue;
+            if (item != null) {
+                MaterialData dat = items.get(i);
+                if (!dat.getItemType().equals(Material.AIR)) {
+                    ItemMeta im = item.getItemMeta();
+                    im.setLore(Arrays.asList("Lava MeltTime: " + PhysicsListener.getLavaMeltTimeAsString(dat), "Water MeltTime: " + PhysicsListener.getWaterMeltTimeAsString(dat)));
+                    item.setItemMeta(im);
+                }
+            }
             this.inventory.setItem(i % 54, item);
         }
         if (this.offset + 45 < this.items.size()) {
@@ -155,7 +174,7 @@ public class BankInventory {
         INSTANCERS.remove(p);
     }
 
-    public List<ItemStack> getItems() {
+    public List<MaterialData> getItems() {
         return this.items;
     }
 }

@@ -9,14 +9,14 @@ import org.bukkit.scoreboard.ScoreboardManager;
 import org.bukkit.scoreboard.Team;
 
 public class ScoreBoards {
-    private String[] ALPHABET = new String[]{"a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z"};
+    private final String[] ALPHABET = new String[]{"a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z"};
     private ScoreboardManager man;
     private Scoreboard b;
 
     void createScoreboard() {
         man = Bukkit.getScoreboardManager();
         RankManager rm = Necessities.getInstance().getRM();
-        b = man.getMainScoreboard();//Use main scoreboard instead of a new one for better compatability with other plugins
+        b = man.getMainScoreboard();//Use main scoreboard instead of a new one for better compatibility with other plugins
         for (Rank r : rm.getOrder()) {
             Team t = b.getTeam(fromInt(rm.getOrder().size() - rm.getOrder().indexOf(r)));
             if (t == null)

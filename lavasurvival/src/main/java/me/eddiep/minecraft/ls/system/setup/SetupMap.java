@@ -15,6 +15,7 @@ import org.bukkit.plugin.Plugin;
 
 import java.io.IOException;
 
+@SuppressWarnings("unused")
 public class SetupMap implements Listener {
     private Player setupPlayer;
     private LavaMap map;
@@ -83,6 +84,7 @@ public class SetupMap implements Listener {
         this.setupPlayer.sendMessage(ChatColor.YELLOW + "[Map Setup] " + ChatColor.GREEN + message);
     }
 
+    @SuppressWarnings("deprecation")
     @EventHandler
     public void onChat(AsyncPlayerChatEvent event) {
         if (event.getPlayer().equals(this.setupPlayer) && event.getMessage().equalsIgnoreCase("ready")) {
@@ -104,15 +106,15 @@ public class SetupMap implements Listener {
                     sendMessage("Please wait..");
                     this.map.setMapSpawn(event.getPlayer().getLocation());
                     World world = event.getPlayer().getWorld();
-                    double minx, maxx;
-                    double miny, maxy;
-                    double minz, maxz;
+                    double minX, maxX;
+                    double minY, maxY;
+                    double minZ, maxZ;
 
-                    minx = maxx = event.getPlayer().getLocation().getX();
-                    miny = maxy = event.getPlayer().getLocation().getY();
-                    minz = maxz = event.getPlayer().getLocation().getZ();
+                    minX = maxX = event.getPlayer().getLocation().getX();
+                    minY = maxY = event.getPlayer().getLocation().getY();
+                    minZ = maxZ = event.getPlayer().getLocation().getZ();
 
-                    Location temp = new Location(world, minx, miny, minz);
+                    Location temp = new Location(world, minX, minY, minZ);
                     while (world.isChunkLoaded(temp.getChunk()) && !world.getBlockAt(temp).getType().isSolid())
                         temp.setX(temp.getX() - 1);
                     temp.setX(temp.getX() + 1);
@@ -124,7 +126,7 @@ public class SetupMap implements Listener {
                     temp.setY(temp.getY() - 1);
                     temp.setX(temp.getX() - 1);
 
-                    Location temp2 = new Location(world, maxx, maxy, maxz);
+                    Location temp2 = new Location(world, maxX, maxY, maxZ);
                     while (!world.isChunkLoaded(temp2.getChunk()) && world.getBlockAt(temp2).getType().isSolid())
                         temp2.setX(temp2.getX() + 1);
                     temp2.setX(temp2.getX() - 1);

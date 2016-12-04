@@ -24,9 +24,4 @@ public class FusionOptions extends FloodOptions {
     public int getLayerCount() {
         return this.layerCount;
     }
-
-    /*@Override
-    public boolean isEnabled() {
-        return false;
-    }*/
 }

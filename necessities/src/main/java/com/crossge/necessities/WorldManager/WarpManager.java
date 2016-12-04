@@ -11,9 +11,9 @@ import java.util.Collections;
 import java.util.HashMap;
 
 public class WarpManager {
-    private static HashMap<String, Warp> warps = new HashMap<>();
-    private static HashMap<String, String> lowerNames = new HashMap<>();
-    private File configFileWarps = new File("plugins/Necessities/WorldManager", "warps.yml");
+    private static final HashMap<String, Warp> warps = new HashMap<>();
+    private static final HashMap<String, String> lowerNames = new HashMap<>();
+    private final File configFileWarps = new File("plugins/Necessities/WorldManager", "warps.yml");
 
     public void initiate() {
         Bukkit.getConsoleSender().sendMessage(ChatColor.AQUA + "Loading warps...");

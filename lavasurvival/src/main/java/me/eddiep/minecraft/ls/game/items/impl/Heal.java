@@ -1,14 +1,14 @@
 package me.eddiep.minecraft.ls.game.items.impl;
 
 import me.eddiep.minecraft.ls.game.items.LavaItem;
-import net.md_5.bungee.api.ChatColor;
-import net.minecraft.server.v1_10_R1.NBTTagCompound;
+import net.minecraft.server.v1_11_R1.NBTTagCompound;
+import org.bukkit.ChatColor;
 import org.bukkit.Material;
-import org.bukkit.craftbukkit.v1_10_R1.inventory.CraftItemStack;
+import org.bukkit.craftbukkit.v1_11_R1.inventory.CraftItemStack;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
-public abstract class Heal extends LavaItem {
+abstract class Heal extends LavaItem {
     @Override
     public boolean consume(Player owner) {
         if (owner.getHealth() == owner.getMaxHealth()) {
@@ -24,9 +24,10 @@ public abstract class Heal extends LavaItem {
         return true;
     }
 
+    @SuppressWarnings("ConstantConditions")
     @Override
     protected ItemStack displayItem() {
-        net.minecraft.server.v1_10_R1.ItemStack nmsStack = CraftItemStack.asNMSCopy(new ItemStack(Material.POTION));
+        net.minecraft.server.v1_11_R1.ItemStack nmsStack = CraftItemStack.asNMSCopy(new ItemStack(Material.POTION));
         NBTTagCompound tag = null;
         if (!nmsStack.hasTag()) {
             tag = new NBTTagCompound();
@@ -34,7 +35,7 @@ public abstract class Heal extends LavaItem {
         }
         if (tag == null)
             tag = nmsStack.getTag();
-        tag.setInt("HideFlags", 32);
+        tag.setInt("HideFlags", 63);
         tag.setString("Potion", "minecraft:healing");
         nmsStack.setTag(tag);
         return CraftItemStack.asCraftMirror(nmsStack);
@@ -45,5 +46,5 @@ public abstract class Heal extends LavaItem {
         return "Heal " + (getPercent() * 100) + "% of your total health";
     }
 
-    public abstract double getPercent();
+    protected abstract double getPercent();
 }

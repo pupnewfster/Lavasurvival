@@ -23,11 +23,9 @@ public class JanetLog {
         File f = new File(file);
         if (!f.exists())
             fileCreate(file);
-        try {
-            BufferedWriter bw = new BufferedWriter(new FileWriter(file, true));
+        try (BufferedWriter bw = new BufferedWriter(new FileWriter(file, true))) {
             bw.write(time + " " + message);
             bw.newLine();
-            bw.close();
         } catch (Exception ignored) {
         }
     }
@@ -36,6 +34,7 @@ public class JanetLog {
         return time.length() == 1 ? "0" + time : time;
     }
 
+    @SuppressWarnings("ResultOfMethodCallIgnored")
     private void fileCreate(String file) {
         File f = new File(file);
         try {

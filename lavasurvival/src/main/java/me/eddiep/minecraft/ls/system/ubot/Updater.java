@@ -12,6 +12,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 
+@SuppressWarnings("unused")
 public class Updater implements UpdateNotifier {
     @Override
     public void onPreCheck(UBot uBot) {
