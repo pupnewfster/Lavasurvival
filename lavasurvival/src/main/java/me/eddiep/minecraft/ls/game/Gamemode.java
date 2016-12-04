@@ -16,7 +16,6 @@ import me.eddiep.minecraft.ls.system.BukkitUtils;
 import me.eddiep.minecraft.ls.system.FileUtils;
 import me.eddiep.minecraft.ls.system.PhysicsListener;
 import me.eddiep.minecraft.ls.system.PlayerListener;
-import me.eddiep.minecraft.ls.game.lsrating.LSRating;
 import mkremins.fanciful.FancyMessage;
 import net.minecraft.server.v1_11_R1.IChatBaseComponent;
 import net.minecraft.server.v1_11_R1.PacketPlayOutTitle;
@@ -26,7 +25,6 @@ import org.bukkit.block.BlockFace;
 import org.bukkit.boss.BarColor;
 import org.bukkit.boss.BarFlag;
 import org.bukkit.boss.BarStyle;
-import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.craftbukkit.v1_11_R1.boss.CraftBossBar;
 import org.bukkit.craftbukkit.v1_11_R1.entity.CraftPlayer;
 import org.bukkit.entity.Player;
@@ -415,13 +413,7 @@ public abstract class Gamemode {
             }
             avgs.clear();
             //calculateGlicko(winners, um);
-            ArrayList<Player> losers = new ArrayList<>();
-            for (UUID id : dead) {
-                Player p = Bukkit.getPlayer(id);
-                if (p != null)
-                    losers.add(p);
-            }
-            recordMatch(winners, losers, um);
+            recordMatch(winners, dead);
         }
 
         Lavasurvival.INSTANCE.MONEY_VIEWER.run();
@@ -466,7 +458,7 @@ public abstract class Gamemode {
         return this.type;
     }
 
-    private void recordMatch(HashMap<Player, Integer> winners, ArrayList<Player> losers, UserManager um) {
+    private void recordMatch(HashMap<Player, Integer> winners, ArrayList<UUID> losers) {
         if ((winners == null || winners.isEmpty()) && (losers == null || losers.isEmpty()))
             return; //Do not record a match that no one is in
         String mode = this.getType();
@@ -478,8 +470,8 @@ public abstract class Gamemode {
                 winnerList += player.getUniqueId().toString() + ",";
                 scoreList += winners.get(player).toString() + ",";
             }
-        for (Player player : losers)
-            loserList += player.getUniqueId().toString() + ",";
+        for (UUID uuid : losers)
+            loserList += uuid + ",";
         winnerList = winnerList.substring(0, winnerList.length() - 1) + "}";
         scoreList = scoreList.substring(0, scoreList.length() - 1) + "}";
         loserList = loserList.substring(0, loserList.length() - 1) + "}";
@@ -489,12 +481,9 @@ public abstract class Gamemode {
             scoreList = "{}";
         if (loserList.length() == 1)
             loserList = "{}";
-        YamlConfiguration config = Necessities.getInstance().getConfig();
-        String url = "jdbc:mariadb://" + config.getString("Lavasurvival.DBHost") + "/" + config.getString("Lavasurvival.DBTable"), user = config.getString("Lavasurvival.DBUser"),
-                pass = config.getString("Lavasurvival.DBPassword");
         try {
             Class.forName("org.mariadb.jdbc.Driver");
-            Connection conn = DriverManager.getConnection(url, user, pass);
+            Connection conn = DriverManager.getConnection(Lavasurvival.INSTANCE.getDBURL(), Lavasurvival.INSTANCE.getDBUser(), Lavasurvival.INSTANCE.getDBPass());
             Statement stmt = conn.createStatement();
             ResultSet rs = stmt.executeQuery("INSERT INTO matches (gamemode, winners, scores, losers) VALUES (\"" + mode + "\", \"" + winnerList + "\", \"" + scoreList + "\", \"" + loserList + "\")");
             rs.close();
@@ -502,16 +491,15 @@ public abstract class Gamemode {
             conn.close();
         } catch (Exception ignored) {
         }
-        for (Player winner : winners.keySet()) {
-            //Rating calculated off of avg blocks around, NOT reward since this is based on rank too
-            int blockCount = countAirBlocksAround(winner, 10);
-            UserInfo user = um.getUser(winner.getUniqueId());
-            user.getRanking().addMatch(blockCount, winner.getUniqueId().toString());
-        }
-        for (Player loser : losers) {
-            UserInfo loserUser = um.getUser(loser.getUniqueId());
-            loserUser.getRanking().addMatch(0, loser.getUniqueId().toString());
-        }
+        final UserManager um = Lavasurvival.INSTANCE.getUserManager();
+        if (winners != null)
+            for (Player winner : winners.keySet()) {
+                //Rating calculated off of avg blocks around, NOT reward since this is based on rank too
+                int blockCount = countAirBlocksAround(winner, 10);
+                um.getUser(winner.getUniqueId()).getRanking().addMatch(blockCount, winner.getUniqueId().toString());
+            }
+        for (UUID uuid : losers)
+            um.getUser(uuid).getRanking().addMatch(0, uuid.toString());
     }
 
     /*private void calculateGlicko(HashMap<Player, Integer> winners, UserManager um) {
