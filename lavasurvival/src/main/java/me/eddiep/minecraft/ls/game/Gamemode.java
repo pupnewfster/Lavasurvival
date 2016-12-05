@@ -39,7 +39,6 @@ import java.io.File;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
-import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.*;
 
@@ -366,7 +365,7 @@ public abstract class Gamemode {
                 globalMessage(survivors);
             } else
                 globalMessage("Congratulations to all " + amount + " survivors!");
-            final HashMap<Player, Integer> winners = new HashMap<>();
+            final HashMap<UUID, Integer> winners = new HashMap<>();
             HashMap<Rank, Double[]> avgs = new HashMap<>();
             /*double count = 0;
             int avgAir = 0;
@@ -391,7 +390,7 @@ public abstract class Gamemode {
                 array[1] += reward;
                 array[2]++;
                 avgs.put(rank, array);
-                winners.put(p, blockCount);
+                winners.put(p.getUniqueId(), blockCount);
                 Lavasurvival.INSTANCE.depositPlayer(p, reward);
                 p.getPlayer().sendMessage(ChatColor.GREEN + "+ " + ChatColor.GOLD + "You won " + ChatColor.BOLD + reward + ChatColor.RESET + "" + ChatColor.GOLD + " GGs!");
                 IChatBaseComponent titleJSON = IChatBaseComponent.ChatSerializer.a("{\"text\": \"You won!\"}");
@@ -413,7 +412,12 @@ public abstract class Gamemode {
             }
             avgs.clear();
             //calculateGlicko(winners, um);
-            recordMatch(winners, dead);
+            new BukkitRunnable() {
+                @Override
+                public void run() {
+                    recordMatch(winners, dead);
+                }
+            }.runTaskAsynchronously(Lavasurvival.INSTANCE);
         }
 
         Lavasurvival.INSTANCE.MONEY_VIEWER.run();
@@ -458,7 +462,7 @@ public abstract class Gamemode {
         return this.type;
     }
 
-    private void recordMatch(HashMap<Player, Integer> winners, ArrayList<UUID> losers) {
+    private void recordMatch(HashMap<UUID, Integer> winners, ArrayList<UUID> losers) {
         if ((winners == null || winners.isEmpty()) && (losers == null || losers.isEmpty()))
             return; //Do not record a match that no one is in
         String mode = this.getType();
@@ -466,9 +470,9 @@ public abstract class Gamemode {
         String scoreList = "{";
         String loserList = "{";
         if (winners != null)
-            for (Player player : winners.keySet()) {
-                winnerList += player.getUniqueId().toString() + ",";
-                scoreList += winners.get(player).toString() + ",";
+            for (UUID uuid : winners.keySet()) {
+                winnerList += uuid + ",";
+                scoreList += winners.get(uuid) + ",";
             }
         for (UUID uuid : losers)
             loserList += uuid + ",";
@@ -481,74 +485,22 @@ public abstract class Gamemode {
             scoreList = "{}";
         if (loserList.length() == 1)
             loserList = "{}";
-        try {
+        try { //Only connect once instead of connecting once per user being added
             Class.forName("org.mariadb.jdbc.Driver");
             Connection conn = DriverManager.getConnection(Lavasurvival.INSTANCE.getDBURL(), Lavasurvival.INSTANCE.getDBUser(), Lavasurvival.INSTANCE.getDBPass());
             Statement stmt = conn.createStatement();
-            ResultSet rs = stmt.executeQuery("INSERT INTO matches (gamemode, winners, scores, losers) VALUES (\"" + mode + "\", \"" + winnerList + "\", \"" + scoreList + "\", \"" + loserList + "\")");
-            rs.close();
-            stmt.close();
-            conn.close();
-        } catch (Exception ignored) {
-        }
-        final UserManager um = Lavasurvival.INSTANCE.getUserManager();
-        if (winners != null)
-            for (Player winner : winners.keySet()) {
-                //Rating calculated off of avg blocks around, NOT reward since this is based on rank too
-                int blockCount = countAirBlocksAround(winner, 10);
-                this.addMatch(blockCount, winner.getUniqueId().toString());
-            }
-        for (Player loser : losers) {
-            this.addMatch(0, loser.getUniqueId().toString());
-        }
-    }
-
-    public void addMatch(int blockCount, String uuid) {
-        String url = "jdbc:mariadb://" + config.getString("Lavasurvival.DBHost") + "/" + config.getString("Lavasurvival.DBTable"), user = config.getString("Lavasurvival.DBUser"),
-                pass = config.getString("Lavasurvival.DBPassword");
-        try {
-            Class.forName("org.mariadb.jdbc.Driver");
-            Connection conn = DriverManager.getConnection(url, user, pass);
-            Statement stmt = conn.createStatement();
-            ResultSet rs = stmt.executeQuery(
-                    "UPDATE users SET matches=CONCAT('," + blockCount + "',matches) WHERE uuid='" + uuid + "';"
-            );
-            rs.close();
+            stmt.execute("INSERT INTO matches (gamemode, winners, scores, losers) VALUES (\"" + mode + "\", \"" + winnerList + "\", \"" + scoreList + "\", \"" + loserList + "\")");
+            if (winners != null)
+                for (UUID uuid : winners.keySet()) //Rating calculated off of avg blocks around, NOT reward since this is based on rank too
+                    stmt.execute("UPDATE users SET matches = CONCAT(\"," + winners.get(uuid) + "\", matches) WHERE uuid=\"" + uuid + "\";");
+            for (UUID uuid : losers)
+                stmt.execute("UPDATE users SET matches = CONCAT(\",0\", matches) WHERE uuid=\"" + uuid + "\";");
             stmt.close();
             conn.close();
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
-
-    /*private void calculateGlicko(HashMap<Player, Integer> winners, UserManager um) {
-        for (Player player : winners.keySet()) {
-            int reward = winners.get(player);
-            UserInfo info = um.getUser(player.getUniqueId());
-            for (Player other : winners.keySet()) {
-                if (player.equals(other))
-                    continue;
-                UserInfo otherInfo = um.getUser(other.getUniqueId());
-                int otherReward = winners.get(other);
-                double result;
-                if (reward > otherReward)
-                    result = 1; //They won
-                else if (reward < otherReward)
-                    result = 0; //They lost
-                else
-                    result = 0.5; //They tied
-                info.getRanking().addResult(otherInfo, result);
-            }
-            for (UUID id : dead) {
-                Player p = Bukkit.getPlayer(id);
-                if (p == null)
-                    continue;
-                UserInfo otherInfo = um.getUser(id);
-                info.getRanking().addResult(otherInfo, 1.0);
-                otherInfo.getRanking().addResult(info, 0.0);
-            }
-        }
-    }*/
 
     public List<LavaMap> getMapsInVote() {
         return Collections.unmodifiableList(Arrays.asList(this.nextMaps));
