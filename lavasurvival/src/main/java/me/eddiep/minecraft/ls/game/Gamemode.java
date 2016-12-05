@@ -505,12 +505,28 @@ public abstract class Gamemode {
         for (Player winner : winners.keySet()) {
             //Rating calculated off of avg blocks around, NOT reward since this is based on rank too
             int blockCount = countAirBlocksAround(winner, 10);
-            UserInfo user = um.getUser(winner.getUniqueId());
-            user.getRanking().addMatch(blockCount, winner.getUniqueId().toString());
+            this.addMatch(blockCount, winner.getUniqueId().toString());
         }
         for (Player loser : losers) {
-            UserInfo loserUser = um.getUser(loser.getUniqueId());
-            loserUser.getRanking().addMatch(0, loser.getUniqueId().toString());
+            this.addMatch(0, loser.getUniqueId().toString());
+        }
+    }
+
+    public void addMatch(int blockCount, String uuid) {
+        String url = "jdbc:mariadb://" + config.getString("Lavasurvival.DBHost") + "/" + config.getString("Lavasurvival.DBTable"), user = config.getString("Lavasurvival.DBUser"),
+                pass = config.getString("Lavasurvival.DBPassword");
+        try {
+            Class.forName("org.mariadb.jdbc.Driver");
+            Connection conn = DriverManager.getConnection(url, user, pass);
+            Statement stmt = conn.createStatement();
+            ResultSet rs = stmt.executeQuery(
+                    "UPDATE users SET matches=CONCAT('," + blockCount + "',matches) WHERE uuid='" + uuid + "';"
+            );
+            rs.close();
+            stmt.close();
+            conn.close();
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
