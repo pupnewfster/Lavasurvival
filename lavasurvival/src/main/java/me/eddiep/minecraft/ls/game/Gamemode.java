@@ -531,11 +531,11 @@ public abstract class Gamemode {
             return 1000;
         double sum = 0.0;
         for (int i : matches)
-            sum += matches.get(i);
+            sum += i;
         double average = sum / matches.size();
         double total = 0.0;
         for (int i : matches)
-            total += Math.pow(matches.get(i) - average, 2);
+            total += Math.pow(i - average, 2);
         double std = Math.sqrt(total / matches.size());
         return average;
     }
