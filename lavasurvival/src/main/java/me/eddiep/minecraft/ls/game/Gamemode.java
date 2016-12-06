@@ -3,6 +3,7 @@ package me.eddiep.minecraft.ls.game;
 import com.crossge.necessities.Commands.CmdHide;
 import com.crossge.necessities.Necessities;
 import com.crossge.necessities.RankManager.Rank;
+import com.crossge.necessities.Utils;
 import me.eddiep.minecraft.ls.Lavasurvival;
 import me.eddiep.minecraft.ls.game.impl.Flood;
 import me.eddiep.minecraft.ls.game.impl.Fusion;
@@ -39,6 +40,7 @@ import java.io.File;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.*;
 
@@ -492,24 +494,24 @@ public abstract class Gamemode {
             stmt.execute("INSERT INTO matches (gamemode, winners, scores, losers) VALUES (\"" + mode + "\", \"" + winnerList + "\", \"" + scoreList + "\", \"" + loserList + "\")");
             if (winners != null)
                 for (UUID uuid : winners.keySet()) {//Rating calculated off of avg blocks around, NOT reward since this is based on rank too
-                    ResultSet rs = stmt.execute(
-                            "UPDATE users SET matches = CONCAT(\"," + winners.get(uuid) + "\", matches) WHERE uuid =\"" + uuid + "\";" +
-                            "SELECT matches FROM users WHERE uuid = " + uuid + ";"
-                    );
-                    ArrayList<Integer> matches = new ArrayList<Integer>(Arrays.asList(rs.getString("matches").split(",")));
-                    stmt.execute(
-                            "UPDATE users SET rating = \"" + this.getRating(matches) + "\" WHERE uuid = \"" + uuid + "\";"
-                    );
+                    ResultSet rs = stmt.executeQuery("UPDATE users SET matches = CONCAT(\"," + winners.get(uuid) + "\", matches) WHERE uuid =\"" + uuid + "\";" +
+                            "SELECT matches FROM users WHERE uuid = " + uuid + ";");
+                    ArrayList<Integer> matches = new ArrayList<>();
+                    String[] ms = rs.getString("matches").split(",");
+                    for (String match : ms)
+                        if (!match.equals("") && Utils.legalInt(match))
+                            matches.add(Integer.parseInt(match));
+                    stmt.execute("UPDATE users SET rating = \"" + this.getRating(matches) + "\" WHERE uuid = \"" + uuid + "\";");
                 }
             for (UUID uuid : losers) {
-                ResultSet rs = stmt.execute(
-                        "UPDATE users SET matches = CONCAT(\",0\", matches) WHERE uuid=\"" + uuid + "\";" +
-                        "SELECT matches FROM users WHERE uuid = " + uuid + ";"
-                );
-                ArrayList<Integer> matches = new ArrayList<Integer>(Arrays.asList(rs.getString("matches").split(",")));
-                stmt.execute(
-                        "UPDATE users SET rating = \"" + this.getRating(matches) + "\" WHERE uuid = \"" + uuid + "\";"
-                );
+                ResultSet rs = stmt.executeQuery("UPDATE users SET matches = CONCAT(\",0\", matches) WHERE uuid=\"" + uuid + "\";" +
+                        "SELECT matches FROM users WHERE uuid = " + uuid + ";");
+                ArrayList<Integer> matches = new ArrayList<>();
+                String[] ms = rs.getString("matches").split(",");
+                for (String match : ms)
+                    if (!match.equals("") && Utils.legalInt(match))
+                        matches.add(Integer.parseInt(match));
+                stmt.execute("UPDATE users SET rating = \"" + this.getRating(matches) + "\" WHERE uuid = \"" + uuid + "\";");
             }
             stmt.close();
             conn.close();
@@ -519,17 +521,16 @@ public abstract class Gamemode {
     }
 
     private double getRating(ArrayList<Integer> matches) { //Max blocks around is 7999
-        if(matches.size()==0) {return 1000;}
-        double sum = 0;
-        for(Integer i : matches) {
-            sum+=matches.get(i).doubleValue();
-        }
-        double average = sum/(double)matches.size();
-        double total = 0;
-        for(Integer i : matches) {
-            total+=Math.pow(matches.get(i).doubleValue()-average,2);
-        }
-        double std = Math.sqrt(total/(double)matches.size());
+        if (matches.isEmpty())
+            return 1000;
+        double sum = 0.0;
+        for (int i : matches)
+            sum += matches.get(i);
+        double average = sum / matches.size();
+        double total = 0.0;
+        for (int i : matches)
+            total += Math.pow(matches.get(i) - average, 2);
+        double std = Math.sqrt(total / matches.size());
         return average;
     }
 
