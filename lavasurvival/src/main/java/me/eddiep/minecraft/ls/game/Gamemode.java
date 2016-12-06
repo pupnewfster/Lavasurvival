@@ -496,23 +496,27 @@ public abstract class Gamemode {
                 for (UUID uuid : winners.keySet()) {//Rating calculated off of avg blocks around, NOT reward since this is based on rank too
                     stmt.execute("UPDATE users SET matches = CONCAT(\"," + winners.get(uuid) + "\", matches) WHERE uuid = \"" + uuid + "\"");
                     ResultSet rs = stmt.executeQuery("SELECT matches FROM users WHERE uuid = \"" + uuid + "\"");
+                    if (rs.next()) {
+                        ArrayList<Integer> matches = new ArrayList<>();
+                        String[] ms = rs.getString("matches").split(",");
+                        for (String match : ms)
+                            if (!match.equals("") && Utils.legalInt(match))
+                                matches.add(Integer.parseInt(match));
+                        stmt.execute("UPDATE users SET rating = \"" + this.getRating(matches) + "\" WHERE uuid = \"" + uuid + "\"");
+                    }
+                    rs.close();
+                }
+            for (UUID uuid : losers) {
+                stmt.execute("UPDATE users SET matches = CONCAT(\",0\", matches) WHERE uuid= \"" + uuid + "\"");
+                ResultSet rs = stmt.executeQuery("SELECT matches FROM users WHERE uuid = \"" + uuid + "\"");
+                if (rs.next()) {
                     ArrayList<Integer> matches = new ArrayList<>();
                     String[] ms = rs.getString("matches").split(",");
                     for (String match : ms)
                         if (!match.equals("") && Utils.legalInt(match))
                             matches.add(Integer.parseInt(match));
                     stmt.execute("UPDATE users SET rating = \"" + this.getRating(matches) + "\" WHERE uuid = \"" + uuid + "\"");
-                    rs.close();
                 }
-            for (UUID uuid : losers) {
-                stmt.execute("UPDATE users SET matches = CONCAT(\",0\", matches) WHERE uuid= \"" + uuid + "\"");
-                ResultSet rs = stmt.executeQuery("SELECT matches FROM users WHERE uuid = \"" + uuid + "\"");
-                ArrayList<Integer> matches = new ArrayList<>();
-                String[] ms = rs.getString("matches").split(",");
-                for (String match : ms)
-                    if (!match.equals("") && Utils.legalInt(match))
-                        matches.add(Integer.parseInt(match));
-                stmt.execute("UPDATE users SET rating = \"" + this.getRating(matches) + "\" WHERE uuid = \"" + uuid + "\"");
                 rs.close();
             }
             stmt.close();
