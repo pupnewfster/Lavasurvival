@@ -502,6 +502,7 @@ public abstract class Gamemode {
                         if (!match.equals("") && Utils.legalInt(match))
                             matches.add(Integer.parseInt(match));
                     stmt.execute("UPDATE users SET rating = \"" + this.getRating(matches) + "\" WHERE uuid = \"" + uuid + "\"");
+                    rs.close();
                 }
             for (UUID uuid : losers) {
                 stmt.execute("UPDATE users SET matches = CONCAT(\",0\", matches) WHERE uuid= \"" + uuid + "\"");
@@ -512,6 +513,7 @@ public abstract class Gamemode {
                     if (!match.equals("") && Utils.legalInt(match))
                         matches.add(Integer.parseInt(match));
                 stmt.execute("UPDATE users SET rating = \"" + this.getRating(matches) + "\" WHERE uuid = \"" + uuid + "\"");
+                rs.close();
             }
             stmt.close();
             conn.close();
