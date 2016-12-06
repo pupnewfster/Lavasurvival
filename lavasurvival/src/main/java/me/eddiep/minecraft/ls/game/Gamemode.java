@@ -491,15 +491,46 @@ public abstract class Gamemode {
             Statement stmt = conn.createStatement();
             stmt.execute("INSERT INTO matches (gamemode, winners, scores, losers) VALUES (\"" + mode + "\", \"" + winnerList + "\", \"" + scoreList + "\", \"" + loserList + "\")");
             if (winners != null)
-                for (UUID uuid : winners.keySet()) //Rating calculated off of avg blocks around, NOT reward since this is based on rank too
-                    stmt.execute("UPDATE users SET matches = CONCAT(\"," + winners.get(uuid) + "\", matches) WHERE uuid=\"" + uuid + "\";");
-            for (UUID uuid : losers)
-                stmt.execute("UPDATE users SET matches = CONCAT(\",0\", matches) WHERE uuid=\"" + uuid + "\";");
+                for (UUID uuid : winners.keySet()) {//Rating calculated off of avg blocks around, NOT reward since this is based on rank too
+                    ResultSet rs = stmt.execute(
+                            "UPDATE users SET matches = CONCAT(\"," + winners.get(uuid) + "\", matches) WHERE uuid =\"" + uuid + "\";" +
+                            "SELECT matches FROM users WHERE uuid = " + uuid + ";"
+                    );
+                    ArrayList<Integer> matches = new ArrayList<Integer>(Arrays.asList(rs.getString("matches").split(",")));
+                    stmt.execute(
+                            "UPDATE users SET rating = \"" + this.getRating(matches) + "\" WHERE uuid = \"" + uuid + "\";"
+                    );
+                }
+            for (UUID uuid : losers) {
+                ResultSet rs = stmt.execute(
+                        "UPDATE users SET matches = CONCAT(\",0\", matches) WHERE uuid=\"" + uuid + "\";" +
+                        "SELECT matches FROM users WHERE uuid = " + uuid + ";"
+                );
+                ArrayList<Integer> matches = new ArrayList<Integer>(Arrays.asList(rs.getString("matches").split(",")));
+                stmt.execute(
+                        "UPDATE users SET rating = \"" + this.getRating(matches) + "\" WHERE uuid = \"" + uuid + "\";"
+                );
+            }
             stmt.close();
             conn.close();
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    private double getRating(ArrayList<Integer> matches) { //Max blocks around is 7999
+        if(matches.size()==0) {return 1000;}
+        double sum = 0;
+        for(Integer i : matches) {
+            sum+=matches.get(i).doubleValue();
+        }
+        double average = sum/(double)matches.size();
+        double total = 0;
+        for(Integer i : matches) {
+            total+=Math.pow(matches.get(i).doubleValue()-average,2);
+        }
+        double std = Math.sqrt(total/(double)matches.size());
+        return average;
     }
 
     public List<LavaMap> getMapsInVote() {
