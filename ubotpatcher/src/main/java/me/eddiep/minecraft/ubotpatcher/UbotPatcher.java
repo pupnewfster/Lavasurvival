@@ -1,5 +1,6 @@
 package me.eddiep.minecraft.ubotpatcher;
 
+import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
@@ -38,6 +39,7 @@ public class UbotPatcher extends JavaPlugin {
         }
 
         getLogger().info("Patching complete!");
-        getServer().getPluginManager().disablePlugin(this);
+        //Restart server once it is finished starting
+        Bukkit.getScheduler().scheduleSyncDelayedTask(this, () -> Bukkit.spigot().restart());
     }
 }
