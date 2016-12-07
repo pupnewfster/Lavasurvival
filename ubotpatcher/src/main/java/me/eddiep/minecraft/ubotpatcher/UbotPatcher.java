@@ -20,7 +20,7 @@ public class UbotPatcher extends JavaPlugin {
 
         File[] jars = dataFolder.listFiles(pathname -> pathname.getName().endsWith("jar"));
 
-        if (jars == null) {
+        if (jars == null || jars.length == 0) {
             getLogger().info("No jar files found!");
             getServer().getPluginManager().disablePlugin(this);
             return;
