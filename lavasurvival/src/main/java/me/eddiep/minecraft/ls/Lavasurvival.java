@@ -1,9 +1,6 @@
 package me.eddiep.minecraft.ls;
 
-import com.crossge.necessities.Commands.CmdHide;
-import com.crossge.necessities.GetUUID;
 import com.crossge.necessities.Necessities;
-import com.crossge.necessities.RankManager.RankManager;
 import com.google.gson.Gson;
 import me.eddiep.ClassicPhysics;
 import me.eddiep.handles.ClassicPhysicsHandler;
@@ -45,10 +42,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 @SuppressWarnings("unused")
 public class Lavasurvival extends JavaPlugin {
@@ -64,7 +58,8 @@ public class Lavasurvival extends JavaPlugin {
     private UserManager userManager;
     private boolean running = false;
     private ItemStack rules;
-    private String dburl, dbpass, dbuser;
+    private String dbURL;
+    private Properties properties;
     @SuppressWarnings("CanBeFinal")
     private CancelToken ubotCancelToken;
     public boolean updating;
@@ -83,7 +78,6 @@ public class Lavasurvival extends JavaPlugin {
             inv.setItem(inv.firstEmpty(), item);
             return;
         }
-
         ItemStack item = inv.getItem(index);
         ItemMeta meta = item.getItemMeta();
         ArrayList<String> lore = new ArrayList<>();
@@ -95,9 +89,8 @@ public class Lavasurvival extends JavaPlugin {
     public void withdrawAndUpdate(Player player, double price) {
         this.econ.withdrawPlayer(player, price);
         updateMoneyView(player);
-        if (Necessities.isTracking()) {
+        if (Necessities.isTracking())
             Necessities.trackActionWithValue(player, -price, -price);
-        }
     }
 
     public static void log(String message) {
@@ -181,25 +174,13 @@ public class Lavasurvival extends JavaPlugin {
     }
 
     private void setupShops() {
-        MenuFramework.enable(new MenuRegistry(this, RankShop.class, ItemShop.class, BlockShopCategory.class, BasicBlockShop.class, AdvancedBlockShop.class,
-                SurvivorBlockShop.class, TrustedBlockShop.class, ElderBlockShop.class, DonatorBlockShop.class));
+        MenuFramework.enable(new MenuRegistry(this, RankShop.class, ItemShop.class, BlockShopCategory.class, BasicBlockShop.class, AdvancedBlockShop.class, SurvivorBlockShop.class, TrustedBlockShop.class,
+                ElderBlockShop.class, DonatorBlockShop.class));
 
-        ArrayList<String> lore = new ArrayList<>();
-        lore.add(ChatColor.GOLD + "" + ChatColor.ITALIC + "Buy more blocks!");
-
-        ArrayList<String> lore2 = new ArrayList<>();
-        lore2.add(ChatColor.GREEN + "" + ChatColor.ITALIC + "Level up!");
-
-        ArrayList<String> lore3 = new ArrayList<>();
-        lore3.add(ChatColor.RED + "" + ChatColor.ITALIC + "Buy powerups!");
-
-        ArrayList<String> lore4 = new ArrayList<>();
-        lore4.add(ChatColor.AQUA + "" + ChatColor.ITALIC + "Store unused blocks!");
-
-        ShopFactory.createShop(this, "Block Shop", new MenuShopManager(BlockShopCategory.class), Material.EMERALD, lore, true);
-        ShopFactory.createShop(this, "Rank Shop", new MenuShopManager(RankShop.class), Material.EXP_BOTTLE, lore2, false);
-        ShopFactory.createShop(this, "Item Shop", new MenuShopManager(ItemShop.class), Material.CLAY_BALL, lore3, true);
-        ShopFactory.createShop(this, "Bank", new BankShopManager(), Material.CHEST, lore4, false);
+        ShopFactory.createShop(this, "Block Shop", new MenuShopManager(BlockShopCategory.class), Material.EMERALD, Collections.singletonList(ChatColor.GOLD + "" + ChatColor.ITALIC + "Buy more blocks!"), true);
+        ShopFactory.createShop(this, "Rank Shop", new MenuShopManager(RankShop.class), Material.EXP_BOTTLE, Collections.singletonList(ChatColor.GREEN + "" + ChatColor.ITALIC + "Level up!"), false);
+        ShopFactory.createShop(this, "Item Shop", new MenuShopManager(ItemShop.class), Material.CLAY_BALL, Collections.singletonList(ChatColor.RED + "" + ChatColor.ITALIC + "Buy powerups!"), true);
+        ShopFactory.createShop(this, "Bank", new BankShopManager(), Material.CHEST, Collections.singletonList(ChatColor.AQUA + "" + ChatColor.ITALIC + "Store unused blocks!"), false);
     }
 
     @SuppressWarnings("ResultOfMethodCallIgnored")
@@ -231,13 +212,16 @@ public class Lavasurvival extends JavaPlugin {
             UBot ubot = new UBot(new File("/home/minecraft/ubot/Lavasurvival"), new Updater(), new UBotLogger());
             ubotCancelToken = ubot.startAsync();
         } catch (Exception e) {
-            e.printStackTrace();
+            log("Failed to start UBot");
         }
 
         YamlConfiguration config = Necessities.getInstance().getConfig();
-        this.dburl = "jdbc:mariadb://" + config.getString("Lavasurvival.DBHost") + "/" + config.getString("Lavasurvival.DBTable");
-        this.dbuser = config.getString("Lavasurvival.DBUser");
-        this.dbpass = config.getString("Lavasurvival.DBPassword");
+        this.dbURL = "jdbc:mysql://" + config.getString("Lavasurvival.DBHost") + "/" + config.getString("Lavasurvival.DBTable");
+        this.properties = new Properties();
+        this.properties.setProperty("user", config.getString("Lavasurvival.DBUser"));
+        this.properties.setProperty("password", config.getString("Lavasurvival.DBPassword"));
+        this.properties.setProperty("useSSL", "false");
+        this.properties.setProperty("autoReconnect", "true");
     }
 
     private boolean setupEcon() {
@@ -258,36 +242,16 @@ public class Lavasurvival extends JavaPlugin {
         return this.econ;
     }
 
-    public GetUUID getUUIDs() {
-        return Necessities.getInstance().getUUID();
-    }
-
     public UserManager getUserManager() {
         return this.userManager;
     }
 
-    public CmdHide getHide() {
-        return Necessities.getInstance().getHide();
-    }
-
-    public com.crossge.necessities.RankManager.UserManager getNecessitiesUserManager() {
-        return Necessities.getInstance().getUM();
-    }
-
     public String getDBURL() {
-        return this.dburl;
+        return this.dbURL;
     }
 
-    public String getDBPass() {
-        return this.dbpass;
-    }
-
-    public String getDBUser() {
-        return this.dbuser;
-    }
-
-    public RankManager getRankManager() {
-        return Necessities.getInstance().getRM();
+    public Properties getDBProperties() {
+        return this.properties;
     }
 
     public void removeFromSetup(UUID uuid) {
@@ -348,7 +312,7 @@ public class Lavasurvival extends JavaPlugin {
     }
 
     public void depositPlayer(Player player, double reward) {
-        econ.depositPlayer(player, reward);
+        this.econ.depositPlayer(player, reward);
         if (Necessities.isTracking())
             Necessities.trackActionWithValue(player, reward, reward);
     }

@@ -124,9 +124,9 @@ public class Rise extends Gamemode {
     }
 
     private void pourAndAdvance(long time) {
-        List<Location> locs = getCurrentMap().getRiseOptions().getSpawnLocation(0, lvl - getCurrentMap().getHeight(), 0);
-        int highestCurrentY = locs.get(0).getBlockY();
-        for (Location loc : locs) {
+        List<Location> locations = getCurrentMap().getRiseOptions().getSpawnLocation(0, lvl - getCurrentMap().getHeight(), 0);
+        int highestCurrentY = locations.get(0).getBlockY();
+        for (Location loc : locations) {
             if (loc.getBlockY() > highestCurrentY)
                 highestCurrentY = loc.getBlockY();
         }
@@ -140,9 +140,9 @@ public class Rise extends Gamemode {
             }
             return;
         }
-        locs.forEach(l -> Lavasurvival.INSTANCE.getPhysicsHandler().forcePlaceClassicBlockAt(l, getMat()));
+        locations.forEach(l -> Lavasurvival.INSTANCE.getPhysicsHandler().forcePlaceClassicBlockAt(l, getMat()));
         this.lastEvent = System.currentTimeMillis(); //Set the last event to now
-        getCurrentWorld().strikeLightningEffect(locs.get(RANDOM.nextInt(locs.size()))); //Actions are better than words :3
+        getCurrentWorld().strikeLightningEffect(locations.get(RANDOM.nextInt(locations.size()))); //Actions are better than words :3
         this.lvl += getCurrentMap().getRiseOptions().getLayerCount();
         this.layersLeft.setScore(lavaY - highestCurrentY);
         if (highestCurrentY <= lavaY)

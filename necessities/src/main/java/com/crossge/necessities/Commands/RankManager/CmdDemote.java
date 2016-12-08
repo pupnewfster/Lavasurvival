@@ -20,20 +20,18 @@ public class CmdDemote implements RankCmd {
         }
         GetUUID get = Necessities.getInstance().getUUID();
         UUID uuid = get.getID(args[0]);
-        Player target;
         if (uuid == null) {
             uuid = get.getOfflineID(args[0]);
-            if (uuid == null) {
-                sender.sendMessage(var.getEr() + "Error: " + var.getErMsg() + "That player has not joined the server. If the player is offline, please use the full and most recent name.");
+            if (uuid == null || !Bukkit.getOfflinePlayer(uuid).hasPlayedBefore()) {
+                sender.sendMessage(var.getEr() + "Error: " + var.getErMsg() + "That player does not exist or has not joined the server. If the player is offline, please use the full and most recent name.");
                 return true;
             }
-            target = Bukkit.getOfflinePlayer(uuid).getPlayer();
-        } else
-            target = Bukkit.getPlayer(uuid);
+        }
         UserManager um = Necessities.getInstance().getUM();
         User u = um.getUser(uuid);
+        String targetName = get.nameFromString(uuid.toString());
         if (u.getRank().getPrevious() == null) {
-            sender.sendMessage(var.getEr() + "Error: " + var.getErMsg() + target.getName() + " is already the lowest rank.");
+            sender.sendMessage(var.getEr() + "Error: " + var.getErMsg() + targetName + " is already the lowest rank.");
             return true;
         }
         String name = "Console";
@@ -46,7 +44,7 @@ public class CmdDemote implements RankCmd {
             name = player.getName();
         }
         um.updateUserRank(u, uuid, u.getRank().getPrevious());
-        Bukkit.broadcastMessage(var.getDemote() + name + " demoted " + get.nameFromString(uuid.toString()) + " to " + u.getRank().getName() + ".");
+        Bukkit.broadcastMessage(var.getDemote() + name + " demoted " + targetName + " to " + u.getRank().getName() + ".");
         return true;
     }
 }

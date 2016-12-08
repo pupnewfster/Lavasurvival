@@ -12,7 +12,7 @@ import java.io.BufferedReader;
 import java.net.URL;
 import java.util.UUID;
 
-public class GetUUID {
+public class GetUUID { //TODO: Potentially move this stuff into Utils and make it static now that it does not have to load anything
     public UUID getID(String name) {
         UUID partial = null;
         boolean startsWith = false;

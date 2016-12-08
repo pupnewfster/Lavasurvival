@@ -41,28 +41,27 @@ import java.util.UUID;
 public class Necessities extends JavaPlugin {
     private static Necessities INSTANCE;
     private final List<String> devs = Arrays.asList("pupnewfster", "Mod_Chris", "hypereddie10");
-    private final File configFile = new File("plugins/Necessities", "config.yml");
     private Tracker googleAnalyticsTracker;
     private PacketPlayOutPlayerInfo janetInfo;
-    private CmdCommandSpy spy = new CmdCommandSpy();
-    private PortalManager pm = new PortalManager();
-    private WarpManager warps = new WarpManager();
-    private WorldManager wm = new WorldManager();
-    private UserManager um = new UserManager();
-    private RankManager rm = new RankManager();
-    private ScoreBoards sb = new ScoreBoards();
-    private JanetWarn warns = new JanetWarn();
-    private Console console = new Console();
-    private Variables var = new Variables();
-    private Teleports tps = new Teleports();
-    private JanetLog log = new JanetLog();
-    private CmdHide hide = new CmdHide();
-    private GetUUID get = new GetUUID();
-    private Janet bot = new Janet();
-    private JanetNet net = new JanetNet();
-    private JanetAI ai = new JanetAI();
-    private JanetSlack slack = new JanetSlack();
-    private Announcer announcer = new Announcer();
+    private CmdCommandSpy spy;
+    private PortalManager pm;
+    private WarpManager warps;
+    private WorldManager wm;
+    private UserManager um;
+    private RankManager rm;
+    private ScoreBoards sb;
+    private JanetWarn warns;
+    private Console console;
+    private Variables var;
+    private Teleports tps;
+    private JanetLog log;
+    private CmdHide hide;
+    private GetUUID get;
+    private Janet bot;
+    private JanetNet net;
+    private JanetAI ai;
+    private JanetSlack slack;
+    private Announcer announcer;
 
     public UserManager getUM() {
         return this.um == null ? this.um = new UserManager() : this.um;
@@ -141,7 +140,7 @@ public class Necessities extends JavaPlugin {
     }
 
     File getConfigFile() {
-        return this.configFile;
+        return new File(getDataFolder(), "config.yml");
     }
 
     public YamlConfiguration getConfig() {
@@ -296,13 +295,13 @@ public class Necessities extends JavaPlugin {
         else if (isEqual(name, "hat"))
             com = new CmdHat();
         else if (isEqual(name, "hide"))
-            com = this.hide;
+            com = getHide();
         else if (isEqual(name, "title"))
             com = new CmdTitle();
         else if (isEqual(name, "bracketcolor"))
             com = new CmdBracketColor();
         else if (isEqual(name, "commandspy"))
-            com = this.spy;
+            com = getSpy();
         else if (isEqual(name, "gamemode"))
             com = new CmdGamemode();
         else if (isEqual(name, "fly"))

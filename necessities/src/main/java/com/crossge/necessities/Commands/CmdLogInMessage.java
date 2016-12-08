@@ -11,8 +11,6 @@ import java.io.File;
 
 @SuppressWarnings("unused")
 public class CmdLogInMessage implements Cmd {
-    private final File configFileLogIn = new File("plugins/Necessities", "loginmessages.yml");
-
     public boolean commandUse(CommandSender sender, String[] args) {
         Variables var = Necessities.getInstance().getVar();
         if (sender instanceof Player) {
@@ -26,6 +24,7 @@ public class CmdLogInMessage implements Cmd {
                     loginMessage = "{RANK} {NAME}&r " + loginMessage;
                 loginMessage = loginMessage.trim();
             }
+            File configFileLogIn = new File(Necessities.getInstance().getDataFolder(), "loginmessages.yml");
             YamlConfiguration configLogIn = YamlConfiguration.loadConfiguration(configFileLogIn);
             configLogIn.set(p.getUniqueId().toString(), loginMessage);
             try {

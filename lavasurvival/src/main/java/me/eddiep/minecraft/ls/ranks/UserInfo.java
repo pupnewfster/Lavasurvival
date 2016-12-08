@@ -51,10 +51,12 @@ public class UserInfo {
         load();
     }
 
+    @SuppressWarnings("unused")
     public long getBlockChangeCount() {
         return this.blockChangeCount;
     }
 
+    @SuppressWarnings("unused")
     public void resetBlockChangeCount() {
         this.blockChangeCount = 0;
     }
@@ -68,10 +70,9 @@ public class UserInfo {
                 public void run() {
                     String curOwned = "", curBank = "";
                     try {
-                        Class.forName("org.mariadb.jdbc.Driver");
-                        Connection conn = DriverManager.getConnection(Lavasurvival.INSTANCE.getDBURL(), Lavasurvival.INSTANCE.getDBUser(), Lavasurvival.INSTANCE.getDBPass());
+                        Connection conn = DriverManager.getConnection(Lavasurvival.INSTANCE.getDBURL(), Lavasurvival.INSTANCE.getDBProperties());
                         Statement stmt = conn.createStatement();
-                        ResultSet rs = stmt.executeQuery("SELECT * FROM users WHERE uuid = \"" + UserInfo.this.userUUID + "\"");
+                        ResultSet rs = stmt.executeQuery("SELECT * FROM users WHERE uuid = '" + UserInfo.this.userUUID + "'");
                         if (rs.next()) {
                             curOwned = rs.getString("ownedBlocks");
                             curBank = rs.getString("bank");
@@ -81,7 +82,7 @@ public class UserInfo {
                                     curBank = toAdd;
                                 else
                                     curBank += "|" + toAdd;
-                                stmt.execute("UPDATE users SET addToBank = \"\", bank = \"" + curBank + "\" WHERE uuid = \"" + UserInfo.this.userUUID + "\"");
+                                stmt.execute("UPDATE users SET addToBank = '', bank = '" + curBank + "' WHERE uuid = '" + UserInfo.this.userUUID + "'");
                             }
                         }
                         rs.close();
@@ -109,14 +110,14 @@ public class UserInfo {
     @SuppressWarnings("UnusedReturnValue")
     public Inventory createBankInventory(Player p) {
         new BukkitRunnable() {
+            @SuppressWarnings("deprecation")
             @Override
             public void run() {
                 String toAdd = "";
                 try {
-                    Class.forName("org.mariadb.jdbc.Driver");
-                    Connection conn = DriverManager.getConnection(Lavasurvival.INSTANCE.getDBURL(), Lavasurvival.INSTANCE.getDBUser(), Lavasurvival.INSTANCE.getDBPass());
+                    Connection conn = DriverManager.getConnection(Lavasurvival.INSTANCE.getDBURL(), Lavasurvival.INSTANCE.getDBProperties());
                     Statement stmt = conn.createStatement();
-                    ResultSet rs = stmt.executeQuery("SELECT * FROM users WHERE uuid = \"" + UserInfo.this.userUUID + "\"");
+                    ResultSet rs = stmt.executeQuery("SELECT * FROM users WHERE uuid = '" + UserInfo.this.userUUID + "'");
                     if (rs.next()) {
                         toAdd = rs.getString("addToBank");
                         if (!toAdd.equals("")) {
@@ -125,7 +126,7 @@ public class UserInfo {
                                 current = toAdd;
                             else
                                 current += "|" + toAdd;
-                            stmt.execute("UPDATE users SET addToBank = \"\", bank = \"" + current + "\" WHERE uuid = \"" + UserInfo.this.userUUID + "\"");
+                            stmt.execute("UPDATE users SET addToBank = '', bank = '" + current + "' WHERE uuid = '" + UserInfo.this.userUUID + "'");
                         }
                     }
                     rs.close();
@@ -142,6 +143,7 @@ public class UserInfo {
         return BankInventory.create(p, this.BANK).openFor(p);
     }
 
+    @SuppressWarnings("deprecation")
     public void saveBank() {
         ArrayList<MaterialData> cBank = new ArrayList<>();
         for (MaterialData e : this.BANK)
@@ -170,10 +172,9 @@ public class UserInfo {
 
     private void saveBank(String banked) {
         try {
-            Class.forName("org.mariadb.jdbc.Driver");
-            Connection conn = DriverManager.getConnection(Lavasurvival.INSTANCE.getDBURL(), Lavasurvival.INSTANCE.getDBUser(), Lavasurvival.INSTANCE.getDBPass());
+            Connection conn = DriverManager.getConnection(Lavasurvival.INSTANCE.getDBURL(), Lavasurvival.INSTANCE.getDBProperties());
             Statement stmt = conn.createStatement();
-            stmt.execute("UPDATE users SET bank = \"" + banked + "\" WHERE uuid = \"" + this.userUUID + "\"");
+            stmt.execute("UPDATE users SET bank = '" + banked + "' WHERE uuid = '" + this.userUUID + "'");
             stmt.close();
             conn.close();
         } catch (Exception ignored) {
@@ -190,14 +191,6 @@ public class UserInfo {
 
     public void setLastBreak(long lastBreak) {
         this.lastBreak = lastBreak;
-    }
-
-    private UUID getUUID() {
-        return getPlayer() == null ? this.userUUID : getPlayer().getUniqueId();
-    }
-
-    public String getName() {
-        return getPlayer() == null ? Bukkit.getOfflinePlayer(getUUID()).getName() : getPlayer().getName();
     }
 
     public boolean isInWater() {
@@ -248,6 +241,7 @@ public class UserInfo {
             }
     }
 
+    @SuppressWarnings("deprecation")
     private void addBlock(MaterialData dat) {
         if (!this.ownedBlocks.contains(dat)) {
             this.ownedBlocks.add(dat);
@@ -256,10 +250,9 @@ public class UserInfo {
                 @Override
                 public void run() {
                     try {
-                        Class.forName("org.mariadb.jdbc.Driver");
-                        Connection conn = DriverManager.getConnection(Lavasurvival.INSTANCE.getDBURL(), Lavasurvival.INSTANCE.getDBUser(), Lavasurvival.INSTANCE.getDBPass());
+                        Connection conn = DriverManager.getConnection(Lavasurvival.INSTANCE.getDBURL(), Lavasurvival.INSTANCE.getDBProperties());
                         Statement stmt = conn.createStatement();
-                        ResultSet rs = stmt.executeQuery("SELECT * FROM users WHERE uuid = \"" + UserInfo.this.userUUID + "\"");
+                        ResultSet rs = stmt.executeQuery("SELECT * FROM users WHERE uuid = '" + UserInfo.this.userUUID + "'");
                         String curOwned = "", curBank = "";
                         if (rs.next()) {
                             curOwned = rs.getString("ownedBlocks");
@@ -270,7 +263,7 @@ public class UserInfo {
                                 curBank += "|";
                         }
                         rs.close();
-                        stmt.execute("UPDATE users SET ownedBlocks = \"" + curOwned + datInfo + "\", bank = \"" + curBank + datInfo + "\" WHERE uuid = \"" + UserInfo.this.userUUID + "\"");
+                        stmt.execute("UPDATE users SET ownedBlocks = '" + curOwned + datInfo + "', bank = '" + curBank + datInfo + "' WHERE uuid = '" + UserInfo.this.userUUID + "'");
                         stmt.close();
                         conn.close();
                     } catch (Exception ignored) {

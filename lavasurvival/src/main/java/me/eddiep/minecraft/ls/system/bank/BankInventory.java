@@ -40,15 +40,7 @@ public class BankInventory {
             ItemStack item = items.get(i).toItemStack(1);
             if (item != null && item.getType() == Material.EMERALD_BLOCK)
                 continue;
-            if (item != null) {
-                MaterialData dat = items.get(i);
-                if (!dat.getItemType().equals(Material.AIR)) {
-                    ItemMeta im = item.getItemMeta();
-                    im.setLore(Arrays.asList("Lava MeltTime: " + PhysicsListener.getLavaMeltTimeAsString(dat), "Water MeltTime: " + PhysicsListener.getWaterMeltTimeAsString(dat)));
-                    item.setItemMeta(im);
-                }
-            }
-            inventory.setItem(i, item);
+            inventory.setItem(i, addMeltTime(item));
         }
         if (slotSize == 54) {
             ItemStack item = new ItemStack(Material.EMERALD_BLOCK, 1);
@@ -57,11 +49,23 @@ public class BankInventory {
             item.setItemMeta(meta);
             inventory.setItem(53, item);
         }
-        BankInventory sinventory = new BankInventory();
-        sinventory.inventory = inventory;
-        sinventory.items = items;
-        INSTANCERS.put(p, sinventory);
-        return sinventory;
+        BankInventory sInventory = new BankInventory();
+        sInventory.inventory = inventory;
+        sInventory.items = items;
+        INSTANCERS.put(p, sInventory);
+        return sInventory;
+    }
+
+    private static ItemStack addMeltTime(ItemStack is) {
+        if (is != null) {
+            MaterialData dat = is.getData();
+            if (!dat.getItemType().equals(Material.AIR)) {
+                ItemMeta im = is.getItemMeta();
+                im.setLore(Arrays.asList("Lava MeltTime: " + PhysicsListener.getLavaMeltTimeAsString(dat), "Water MeltTime: " + PhysicsListener.getWaterMeltTimeAsString(dat)));
+                is.setItemMeta(im);
+            }
+        }
+        return is;
     }
 
     public static BankInventory from(Player p) {
@@ -109,15 +113,7 @@ public class BankInventory {
             ItemStack item = this.items.get(i).toItemStack(1);
             if (item != null && item.getType() == Material.EMERALD_BLOCK)
                 continue;
-            if (item != null) {
-                MaterialData dat = items.get(i);
-                if (!dat.getItemType().equals(Material.AIR)) {
-                    ItemMeta im = item.getItemMeta();
-                    im.setLore(Arrays.asList("Lava MeltTime: " + PhysicsListener.getLavaMeltTimeAsString(dat), "Water MeltTime: " + PhysicsListener.getWaterMeltTimeAsString(dat)));
-                    item.setItemMeta(im);
-                }
-            }
-            this.inventory.setItem(i % 54, item);
+            this.inventory.setItem(i % 54, addMeltTime(item));
         }
         if (this.offset + 45 < this.items.size()) {
             ItemStack item = new ItemStack(Material.EMERALD_BLOCK, 1);
@@ -174,6 +170,7 @@ public class BankInventory {
         INSTANCERS.remove(p);
     }
 
+    @SuppressWarnings("unused")
     public List<MaterialData> getItems() {
         return this.items;
     }

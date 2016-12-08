@@ -15,8 +15,6 @@ import java.util.List;
 import java.util.UUID;
 
 public class CmdBracketColor implements Cmd {
-    private final File configFileTitles = new File("plugins/Necessities", "titles.yml");
-
     public boolean commandUse(CommandSender sender, String[] args) {
         Variables var = Necessities.getInstance().getVar();
         if (args.length == 0 || (args.length > 1 && args[1].length() > 1) || (args.length == 1 && args[0].length() > 1)) {
@@ -36,6 +34,7 @@ public class CmdBracketColor implements Cmd {
             if (target != p && !p.hasPermission("Necessities.bracketOthers"))
                 target = p;
         }
+        File configFileTitles = new File(Necessities.getInstance().getDataFolder(), "titles.yml");
         YamlConfiguration configTitles = YamlConfiguration.loadConfiguration(configFileTitles);
         if (args.length == 1) {
             configTitles.set(target.getUniqueId() + ".color", "r");

@@ -18,9 +18,6 @@ import java.util.stream.Collectors;
 
 public class CmdHide implements Cmd {
     private final ArrayList<UUID> hidden = new ArrayList<>();
-    private final File configFileHiding = new File("plugins/Necessities", "hiding.yml");
-    private final File configFileLogOut = new File("plugins/Necessities", "logoutmessages.yml");
-    private final File configFileLogIn = new File("plugins/Necessities", "loginmessages.yml");
 
     public boolean commandUse(CommandSender sender, String[] args) {
         UserManager um = Necessities.getInstance().getUM();
@@ -30,7 +27,7 @@ public class CmdHide implements Cmd {
             User u = um.getUser(p.getUniqueId());
             if (hidden.contains(p.getUniqueId())) {
                 unhidePlayer(p);
-                YamlConfiguration configLogIn = YamlConfiguration.loadConfiguration(configFileLogIn);
+                YamlConfiguration configLogIn = YamlConfiguration.loadConfiguration(new File(Necessities.getInstance().getDataFolder(), "loginmessages.yml"));
                 Bukkit.broadcastMessage((ChatColor.GREEN + " + " + ChatColor.YELLOW + ChatColor.translateAlternateColorCodes('&',
                         configLogIn.getString(p.getUniqueId().toString()).replaceAll("\\{NAME}", p.getDisplayName()).replaceAll("\\{RANK}",
                                 um.getUser(p.getUniqueId()).getRank().getTitle()))).replaceAll(ChatColor.RESET + "", ChatColor.YELLOW + ""));
@@ -49,7 +46,7 @@ public class CmdHide implements Cmd {
                 }
             } else {
                 hidePlayer(p);
-                YamlConfiguration configLogOut = YamlConfiguration.loadConfiguration(configFileLogOut);
+                YamlConfiguration configLogOut = YamlConfiguration.loadConfiguration(new File(Necessities.getInstance().getDataFolder(), "logoutmessages.yml"));
                 Bukkit.broadcastMessage((ChatColor.RED + " - " + ChatColor.YELLOW + ChatColor.translateAlternateColorCodes('&',
                         configLogOut.getString(p.getUniqueId().toString()).replaceAll("\\{NAME}", p.getDisplayName()).replaceAll("\\{RANK}",
                                 um.getUser(p.getUniqueId()).getRank().getTitle()))).replaceAll(ChatColor.RESET + "", ChatColor.YELLOW + ""));
@@ -91,6 +88,7 @@ public class CmdHide implements Cmd {
     }
 
     public void unload() {
+        File configFileHiding = new File(Necessities.getInstance().getDataFolder(), "hiding.yml");
         YamlConfiguration configHiding = YamlConfiguration.loadConfiguration(configFileHiding);
         configHiding.getKeys(false).forEach(key -> configHiding.set(key, null));
         hidden.forEach(uuid -> configHiding.set(uuid.toString(), true));
@@ -101,7 +99,7 @@ public class CmdHide implements Cmd {
     }
 
     public void init() {
-        YamlConfiguration configSpying = YamlConfiguration.loadConfiguration(configFileHiding);
+        YamlConfiguration configSpying = YamlConfiguration.loadConfiguration(new File(Necessities.getInstance().getDataFolder(), "hiding.yml"));
         hidden.addAll(configSpying.getKeys(false).stream().map(UUID::fromString).collect(Collectors.toList()));
     }
 }

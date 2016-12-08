@@ -123,9 +123,9 @@ public class Fusion extends Gamemode {
     }
 
     private void pourAndAdvance(long time) {
-        List<Location> locs = getCurrentMap().getFusionOptions().getSpawnLocation(0, this.lvl - getCurrentMap().getHeight(), 0);
-        int highestCurrentY = locs.get(0).getBlockY();
-        for (Location loc : locs)
+        List<Location> locations = getCurrentMap().getFusionOptions().getSpawnLocation(0, this.lvl - getCurrentMap().getHeight(), 0);
+        int highestCurrentY = locations.get(0).getBlockY();
+        for (Location loc : locations)
             if (loc.getBlockY() > highestCurrentY)
                 highestCurrentY = loc.getBlockY();
         int lavaY = getCurrentMap().getFusionOptions().getHighestLocation().getBlockY();
@@ -139,9 +139,9 @@ public class Fusion extends Gamemode {
             return;
         }
         this.switchADoodle = RANDOM.nextInt();
-        locs.forEach(l -> Lavasurvival.INSTANCE.getPhysicsHandler().forcePlaceClassicBlockAt(l, getMat()));
+        locations.forEach(l -> Lavasurvival.INSTANCE.getPhysicsHandler().forcePlaceClassicBlockAt(l, getMat()));
         this.lastEvent = System.currentTimeMillis(); //Set the last event to now
-        getCurrentWorld().strikeLightningEffect(locs.get(RANDOM.nextInt(locs.size()))); //Actions are better than words :3
+        getCurrentWorld().strikeLightningEffect(locations.get(RANDOM.nextInt(locations.size()))); //Actions are better than words :3
         this.lvl += getCurrentMap().getFusionOptions().getLayerCount();
         this.layersLeft.setScore(lavaY - highestCurrentY);
         BarColor cur = this.bars.get(0).getColor();

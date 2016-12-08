@@ -10,38 +10,38 @@ import java.io.File;
 import java.util.*;
 
 public class RankManager {
-    private static final HashMap<String, String> subranks = new HashMap<>();
-    private static final HashMap<String, Rank> ranks = new HashMap<>();
-    private static final ArrayList<String> names = new ArrayList<>();
-    private static final ArrayList<Rank> order = new ArrayList<>();
+    private final HashMap<String, String> subranks = new HashMap<>();
+    private final HashMap<String, Rank> ranks = new HashMap<>();
+    private final ArrayList<String> names = new ArrayList<>();
+    private final ArrayList<Rank> order = new ArrayList<>();
     private final File configFileRanks = new File("plugins/Necessities/RankManager", "ranks.yml");
     private final File configFileSubranks = new File("plugins/Necessities/RankManager", "subranks.yml");
 
     public void readRanks() {
-        YamlConfiguration configRanks = YamlConfiguration.loadConfiguration(this.configFileRanks), configSubranks = YamlConfiguration.loadConfiguration(configFileSubranks);
+        YamlConfiguration configRanks = YamlConfiguration.loadConfiguration(this.configFileRanks), configSubranks = YamlConfiguration.loadConfiguration(this.configFileSubranks);
         for (String rank : configRanks.getKeys(false)) {
             if (configRanks.contains(rank + ".previousRank")) {
-                if (names.contains(configRanks.getString(rank + ".previousRank")))
-                    names.add(names.indexOf(configRanks.getString(rank + ".previousRank")) + 1, rank);
+                if (this.names.contains(configRanks.getString(rank + ".previousRank")))
+                    this.names.add(this.names.indexOf(configRanks.getString(rank + ".previousRank")) + 1, rank);
                 else {
                     String previous = configRanks.getString(rank + ".previousRank");
                     while (configRanks.contains(previous + ".previousRank")) {
                         previous = configRanks.getString(previous + ".previousRank");
-                        if (names.contains(previous)) {
-                            names.add(names.indexOf(previous) + 1, rank);
+                        if (this.names.contains(previous)) {
+                            this.names.add(this.names.indexOf(previous) + 1, rank);
                             break;
                         }
                     }
                 }
-            } else if (!names.contains(rank))
-                names.add(0, rank);
+            } else if (!this.names.contains(rank))
+                this.names.add(0, rank);
         }
-        for (String name : names) {
-            ranks.put(name, new Rank(name));
-            order.add(ranks.get(name));
+        for (String name : this.names) {
+            this.ranks.put(name, new Rank(name));
+            this.order.add(this.ranks.get(name));
         }
         //If is an actual subrank not just base node in tree of a subrank
-        configSubranks.getKeys(true).stream().filter(subrank -> !subrank.equals("") && !configSubranks.getStringList(subrank).isEmpty()).forEach(subrank -> subranks.put(subrank.toLowerCase(), subrank));
+        configSubranks.getKeys(true).stream().filter(subrank -> !subrank.equals("") && !configSubranks.getStringList(subrank).isEmpty()).forEach(subrank -> this.subranks.put(subrank.toLowerCase(), subrank));
         Necessities.getInstance().getUM().readUsers();
         Bukkit.getScheduler().scheduleSyncDelayedTask(Necessities.getInstance(), () -> {
             Bukkit.getConsoleSender().sendMessage(ChatColor.AQUA + "Retrieving all permissions.");
@@ -69,31 +69,31 @@ public class RankManager {
     }
 
     public boolean validSubrank(String subrank) {
-        return !subranks.containsKey(subrank.toLowerCase());
+        return !this.subranks.containsKey(subrank.toLowerCase());
     }
 
     public String getSub(String subrank) {
-        return subranks.get(subrank.toLowerCase());
+        return this.subranks.get(subrank.toLowerCase());
     }
 
     public ArrayList<Rank> getOrder() {
-        return order;
+        return this.order;
     }
 
     public Collection<String> getSubranks() {
-        return subranks.values();
+        return this.subranks.values();
     }
 
     public Rank getRank(int index) {
-        return order.size() - 1 < index ? null : order.get(index);
+        return this.order.size() - 1 < index ? null : this.order.get(index);
     }
 
     public Rank getRank(String name) {
-        return ranks.get(name);
+        return this.ranks.get(name);
     }
 
     public boolean hasRank(Rank rank, Rank check) {
-        return !(!order.contains(check) || !order.contains(rank)) && order.indexOf(rank) - order.indexOf(check) >= 0;
+        return !(!this.order.contains(check) || !this.order.contains(rank)) && this.order.indexOf(rank) - this.order.indexOf(check) >= 0;
     }
 
     public void updateRankPerms(Rank r, String permission, boolean remove) {
@@ -144,7 +144,7 @@ public class RankManager {
             configSubranks.save(this.configFileSubranks);
         } catch (Exception ignored) {
         }
-        order.stream().filter(r -> configRanks.contains(r.getName()) && configRanks.getStringList(r.getName() + ".subranks").contains(subrank)).forEach(r -> {
+        this.order.stream().filter(r -> configRanks.contains(r.getName()) && configRanks.getStringList(r.getName() + ".subranks").contains(subrank)).forEach(r -> {
             r.refreshPerms();
             Necessities.getInstance().getUM().refreshRankPerm(r);
         });
@@ -187,16 +187,16 @@ public class RankManager {
         } catch (Exception ignored) {
         }
         if (previous == null) {
-            ranks.put(name, new Rank(name));
+            this.ranks.put(name, new Rank(name));
             if (next != null)
-                next.setPrevious(ranks.get(name));
-            order.add(0, ranks.get(name));
+                next.setPrevious(this.ranks.get(name));
+            this.order.add(0, this.ranks.get(name));
         } else {
-            ranks.put(name, new Rank(name));
-            previous.setNext(ranks.get(name));
+            this.ranks.put(name, new Rank(name));
+            previous.setNext(this.ranks.get(name));
             if (next != null)
-                next.setPrevious(ranks.get(name));
-            order.add(order.indexOf(previous) + 1, ranks.get(name));
+                next.setPrevious(this.ranks.get(name));
+            this.order.add(this.order.indexOf(previous) + 1, this.ranks.get(name));
         }
     }
 
@@ -210,8 +210,8 @@ public class RankManager {
             else if (previous != null)
                 u.setRank(previous);
         });
-        order.remove(rank);
-        ranks.remove(rank.getName());
+        this.order.remove(rank);
+        this.ranks.remove(rank.getName());
         if (previous != null && next != null) {
             next.setPrevious(previous);
             previous.setNext(next);
@@ -236,7 +236,7 @@ public class RankManager {
             return;
         YamlConfiguration configSubranks = YamlConfiguration.loadConfiguration(this.configFileSubranks);
         configSubranks.set(name, Collections.singletonList(""));
-        subranks.put(name.toLowerCase(), name);
+        this.subranks.put(name.toLowerCase(), name);
         try {
             configSubranks.save(this.configFileSubranks);
         } catch (Exception ignored) {
@@ -248,10 +248,10 @@ public class RankManager {
             return;
         UserManager um = Necessities.getInstance().getUM();
         um.getUsers().values().forEach(u -> um.updateUserSubrank(u.getUUID(), name, true));
-        order.forEach(r -> updateRankSubrank(r, name, true));
+        this.order.forEach(r -> updateRankSubrank(r, name, true));
         YamlConfiguration configSubranks = YamlConfiguration.loadConfiguration(this.configFileSubranks);
         configSubranks.set(name, null);
-        subranks.remove(name.toLowerCase());
+        this.subranks.remove(name.toLowerCase());
         try {
             configSubranks.save(this.configFileSubranks);
         } catch (Exception ignored) {

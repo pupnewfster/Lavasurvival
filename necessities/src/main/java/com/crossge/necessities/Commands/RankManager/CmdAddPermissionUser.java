@@ -4,6 +4,7 @@ import com.crossge.necessities.GetUUID;
 import com.crossge.necessities.Necessities;
 import com.crossge.necessities.Utils;
 import com.crossge.necessities.Variables;
+import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 
 import java.util.UUID;
@@ -17,11 +18,12 @@ public class CmdAddPermissionUser implements RankCmd {
         }
         GetUUID get = Necessities.getInstance().getUUID();
         UUID uuid = get.getID(args[0]);
-        if (uuid == null)
-            uuid = get.getOfflineID(args[0]);
         if (uuid == null) {
-            sender.sendMessage(var.getEr() + "Error: " + var.getErMsg() + "That player has not joined the server. If the player is offline, please use the full and most recent name.");
-            return true;
+            uuid = get.getOfflineID(args[0]);
+            if (uuid == null || !Bukkit.getOfflinePlayer(uuid).hasPlayedBefore()) {
+                sender.sendMessage(var.getEr() + "Error: " + var.getErMsg() + "That player does not exist or has not joined the server. If the player is offline, please use the full and most recent name.");
+                return true;
+            }
         }
         String node = args[1];
         Necessities.getInstance().getUM().updateUserPerms(uuid, node, false);
