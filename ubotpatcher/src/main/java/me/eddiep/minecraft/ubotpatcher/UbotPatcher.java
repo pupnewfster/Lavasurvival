@@ -40,6 +40,6 @@ public class UbotPatcher extends JavaPlugin {
 
         getLogger().info("Patching complete!");
         //Restart server once it is finished starting
-        Bukkit.getScheduler().scheduleSyncDelayedTask(this, () -> Bukkit.spigot().restart(), 20);
+        Bukkit.getScheduler().scheduleSyncDelayedTask(this, () -> Bukkit.spigot().restart(), 200);
     }
 }
