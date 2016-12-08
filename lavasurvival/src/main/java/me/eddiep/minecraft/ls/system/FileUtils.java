@@ -77,9 +77,14 @@ public class FileUtils {
      */
     @SuppressWarnings("ResultOfMethodCallIgnored")
     public static void deleteIfExist(String filePath) {
-        File file = new File(filePath);
-        if (file.exists())
-            file.delete();
+        File src = new File(filePath);
+        if (src.isDirectory()) {
+            String files[] = src.list();
+            for (String file : files != null ? files : new String[0])
+                deleteIfExist(new File(src, file).getPath());
+        }
+        if (src.exists())
+            src.delete();
     }
 
     /**

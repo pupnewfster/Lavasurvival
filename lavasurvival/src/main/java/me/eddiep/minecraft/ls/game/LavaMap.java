@@ -71,11 +71,12 @@ public class LavaMap {
 
     private void restoreBackup() {
         File directoy = new File(this.worldName);
-        File backup = new File(Lavasurvival.INSTANCE.getDataFolder(), worldName);
+        File backup = new File(Lavasurvival.INSTANCE.getDataFolder(), this.worldName);
         if (!backup.exists())
             return;
         if (directoy.exists()) {
-            if (!directoy.delete()) {
+            FileUtils.deleteIfExist(directoy.getPath());
+            if (directoy.exists()) {
                 System.err.println("Could not delete world!");
                 return;
             }
