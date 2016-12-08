@@ -9,7 +9,7 @@ import java.lang.reflect.Field;
 import java.text.DecimalFormat;
 
 public class Utils {
-    @SuppressWarnings({"BooleanMethodIsAlwaysInverted", "ResultOfMethodCallIgnored"})
+    @SuppressWarnings({"ResultOfMethodCallIgnored", "BooleanMethodIsAlwaysInverted"})
     public static boolean legalDouble(String input) {
         try {
             Double.parseDouble(input);
@@ -19,7 +19,7 @@ public class Utils {
         return true;
     }
 
-    @SuppressWarnings({"BooleanMethodIsAlwaysInverted", "ResultOfMethodCallIgnored"})
+    @SuppressWarnings("ResultOfMethodCallIgnored")
     public static boolean legalInt(String input) {
         try {
             Integer.parseInt(input);

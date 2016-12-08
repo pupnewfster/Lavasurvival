@@ -1,5 +1,6 @@
 package me.eddiep.minecraft.ls.game.shop.impl;
 
+import com.crossge.necessities.Necessities;
 import com.crossge.necessities.RankManager.RankManager;
 import com.crossge.necessities.RankManager.User;
 import me.eddiep.minecraft.ls.Lavasurvival;
@@ -52,8 +53,8 @@ public class RankShop extends Menu {
     }
 
     private void buyRank(MenuPlayer player, String RANK, double price) {
-        RankManager manager = Lavasurvival.INSTANCE.getRankManager();
-        User user = Lavasurvival.INSTANCE.getNecessitiesUserManager().getUser(player.getBukkit().getUniqueId());
+        RankManager manager = Necessities.getInstance().getRM();
+        User user = Necessities.getInstance().getUM().getUser(player.getBukkit().getUniqueId());
         int curNum = manager.getOrder().indexOf(user.getRank());
         int thisRank = manager.getOrder().indexOf(manager.getRank(RANK));
         if (curNum == thisRank)
@@ -75,40 +76,40 @@ public class RankShop extends Menu {
     @PreProcessor
     public void process(Inventory inv) {
         ItemStack basic = new ItemStack(Material.WOOD, 1);
-        ItemMeta bmeta = basic.getItemMeta();
-        bmeta.setDisplayName("Basic");
-        bmeta.setLore(Arrays.asList(ChatColor.GOLD + "" + ChatColor.BOLD + "Start buying blocks!", "7000 ggs"));
-        basic.setItemMeta(bmeta);
+        ItemMeta bMeta = basic.getItemMeta();
+        bMeta.setDisplayName("Basic");
+        bMeta.setLore(Arrays.asList(ChatColor.GOLD + "" + ChatColor.BOLD + "Start buying blocks!", "7000 ggs"));
+        basic.setItemMeta(bMeta);
         basic = ShopFactory.addGlow(basic);
         inv.setItem(2, basic);
         ItemStack advanced = new ItemStack(Material.IRON_BLOCK, 1);
-        ItemMeta ameta = advanced.getItemMeta();
-        ameta.setDisplayName("Advanced");
-        ameta.setLore(Arrays.asList(ChatColor.GOLD + "" + ChatColor.BOLD + "Buy more durable blocks!", "30,000 ggs"));
-        advanced.setItemMeta(ameta);
+        ItemMeta aMeta = advanced.getItemMeta();
+        aMeta.setDisplayName("Advanced");
+        aMeta.setLore(Arrays.asList(ChatColor.GOLD + "" + ChatColor.BOLD + "Buy more durable blocks!", "30,000 ggs"));
+        advanced.setItemMeta(aMeta);
         advanced = ShopFactory.addGlow(advanced);
         inv.setItem(3, advanced);
         ItemStack survivor = new ItemStack(Material.LAVA_BUCKET, 1);
-        ItemMeta smeta = survivor.getItemMeta();
-        smeta.setDisplayName("Survivor");
-        smeta.setLore(Arrays.asList(ChatColor.GOLD + "" + ChatColor.BOLD + "Are you a survivor?", ChatColor.GOLD + "" + ChatColor.BOLD + "Prove yourself!", "90,000 ggs"));
-        survivor.setItemMeta(smeta);
+        ItemMeta sMeta = survivor.getItemMeta();
+        sMeta.setDisplayName("Survivor");
+        sMeta.setLore(Arrays.asList(ChatColor.GOLD + "" + ChatColor.BOLD + "Are you a survivor?", ChatColor.GOLD + "" + ChatColor.BOLD + "Prove yourself!", "90,000 ggs"));
+        survivor.setItemMeta(sMeta);
         survivor = ShopFactory.addGlow(survivor);
         inv.setItem(4, survivor);
         ItemStack trusted = new ItemStack(Material.APPLE, 1);
-        ItemMeta tmeta = trusted.getItemMeta();
-        tmeta.setDisplayName("Trusted");
-        tmeta.setLore(Arrays.asList(ChatColor.GOLD + "" + ChatColor.BOLD + "Decorate that nice", ChatColor.GOLD + "" + ChatColor.BOLD + "house with some",
+        ItemMeta tMeta = trusted.getItemMeta();
+        tMeta.setDisplayName("Trusted");
+        tMeta.setLore(Arrays.asList(ChatColor.GOLD + "" + ChatColor.BOLD + "Decorate that nice", ChatColor.GOLD + "" + ChatColor.BOLD + "house with some",
                 ChatColor.GOLD + "" + ChatColor.BOLD + "furniture!", "180,000 ggs"));
-        trusted.setItemMeta(tmeta);
+        trusted.setItemMeta(tMeta);
         trusted = ShopFactory.addGlow(trusted);
         inv.setItem(5, trusted);
         ItemStack elder = new ItemStack(Material.GOLDEN_APPLE, 1, (byte) 1);
-        ItemMeta emeta = elder.getItemMeta();
-        emeta.setDisplayName("Elder");
-        emeta.setLore(Arrays.asList(ChatColor.GOLD + "" + ChatColor.BOLD + "Only true elders", ChatColor.GOLD + "" + ChatColor.BOLD + "can achieve this",
+        ItemMeta eMeta = elder.getItemMeta();
+        eMeta.setDisplayName("Elder");
+        eMeta.setLore(Arrays.asList(ChatColor.GOLD + "" + ChatColor.BOLD + "Only true elders", ChatColor.GOLD + "" + ChatColor.BOLD + "can achieve this",
                 ChatColor.GOLD + "" + ChatColor.BOLD + "rank.. are you", ChatColor.GOLD + "" + ChatColor.BOLD + "one of them?", "300,000 ggs"));
-        elder.setItemMeta(emeta);
+        elder.setItemMeta(eMeta);
         inv.setItem(6, elder);
     }
 }

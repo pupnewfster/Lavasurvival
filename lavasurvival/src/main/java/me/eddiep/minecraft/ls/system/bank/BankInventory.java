@@ -57,11 +57,11 @@ public class BankInventory {
             item.setItemMeta(meta);
             inventory.setItem(53, item);
         }
-        BankInventory sinventory = new BankInventory();
-        sinventory.inventory = inventory;
-        sinventory.items = items;
-        INSTANCERS.put(p, sinventory);
-        return sinventory;
+        BankInventory sInventory = new BankInventory();
+        sInventory.inventory = inventory;
+        sInventory.items = items;
+        INSTANCERS.put(p, sInventory);
+        return sInventory;
     }
 
     public static BankInventory from(Player p) {

@@ -14,7 +14,7 @@ public class UbotPatcher extends JavaPlugin {
     public void onEnable() {
         getLogger().info("Searching for jar files...");
 
-        File dataFolder = new File("plugins/ubotpatcher");
+        File dataFolder = getDataFolder();
         if (!dataFolder.exists())
             dataFolder.mkdir();
 

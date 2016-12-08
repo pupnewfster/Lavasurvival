@@ -70,21 +70,21 @@ public abstract class Hat {
     @SuppressWarnings("unused")
     public void move(double x, double y, double z, float yaw, float pitch) {
         /*this.pitch = ((90 - pitch) * Math.PI) / 180;
-        this.yaw  = ((yaw + 90 + 180) * Math.PI) / 180;
+        this.yaw = ((yaw + 90 + 180) * Math.PI) / 180;
         double x2 = this.x1, y2 = this.y1, z2 = this.z1;
         this.y1 = Math.sin(Math.toRadians(this.pitch)) * Math.sin(Math.toRadians(this.yaw));
         this.x1 = Math.sin(Math.toRadians(this.pitch)) * Math.cos(Math.toRadians(this.yaw));
         this.z1 = Math.cos(Math.toRadians(this.pitch));
-        int xchange = dir.getX() >= 0 ? 1 : -1;
-        int zchange = dir.getZ() >= 0 ? 1 : -1;*/
+        int xChange = dir.getX() >= 0 ? 1 : -1;
+        int zChange = dir.getZ() >= 0 ? 1 : -1;*/
         this.trueLoc = this.trueLoc.clone().add(x, y, z);
         //double ang = Math.toRadians(yaw);//Math.atan2(rx, rz));
         for (ArmorStand a : this.armorStands) {
-            //Location loc = a.getLocation().add(x + (x2 - this.x1)*xchange, y + y2 - this.y1, z + (z2 - this.z1)*zchange);
+            //Location loc = a.getLocation().add(x + (x2 - this.x1) * xChange, y + y2 - this.y1, z + (z2 - this.z1) * zChange);
             Location loc = a.getLocation().clone().add(x, y, z);
             //loc.setYaw(loc.getYaw() + yaw);
             a.teleport(loc);
-            //a.setHeadPose(a.getHeadPose().add(Math.toRadians(pitchChange*xchange*zchange*-1), 0, 0));
+            //a.setHeadPose(a.getHeadPose().add(Math.toRadians(pitchChange * xChange * zChange * -1), 0, 0));
         }
     }
 

@@ -18,7 +18,7 @@ public class Announcer {
 
     void init() {
         Bukkit.getConsoleSender().sendMessage(ChatColor.AQUA + "Loading Announcer messages...");
-        try (BufferedReader read = new BufferedReader(new FileReader(new File("plugins/Necessities/announcements.txt")))) {
+        try (BufferedReader read = new BufferedReader(new FileReader(new File(Necessities.getInstance().getDataFolder(), "announcements.txt")))) {
             String line;
             while ((line = read.readLine()) != null)
                 this.messages.add(ChatColor.translateAlternateColorCodes('&', line));

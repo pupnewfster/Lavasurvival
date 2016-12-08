@@ -86,10 +86,10 @@ public class CmdHelp implements Cmd {
             }
             if (search.equals(""))
                 sender.sendMessage(ChatColor.YELLOW + " ---- " + var.getMessages() + "Help" + ChatColor.YELLOW + " -- " + var.getMessages() + "Page " +
-                        ChatColor.RED + Integer.toString(page) + var.getMessages() + "/" + ChatColor.RED + Integer.toString(totalPages) + ChatColor.YELLOW + " ---- ");
+                        ChatColor.RED + Integer.toString(page) + var.getMessages() + "/" + ChatColor.RED + Integer.toString(totalPages) + ChatColor.YELLOW + " ----");
             else
                 sender.sendMessage(ChatColor.YELLOW + " ---- " + var.getMessages() + "Help: " + search + ChatColor.YELLOW + " -- " + var.getMessages() + "Page " +
-                        ChatColor.RED + Integer.toString(page) + var.getMessages() + "/" + ChatColor.RED + Integer.toString(totalPages) + ChatColor.YELLOW + " ---- ");
+                        ChatColor.RED + Integer.toString(page) + var.getMessages() + "/" + ChatColor.RED + Integer.toString(totalPages) + ChatColor.YELLOW + " ----");
             page = page - 1;
             String message = getHelp(page, time, helpList);
             while (message != null) {
@@ -170,10 +170,10 @@ public class CmdHelp implements Cmd {
         }
         if (search.equals(""))
             sender.sendMessage(ChatColor.YELLOW + " ---- " + var.getMessages() + "Help" + ChatColor.YELLOW + " -- " + var.getMessages() + "Page " +
-                    ChatColor.RED + Integer.toString(page) + var.getMessages() + "/" + ChatColor.RED + Integer.toString(totalPages) + ChatColor.YELLOW + " ---- ");
+                    ChatColor.RED + Integer.toString(page) + var.getMessages() + "/" + ChatColor.RED + Integer.toString(totalPages) + ChatColor.YELLOW + " ----");
         else
             sender.sendMessage(ChatColor.YELLOW + " ---- " + var.getMessages() + "Help: " + search + ChatColor.YELLOW + " -- " + var.getMessages() + "Page " +
-                    ChatColor.RED + Integer.toString(page) + var.getMessages() + "/" + ChatColor.RED + Integer.toString(totalPages) + ChatColor.YELLOW + " ---- ");
+                    ChatColor.RED + Integer.toString(page) + var.getMessages() + "/" + ChatColor.RED + Integer.toString(totalPages) + ChatColor.YELLOW + " ----");
         page = page - 1;
         String message = getHelp(page, time, helpList);
         while (message != null) {

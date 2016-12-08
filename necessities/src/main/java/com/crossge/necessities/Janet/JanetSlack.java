@@ -18,7 +18,6 @@ import org.bukkit.entity.Player;
 import org.json.simple.JsonArray;
 import org.json.simple.JsonObject;
 import org.json.simple.Jsoner;
-import org.json.simple.parser.JSONParser;
 
 import javax.net.ssl.HttpsURLConnection;
 import java.io.BufferedReader;
@@ -37,53 +36,41 @@ public class JanetSlack {
     private String token;
     private URL hookURL;
     private WebSocket ws;
-    private RankManager rm;
-    private UserManager um;
-    private JanetWarn warns;
-    private Variables var;
-    private CmdHide hide;
-    private GetUUID get;
 
     public void init() {
         Bukkit.getConsoleSender().sendMessage(ChatColor.AQUA + "Connecting to Slack...");
         YamlConfiguration config = Necessities.getInstance().getConfig();
-        token = config.contains("Necessities.SlackToken") ? config.getString("Necessities.SlackToken") : "token";
+        this.token = config.contains("Necessities.SlackToken") ? config.getString("Necessities.SlackToken") : "token";
         String hook = config.contains("Necessities.WebHook") ? config.getString("Necessities.WebHook") : "webHook";
-        if (token.equals("token") || hook.equals("webHook")) {
+        if (this.token.equals("token") || hook.equals("webHook")) {
             Bukkit.getConsoleSender().sendMessage(ChatColor.AQUA + " Failed to connect to Slack.");
             return;
         }
         try {
-            hookURL = new URL(hook);
+            this.hookURL = new URL(hook);
         } catch (Exception e) {
             Bukkit.getConsoleSender().sendMessage(ChatColor.AQUA + " Failed to connect to Slack.");
             return;
         }
-        rm = Necessities.getInstance().getRM();
-        um = Necessities.getInstance().getUM();
-        warns = Necessities.getInstance().getWarns();
-        var = Necessities.getInstance().getVar();
-        hide = Necessities.getInstance().getHide();
-        get = Necessities.getInstance().getUUID();
         setHelp();
         connect();
         Bukkit.getConsoleSender().sendMessage(ChatColor.AQUA + "Connected to Slack.");
     }
 
     public void disconnect() {
-        if (!isConnected)
+        if (!this.isConnected)
             return;
-        userMap.clear();
-        helpLists.clear();
+        this.userMap.clear();
+        this.helpLists.clear();
         sendMessage("Disconnected.");
-        sendPost("https://slack.com/api/users.setPresence?token=" + token + "&presence=away&pretty=1");
-        isConnected = false;
-        if (ws != null)
-            ws.disconnect();
+        sendPost("https://slack.com/api/users.setPresence?token=" + this.token + "&presence=away&pretty=1");
+        this.isConnected = false;
+        if (this.ws != null)
+            this.ws.disconnect();
     }
 
     public void handleInGameChat(String message) {
-        userMap.values().stream().filter(SlackUser::viewingChat).forEach(u -> u.sendPrivateMessage(message));
+        this.userMap.values().stream().filter(SlackUser::viewingChat).forEach(u -> u.sendPrivateMessage(message));
     }
 
     public void sendMessage(String message, boolean isPM, SlackUser u) {
@@ -101,7 +88,7 @@ public class JanetSlack {
         JsonObject json = new JsonObject();
         json.put("text", message);
         try {
-            HttpsURLConnection con = (HttpsURLConnection) hookURL.openConnection();
+            HttpsURLConnection con = (HttpsURLConnection) this.hookURL.openConnection();
             con.setDoOutput(true);
             con.setRequestProperty("Content-Type", "application/json;");
             con.setRequestProperty("Accept", "application/json,text/plain");
@@ -117,11 +104,11 @@ public class JanetSlack {
     }
 
     private SlackUser getUserInfo(String id) {
-        if (userMap.containsKey(id))
-            return userMap.get(id);
+        if (this.userMap.containsKey(id))
+            return this.userMap.get(id);
         //Almost never should get past this point as it maps the users when it connects unless a new user gets invited
         try {
-            URL url = new URL("https://slack.com/api/users.info?token=" + token + "&user=" + id + "&pretty=1");
+            URL url = new URL("https://slack.com/api/users.info?token=" + this.token + "&user=" + id + "&pretty=1");
             HttpsURLConnection con = (HttpsURLConnection) url.openConnection();
             con.setRequestMethod("POST");
             BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
@@ -130,11 +117,10 @@ public class JanetSlack {
             while ((inputLine = in.readLine()) != null)
                 response.append(inputLine);
             in.close();
-            JSONParser jsonParser = new JSONParser();
-            userMap.put(id, new SlackUser((JsonObject) jsonParser.parse(response.toString())));
+            this.userMap.put(id, new SlackUser(Jsoner.deserialize(response.toString(), new JsonObject())));
         } catch (Exception ignored) {
         }
-        return userMap.get(id);
+        return this.userMap.get(id);
     }
 
     private void sendPost(String url) {
@@ -150,10 +136,10 @@ public class JanetSlack {
     }
 
     private void connect() {
-        if (isConnected)
+        if (this.isConnected)
             return;
         try {
-            URL url = new URL("https://slack.com/api/rtm.start?token=" + token + "&simple_latest=true&no_unreads=true");
+            URL url = new URL("https://slack.com/api/rtm.start?token=" + this.token + "&simple_latest=true&no_unreads=true");
             HttpsURLConnection con = (HttpsURLConnection) url.openConnection();
             con.setRequestMethod("POST");
             BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
@@ -170,13 +156,13 @@ public class JanetSlack {
         }
         setUsers();
         setUserChannels();
-        isConnected = true;
+        this.isConnected = true;
         sendMessage("Connected.");
     }
 
     private void setUsers() {
         try {
-            URL url = new URL("https://slack.com/api/users.list?token=" + token + "&presence=true");
+            URL url = new URL("https://slack.com/api/users.list?token=" + this.token + "&presence=true");
             HttpsURLConnection con = (HttpsURLConnection) url.openConnection();
             con.setRequestMethod("POST");
             BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
@@ -193,8 +179,8 @@ public class JanetSlack {
                 if (user.getBoolean("deleted"))
                     continue;
                 String id = user.getString("id");
-                if (!userMap.containsKey(id))
-                    userMap.put(id, new SlackUser(user));
+                if (!this.userMap.containsKey(id))
+                    this.userMap.put(id, new SlackUser(user));
             }
         } catch (Exception ignored) {
         }
@@ -202,7 +188,7 @@ public class JanetSlack {
 
     private void openWebSocket(String url) {
         try {
-            ws = new WebSocketFactory().createSocket(url).addListener(new WebSocketAdapter() {
+            this.ws = new WebSocketFactory().createSocket(url).addListener(new WebSocketAdapter() {
                 @Override
                 public void onTextMessage(WebSocket websocket, String message) throws Exception {
                     JsonObject json = Jsoner.deserialize(message, new JsonObject());
@@ -228,7 +214,7 @@ public class JanetSlack {
 
     private void setUserChannels() {
         try {
-            URL url = new URL("https://slack.com/api/im.list?token=" + token);
+            URL url = new URL("https://slack.com/api/im.list?token=" + this.token);
             HttpsURLConnection con = (HttpsURLConnection) url.openConnection();
             con.setRequestMethod("POST");
             BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
@@ -242,8 +228,8 @@ public class JanetSlack {
             for (Object i : (JsonArray) json.get("ims")) {
                 JsonObject im = (JsonObject) i;
                 String userID = im.getString("user");
-                if (userMap.containsKey(userID))
-                    userMap.get(userID).setChannel(im.getString("id"));
+                if (this.userMap.containsKey(userID))
+                    this.userMap.get(userID).setChannel(im.getString("id"));
             }
         } catch (Exception ignored) {
         }
@@ -297,9 +283,10 @@ public class JanetSlack {
             sendMessage("Error: You are restricted or ultra restricted", isPM, info);
             return;
         }
-        if (info.isBot) //If bot don't send to game
+        if (info.isBot()) //If bot don't send to game
             return;
         final String name = info.getName();
+        Variables var = Necessities.getInstance().getVar();
         if (message.startsWith("!")) {
             String m = "";
             if (message.startsWith("!help")) {
@@ -322,7 +309,7 @@ public class JanetSlack {
                     sendMessage("Error: Input a number from 1 to " + Integer.toString(totalpages), isPM, info);
                     return;
                 }
-                m += " ---- Help -- Page " + Integer.toString(page) + "/" + Integer.toString(totalpages) + " ---- \n";
+                m += " ---- Help -- Page " + Integer.toString(page) + "/" + Integer.toString(totalpages) + " ----\n";
                 page = page - 1;
                 String msg = getLine(page, time, helpList);
                 while (msg != null) {
@@ -353,15 +340,16 @@ public class JanetSlack {
                     return;
                 }
                 String target = message.split(" ")[1];
+                GetUUID get = Necessities.getInstance().getUUID();
                 UUID uuid = get.getID(target);
                 if (uuid == null) {
                     uuid = get.getOfflineID(target);
                     if (uuid == null) {
-                        sendMessage("Error: That player has not joined the server. If the player is offline, please use the full and most recent name.", isPM, info);
+                        sendMessage("Error: That player does not exist. If the player is offline, please use the full and most recent name.", isPM, info);
                         return;
                     }
                 }
-                User u = um.getUser(uuid);
+                User u = Necessities.getInstance().getUM().getUser(uuid);
                 m += "===== WhoIs: " + u.getName() + " =====\n";
                 if (u.getPlayer() != null)
                     m += " - Nick: " + u.getPlayer().getDisplayName() + "\n";
@@ -405,14 +393,17 @@ public class JanetSlack {
                         gamemode = "Spectator";
                     m += " - Gamemode: " + gamemode + "\n";
                     m += " - Banned: " + (p.isBanned() ? "true" : "false") + "\n";
-                    m += " - Visible: " + (hide.isHidden(p) ? "false" : "true") + "\n";
+                    m += " - Visible: " + (Necessities.getInstance().getHide().isHidden(p) ? "false" : "true") + "\n";
                 } else
                     m += " - Banned: " + (Bukkit.getOfflinePlayer(u.getUUID()).isBanned() ? "true" : "false") + "\n";
             } else if (message.startsWith("!who")) {
                 int numbOnline = Bukkit.getOnlinePlayers().size() + 1;
                 HashMap<Rank, String> online = new HashMap<>();
+                RankManager rm = Necessities.getInstance().getRM();
                 if (!rm.getOrder().isEmpty())
                     online.put(rm.getRank(rm.getOrder().size() - 1), rm.getRank(rm.getOrder().size() - 1).getColor() + "Janet, ");
+                UserManager um = Necessities.getInstance().getUM();
+                CmdHide hide = Necessities.getInstance().getHide();
                 if (!um.getUsers().isEmpty())
                     for (User u : um.getUsers().values())
                         if (hide.isHidden(u.getPlayer()))
@@ -437,7 +428,7 @@ public class JanetSlack {
                     sendMessage("Error: You must enter a player to warn and a reason.", isPM, info);
                     return;
                 }
-                UUID uuid = get.getID(message.split(" ")[0]);
+                UUID uuid = Necessities.getInstance().getUUID().getID(message.split(" ")[0]);
                 if (uuid == null) {
                     sendMessage("Error: Invalid player.", isPM, info);
                     return;
@@ -448,7 +439,7 @@ public class JanetSlack {
                     return;
                 }
                 final String reason = message.replaceFirst(message.split(" ")[0], "").trim();
-                Bukkit.getScheduler().scheduleSyncDelayedTask(Necessities.getInstance(), () -> warns.warn(target.getUniqueId(), reason, name));
+                Bukkit.getScheduler().scheduleSyncDelayedTask(Necessities.getInstance(), () -> Necessities.getInstance().getWarns().warn(target.getUniqueId(), reason, name));
                 m += target.getName() + " was warned by " + name + " for " + reason + ".\n";
             } else if (message.startsWith("!worlds")) {
                 String levels = "";
@@ -466,7 +457,7 @@ public class JanetSlack {
                     sendMessage("Error: You must enter a player to kick and a reason.", isPM, info);
                     return;
                 }
-                UUID uuid = get.getID(message.split(" ")[0]);
+                UUID uuid = Necessities.getInstance().getUUID().getID(message.split(" ")[0]);
                 if (uuid == null) {
                     sendMessage("Error: Invalid player.", isPM, info);
                     return;
@@ -482,6 +473,7 @@ public class JanetSlack {
                     sendMessage("Error: You must enter a player to ban.", isPM, info);
                     return;
                 }
+                GetUUID get = Necessities.getInstance().getUUID();
                 UUID uuid = get.getID(message.split(" ")[0]);
                 if (uuid == null)
                     uuid = get.getOfflineID(message.split(" ")[0]);
@@ -509,6 +501,7 @@ public class JanetSlack {
                     sendMessage("Error: You must enter a player to unban.", isPM, info);
                     return;
                 }
+                GetUUID get = Necessities.getInstance().getUUID();
                 UUID uuid = get.getID(message.split(" ")[0]);
                 if (uuid == null)
                     uuid = get.getOfflineID(message.split(" ")[0]);
@@ -532,12 +525,12 @@ public class JanetSlack {
                     sendMessage("Error: You must enter a player to mute.", isPM, info);
                     return;
                 }
-                UUID uuid = get.getID(message.split(" ")[0]);
+                UUID uuid = Necessities.getInstance().getUUID().getID(message.split(" ")[0]);
                 if (uuid == null) {
                     sendMessage("Error: Invalid player.", isPM, info);
                     return;
                 }
-                User u = um.getUser(uuid);
+                User u = Necessities.getInstance().getUM().getUser(uuid);
                 Bukkit.broadcastMessage(var.getObj() + name + var.getMessages() + (!u.isMuted() ? " muted " : " unmuted ") + var.getObj() + u.getPlayer().getDisplayName() + var.getMessages() + ".");
                 u.getPlayer().sendMessage(var.getDemote() + "You have been " + var.getObj() + (!u.isMuted() ? "muted" : "unmuted") + var.getMessages() + ".");
                 m += name + (!u.isMuted() ? " muted " : " unmuted ") + u.getPlayer().getDisplayName() + ".\n";
@@ -548,7 +541,7 @@ public class JanetSlack {
                     sendMessage("Error: You must enter a player to slap.", isPM, info);
                     return;
                 }
-                UUID uuid = get.getID(message.split(" ")[0]);
+                UUID uuid = Necessities.getInstance().getUUID().getID(message.split(" ")[0]);
                 if (uuid == null) {
                     sendMessage("Error: Invalid player.", isPM, info);
                     return;
@@ -564,6 +557,7 @@ public class JanetSlack {
                     sendMessage("Error: You must enter a player to ban and a duration in minutes.", isPM, info);
                     return;
                 }
+                GetUUID get = Necessities.getInstance().getUUID();
                 UUID uuid = get.getID(message.split(" ")[0]);
                 if (uuid == null)
                     uuid = get.getOfflineID(message.split(" ")[0]);
@@ -604,7 +598,7 @@ public class JanetSlack {
                     sendMessage("Error: You must enter an ip to ban.", isPM, info);
                     return;
                 }
-                UUID uuid = get.getID(message.split(" ")[0]);
+                UUID uuid = Necessities.getInstance().getUUID().getID(message.split(" ")[0]);
                 if (uuid != null) {
                     final Player target = Bukkit.getPlayer(uuid);
                     if (target.hasPermission("Necessities.antiBan") && !info.isOwner()) {
@@ -706,7 +700,7 @@ public class JanetSlack {
             sendMessage(m, isPM, info);
         } else if (!isPM)
             Bukkit.broadcast(var.getMessages() + "From Slack - " + ChatColor.WHITE + name + ": " + message, "Necessities.slack");
-        Necessities.getInstance().getAI().parseMessage(name, message, JanetAI.Source.Slack, isPM, info);
+        Necessities.getInstance().getAI().parseMessage(message, JanetAI.Source.Slack, isPM, info);
     }
 
     @SuppressWarnings("unused")
@@ -749,7 +743,7 @@ public class JanetSlack {
             return this.rank;
         }
 
-        public boolean isBot() {
+        boolean isBot() {
             return this.isBot;
         }
 

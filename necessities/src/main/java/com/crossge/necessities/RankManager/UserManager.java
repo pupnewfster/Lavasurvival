@@ -14,7 +14,7 @@ import java.util.UUID;
 
 public class UserManager {
     private final File configFileUsers = new File("plugins/Necessities/RankManager", "users.yml");
-    private static final HashMap<UUID, User> players = new HashMap<>();
+    private final HashMap<UUID, User> players = new HashMap<>();
 
     void readUsers() {
         Bukkit.getOnlinePlayers().forEach(this::parseUser);
@@ -25,25 +25,25 @@ public class UserManager {
     }
 
     public void forceParseUser(Player p) {
-        players.put(p.getUniqueId(), new User(p));
-        players.get(p.getUniqueId()).givePerms();
+        this.players.put(p.getUniqueId(), new User(p));
+        this.players.get(p.getUniqueId()).givePerms();
     }
 
     public HashMap<UUID, User> getUsers() {
-        return players;
+        return this.players;
     }
 
     public void removeUser(UUID uuid) {
-        players.remove(uuid);
+        this.players.remove(uuid);
     }
 
     public User getUser(UUID uuid) {
-        return !players.containsKey(uuid) ? new User(uuid) : players.get(uuid);
+        return !this.players.containsKey(uuid) ? new User(uuid) : this.players.get(uuid);
     }
 
     public void unload() {
-        for (UUID uuid : players.keySet()) {
-            User u = players.get(uuid);
+        for (UUID uuid : this.players.keySet()) {
+            User u = this.players.get(uuid);
             Hat h = u.getHat();
             if (h != null)
                 h.despawn();
@@ -53,15 +53,15 @@ public class UserManager {
     }
 
     void addRankPerm(Rank r, String node) {
-        players.keySet().stream().filter(uuid -> Necessities.getInstance().getRM().hasRank(players.get(uuid).getRank(), r)).forEach(uuid -> players.get(uuid).addPerm(node));
+        this.players.keySet().stream().filter(uuid -> Necessities.getInstance().getRM().hasRank(this.players.get(uuid).getRank(), r)).forEach(uuid -> this.players.get(uuid).addPerm(node));
     }
 
     void delRankPerm(Rank r, String node) {
-        players.keySet().stream().filter(uuid -> Necessities.getInstance().getRM().hasRank(players.get(uuid).getRank(), r)).forEach(uuid -> players.get(uuid).removePerm(node));
+        this.players.keySet().stream().filter(uuid -> Necessities.getInstance().getRM().hasRank(this.players.get(uuid).getRank(), r)).forEach(uuid -> this.players.get(uuid).removePerm(node));
     }
 
     void refreshRankPerm(Rank r) {
-        players.keySet().stream().filter(uuid -> Necessities.getInstance().getRM().hasRank(players.get(uuid).getRank(), r)).forEach(uuid -> players.get(uuid).refreshPerms());
+        this.players.keySet().stream().filter(uuid -> Necessities.getInstance().getRM().hasRank(this.players.get(uuid).getRank(), r)).forEach(uuid -> this.players.get(uuid).refreshPerms());
     }
 
     public void addUser(Player player) {
@@ -101,13 +101,13 @@ public class UserManager {
             if (perms.isEmpty())
                 perms.add("");
             configUsers.set(uuid.toString() + ".permissions", perms);
-            if (players.containsKey(uuid))
+            if (this.players.containsKey(uuid))
                 getUser(uuid).removePerm(permission);
 
         } else {
             perms.add(permission);
             configUsers.set(uuid.toString() + ".permissions", perms);
-            if (players.containsKey(uuid))
+            if (this.players.containsKey(uuid))
                 getUser(uuid).addPerm(permission);
         }
         try {
@@ -134,7 +134,7 @@ public class UserManager {
             configUsers.save(this.configFileUsers);
         } catch (Exception ignored) {
         }
-        if (players.containsKey(uuid))
+        if (this.players.containsKey(uuid))
             getUser(uuid).refreshPerms();
     }
 }

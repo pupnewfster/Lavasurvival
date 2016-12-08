@@ -9,29 +9,27 @@ import java.util.HashMap;
 import java.util.UUID;
 
 public class JanetWarn {
-    private static final HashMap<UUID, Integer> warnCount = new HashMap<>();
-    private static String JanetName = "";
+    private final HashMap<UUID, Integer> warnCount = new HashMap<>();
+    private String janetName = "";
     private int warns;
-    private JanetLog log;
 
     public void initiate() {
         RankManager rm = Necessities.getInstance().getRM();
-        JanetName = (!rm.getOrder().isEmpty() ? ChatColor.translateAlternateColorCodes('&', rm.getRank(rm.getOrder().size() - 1).getTitle() + " ") : "") + "Janet" + ChatColor.DARK_RED + ": " + ChatColor.WHITE;
-        warns = Necessities.getInstance().getConfig().getInt("Necessities.warns");
-        log = Necessities.getInstance().getLog();
+        this.janetName = (!rm.getOrder().isEmpty() ? ChatColor.translateAlternateColorCodes('&', rm.getRank(rm.getOrder().size() - 1).getTitle() + " ") : "") + "Janet" + ChatColor.DARK_RED + ": " + ChatColor.WHITE;
+        this.warns = Necessities.getInstance().getConfig().getInt("Necessities.warns");
     }
 
     void removePlayer(UUID uuid) {
-        warnCount.remove(uuid);
+        this.warnCount.remove(uuid);
     }
 
     public void warn(UUID uuid, String reason, String warner) {
-        if (!warnCount.containsKey(uuid))
-            warnCount.put(uuid, 1);
+        if (!this.warnCount.containsKey(uuid))
+            this.warnCount.put(uuid, 1);
         else
-            warnCount.put(uuid, warnCount.get(uuid) + 1);
+            this.warnCount.put(uuid, this.warnCount.get(uuid) + 1);
         String warning;
-        if (warnCount.get(uuid) == warns) {
+        if (this.warnCount.get(uuid) == this.warns) {
             switch (reason) {
                 case "Language":
                     warning = language(uuid);
@@ -69,79 +67,79 @@ public class JanetWarn {
             }
             timesLeft(uuid);
         }
-        log.log("Janet: " + warning);
+        Necessities.getInstance().getLog().log("Janet: " + warning);
     }
 
     private void timesLeft(UUID uuid) {
-        String left = Integer.toString(warns - warnCount.get(uuid));
+        String left = Integer.toString(this.warns - this.warnCount.get(uuid));
         String plural = "times";
-        if (this.warns - warnCount.get(uuid) == 1)
+        if (this.warns - this.warnCount.get(uuid) == 1)
             plural = "time";
-        Bukkit.getPlayer(uuid).sendMessage(JanetName + "Do it " + left + " more " + plural + " and you will be kicked.");
+        Bukkit.getPlayer(uuid).sendMessage(this.janetName + "Do it " + left + " more " + plural + " and you will be kicked.");
     }
 
     private String langMsg(UUID uuid) {
-        Bukkit.getPlayer(uuid).sendMessage(JanetName + ChatColor.DARK_RED + "Warning, " + ChatColor.WHITE + "Do not swear please.");
-        broadcast(JanetName + getName(uuid) + " was warned for using bad language.", uuid);
+        Bukkit.getPlayer(uuid).sendMessage(this.janetName + ChatColor.DARK_RED + "Warning, " + ChatColor.WHITE + "Do not swear please.");
+        broadcast(this.janetName + getName(uuid) + " was warned for using bad language.", uuid);
         return getName(uuid) + " was warned for using bad language.";
     }
 
     private String chatMsg(UUID uuid) {
-        Bukkit.getPlayer(uuid).sendMessage(JanetName + ChatColor.DARK_RED + "Warning, " + ChatColor.WHITE + "Do not spam the chat please.");
-        broadcast(JanetName + getName(uuid) + " was warned for spamming the chat.", uuid);
+        Bukkit.getPlayer(uuid).sendMessage(this.janetName + ChatColor.DARK_RED + "Warning, " + ChatColor.WHITE + "Do not spam the chat please.");
+        broadcast(this.janetName + getName(uuid) + " was warned for spamming the chat.", uuid);
         return getName(uuid) + " was warned for spamming the chat.";
     }
 
     private String cmdMsg(UUID uuid) {
-        Bukkit.getPlayer(uuid).sendMessage(JanetName + ChatColor.DARK_RED + "Warning, " + ChatColor.WHITE + "Do not spam commands please.");
-        broadcast(JanetName + getName(uuid) + " was warned for spamming commands.", uuid);
+        Bukkit.getPlayer(uuid).sendMessage(this.janetName + ChatColor.DARK_RED + "Warning, " + ChatColor.WHITE + "Do not spam commands please.");
+        broadcast(this.janetName + getName(uuid) + " was warned for spamming commands.", uuid);
         return getName(uuid) + " was warned for spamming commands.";
     }
 
     private String addsMsg(UUID uuid) {
-        Bukkit.getPlayer(uuid).sendMessage(JanetName + ChatColor.DARK_RED + "Warning, " + ChatColor.WHITE + "Do not advertise other servers please.");
-        broadcast(JanetName + getName(uuid) + " was warned for advertising other servers.", uuid);
+        Bukkit.getPlayer(uuid).sendMessage(this.janetName + ChatColor.DARK_RED + "Warning, " + ChatColor.WHITE + "Do not advertise other servers please.");
+        broadcast(this.janetName + getName(uuid) + " was warned for advertising other servers.", uuid);
         return getName(uuid) + " was warned for advertising other servers.";
     }
 
     private String warnMessage(UUID uuid, String reason, String warner) {
         reason = ChatColor.translateAlternateColorCodes('&', reason);
-        Bukkit.getPlayer(uuid).sendMessage(JanetName + ChatColor.DARK_RED + "Warning, " + ChatColor.WHITE + "You were warned for " + reason + ".");
-        broadcast(JanetName + getName(uuid) + " was warned by " + warner + " for " + reason + ".", uuid);
+        Bukkit.getPlayer(uuid).sendMessage(this.janetName + ChatColor.DARK_RED + "Warning, " + ChatColor.WHITE + "You were warned for " + reason + ".");
+        broadcast(this.janetName + getName(uuid) + " was warned by " + warner + " for " + reason + ".", uuid);
         return getName(uuid) + " was warned by " + warner + " for " + reason + ".";
     }
 
     private String other(UUID uuid, String reason) {
         String pname = getName(uuid);
-        Bukkit.broadcastMessage(JanetName + pname + " was kicked for " + reason + ".");
+        Bukkit.broadcastMessage(this.janetName + pname + " was kicked for " + reason + ".");
         Bukkit.getPlayer(uuid).kickPlayer(ChatColor.WHITE + "You were kicked for " + reason);
         return pname + " was kicked for " + reason + ".";
     }
 
     private String chatSpam(UUID uuid) {
         String pname = getName(uuid);
-        Bukkit.broadcastMessage(JanetName + pname + " was kicked for spamming the chat.");
+        Bukkit.broadcastMessage(this.janetName + pname + " was kicked for spamming the chat.");
         Bukkit.getPlayer(uuid).kickPlayer(ChatColor.WHITE + "Don't spam the chat!");
         return pname + " was kicked for spamming the chat.";
     }
 
     private String cmdSpam(UUID uuid) {
         String pname = getName(uuid);
-        Bukkit.broadcastMessage(JanetName + pname + " was kicked for spamming commands.");
+        Bukkit.broadcastMessage(this.janetName + pname + " was kicked for spamming commands.");
         Bukkit.getPlayer(uuid).kickPlayer(ChatColor.WHITE + "Don't spam commands!");
         return pname + " was kicked for spamming commands.";
     }
 
     private String language(UUID uuid) {
         String pname = getName(uuid);
-        Bukkit.broadcastMessage(JanetName + pname + " was kicked for using bad language.");
+        Bukkit.broadcastMessage(this.janetName + pname + " was kicked for using bad language.");
         Bukkit.getPlayer(uuid).kickPlayer(ChatColor.WHITE + "Watch your language!");
         return pname + " was kicked for using bad language.";
     }
 
     private String advertising(UUID uuid) {
         String pname = getName(uuid);
-        Bukkit.broadcastMessage(JanetName + pname + " was kicked for advertising.");
+        Bukkit.broadcastMessage(this.janetName + pname + " was kicked for advertising.");
         Bukkit.getPlayer(uuid).kickPlayer(ChatColor.WHITE + "Do not advertise other servers!");
         return pname + " was kicked for advertising.";
     }

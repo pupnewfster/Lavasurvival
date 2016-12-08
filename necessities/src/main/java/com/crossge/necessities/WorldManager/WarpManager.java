@@ -11,36 +11,36 @@ import java.util.Collections;
 import java.util.HashMap;
 
 public class WarpManager {
-    private static final HashMap<String, Warp> warps = new HashMap<>();
-    private static final HashMap<String, String> lowerNames = new HashMap<>();
+    private final HashMap<String, Warp> warps = new HashMap<>();
+    private final HashMap<String, String> lowerNames = new HashMap<>();
     private final File configFileWarps = new File("plugins/Necessities/WorldManager", "warps.yml");
 
     public void initiate() {
         Bukkit.getConsoleSender().sendMessage(ChatColor.AQUA + "Loading warps...");
         YamlConfiguration configWarps = YamlConfiguration.loadConfiguration(this.configFileWarps);
         for (String warp : configWarps.getKeys(false)) {
-            warps.put(warp, new Warp(warp));
-            lowerNames.put(warp.toLowerCase(), warp);
+            this.warps.put(warp, new Warp(warp));
+            this.lowerNames.put(warp.toLowerCase(), warp);
         }
         Bukkit.getConsoleSender().sendMessage(ChatColor.AQUA + "All warps loaded.");
     }
 
     public boolean isWarp(String name) {
-        return lowerNames.containsKey(name.toLowerCase());
+        return this.lowerNames.containsKey(name.toLowerCase());
     }
 
     public Warp getWarp(String name) {
-        return !isWarp(name) ? null : warps.get(lowerNames.get(name.toLowerCase()));
+        return !isWarp(name) ? null : this.warps.get(this.lowerNames.get(name.toLowerCase()));
     }
 
     public String getWarps() {
         ArrayList<String> ws = new ArrayList<>();
-        ws.addAll(warps.keySet());
+        ws.addAll(this.warps.keySet());
         Collections.sort(ws);
-        String wrps = "";
+        String warps = "";
         for (String w : ws)
-            wrps += w + ", ";
-        return wrps.equals("") ? "" : wrps.trim().substring(0, wrps.length() - 2);
+            warps += w + ", ";
+        return warps.equals("") ? "" : warps.trim().substring(0, warps.length() - 2);
     }
 
     public void remove(String name) {
@@ -50,8 +50,8 @@ public class WarpManager {
             configWarps.save(this.configFileWarps);
         } catch (Exception ignored) {
         }
-        warps.remove(name);
-        lowerNames.remove(name.toLowerCase());
+        this.warps.remove(name);
+        this.lowerNames.remove(name.toLowerCase());
     }
 
     public void create(String name, Location loc) {
@@ -66,7 +66,7 @@ public class WarpManager {
             configWarps.save(this.configFileWarps);
         } catch (Exception ignored) {
         }
-        warps.put(name, new Warp(name));
-        lowerNames.put(name.toLowerCase(), name);
+        this.warps.put(name, new Warp(name));
+        this.lowerNames.put(name.toLowerCase(), name);
     }
 }

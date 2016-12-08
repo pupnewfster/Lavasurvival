@@ -15,7 +15,6 @@ import java.util.stream.Collectors;
 
 public class CmdCommandSpy implements Cmd {
     private final ArrayList<UUID> spying = new ArrayList<>();
-    private final File configFileSpying = new File("plugins/Necessities", "spying.yml");
 
     public void broadcast(String sender, String command) {
         ArrayList<UUID> temp = new ArrayList<>();
@@ -43,6 +42,7 @@ public class CmdCommandSpy implements Cmd {
     }
 
     public void unload() {
+        File configFileSpying = new File(Necessities.getInstance().getDataFolder(), "spying.yml");
         YamlConfiguration configSpying = YamlConfiguration.loadConfiguration(configFileSpying);
         configSpying.getKeys(false).forEach(key -> configSpying.set(key, null));
         this.spying.forEach(uuid -> configSpying.set(uuid.toString(), true));
@@ -53,7 +53,7 @@ public class CmdCommandSpy implements Cmd {
     }
 
     public void init() {
-        YamlConfiguration configSpying = YamlConfiguration.loadConfiguration(configFileSpying);
+        YamlConfiguration configSpying = YamlConfiguration.loadConfiguration(new File(Necessities.getInstance().getDataFolder(), "spying.yml"));
         this.spying.addAll(configSpying.getKeys(false).stream().map(UUID::fromString).collect(Collectors.toList()));
     }
 }

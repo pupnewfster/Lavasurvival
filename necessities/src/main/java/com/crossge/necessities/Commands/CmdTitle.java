@@ -12,8 +12,6 @@ import java.io.File;
 import java.util.UUID;
 
 public class CmdTitle implements Cmd {
-    private final File configFileTitles = new File("plugins/Necessities", "titles.yml");
-
     public boolean commandUse(CommandSender sender, String[] args) {
         Variables var = Necessities.getInstance().getVar();
         if (args.length == 0) {
@@ -31,6 +29,7 @@ public class CmdTitle implements Cmd {
             if (target != p && !p.hasPermission("Necessities.bracketOthers"))
                 target = p;
         }
+        File configFileTitles = new File(Necessities.getInstance().getDataFolder(), "titles.yml");
         YamlConfiguration configTitles = YamlConfiguration.loadConfiguration(configFileTitles);
         if (args.length == 1) {
             configTitles.set(target.getUniqueId() + ".title", null);

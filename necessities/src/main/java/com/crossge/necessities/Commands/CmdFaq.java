@@ -11,7 +11,7 @@ import java.io.FileReader;
 
 public class CmdFaq implements Cmd {
     public boolean commandUse(CommandSender sender, String[] args) {
-        File f = new File("plugins/Necessities/faq.txt");
+        File f = new File(Necessities.getInstance().getDataFolder(), "faq.txt");
         Variables var = Necessities.getInstance().getVar();
         if (!f.exists()) {
             sender.sendMessage(var.getEr() + "Error: " + var.getErMsg() + "The file does not exist somehow...");

@@ -1,5 +1,6 @@
 package com.crossge.necessities.Janet;
 
+import com.crossge.necessities.Necessities;
 import info.debatty.java.stringsimilarity.KShingling;
 import info.debatty.java.stringsimilarity.MetricLCS;
 import info.debatty.java.stringsimilarity.StringProfile;
@@ -39,7 +40,7 @@ public class JanetNet {
 
     public void readCustom() {
         Bukkit.getConsoleSender().sendMessage(ChatColor.AQUA + "Adding custom words to JanetNet.");
-        try (BufferedReader read = new BufferedReader(new FileReader(new File("plugins/Necessities/customWords.txt")))) {
+        try (BufferedReader read = new BufferedReader(new FileReader(new File(Necessities.getInstance().getDataFolder(), "customWords.txt")))) {
             String line;
             while ((line = read.readLine()) != null) {
                 String lline = line.toLowerCase();

@@ -11,8 +11,6 @@ import java.io.File;
 
 @SuppressWarnings("unused")
 public class CmdLogOutMessage implements Cmd {
-    private final File configFileLogOut = new File("plugins/Necessities", "logoutmessages.yml");
-
     public boolean commandUse(CommandSender sender, String[] args) {
         Variables var = Necessities.getInstance().getVar();
         if (sender instanceof Player) {
@@ -26,6 +24,7 @@ public class CmdLogOutMessage implements Cmd {
                     logoutMessage = "{RANK} {NAME}&r " + logoutMessage;
                 logoutMessage = logoutMessage.trim();
             }
+            File configFileLogOut = new File(Necessities.getInstance().getDataFolder(), "logoutmessages.yml");
             YamlConfiguration configLogOut = YamlConfiguration.loadConfiguration(configFileLogOut);
             configLogOut.set(p.getUniqueId().toString(), logoutMessage);
             try {

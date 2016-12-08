@@ -12,7 +12,7 @@ import java.io.FileReader;
 public class CmdMotd implements Cmd {
     public boolean commandUse(CommandSender sender, String[] args) {
         Variables var = Necessities.getInstance().getVar();
-        File f = new File("plugins/Necessities/motd.txt");
+        File f = new File(Necessities.getInstance().getDataFolder(), "motd.txt");
         if (!f.exists()) {
             sender.sendMessage(var.getEr() + "Error: " + var.getErMsg() + "The file does not exist somehow...");
             return true;

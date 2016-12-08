@@ -1,5 +1,6 @@
 package me.eddiep.minecraft.ls.ranks;
 
+import com.crossge.necessities.Necessities;
 import me.eddiep.minecraft.ls.Lavasurvival;
 import me.eddiep.minecraft.ls.game.Gamemode;
 import me.eddiep.minecraft.ls.game.status.PlayerStatusManager;
@@ -109,6 +110,7 @@ public class UserInfo {
     @SuppressWarnings("UnusedReturnValue")
     public Inventory createBankInventory(Player p) {
         new BukkitRunnable() {
+            @SuppressWarnings("deprecation")
             @Override
             public void run() {
                 String toAdd = "";
@@ -142,6 +144,7 @@ public class UserInfo {
         return BankInventory.create(p, this.BANK).openFor(p);
     }
 
+    @SuppressWarnings("deprecation")
     public void saveBank() {
         ArrayList<MaterialData> cBank = new ArrayList<>();
         for (MaterialData e : this.BANK)
@@ -197,7 +200,7 @@ public class UserInfo {
     }
 
     public String getName() {
-        return getPlayer() == null ? Bukkit.getOfflinePlayer(getUUID()).getName() : getPlayer().getName();
+        return getPlayer() == null ? Necessities.getInstance().getUUID().nameFromString(this.userUUID.toString()) : getPlayer().getName();
     }
 
     public boolean isInWater() {
@@ -248,6 +251,7 @@ public class UserInfo {
             }
     }
 
+    @SuppressWarnings("deprecation")
     private void addBlock(MaterialData dat) {
         if (!this.ownedBlocks.contains(dat)) {
             this.ownedBlocks.add(dat);

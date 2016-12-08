@@ -1,5 +1,6 @@
 package me.eddiep.minecraft.ls.system;
 
+import com.crossge.necessities.Necessities;
 import me.eddiep.handles.ClassicBlockPlaceEvent;
 import me.eddiep.minecraft.ls.Lavasurvival;
 import me.eddiep.minecraft.ls.game.Gamemode;
@@ -368,7 +369,7 @@ public class PlayerListener implements Listener {
                 Gamemode.getCurrentGame().playerJoin(player);
             }
             if (Gamemode.getCurrentGame().isAlive(player)) {
-                Lavasurvival.INSTANCE.getNecessitiesUserManager().getUser(player.getUniqueId()).setStatus("alive");
+                Necessities.getInstance().getUM().getUser(player.getUniqueId()).setStatus("alive");
                 if (!player.getLocation().getBlock().hasMetadata("classic_block") && !player.getEyeLocation().getBlock().hasMetadata("classic_block"))
                     player.teleport(Gamemode.getCurrentWorld().getSpawnLocation().clone());
             }

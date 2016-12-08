@@ -123,7 +123,7 @@ public class User {
     }
 
     public void ignore(UUID uuid) {
-        if (!this.ignored.contains(uuid)) {//this should already be checked but whatevs
+        if (!this.ignored.contains(uuid)) {//this should already be checked but whatever
             this.ignored.add(uuid);
             YamlConfiguration configUsers = YamlConfiguration.loadConfiguration(this.configFileUsers);
             if (!configUsers.contains(getUUID().toString()))
@@ -141,7 +141,7 @@ public class User {
     }
 
     public void unignore(UUID uuid) {
-        if (this.ignored.contains(uuid)) {//this should already be checked but whatevs
+        if (this.ignored.contains(uuid)) {//this should already be checked but whatever
             this.ignored.remove(uuid);
             YamlConfiguration configUsers = YamlConfiguration.loadConfiguration(this.configFileUsers);
             if (!configUsers.contains(getUUID().toString()))
@@ -260,8 +260,8 @@ public class User {
         return this.muted;
     }
 
-    public void setMuted(boolean tomute) {
-        this.muted = tomute;
+    public void setMuted(boolean toMute) {
+        this.muted = toMute;
         YamlConfiguration configUsers = YamlConfiguration.loadConfiguration(this.configFileUsers);
         if (!configUsers.contains(getUUID().toString()))
             return;

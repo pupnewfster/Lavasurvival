@@ -1,5 +1,6 @@
 package me.eddiep.minecraft.ls.game.shop.impl;
 
+import com.crossge.necessities.Necessities;
 import com.crossge.necessities.RankManager.RankManager;
 import me.eddiep.minecraft.ls.Lavasurvival;
 import me.eddiep.minecraft.ls.ranks.UserInfo;
@@ -339,8 +340,8 @@ public class TrustedBlockShop extends Menu implements BlockShop {
     private boolean canBuy(MenuPlayer player) {
         if (player == null || player.getBukkit() == null)
             return false;
-        RankManager rm = Lavasurvival.INSTANCE.getRankManager();
-        if (rm.hasRank(Lavasurvival.INSTANCE.getNecessitiesUserManager().getUser(player.getBukkit().getUniqueId()).getRank(), rm.getRank("Trusted")))
+        RankManager rm = Necessities.getInstance().getRM();
+        if (rm.hasRank(Necessities.getInstance().getUM().getUser(player.getBukkit().getUniqueId()).getRank(), rm.getRank("Trusted")))
             return true;
         else {
             player.getBukkit().sendMessage(ChatColor.RED + "You must be Trusted or higher to purchase from this shop.");

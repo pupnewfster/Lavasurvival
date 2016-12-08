@@ -12,7 +12,7 @@ import java.io.BufferedReader;
 import java.net.URL;
 import java.util.UUID;
 
-public class GetUUID {
+public class GetUUID { //TODO: add a hasJoined check for some of the RankManager commands
     public UUID getID(String name) {
         UUID partial = null;
         boolean startsWith = false;

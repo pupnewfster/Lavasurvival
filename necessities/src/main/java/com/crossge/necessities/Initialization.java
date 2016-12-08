@@ -18,11 +18,11 @@ class Initialization {
         fileCreate("plugins/Necessities/rules.txt");
         fileCreate("plugins/Necessities/faq.txt");
         fileCreate("plugins/Necessities/announcements.txt");
-        File cwords = new File("plugins/Necessities", "customWords.txt");
-        if (!cwords.exists())
+        File cWords = new File("plugins/Necessities", "customWords.txt");
+        if (!cWords.exists())
             try {
-                cwords.createNewFile();
-                FileUtils.copyURLToFile(getClass().getResource("/customWords.txt"), cwords);
+                cWords.createNewFile();
+                FileUtils.copyURLToFile(getClass().getResource("/customWords.txt"), cWords);
             } catch (Exception ignored) {
             }
         createYaml();

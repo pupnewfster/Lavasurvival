@@ -9,32 +9,32 @@ import java.io.File;
 import java.util.HashMap;
 
 public class PortalManager {//TODO: add a method to update the things when a world is unloaded or loaded
-    private static final HashMap<String, Portal> portals = new HashMap<>();
-    private static final HashMap<String, String> lowerNames = new HashMap<>();
+    private final HashMap<String, Portal> portals = new HashMap<>();
+    private final HashMap<String, String> lowerNames = new HashMap<>();
     private final File configFilePM = new File("plugins/Necessities/WorldManager", "portals.yml");
 
     public void initiate() {
         Bukkit.getConsoleSender().sendMessage(ChatColor.AQUA + "Loading portals...");
         YamlConfiguration configPM = YamlConfiguration.loadConfiguration(this.configFilePM);
         for (String portal : configPM.getKeys(false)) {
-            portals.put(portal, new Portal(portal));
-            lowerNames.put(portal.toLowerCase(), portal);
+            this.portals.put(portal, new Portal(portal));
+            this.lowerNames.put(portal.toLowerCase(), portal);
         }
         Bukkit.getConsoleSender().sendMessage(ChatColor.AQUA + "All portals loaded.");
     }
 
     public Location portalDestination(Location l) {
-        for (String key : portals.keySet())
-            if (portals.get(key).isPortal(l)) {
-                if (portals.get(key).isWarp())
-                    return portals.get(key).getWarp().getDestination();
-                return portals.get(key).getWorldTo().getSpawnLocation();
+        for (String key : this.portals.keySet())
+            if (this.portals.get(key).isPortal(l)) {
+                if (this.portals.get(key).isWarp())
+                    return this.portals.get(key).getWarp().getDestination();
+                return this.portals.get(key).getWorldTo().getSpawnLocation();
             }
         return null;
     }
 
     public boolean exists(String name) {
-        return lowerNames.containsKey(name.toLowerCase());
+        return this.lowerNames.containsKey(name.toLowerCase());
     }
 
     public void remove(String name) {
@@ -44,8 +44,8 @@ public class PortalManager {//TODO: add a method to update the things when a wor
             configPM.save(this.configFilePM);
         } catch (Exception ignored) {
         }
-        portals.remove(name);
-        lowerNames.remove(name.toLowerCase());
+        this.portals.remove(name);
+        this.lowerNames.remove(name.toLowerCase());
     }
 
     public void create(String name, String destination, Location left, Location right) {
@@ -62,7 +62,7 @@ public class PortalManager {//TODO: add a method to update the things when a wor
             configPM.save(this.configFilePM);
         } catch (Exception ignored) {
         }
-        portals.put(name, new Portal(name));
-        lowerNames.put(name.toLowerCase(), name);
+        this.portals.put(name, new Portal(name));
+        this.lowerNames.put(name.toLowerCase(), name);
     }
 } 

@@ -1,7 +1,7 @@
 package me.eddiep.minecraft.ls.commands;
 
+import com.crossge.necessities.Necessities;
 import com.crossge.necessities.RankManager.Rank;
-import me.eddiep.minecraft.ls.Lavasurvival;
 import me.eddiep.minecraft.ls.game.Gamemode;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
@@ -23,7 +23,7 @@ public class CmdAirc implements Cmd {
             int count = game.countAirBlocksAround(player, 10);
             player.sendMessage("You have " + count + " air blocks around you!");
 
-            ArrayList<Rank> ranks = Lavasurvival.INSTANCE.getRankManager().getOrder();
+            ArrayList<Rank> ranks = Necessities.getInstance().getRM().getOrder();
             for (Rank rank : ranks) {
                 double bonusAdd = (5 + ranks.indexOf(rank)) / 2.0;
                 double reward = 100 + (bonusAdd * count);

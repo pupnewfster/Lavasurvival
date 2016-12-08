@@ -6,8 +6,8 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import java.util.UUID;
 
 public class Console {
-    private static boolean togglechat = false;
-    private static UUID lastContact = null;
+    private boolean togglechat = false;
+    private UUID lastContact = null;
 
     public String getName() {
         Variables var = new Variables();
@@ -17,18 +17,18 @@ public class Console {
     }
 
     public void chatToggle() {
-        togglechat = !togglechat;
+        this.togglechat = !this.togglechat;
     }
 
     public boolean chatToggled() {
-        return togglechat;
+        return this.togglechat;
     }
 
     public UUID getLastContact() {
-        return lastContact;
+        return this.lastContact;
     }
 
     public void setLastContact(UUID uuid) {
-        lastContact = uuid;
+        this.lastContact = uuid;
     }
 }
