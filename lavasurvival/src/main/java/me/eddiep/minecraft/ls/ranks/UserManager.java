@@ -49,12 +49,11 @@ public class UserManager {
             @Override
             public void run() {
                 try {
-                    Class.forName("org.mariadb.jdbc.Driver");
-                    Connection conn = DriverManager.getConnection(Lavasurvival.INSTANCE.getDBURL(), Lavasurvival.INSTANCE.getDBUser(), Lavasurvival.INSTANCE.getDBPass());
+                    Connection conn = DriverManager.getConnection(Lavasurvival.INSTANCE.getDBURL(), Lavasurvival.INSTANCE.getDBProperties());
                     Statement stmt = conn.createStatement();
-                    ResultSet rs = stmt.executeQuery("SELECT * FROM users WHERE uuid = \"" + uuid + "\"");
+                    ResultSet rs = stmt.executeQuery("SELECT * FROM users WHERE uuid = '" + uuid + "'");
                     if (!rs.next())
-                        stmt.execute("INSERT INTO users (uuid, matches, ownedBlocks, bank, addToBank) VALUES (\"" + uuid + "\", \"\", \"\", \"\", \"\")");
+                        stmt.execute("INSERT INTO users (uuid, matches, ownedBlocks, bank, addToBank) VALUES ('" + uuid + "', '', '', '', '')");
                     rs.close();
                     stmt.close();
                     conn.close();

@@ -344,8 +344,8 @@ public class JanetSlack {
                 UUID uuid = get.getID(target);
                 if (uuid == null) {
                     uuid = get.getOfflineID(target);
-                    if (uuid == null) {
-                        sendMessage("Error: That player does not exist. If the player is offline, please use the full and most recent name.", isPM, info);
+                    if (uuid == null || !Bukkit.getOfflinePlayer(uuid).hasPlayedBefore()) {
+                        sendMessage("Error: That player does not exist or has not joined the server. If the player is offline, please use the full and most recent name.", isPM, info);
                         return;
                     }
                 }
@@ -384,14 +384,7 @@ public class JanetSlack {
                 if (u.getPlayer() != null) {
                     Player p = u.getPlayer();
                     m += " - IP Address: " + p.getAddress().toString().split("/")[1].split(":")[0] + "\n";
-                    String gamemode = "Survival";
-                    if (p.getGameMode().equals(GameMode.ADVENTURE))
-                        gamemode = "Adventure";
-                    else if (p.getGameMode().equals(GameMode.CREATIVE))
-                        gamemode = "Creative";
-                    else if (p.getGameMode().equals(GameMode.SPECTATOR))
-                        gamemode = "Spectator";
-                    m += " - Gamemode: " + gamemode + "\n";
+                    m += " - Gamemode: " + Utils.capFirst(p.getGameMode().toString()) + "\n";
                     m += " - Banned: " + (p.isBanned() ? "true" : "false") + "\n";
                     m += " - Visible: " + (Necessities.getInstance().getHide().isHidden(p) ? "false" : "true") + "\n";
                 } else
@@ -475,11 +468,12 @@ public class JanetSlack {
                 }
                 GetUUID get = Necessities.getInstance().getUUID();
                 UUID uuid = get.getID(message.split(" ")[0]);
-                if (uuid == null)
-                    uuid = get.getOfflineID(message.split(" ")[0]);
                 if (uuid == null) {
-                    sendMessage("Error: Invalid player.", isPM, info);
-                    return;
+                    uuid = get.getOfflineID(message.split(" ")[0]);
+                    if (uuid == null || !Bukkit.getOfflinePlayer(uuid).hasPlayedBefore()) {
+                        sendMessage("Error: That player does not exist or has not joined the server. If the player is offline, please use the full and most recent name.", isPM, info);
+                        return;
+                    }
                 }
                 final OfflinePlayer target = Bukkit.getOfflinePlayer(uuid);
                 if (target.getPlayer() != null && target.getPlayer().hasPermission("Necessities.antiBan") && !info.isOwner()) {
@@ -503,11 +497,12 @@ public class JanetSlack {
                 }
                 GetUUID get = Necessities.getInstance().getUUID();
                 UUID uuid = get.getID(message.split(" ")[0]);
-                if (uuid == null)
-                    uuid = get.getOfflineID(message.split(" ")[0]);
                 if (uuid == null) {
-                    sendMessage("Error: Invalid player.", isPM, info);
-                    return;
+                    uuid = get.getOfflineID(message.split(" ")[0]);
+                    if (uuid == null || !Bukkit.getOfflinePlayer(uuid).hasPlayedBefore()) {
+                        sendMessage("Error: That player does not exist or has not joined the server. If the player is offline, please use the full and most recent name.", isPM, info);
+                        return;
+                    }
                 }
                 OfflinePlayer target = Bukkit.getOfflinePlayer(uuid);
                 BanList bans = Bukkit.getBanList(BanList.Type.NAME);
@@ -559,11 +554,12 @@ public class JanetSlack {
                 }
                 GetUUID get = Necessities.getInstance().getUUID();
                 UUID uuid = get.getID(message.split(" ")[0]);
-                if (uuid == null)
-                    uuid = get.getOfflineID(message.split(" ")[0]);
                 if (uuid == null) {
-                    sendMessage("Error: Invalid player.", isPM, info);
-                    return;
+                    uuid = get.getOfflineID(message.split(" ")[0]);
+                    if (uuid == null || !Bukkit.getOfflinePlayer(uuid).hasPlayedBefore()) {
+                        sendMessage("Error: That player does not exist or has not joined the server. If the player is offline, please use the full and most recent name.", isPM, info);
+                        return;
+                    }
                 }
                 final OfflinePlayer target = Bukkit.getOfflinePlayer(uuid);
                 if (target.getPlayer() != null && target.getPlayer().hasPermission("Necessities.antiBan") && !info.isOwner()) {

@@ -487,35 +487,22 @@ public abstract class Gamemode {
         if (loserList.length() == 1)
             loserList = "{}";
         try { //Only connect once instead of connecting once per user being added
-            Class.forName("org.mariadb.jdbc.Driver");
-            Connection conn = DriverManager.getConnection(Lavasurvival.INSTANCE.getDBURL(), Lavasurvival.INSTANCE.getDBUser(), Lavasurvival.INSTANCE.getDBPass());
+            Connection conn = DriverManager.getConnection(Lavasurvival.INSTANCE.getDBURL(), Lavasurvival.INSTANCE.getDBProperties());
             Statement stmt = conn.createStatement();
-            stmt.execute("INSERT INTO matches (gamemode, winners, scores, losers) VALUES (\"" + mode + "\", \"" + winnerList + "\", \"" + scoreList + "\", \"" + loserList + "\")");
+            stmt.execute("INSERT INTO matches (gamemode, winners, scores, losers) VALUES ('" + mode + "', '" + winnerList + "', '" + scoreList + "', '" + loserList + "')");
             if (winners != null)
                 for (UUID uuid : winners.keySet()) {//Rating calculated off of avg blocks around, NOT reward since this is based on rank too
-                    stmt.execute("UPDATE users SET matches = CONCAT(\"," + winners.get(uuid) + "\", matches) WHERE uuid = \"" + uuid + "\"");
-                    ResultSet rs = stmt.executeQuery("SELECT matches FROM users WHERE uuid = \"" + uuid + "\"");
-                    if (rs.next()) {
-                        ArrayList<Integer> matches = new ArrayList<>();
-                        String[] ms = rs.getString("matches").split(",");
-                        for (String match : ms)
-                            if (!match.equals("") && Utils.legalInt(match))
-                                matches.add(Integer.parseInt(match));
-                        stmt.execute("UPDATE users SET rating = \"" + this.getRating(matches) + "\" WHERE uuid = \"" + uuid + "\"");
-                    }
+                    stmt.execute("UPDATE users SET matches = CONCAT('," + winners.get(uuid) + "', matches) WHERE uuid = '" + uuid + "'");
+                    ResultSet rs = stmt.executeQuery("SELECT matches FROM users WHERE uuid = '" + uuid + "'");
+                    if (rs.next())
+                        stmt.execute("UPDATE users SET rating = '" + this.getRating(parseMatches(rs.getString("matches"))) + "' WHERE uuid = '" + uuid + "'");
                     rs.close();
                 }
             for (UUID uuid : losers) {
-                stmt.execute("UPDATE users SET matches = CONCAT(\",0\", matches) WHERE uuid= \"" + uuid + "\"");
-                ResultSet rs = stmt.executeQuery("SELECT matches FROM users WHERE uuid = \"" + uuid + "\"");
-                if (rs.next()) {
-                    ArrayList<Integer> matches = new ArrayList<>();
-                    String[] ms = rs.getString("matches").split(",");
-                    for (String match : ms)
-                        if (!match.equals("") && Utils.legalInt(match))
-                            matches.add(Integer.parseInt(match));
-                    stmt.execute("UPDATE users SET rating = \"" + this.getRating(matches) + "\" WHERE uuid = \"" + uuid + "\"");
-                }
+                stmt.execute("UPDATE users SET matches = CONCAT(',0', matches) WHERE uuid= '" + uuid + "'");
+                ResultSet rs = stmt.executeQuery("SELECT matches FROM users WHERE uuid = '" + uuid + "'");
+                if (rs.next())
+                    stmt.execute("UPDATE users SET rating = '" + this.getRating(parseMatches(rs.getString("matches"))) + "' WHERE uuid = '" + uuid + "'");
                 rs.close();
             }
             stmt.close();
@@ -523,6 +510,15 @@ public abstract class Gamemode {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    private ArrayList<Integer> parseMatches(String matchesString) {
+        String[] ms = matchesString.split(",");
+        ArrayList<Integer> matches = new ArrayList<>();
+        for (String match : ms)
+            if (!match.equals("") && Utils.legalInt(match))
+                matches.add(Integer.parseInt(match));
+        return matches;
     }
 
     private double getRating(ArrayList<Integer> matches) { //Max blocks around is 7999

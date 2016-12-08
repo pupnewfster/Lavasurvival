@@ -7,7 +7,6 @@ import com.crossge.necessities.Utils;
 import com.crossge.necessities.Variables;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.GameMode;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -24,11 +23,12 @@ public class CmdWhois implements RankCmd {
         }
         GetUUID get = Necessities.getInstance().getUUID();
         UUID uuid = get.getID(args[0]);
-        if (uuid == null)
-            uuid = get.getOfflineID(args[0]);
         if (uuid == null) {
-            sender.sendMessage(var.getEr() + "Error: " + var.getErMsg() + "That player does not exist. If the player is offline, please use the full and most recent name.");
-            return true;
+            uuid = get.getOfflineID(args[0]);
+            if (uuid == null || !Bukkit.getOfflinePlayer(uuid).hasPlayedBefore()) {
+                sender.sendMessage(var.getEr() + "Error: " + var.getErMsg() + "That player does not exist or has not joined the server. If the player is offline, please use the full and most recent name.");
+                return true;
+            }
         }
         User u = Necessities.getInstance().getUM().getUser(uuid);
         sender.sendMessage(var.getMessages() + "===== WhoIs: " + var.getObj() + u.getName() + var.getMessages() + " =====");
@@ -69,14 +69,7 @@ public class CmdWhois implements RankCmd {
         if (u.getPlayer() != null) {
             Player p = u.getPlayer();
             sender.sendMessage(var.getMessages() + " - IP Address: " + ChatColor.RESET + p.getAddress().toString().split("/")[1].split(":")[0]);
-            String gamemode = "Survival";
-            if (p.getGameMode().equals(GameMode.ADVENTURE))
-                gamemode = "Adventure";
-            else if (p.getGameMode().equals(GameMode.CREATIVE))
-                gamemode = "Creative";
-            else if (p.getGameMode().equals(GameMode.SPECTATOR))
-                gamemode = "Spectator";
-            sender.sendMessage(var.getMessages() + " - Gamemode: " + ChatColor.RESET + gamemode);
+            sender.sendMessage(var.getMessages() + " - Gamemode: " + ChatColor.RESET + Utils.capFirst(p.getGameMode().toString()));
         }
         if (u.getPlayer() != null) {
             Player p = u.getPlayer();

@@ -58,7 +58,8 @@ public class Lavasurvival extends JavaPlugin {
     private UserManager userManager;
     private boolean running = false;
     private ItemStack rules;
-    private String dbURL, dbPass, dbUser;
+    private String dbURL;
+    private Properties properties;
     @SuppressWarnings("CanBeFinal")
     private CancelToken ubotCancelToken;
     public boolean updating;
@@ -211,13 +212,16 @@ public class Lavasurvival extends JavaPlugin {
             UBot ubot = new UBot(new File("/home/minecraft/ubot/Lavasurvival"), new Updater(), new UBotLogger());
             ubotCancelToken = ubot.startAsync();
         } catch (Exception e) {
-            e.printStackTrace();
+            log("Failed to start UBot");
         }
 
         YamlConfiguration config = Necessities.getInstance().getConfig();
-        this.dbURL = "jdbc:mariadb://" + config.getString("Lavasurvival.DBHost") + "/" + config.getString("Lavasurvival.DBTable");
-        this.dbUser = config.getString("Lavasurvival.DBUser");
-        this.dbPass = config.getString("Lavasurvival.DBPassword");
+        this.dbURL = "jdbc:mysql://" + config.getString("Lavasurvival.DBHost") + "/" + config.getString("Lavasurvival.DBTable");
+        this.properties = new Properties();
+        this.properties.setProperty("user", config.getString("Lavasurvival.DBUser"));
+        this.properties.setProperty("password", config.getString("Lavasurvival.DBPassword"));
+        this.properties.setProperty("useSSL", "false");
+        this.properties.setProperty("autoReconnect", "true");
     }
 
     private boolean setupEcon() {
@@ -246,12 +250,8 @@ public class Lavasurvival extends JavaPlugin {
         return this.dbURL;
     }
 
-    public String getDBPass() {
-        return this.dbPass;
-    }
-
-    public String getDBUser() {
-        return this.dbUser;
+    public Properties getDBProperties() {
+        return this.properties;
     }
 
     public void removeFromSetup(UUID uuid) {
