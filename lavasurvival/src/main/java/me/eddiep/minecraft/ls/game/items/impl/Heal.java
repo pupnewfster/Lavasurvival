@@ -4,6 +4,7 @@ import me.eddiep.minecraft.ls.game.items.LavaItem;
 import net.minecraft.server.v1_11_R1.NBTTagCompound;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
+import org.bukkit.attribute.Attribute;
 import org.bukkit.craftbukkit.v1_11_R1.inventory.CraftItemStack;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -11,14 +12,15 @@ import org.bukkit.inventory.ItemStack;
 abstract class Heal extends LavaItem {
     @Override
     public boolean consume(Player owner) {
-        if (owner.getHealth() == owner.getMaxHealth()) {
+        double maxHealth = owner.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue();
+        if (owner.getHealth() == maxHealth) {
             owner.sendMessage(ChatColor.DARK_RED + "You are already at full health");
             return false;
         }
 
         double health = owner.getHealth();
-        double healAdd = owner.getMaxHealth() * getPercent();
-        double newHealth = Math.min(health + healAdd, owner.getMaxHealth());
+        double healAdd = maxHealth * getPercent();
+        double newHealth = Math.min(health + healAdd, maxHealth);
         owner.setHealth(newHealth);
 
         return true;

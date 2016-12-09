@@ -1,6 +1,0 @@
-name: UBotPatcher
-main: me.eddiep.minecraft.ubotpatcher.UbotPatcher
-version: 1.0.0
-description: Patches plugins on server boot
-authors: [hypereddie]
-loadbefore: [Necessities, ClassicPhysics, Lavasurvival]
