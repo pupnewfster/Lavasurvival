@@ -18,7 +18,7 @@ class Portal {
     Portal(String portalName) {
         File configFilePM = new File("plugins/Necessities/WorldManager", "portals.yml");
         YamlConfiguration configPM = YamlConfiguration.loadConfiguration(configFilePM);
-        WarpManager warps = Necessities.getInstance().getWarps();
+        WarpManager warps = Necessities.getWarps();
         this.name = portalName;
         if (configPM.contains(this.name + ".world"))
             this.from = Bukkit.getWorld(configPM.getString(this.name + ".world"));
@@ -91,7 +91,7 @@ class Portal {
     boolean isPortal(Location l) {
         if ((this.to == null && !isWarp()) || this.from == null)
             return false;
-        WorldManager wm = Necessities.getInstance().getWM();
+        WorldManager wm = Necessities.getWM();
         return this.validPortal && this.from.equals(l.getWorld()) && (isWarp() || wm.worldExists(this.to.getName())) && this.x1 <= l.getBlockX() && l.getBlockX() <= this.x2 && this.y1 <= l.getBlockY() &&
                 l.getBlockY() <= this.y2 && this.z1 <= l.getBlockZ() && l.getBlockZ() <= this.z2;
     }

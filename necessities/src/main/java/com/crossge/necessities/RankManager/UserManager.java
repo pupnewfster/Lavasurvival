@@ -53,22 +53,22 @@ public class UserManager {
     }
 
     void addRankPerm(Rank r, String node) {
-        this.players.keySet().stream().filter(uuid -> Necessities.getInstance().getRM().hasRank(this.players.get(uuid).getRank(), r)).forEach(uuid -> this.players.get(uuid).addPerm(node));
+        this.players.keySet().stream().filter(uuid -> Necessities.getRM().hasRank(this.players.get(uuid).getRank(), r)).forEach(uuid -> this.players.get(uuid).addPerm(node));
     }
 
     void delRankPerm(Rank r, String node) {
-        this.players.keySet().stream().filter(uuid -> Necessities.getInstance().getRM().hasRank(this.players.get(uuid).getRank(), r)).forEach(uuid -> this.players.get(uuid).removePerm(node));
+        this.players.keySet().stream().filter(uuid -> Necessities.getRM().hasRank(this.players.get(uuid).getRank(), r)).forEach(uuid -> this.players.get(uuid).removePerm(node));
     }
 
     void refreshRankPerm(Rank r) {
-        this.players.keySet().stream().filter(uuid -> Necessities.getInstance().getRM().hasRank(this.players.get(uuid).getRank(), r)).forEach(uuid -> this.players.get(uuid).refreshPerms());
+        this.players.keySet().stream().filter(uuid -> Necessities.getRM().hasRank(this.players.get(uuid).getRank(), r)).forEach(uuid -> this.players.get(uuid).refreshPerms());
     }
 
     public void addUser(Player player) {
         YamlConfiguration configUsers = YamlConfiguration.loadConfiguration(this.configFileUsers);
         if (configUsers.contains(player.getUniqueId().toString()))
             return;
-        configUsers.set(player.getUniqueId().toString() + ".rank", Necessities.getInstance().getRM().getRank(0).getName());
+        configUsers.set(player.getUniqueId().toString() + ".rank", Necessities.getRM().getRank(0).getName());
         configUsers.set(player.getUniqueId().toString() + ".permissions", Collections.singletonList(""));
         configUsers.set(player.getUniqueId().toString() + ".subranks", Collections.singletonList(""));
         try {

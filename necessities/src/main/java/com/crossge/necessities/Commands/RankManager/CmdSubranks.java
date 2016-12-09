@@ -8,8 +8,8 @@ import org.bukkit.command.CommandSender;
 
 public class CmdSubranks implements RankCmd {
     public boolean commandUse(CommandSender sender, String[] args) {
-        Variables var = Necessities.getInstance().getVar();
-        RankManager rm = Necessities.getInstance().getRM();
+        Variables var = Necessities.getVar();
+        RankManager rm = Necessities.getRM();
         if (rm.getSubranks().isEmpty())
             sender.sendMessage(var.getEr() + "Error: " + var.getErMsg() + "No subranks are set.");
         else {

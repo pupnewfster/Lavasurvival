@@ -11,10 +11,10 @@ import org.bukkit.entity.Player;
 import java.util.UUID;
 
 public class CmdTpaccept implements Cmd {
-    private final Teleports tps = Necessities.getInstance().getTPs();
+    private final Teleports tps = Necessities.getTPs();
 
     public boolean commandUse(CommandSender sender, String[] args) {
-        Variables var = Necessities.getInstance().getVar();
+        Variables var = Necessities.getVar();
         if (sender instanceof Player) {
             Player p = (Player) sender;
             UUID uuid = null;
@@ -26,7 +26,7 @@ public class CmdTpaccept implements Cmd {
                 }
             }
             if (args.length > 0)
-                uuid = Necessities.getInstance().getUUID().getID(args[0]);
+                uuid = Necessities.getUUID().getID(args[0]);
             if (uuid == null) {
                 sender.sendMessage(var.getEr() + "Error: " + var.getErMsg() + "Invalid player.");
                 return true;
@@ -37,9 +37,9 @@ public class CmdTpaccept implements Cmd {
                 sender.sendMessage(var.getEr() + "Error: " + var.getErMsg() + "You or the target are in the lava.");
                 return true;
             }
-            UserManager um = Necessities.getInstance().getUM();
+            UserManager um = Necessities.getUM();
             String tPrefix = um.getUser(uuid).getStatus(), pPrefix = um.getUser(p.getUniqueId()).getStatus();
-            if (!p.hasPermission("Necessities.seehidden") && Necessities.getInstance().getHide().isHidden(target)) {
+            if (!p.hasPermission("Necessities.seehidden") && Necessities.getHide().isHidden(target)) {
                 sender.sendMessage(var.getEr() + "Error: " + var.getErMsg() + "Invalid player.");
                 return true;
             } else if (!tPrefix.equals(pPrefix)) {

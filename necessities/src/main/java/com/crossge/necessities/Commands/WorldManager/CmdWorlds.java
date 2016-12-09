@@ -16,7 +16,7 @@ public class CmdWorlds implements WorldCmd {
         for (int i = 0; i < worlds.size() - 1; i++)
             levels += worlds.get(i) + ", ";
         levels += "and " + worlds.get(worlds.size() - 1) + ".";
-        sender.sendMessage(Necessities.getInstance().getVar().getMessages() + "The worlds are: " + ChatColor.WHITE + levels);
+        sender.sendMessage(Necessities.getVar().getMessages() + "The worlds are: " + ChatColor.WHITE + levels);
         return true;
     }
 }

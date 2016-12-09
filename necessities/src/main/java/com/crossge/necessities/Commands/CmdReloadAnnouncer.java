@@ -7,9 +7,9 @@ import org.bukkit.command.CommandSender;
 public class CmdReloadAnnouncer implements Cmd {
     @Override
     public boolean commandUse(CommandSender sender, String[] args) {
-        Variables var = Necessities.getInstance().getVar();
+        Variables var = Necessities.getVar();
         sender.sendMessage(var.getMessages() + "Reloading Announcer.");
-        Necessities.getInstance().getAnnouncer().reloadAnnouncer();
+        Necessities.getAnnouncer().reloadAnnouncer();
         sender.sendMessage(var.getMessages() + "Announcer reloaded.");
         return true;
     }

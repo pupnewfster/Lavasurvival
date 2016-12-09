@@ -11,7 +11,7 @@ public class JanetAI {//TODO: Move to JanetNet and add understanding logic
     public void parseMessage(String message, Source s, boolean isPM, JanetSlack.SlackUser user) {
         message = ChatColor.stripColor(message);
         if (s.equals(Source.Slack) && message.contains("Janet")) {
-            String result = this.janetName + Necessities.getInstance().getNet().bestGuess(message);
+            String result = this.janetName + Necessities.getNet().bestGuess(message);
             sendMessage(result, s, isPM, user);
         }
     }
@@ -21,13 +21,13 @@ public class JanetAI {//TODO: Move to JanetNet and add understanding logic
             Bukkit.broadcastMessage(message);
         else if (s.equals(Source.Slack)) {
             if (!isPM)
-                Bukkit.broadcast(Necessities.getInstance().getVar().getMessages() + "To Slack - " + ChatColor.WHITE + message, "Necessities.slack");
-            Necessities.getInstance().getSlack().sendMessage(ChatColor.stripColor(message), isPM, user);
+                Bukkit.broadcast(Necessities.getVar().getMessages() + "To Slack - " + ChatColor.WHITE + message, "Necessities.slack");
+            Necessities.getSlack().sendMessage(ChatColor.stripColor(message), isPM, user);
         }
     }
 
     public void initiate() {
-        RankManager rm = Necessities.getInstance().getRM();
+        RankManager rm = Necessities.getRM();
         this.janetName = (!rm.getOrder().isEmpty() ? ChatColor.translateAlternateColorCodes('&', rm.getRank(rm.getOrder().size() - 1).getTitle() + " ") : "") + "Janet" + ChatColor.DARK_RED + ": " + ChatColor.WHITE;
     }
 

@@ -24,7 +24,7 @@ public class CmdHelp implements Cmd {
             else
                 page = Integer.parseInt(args[0]);
         }
-        Variables var = Necessities.getInstance().getVar();
+        Variables var = Necessities.getVar();
         if (args.length > 1) {
             if (!Utils.legalInt(args[1])) {
                 sender.sendMessage(var.getEr() + "Error: " + var.getErMsg() + "You must enter a valid help page.");

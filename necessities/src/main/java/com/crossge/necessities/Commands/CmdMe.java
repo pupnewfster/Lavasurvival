@@ -14,9 +14,9 @@ public class CmdMe implements Cmd {
         for (String s : args)
             msg += s + " ";
         msg = msg.trim();
-        Variables var = Necessities.getInstance().getVar();
+        Variables var = Necessities.getVar();
         if (sender instanceof Player) {
-            User self = Necessities.getInstance().getUM().getUser(((Player) sender).getUniqueId());
+            User self = Necessities.getUM().getUser(((Player) sender).getUniqueId());
             if (self.isMuted()) {
                 sender.sendMessage(var.getEr() + "Error: " + var.getErMsg() + "You are muted.");
                 return true;
@@ -25,14 +25,14 @@ public class CmdMe implements Cmd {
                 msg = ChatColor.translateAlternateColorCodes('&', (self.getPlayer().hasPermission("Necessities.magicchat") ? msg : msg.replaceAll("&k", "")));
             sendMessage(self, msg);
         } else
-            Bukkit.broadcastMessage(var.getMe() + "*" + Necessities.getInstance().getConsole().getName().replaceAll(":", "") + var.getMe() + msg);
+            Bukkit.broadcastMessage(var.getMe() + "*" + Necessities.getConsole().getName().replaceAll(":", "") + var.getMe() + msg);
         return true;
     }
 
     private void sendMessage(User sender, String msg) {
-        Variables var = Necessities.getInstance().getVar();
+        Variables var = Necessities.getVar();
         for (Player p : Bukkit.getOnlinePlayers()) {
-            User u = Necessities.getInstance().getUM().getUser(p.getUniqueId());
+            User u = Necessities.getUM().getUser(p.getUniqueId());
             if (u != null && !u.isIgnoring(sender.getUUID()))
                 p.sendMessage(var.getMe() + "*" + sender.getRank().getColor() + sender.getPlayer().getDisplayName() + var.getMe() + " " + msg);
         }

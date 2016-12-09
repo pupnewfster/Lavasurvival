@@ -12,7 +12,7 @@ import java.io.File;
 @SuppressWarnings("unused")
 public class CmdLogOutMessage implements Cmd {
     public boolean commandUse(CommandSender sender, String[] args) {
-        Variables var = Necessities.getInstance().getVar();
+        Variables var = Necessities.getVar();
         if (sender instanceof Player) {
             Player p = (Player) sender;
             String logoutMessage = "{RANK} {NAME}&r Disconnected.";
@@ -33,7 +33,7 @@ public class CmdLogOutMessage implements Cmd {
             }
             p.sendMessage("Logout message set to: " + ChatColor.YELLOW + ChatColor.translateAlternateColorCodes('&',
                     logoutMessage.replaceAll("\\{NAME}", p.getDisplayName()).replaceAll("\\{RANK}",
-                            Necessities.getInstance().getUM().getUser(p.getUniqueId()).getRank().getTitle())).replaceAll(ChatColor.RESET + "", ChatColor.YELLOW + ""));
+                            Necessities.getUM().getUser(p.getUniqueId()).getRank().getTitle())).replaceAll(ChatColor.RESET + "", ChatColor.YELLOW + ""));
         } else
             sender.sendMessage(var.getEr() + "Error: " + var.getErMsg() + "The console does not have a logout message.");
         return true;

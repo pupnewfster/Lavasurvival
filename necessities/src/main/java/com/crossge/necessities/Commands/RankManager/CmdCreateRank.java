@@ -9,12 +9,12 @@ import org.bukkit.command.CommandSender;
 
 public class CmdCreateRank implements RankCmd {
     public boolean commandUse(CommandSender sender, String[] args) {
-        Variables var = Necessities.getInstance().getVar();
+        Variables var = Necessities.getVar();
         if (args.length < 3) {
             sender.sendMessage(var.getEr() + "Error: " + var.getErMsg() + "Format requires you to enter a rank to create the rank that comes before and the rank that comes after.");
             return true;
         }
-        RankManager rm = Necessities.getInstance().getRM();
+        RankManager rm = Necessities.getRM();
         if (rm.getRank(Utils.capFirst(args[0])) != null) {
             sender.sendMessage(var.getEr() + "Error: " + var.getErMsg() + "That rank already exists.");
             return true;

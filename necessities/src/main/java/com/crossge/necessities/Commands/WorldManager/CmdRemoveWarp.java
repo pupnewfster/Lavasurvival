@@ -7,12 +7,12 @@ import org.bukkit.command.CommandSender;
 
 public class CmdRemoveWarp implements WorldCmd {
     public boolean commandUse(CommandSender sender, String[] args) {
-        Variables var = Necessities.getInstance().getVar();
+        Variables var = Necessities.getVar();
         if (args.length == 0) {
             sender.sendMessage(var.getEr() + "Error: " + var.getErMsg() + "You must enter a name for the warp you wish to remove.");
             return true;
         }
-        WarpManager warps = Necessities.getInstance().getWarps();
+        WarpManager warps = Necessities.getWarps();
         if (!warps.isWarp(args[0])) {
             sender.sendMessage(var.getEr() + "Error: " + var.getErMsg() + "There is no warp by that name.");
             return true;

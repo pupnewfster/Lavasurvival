@@ -196,8 +196,8 @@ public class BasicBlockShop extends Menu implements BlockShop {
     private boolean canBuy(MenuPlayer player) {
         if (player == null || player.getBukkit() == null)
             return false;
-        RankManager rm = Necessities.getInstance().getRM();
-        if (rm.hasRank(Necessities.getInstance().getUM().getUser(player.getBukkit().getUniqueId()).getRank(), rm.getRank("Basic")))
+        RankManager rm = Necessities.getRM();
+        if (rm.hasRank(Necessities.getUM().getUser(player.getBukkit().getUniqueId()).getRank(), rm.getRank("Basic")))
             return true;
         else {
             player.getBukkit().sendMessage(ChatColor.RED + "You must be Basic or higher to purchase from this shop.");

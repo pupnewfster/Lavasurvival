@@ -63,82 +63,6 @@ public class Necessities extends JavaPlugin {
     private JanetSlack slack;
     private Announcer announcer;
 
-    public UserManager getUM() {
-        return this.um == null ? this.um = new UserManager() : this.um;
-    }
-
-    public JanetNet getNet() {
-        return this.net == null ? this.net = new JanetNet() : this.net;
-    }
-
-    CmdCommandSpy getSpy() {
-        return this.spy == null ? this.spy = new CmdCommandSpy() : this.spy;
-    }
-
-    public RankManager getRM() {
-        return this.rm == null ? this.rm = new RankManager() : this.rm;
-    }
-
-    public PortalManager getPM() {
-        return this.pm == null ? this.pm = new PortalManager() : this.pm;
-    }
-
-    public JanetSlack getSlack() {
-        return this.slack == null ? this.slack = new JanetSlack() : this.slack;
-    }
-
-    public Console getConsole() {
-        return this.console == null ? this.console = new Console() : this.console;
-    }
-
-    public Variables getVar() {
-        return this.var == null ? this.var = new Variables() : this.var;
-    }
-
-    public Teleports getTPs() {
-        return this.tps == null ? this.tps = new Teleports() : this.tps;
-    }
-
-    public JanetWarn getWarns() {
-        return this.warns == null ? this.warns = new JanetWarn() : this.warns;
-    }
-
-    public ScoreBoards getSBs() {
-        return this.sb == null ? this.sb = new ScoreBoards() : this.sb;
-    }
-
-    public CmdHide getHide() {
-        return this.hide == null ? this.hide = new CmdHide() : this.hide;
-    }
-
-    public JanetAI getAI() {
-        return this.ai == null ? this.ai = new JanetAI() : this.ai;
-    }
-
-    Janet getBot() {
-        return this.bot == null ? this.bot = new Janet() : this.bot;
-    }
-
-    public GetUUID getUUID() {
-        return this.get == null ? this.get = new GetUUID() : this.get;
-    }
-
-    public WarpManager getWarps() {
-        return this.warps == null ? this.warps = new WarpManager() : this.warps;
-    }
-
-    public WorldManager getWM() {
-        return this.wm == null ? this.wm = new WorldManager() : this.wm;
-    }
-
-    public JanetLog getLog() {
-        return this.log == null ? this.log = new JanetLog() : this.log;
-    }
-
-    public Announcer getAnnouncer() {
-        return this.announcer == null ? this.announcer = new Announcer() : this.announcer;
-    }
-
     File getConfigFile() {
         return new File(getDataFolder(), "config.yml");
     }
@@ -495,5 +419,82 @@ public class Necessities extends JavaPlugin {
         String clientVersion = Bukkit.getVersion().substring("git-Bukkit".length());
         String clientName = "Minecraft " + clientVersion.substring(0, clientVersion.indexOf("-")) + (usesPluginChannel ? " [Supports Plugin Channels]" : "");
         getTracker().TrackActionWithValue(clientName, clientId, ip, clientId, "Economy", label.toString(), value.toString());
+    }
+
+
+    public static UserManager getUM() {
+        return INSTANCE.um == null ? INSTANCE.um = new UserManager() : INSTANCE.um;
+    }
+
+    public static JanetNet getNet() {
+        return INSTANCE.net == null ? INSTANCE.net = new JanetNet() : INSTANCE.net;
+    }
+
+    static CmdCommandSpy getSpy() {
+        return INSTANCE.spy == null ? INSTANCE.spy = new CmdCommandSpy() : INSTANCE.spy;
+    }
+
+    public static RankManager getRM() {
+        return INSTANCE.rm == null ? INSTANCE.rm = new RankManager() : INSTANCE.rm;
+    }
+
+    public static PortalManager getPM() {
+        return INSTANCE.pm == null ? INSTANCE.pm = new PortalManager() : INSTANCE.pm;
+    }
+
+    public static JanetSlack getSlack() {
+        return INSTANCE.slack == null ? INSTANCE.slack = new JanetSlack() : INSTANCE.slack;
+    }
+
+    public static Console getConsole() {
+        return INSTANCE.console == null ? INSTANCE.console = new Console() : INSTANCE.console;
+    }
+
+    public static Variables getVar() {
+        return INSTANCE.var == null ? INSTANCE.var = new Variables() : INSTANCE.var;
+    }
+
+    public static Teleports getTPs() {
+        return INSTANCE.tps == null ? INSTANCE.tps = new Teleports() : INSTANCE.tps;
+    }
+
+    public static JanetWarn getWarns() {
+        return INSTANCE.warns == null ? INSTANCE.warns = new JanetWarn() : INSTANCE.warns;
+    }
+
+    public static ScoreBoards getSBs() {
+        return INSTANCE.sb == null ? INSTANCE.sb = new ScoreBoards() : INSTANCE.sb;
+    }
+
+    public static CmdHide getHide() {
+        return INSTANCE.hide == null ? INSTANCE.hide = new CmdHide() : INSTANCE.hide;
+    }
+
+    public static JanetAI getAI() {
+        return INSTANCE.ai == null ? INSTANCE.ai = new JanetAI() : INSTANCE.ai;
+    }
+
+    static Janet getBot() {
+        return INSTANCE.bot == null ? INSTANCE.bot = new Janet() : INSTANCE.bot;
+    }
+
+    public static GetUUID getUUID() {
+        return INSTANCE.get == null ? INSTANCE.get = new GetUUID() : INSTANCE.get;
+    }
+
+    public static WarpManager getWarps() {
+        return INSTANCE.warps == null ? INSTANCE.warps = new WarpManager() : INSTANCE.warps;
+    }
+
+    public static WorldManager getWM() {
+        return INSTANCE.wm == null ? INSTANCE.wm = new WorldManager() : INSTANCE.wm;
+    }
+
+    public static JanetLog getLog() {
+        return INSTANCE.log == null ? INSTANCE.log = new JanetLog() : INSTANCE.log;
+    }
+
+    public static Announcer getAnnouncer() {
+        return INSTANCE.announcer == null ? INSTANCE.announcer = new Announcer() : INSTANCE.announcer;
     }
 }

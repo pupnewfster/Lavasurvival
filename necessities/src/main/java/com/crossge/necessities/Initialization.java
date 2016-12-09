@@ -29,27 +29,27 @@ class Initialization {
         HatType.mapHats();
 
         //RankManager
-        Necessities.getInstance().getRM().setRanks();
-        Necessities.getInstance().getRM().setSubranks();
-        Necessities.getInstance().getRM().readRanks();
-        Necessities.getInstance().getSBs().createScoreboard();
+        Necessities.getRM().setRanks();
+        Necessities.getRM().setSubranks();
+        Necessities.getRM().readRanks();
+        Necessities.getSBs().createScoreboard();
 
         YamlConfiguration config = Necessities.getInstance().getConfig();
         //WorldManager
         if (config.contains("Necessities.WorldManager") && config.getBoolean("Necessities.WorldManager")) {
-            Necessities.getInstance().getWM().initiate();
-            Necessities.getInstance().getWarps().initiate();
-            Necessities.getInstance().getPM().initiate();
+            Necessities.getWM().initiate();
+            Necessities.getWarps().initiate();
+            Necessities.getPM().initiate();
         }
 
-        Necessities.getInstance().getNet().readCustom();
-        Necessities.getInstance().getBot().initiate();
-        Necessities.getInstance().getSpy().init();
-        Necessities.getInstance().getHide().init();
-        Necessities.getInstance().getWarns().initiate();
-        Necessities.getInstance().getSlack().init();
-        Necessities.getInstance().getAI().initiate();
-        Necessities.getInstance().getAnnouncer().init();
+        Necessities.getNet().readCustom();
+        Necessities.getBot().initiate();
+        Necessities.getSpy().init();
+        Necessities.getHide().init();
+        Necessities.getWarns().initiate();
+        Necessities.getSlack().init();
+        Necessities.getAI().initiate();
+        Necessities.getAnnouncer().init();
     }
 
     @SuppressWarnings("ResultOfMethodCallIgnored")

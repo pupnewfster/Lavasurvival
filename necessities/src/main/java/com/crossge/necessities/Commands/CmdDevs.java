@@ -9,7 +9,7 @@ import java.util.List;
 
 public class CmdDevs implements Cmd {
     public boolean commandUse(CommandSender sender, String[] args) {
-        Variables var = Necessities.getInstance().getVar();
+        Variables var = Necessities.getVar();
         String d = var.getMessages() + "The Devs for Necessities are: ";
         List<String> devs = Necessities.getInstance().getDevs();
         for (int i = 0; i < devs.size(); i++)

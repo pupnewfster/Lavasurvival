@@ -14,13 +14,13 @@ import java.util.UUID;
 
 public class CmdReply implements Cmd {
     public boolean commandUse(CommandSender sender, String[] args) {
-        Variables var = Necessities.getInstance().getVar();
+        Variables var = Necessities.getVar();
         if (args.length == 0) {
             sender.sendMessage(var.getEr() + "Error: " + var.getErMsg() + "You must enter a reply to send.");
             return true;
         }
-        Console console = Necessities.getInstance().getConsole();
-        UserManager um = Necessities.getInstance().getUM();
+        Console console = Necessities.getConsole();
+        UserManager um = Necessities.getUM();
         if (sender instanceof Player) {
             Player p = (Player) sender;
             User self = um.getUser(p.getUniqueId());

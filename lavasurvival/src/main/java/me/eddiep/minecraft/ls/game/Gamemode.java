@@ -345,7 +345,7 @@ public abstract class Gamemode {
         end();
         final UserManager um = Lavasurvival.INSTANCE.getUserManager();
         if (giveRewards) {
-            CmdHide hide = Necessities.getInstance().getHide();
+            CmdHide hide = Necessities.getHide();
             int amount = 0;
             for (UUID id : alive)
                 if (id != null && Bukkit.getPlayer(id) != null && !hide.isHidden(Bukkit.getPlayer(id)) && !isInSpawn(Bukkit.getPlayer(id)))
@@ -380,7 +380,7 @@ public abstract class Gamemode {
                 Player p = Bukkit.getPlayer(id);
                 if (p == null || hide.isHidden(p) || isInSpawn(Bukkit.getPlayer(id)) || p.getGameMode().equals(GameMode.CREATIVE) || p.getGameMode().equals(GameMode.SPECTATOR))
                     continue;
-                Rank rank = Necessities.getInstance().getUM().getUser(p.getUniqueId()).getRank();
+                Rank rank = Necessities.getUM().getUser(p.getUniqueId()).getRank();
                 Double[] array;
                 if (!avgs.containsKey(rank))
                     array = new Double[]{0.0, 0.0, 0.0};
@@ -708,8 +708,8 @@ public abstract class Gamemode {
         if (onlinePlayer == null)
             return 0.0;
         double base = 100.0;
-        Rank rank = Necessities.getInstance().getUM().getUser(player.getUniqueId()).getRank();
-        double bonusAdd = (5 + Necessities.getInstance().getRM().getOrder().indexOf(rank)) / 2.0;
+        Rank rank = Necessities.getUM().getUser(player.getUniqueId()).getRank();
+        double bonusAdd = (5 + Necessities.getRM().getOrder().indexOf(rank)) / 2.0;
         //int blockCount = countAirBlocksAround(onlinePlayer, 20);
         //System.out.println(onlinePlayer.getName() + " had " + blockCount + " blocks around them!");
         return base + (bonusAdd * blockCount);
@@ -728,7 +728,7 @@ public abstract class Gamemode {
         setAlive(player);
         player.teleport(new Location(getCurrentWorld(), getCurrentMap().getMapSpawn().getX(), getCurrentMap().getMapSpawn().getY(), getCurrentMap().getMapSpawn().getZ()));
         player.setGameMode(GameMode.SURVIVAL);
-        player.getAttribute(Attribute.GENERIC_MAX_HEALTH).setBaseValue(getHealth(Necessities.getInstance().getUM().getUser(player.getUniqueId()).getRank()));
+        player.getAttribute(Attribute.GENERIC_MAX_HEALTH).setBaseValue(getHealth(Necessities.getUM().getUser(player.getUniqueId()).getRank()));
         player.setHealth(player.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue());
         player.setGlowing(true);
         UserManager um = Lavasurvival.INSTANCE.getUserManager();
@@ -766,7 +766,7 @@ public abstract class Gamemode {
     public double getHealth(Rank r) {
         if (r == null)
             return 1;
-        switch (Necessities.getInstance().getRM().getOrder().indexOf(r)) {
+        switch (Necessities.getRM().getOrder().indexOf(r)) {
             case 0:
                 return 10;
             case 1:
@@ -792,7 +792,7 @@ public abstract class Gamemode {
             dead.remove(uuid);
         if (!alive.contains(uuid))
             alive.add(uuid);
-        Necessities.getInstance().getUM().getUser(uuid).setStatus("alive");
+        Necessities.getUM().getUser(uuid).setStatus("alive");
         player.setGameMode(GameMode.SURVIVAL);
         Lavasurvival.log(player.getName() + " has joined the alive team.");
     }
@@ -806,7 +806,7 @@ public abstract class Gamemode {
             alive.remove(uuid);
         if (!dead.contains(uuid))
             dead.add(uuid);
-        Necessities.getInstance().getUM().getUser(uuid).setStatus("dead");
+        Necessities.getUM().getUser(uuid).setStatus("dead");
         player.setGameMode(GameMode.SPECTATOR);
         Lavasurvival.log(player.getName() + " has joined the dead team.");
         if (allDead())
@@ -846,7 +846,7 @@ public abstract class Gamemode {
     }
 
     public boolean allDead() {
-        CmdHide hide = Necessities.getInstance().getHide();
+        CmdHide hide = Necessities.getHide();
         boolean allDead = Bukkit.getOnlinePlayers().size() != 0;
         for (Player p : Bukkit.getOnlinePlayers()) {
             if (isAlive(p) && !hide.isHidden(p)) {

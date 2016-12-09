@@ -20,8 +20,8 @@ public class CmdHide implements Cmd {
     private final ArrayList<UUID> hidden = new ArrayList<>();
 
     public boolean commandUse(CommandSender sender, String[] args) {
-        UserManager um = Necessities.getInstance().getUM();
-        Variables var = Necessities.getInstance().getVar();
+        UserManager um = Necessities.getUM();
+        Variables var = Necessities.getVar();
         if (sender instanceof Player) {
             Player p = (Player) sender;
             User u = um.getUser(p.getUniqueId());
@@ -35,7 +35,7 @@ public class CmdHide implements Cmd {
                 p.sendMessage(var.getMessages() + "You are now visible.");
                 Bukkit.broadcast(var.getMessages() + "To Ops - " + var.getObj() + p.getDisplayName() + var.getMessages() + " - is now " + ChatColor.DARK_GRAY + "visible" + var.getMessages() + ".",
                         "Necessities.opBroadcast");
-                RankManager rm = Necessities.getInstance().getRM();
+                RankManager rm = Necessities.getRM();
                 String rank = "";
                 if (!rm.getOrder().isEmpty())
                     rank = ChatColor.translateAlternateColorCodes('&', rm.getRank(rm.getOrder().size() - 1).getTitle() + " ");

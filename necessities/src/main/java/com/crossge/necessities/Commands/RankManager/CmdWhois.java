@@ -17,12 +17,12 @@ import java.util.UUID;
 
 public class CmdWhois implements RankCmd {
     public boolean commandUse(CommandSender sender, String[] args) {
-        Variables var = Necessities.getInstance().getVar();
+        Variables var = Necessities.getVar();
         if (args.length == 0) {
             sender.sendMessage(var.getEr() + "Error: " + var.getErMsg() + "You must enter a player to view info of.");
             return true;
         }
-        GetUUID get = Necessities.getInstance().getUUID();
+        GetUUID get = Necessities.getUUID();
         UUID uuid = get.getID(args[0]);
         if (uuid == null) {
             uuid = get.getOfflineID(args[0]);
@@ -31,7 +31,7 @@ public class CmdWhois implements RankCmd {
                 return true;
             }
         }
-        User u = Necessities.getInstance().getUM().getUser(uuid);
+        User u = Necessities.getUM().getUser(uuid);
         sender.sendMessage(var.getMessages() + "===== WhoIs: " + var.getObj() + u.getName() + var.getMessages() + " =====");
         if (u.getPlayer() != null)
             sender.sendMessage(var.getMessages() + " - Nick: " + ChatColor.RESET + u.getPlayer().getDisplayName());
@@ -75,7 +75,7 @@ public class CmdWhois implements RankCmd {
         if (u.getPlayer() != null) {
             Player p = u.getPlayer();
             sender.sendMessage(var.getMessages() + " - Banned: " + (p.isBanned() ? ChatColor.GREEN + "true" : ChatColor.DARK_RED + "false"));
-            sender.sendMessage(var.getMessages() + " - Visible: " + (Necessities.getInstance().getHide().isHidden(p) ? ChatColor.DARK_RED + "false" : ChatColor.GREEN + "true"));
+            sender.sendMessage(var.getMessages() + " - Visible: " + (Necessities.getHide().isHidden(p) ? ChatColor.DARK_RED + "false" : ChatColor.GREEN + "true"));
             sender.sendMessage(var.getMessages() + " - OP: " + (p.isOp() ? ChatColor.GREEN + "true" : ChatColor.DARK_RED + "false"));
             sender.sendMessage(var.getMessages() + " - Fly mode: " + (p.isFlying() ? ChatColor.GREEN + "true " + ChatColor.RESET + " (flying)" : ChatColor.DARK_RED + "false" + ChatColor.RESET + " (not flying)"));
         } else {

@@ -55,8 +55,8 @@ public class RankShop extends Menu {
     }
 
     private void buyRank(MenuPlayer player, String RANK, double price) {
-        RankManager manager = Necessities.getInstance().getRM();
-        User user = Necessities.getInstance().getUM().getUser(player.getBukkit().getUniqueId());
+        RankManager manager = Necessities.getRM();
+        User user = Necessities.getUM().getUser(player.getBukkit().getUniqueId());
         int curNum = manager.getOrder().indexOf(user.getRank());
         int thisRank = manager.getOrder().indexOf(manager.getRank(RANK));
         if (curNum == thisRank)

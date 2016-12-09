@@ -368,7 +368,7 @@ public class PlayerListener implements Listener {
                 Gamemode.getCurrentGame().playerJoin(player);
             }
             if (Gamemode.getCurrentGame().isAlive(player)) {
-                Necessities.getInstance().getUM().getUser(player.getUniqueId()).setStatus("alive");
+                Necessities.getUM().getUser(player.getUniqueId()).setStatus("alive");
                 if (!player.getLocation().getBlock().hasMetadata("classic_block") && !player.getEyeLocation().getBlock().hasMetadata("classic_block"))
                     player.teleport(Gamemode.getCurrentWorld().getSpawnLocation().clone());
             }

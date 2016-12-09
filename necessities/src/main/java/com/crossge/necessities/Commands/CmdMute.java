@@ -11,18 +11,18 @@ import java.util.UUID;
 
 public class CmdMute implements Cmd {
     public boolean commandUse(CommandSender sender, String[] args) {
-        Variables var = Necessities.getInstance().getVar();
+        Variables var = Necessities.getVar();
         if (args.length == 0) {
             sender.sendMessage(var.getEr() + "Error: " + var.getErMsg() + "You must enter a player to mute.");
             return true;
         }
-        UUID uuid = Necessities.getInstance().getUUID().getID(args[0]);
+        UUID uuid = Necessities.getUUID().getID(args[0]);
         if (uuid == null) {
             sender.sendMessage(var.getEr() + "Error: " + var.getErMsg() + "Invalid player.");
             return true;
         }
-        User u = Necessities.getInstance().getUM().getUser(uuid);
-        String name = Necessities.getInstance().getConsole().getName().replaceAll(":", "");
+        User u = Necessities.getUM().getUser(uuid);
+        String name = Necessities.getConsole().getName().replaceAll(":", "");
         if (sender instanceof Player)
             name = ((Player) sender).getDisplayName();
         Bukkit.broadcastMessage(var.getObj() + name + var.getMessages() + (!u.isMuted() ? " muted " : " unmuted ") + var.getObj() + u.getPlayer().getDisplayName() + var.getMessages() + ".");

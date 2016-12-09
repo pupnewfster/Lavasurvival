@@ -12,7 +12,7 @@ import java.io.File;
 @SuppressWarnings("unused")
 public class CmdLogInMessage implements Cmd {
     public boolean commandUse(CommandSender sender, String[] args) {
-        Variables var = Necessities.getInstance().getVar();
+        Variables var = Necessities.getVar();
         if (sender instanceof Player) {
             Player p = (Player) sender;
             String loginMessage = "{RANK} {NAME}&r joined the game.";
@@ -33,7 +33,7 @@ public class CmdLogInMessage implements Cmd {
             }
             p.sendMessage("Login message set to: " + ChatColor.YELLOW + ChatColor.translateAlternateColorCodes('&',
                     loginMessage.replaceAll("\\{NAME}", p.getDisplayName()).replaceAll("\\{RANK}",
-                            Necessities.getInstance().getUM().getUser(p.getUniqueId()).getRank().getTitle())).replaceAll(ChatColor.RESET + "", ChatColor.YELLOW + ""));
+                            Necessities.getUM().getUser(p.getUniqueId()).getRank().getTitle())).replaceAll(ChatColor.RESET + "", ChatColor.YELLOW + ""));
         } else
             sender.sendMessage(var.getEr() + "Error: " + var.getErMsg() + "The console does not have a login message.");
         return true;

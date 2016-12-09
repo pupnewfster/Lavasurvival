@@ -14,12 +14,12 @@ import java.util.UUID;
 
 public class CmdPromote implements RankCmd {
     public boolean commandUse(CommandSender sender, String[] args) {
-        Variables var = Necessities.getInstance().getVar();
+        Variables var = Necessities.getVar();
         if (args.length != 1) {
             sender.sendMessage(var.getEr() + "Error: " + var.getErMsg() + "You must enter a user to promote.");
             return true;
         }
-        GetUUID get = Necessities.getInstance().getUUID();
+        GetUUID get = Necessities.getUUID();
         UUID uuid = get.getID(args[0]);
         if (uuid == null) {
             uuid = get.getOfflineID(args[0]);
@@ -28,7 +28,7 @@ public class CmdPromote implements RankCmd {
                 return true;
             }
         }
-        UserManager um = Necessities.getInstance().getUM();
+        UserManager um = Necessities.getUM();
         User u = um.getUser(uuid);
         String targetName = get.nameFromString(uuid.toString());
         if (u.getRank().getNext() == null) {
@@ -38,7 +38,7 @@ public class CmdPromote implements RankCmd {
         String name = "Console";
         if (sender instanceof Player) {
             Player player = (Player) sender;
-            RankManager rm = Necessities.getInstance().getRM();
+            RankManager rm = Necessities.getRM();
             if (!player.hasPermission("Necessities.rankmanager.setranksame") && rm.getOrder().indexOf(um.getUser(player.getUniqueId()).getRank()) - rm.getOrder().indexOf(u.getRank()) <= 1) {
                 player.sendMessage(var.getEr() + "Error: " + var.getErMsg() + "You may not promote people to same rank as yourself.");
                 return true;
