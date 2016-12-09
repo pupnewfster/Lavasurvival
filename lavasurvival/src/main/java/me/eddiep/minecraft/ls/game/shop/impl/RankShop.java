@@ -4,6 +4,7 @@ import com.crossge.necessities.Necessities;
 import com.crossge.necessities.RankManager.RankManager;
 import com.crossge.necessities.RankManager.User;
 import me.eddiep.minecraft.ls.Lavasurvival;
+import me.eddiep.minecraft.ls.game.Gamemode;
 import me.eddiep.minecraft.ls.game.shop.ShopFactory;
 import net.njay.Menu;
 import net.njay.MenuManager;
@@ -14,6 +15,7 @@ import net.njay.annotation.PreProcessor;
 import net.njay.player.MenuPlayer;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
+import org.bukkit.attribute.Attribute;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -70,6 +72,9 @@ public class RankShop extends Menu {
             Lavasurvival.INSTANCE.withdrawAndUpdate(player.getBukkit(), price);
             Lavasurvival.globalMessage(user.getPlayer().getDisplayName() + ChatColor.GREEN + " just bought the " + user.getRank().getName() + " rank!");
             player.getBukkit().getOpenInventory().close();
+            double health = Gamemode.getCurrentGame().getHealth(user.getRank());
+            player.getBukkit().getAttribute(Attribute.GENERIC_MAX_HEALTH).setBaseValue(health);
+            player.getBukkit().setHealth(Math.min(player.getBukkit().getHealth() + health / 2, health));
         }
     }
 
