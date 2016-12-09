@@ -763,7 +763,7 @@ public abstract class Gamemode {
         this.bars.forEach(bar -> bar.removePlayer(p));
     }
 
-    private double getHealth(Rank r) {
+    public double getHealth(Rank r) {
         if (r == null)
             return 1;
         switch (Necessities.getInstance().getRM().getOrder().indexOf(r)) {
