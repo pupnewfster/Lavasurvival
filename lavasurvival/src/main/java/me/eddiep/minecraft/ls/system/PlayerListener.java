@@ -54,7 +54,6 @@ public class PlayerListener implements Listener {
             Material.BEDROCK,
             Material.BARRIER
     }));
-    private final UserManager um = Lavasurvival.INSTANCE.getUserManager();
     private final Random rand = new Random();
     public boolean survival = false;
 
@@ -166,7 +165,7 @@ public class PlayerListener implements Listener {
                     event.getPlayer().sendMessage(ChatColor.RED + "" + ChatColor.BOLD + "You are not allowed to build in spawn!");
                     return;
                 }
-                UserInfo u = this.um.getUser(event.getPlayer().getUniqueId());
+                UserInfo u = Lavasurvival.INSTANCE.getUserManager().getUser(event.getPlayer().getUniqueId());
                 if (System.currentTimeMillis() - u.getLastBreak() <= 100)//So that two blocks don't break instantly, may need to be adjusted
                     return;
                 u.setLastBreak(System.currentTimeMillis());
@@ -331,13 +330,12 @@ public class PlayerListener implements Listener {
                     event.getPlayer().getInventory().setItemInMainHand(event.getPlayer().getInventory().getItemInMainHand().clone());
             }
         }
-        UserInfo u = this.um.getUser(event.getPlayer().getUniqueId());
-        u.incrementBlockCount();
+        Lavasurvival.INSTANCE.getUserManager().getUser(event.getPlayer().getUniqueId()).incrementBlockCount();
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void playerQuit(PlayerQuitEvent event) {
-        this.um.getUser(event.getPlayer().getUniqueId()).logOut();
+        Lavasurvival.INSTANCE.getUserManager().getUser(event.getPlayer().getUniqueId()).logOut();
         Lavasurvival.GGBAR.removePlayer(event.getPlayer());
         if (Gamemode.getCurrentGame().allDead() && !Gamemode.getCurrentGame().hasEnded())
             Gamemode.getCurrentGame().endRound();
@@ -353,8 +351,9 @@ public class PlayerListener implements Listener {
             return;
         }
 
-        this.um.addUser(player);
-        this.um.forceParseUser(player);
+        UserManager um = Lavasurvival.INSTANCE.getUserManager();
+        um.addUser(player);
+        um.forceParseUser(player);
         player.setLevel(0);
         player.setExp(0);
 
@@ -399,7 +398,7 @@ public class PlayerListener implements Listener {
         Location from = event.getFrom(), to = event.getTo();
         boolean locationChanged = Math.abs(from.getX() - to.getX()) > 0.1 || Math.abs(from.getY() - to.getY()) > 0.1 || Math.abs(from.getZ() - to.getZ()) > 0.1;
         if (locationChanged && Gamemode.getCurrentGame() != null && Gamemode.DAMAGE != 0 && Gamemode.getCurrentGame().isAlive(event.getPlayer())) {
-            UserInfo u = this.um.getUser(event.getPlayer().getUniqueId());
+            UserInfo u = Lavasurvival.INSTANCE.getUserManager().getUser(event.getPlayer().getUniqueId());
             if (((to.getBlock().getType().equals(Material.WATER) || to.getBlock().getType().equals(Material.STATIONARY_WATER)) && to.getBlock().hasMetadata("classic_block")) ||
                     ((to.getBlock().getRelative(BlockFace.UP).getType().equals(Material.WATER) || to.getBlock().getRelative(BlockFace.UP).getType().equals(Material.STATIONARY_WATER)) &&
                             to.getBlock().getRelative(BlockFace.UP).hasMetadata("classic_block"))) {
@@ -421,7 +420,7 @@ public class PlayerListener implements Listener {
             return;
         Location loc = event.getLocation().getBlock().getLocation();
         Bukkit.getOnlinePlayers().stream().filter(p -> Gamemode.getCurrentGame().isAlive(p) && (p.getLocation().getBlock().getLocation().equals(loc) || p.getLocation().getBlock().getRelative(BlockFace.UP).getLocation().equals(loc))).forEach(p -> {
-            UserInfo u = this.um.getUser(p.getUniqueId());
+            UserInfo u = Lavasurvival.INSTANCE.getUserManager().getUser(p.getUniqueId());
             if (!u.isInWater()) {
                 if (!PlayerStatusManager.isInvincible(p) && !p.getGameMode().equals(GameMode.CREATIVE) && !p.getGameMode().equals(GameMode.SPECTATOR))
                     ((CraftPlayer) p).getHandle().damageEntity(DamageSource.OUT_OF_WORLD, (float) Gamemode.DAMAGE);
@@ -439,7 +438,7 @@ public class PlayerListener implements Listener {
             Gamemode.getCurrentGame().setDead(event.getEntity());
             if (event.getDeathMessage().contains("fell out of the world"))
                 event.setDeathMessage(event.getDeathMessage().replace("fell out of the world", ChatColor.YELLOW + "died to the elements."));
-            UserInfo u = this.um.getUser(event.getEntity().getUniqueId());
+            UserInfo u = Lavasurvival.INSTANCE.getUserManager().getUser(event.getEntity().getUniqueId());
             u.setInWater(false);
             event.getDrops().clear();
             event.setDroppedExp(0);
