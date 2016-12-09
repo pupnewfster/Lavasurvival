@@ -21,6 +21,7 @@ import mkremins.fanciful.FancyMessage;
 import net.minecraft.server.v1_11_R1.IChatBaseComponent;
 import net.minecraft.server.v1_11_R1.PacketPlayOutTitle;
 import org.bukkit.*;
+import org.bukkit.attribute.Attribute;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.boss.BarColor;
@@ -178,6 +179,7 @@ public abstract class Gamemode {
                     }
                 }
                 //Restart
+                //Should this use Bukkit.spigot().restart(); instead of will that cause issues
                 Bukkit.getScheduler().scheduleSyncDelayedTask(Lavasurvival.INSTANCE, () -> Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "restart"), 20);
             }, 20 * 2);
             return;
@@ -726,8 +728,8 @@ public abstract class Gamemode {
         setAlive(player);
         player.teleport(new Location(getCurrentWorld(), getCurrentMap().getMapSpawn().getX(), getCurrentMap().getMapSpawn().getY(), getCurrentMap().getMapSpawn().getZ()));
         player.setGameMode(GameMode.SURVIVAL);
-        player.setMaxHealth(getHealth(Necessities.getInstance().getUM().getUser(player.getUniqueId()).getRank()));
-        player.setHealth(player.getMaxHealth());
+        player.getAttribute(Attribute.GENERIC_MAX_HEALTH).setBaseValue(getHealth(Necessities.getInstance().getUM().getUser(player.getUniqueId()).getRank()));
+        player.setHealth(player.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue());
         player.setGlowing(true);
         UserManager um = Lavasurvival.INSTANCE.getUserManager();
         UserInfo u = um.getUser(player.getUniqueId());

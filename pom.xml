@@ -34,7 +34,6 @@
         <module>classicphysics</module>
         <module>lavasurvival</module>
         <module>necessities</module>
-        <module>ubotpatcher</module>
     </modules>
 
 </project>

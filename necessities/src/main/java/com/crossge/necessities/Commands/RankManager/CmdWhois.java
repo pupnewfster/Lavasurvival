@@ -8,6 +8,7 @@ import com.crossge.necessities.Variables;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
+import org.bukkit.attribute.Attribute;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -60,7 +61,7 @@ public class CmdWhois implements RankCmd {
             sender.sendMessage(var.getMessages() + " - Permission nodes: " + ChatColor.RESET + permissions);
         if (u.getPlayer() != null) {
             Player p = u.getPlayer();
-            sender.sendMessage(var.getMessages() + " - Health: " + ChatColor.RESET + (int) p.getHealth() + "/" + (int) p.getMaxHealth());
+            sender.sendMessage(var.getMessages() + " - Health: " + ChatColor.RESET + (int) p.getHealth() + "/" + (int) p.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue());
             sender.sendMessage(var.getMessages() + " - Hunger: " + ChatColor.RESET + p.getFoodLevel() + "/20 (+" + (int) p.getSaturation() + " saturation)");
             sender.sendMessage(var.getMessages() + " - Exp: " + ChatColor.RESET + Utils.addCommas(p.getTotalExperience()) + " (Level " + p.getLevel() + ")");
             String location = "(" + p.getWorld().getName() + ", " + p.getLocation().getBlockX() + ", " + p.getLocation().getBlockY() + ", " + p.getLocation().getBlockZ() + ")";
