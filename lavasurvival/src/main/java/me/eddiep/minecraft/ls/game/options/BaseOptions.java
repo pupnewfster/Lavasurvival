@@ -5,6 +5,7 @@ import java.util.Random;
 public class BaseOptions {
     static final Random RANDOM = new Random();
 
+    @SuppressWarnings({"FieldCanBeLocal", "CanBeFinal"})
     private boolean isEnabled = true;
 
     @SuppressWarnings("unused")

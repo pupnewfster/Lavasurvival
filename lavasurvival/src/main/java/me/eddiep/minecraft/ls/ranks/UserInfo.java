@@ -2,6 +2,7 @@ package me.eddiep.minecraft.ls.ranks;
 
 import me.eddiep.minecraft.ls.Lavasurvival;
 import me.eddiep.minecraft.ls.game.Gamemode;
+import me.eddiep.minecraft.ls.game.items.LavaItem;
 import me.eddiep.minecraft.ls.game.status.PlayerStatusManager;
 import me.eddiep.minecraft.ls.system.BukkitUtils;
 import me.eddiep.minecraft.ls.system.PhysicsListener;
@@ -205,14 +206,26 @@ public class UserInfo {
         if (value && getPlayer() != null && Gamemode.getCurrentGame() != null && Gamemode.DAMAGE != 0 && Gamemode.getCurrentGame().isAlive(getPlayer()))
             this.taskID = Bukkit.getScheduler().scheduleSyncDelayedTask(Lavasurvival.INSTANCE, () -> {
                 if (isInWater() && getPlayer() != null) {
-                    if (!PlayerStatusManager.isInvincible(getPlayer()) && !getPlayer().getGameMode().equals(GameMode.CREATIVE) && !getPlayer().getGameMode().equals(GameMode.SPECTATOR))
-                        ((CraftPlayer) getPlayer()).getHandle().damageEntity(DamageSource.OUT_OF_WORLD, (float) Gamemode.DAMAGE);
+                    if (!PlayerStatusManager.isInvincible(getPlayer()) && !getPlayer().getGameMode().equals(GameMode.CREATIVE) && !getPlayer().getGameMode().equals(GameMode.SPECTATOR)) {
+                        damagePlayer();
+                    }
                     Block b = getPlayer().getLocation().getBlock();
                     setInWater(((b.getType().equals(Material.WATER) || b.getType().equals(Material.STATIONARY_WATER)) && b.hasMetadata("classic_block")) ||
                             ((b.getRelative(BlockFace.UP).getType().equals(Material.WATER) || b.getRelative(BlockFace.UP).getType().equals(Material.STATIONARY_WATER)) &&
                                     b.getRelative(BlockFace.UP).hasMetadata("classic_block")));
                 }
             }, (int) (20 * Gamemode.DAMAGE_FREQUENCY));
+    }
+
+    public void damagePlayer() {
+        if (getPlayer() == null)
+            return;
+        if (getPlayer().getHealth() - Gamemode.DAMAGE <= 0 && LavaItem.SECOND_CHANCE.isItem(getPlayer().getInventory().getItemInOffHand())) {
+            LavaItem.SECOND_CHANCE.consume(getPlayer());
+            getPlayer().getInventory().setItemInOffHand(null);
+            getPlayer().setHealth(1); //Set their health to half a heart to be in line with the totem mechanics
+        } else
+            ((CraftPlayer) getPlayer()).getHandle().damageEntity(DamageSource.OUT_OF_WORLD, (float) Gamemode.DAMAGE);
     }
 
     private Player getPlayer() {

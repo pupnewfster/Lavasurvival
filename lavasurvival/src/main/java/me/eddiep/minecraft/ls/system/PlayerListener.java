@@ -10,7 +10,6 @@ import me.eddiep.minecraft.ls.game.status.PlayerStatusManager;
 import me.eddiep.minecraft.ls.ranks.UserInfo;
 import me.eddiep.minecraft.ls.ranks.UserManager;
 import me.eddiep.minecraft.ls.system.bank.BankInventory;
-import net.minecraft.server.v1_11_R1.EntityPlayer;
 import net.minecraft.server.v1_11_R1.IChatBaseComponent;
 import net.minecraft.server.v1_11_R1.PacketPlayInClientCommand;
 import net.minecraft.server.v1_11_R1.PacketPlayOutTitle;
@@ -111,7 +110,8 @@ public class PlayerListener implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onPlayerDamage(EntityDamageEvent event) {
-        if (event.getEntity() instanceof Player && PlayerStatusManager.isInvincible((Player) event.getEntity())) {
+        if ((event.getEntity() instanceof Player && PlayerStatusManager.isInvincible((Player) event.getEntity())) || (Gamemode.getCurrentGame() != null &&
+                Gamemode.getCurrentGame().hasEnded())) {
             event.setCancelled(true);
             return;
         }
@@ -444,13 +444,9 @@ public class PlayerListener implements Listener {
             event.getDrops().clear();
             event.setDroppedExp(0);
             final Player p = event.getEntity();
-            final IChatBaseComponent subtitleJSON = IChatBaseComponent.ChatSerializer.a("{\"text\": \"§6Please wait for the next round to start!\"}");
-            final IChatBaseComponent titleJSON = IChatBaseComponent.ChatSerializer.a("{\"text\": \"" + deathMessages[rand.nextInt(deathMessages.length)] + "\"}");
             Bukkit.getScheduler().scheduleSyncDelayedTask(Lavasurvival.INSTANCE, () -> {
-                EntityPlayer ep = ((CraftPlayer) p).getHandle();
-                ep.playerConnection.a(new PacketPlayInClientCommand(PacketPlayInClientCommand.EnumClientCommand.PERFORM_RESPAWN));
-                ep.playerConnection.sendPacket(new PacketPlayOutTitle(PacketPlayOutTitle.EnumTitleAction.TITLE, titleJSON, 0, 60, 0));
-                ep.playerConnection.sendPacket(new PacketPlayOutTitle(PacketPlayOutTitle.EnumTitleAction.SUBTITLE, subtitleJSON));
+                ((CraftPlayer) p).getHandle().playerConnection.a(new PacketPlayInClientCommand(PacketPlayInClientCommand.EnumClientCommand.PERFORM_RESPAWN));
+                p.sendTitle(deathMessages[rand.nextInt(deathMessages.length)], ChatColor.GOLD + "Please wait for the next round to start!", 0, 60, 0);
                 p.teleport(Gamemode.getCurrentWorld().getSpawnLocation());
             }, 1);
         }

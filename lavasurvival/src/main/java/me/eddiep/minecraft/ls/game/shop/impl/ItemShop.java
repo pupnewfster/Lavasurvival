@@ -48,6 +48,11 @@ public class ItemShop extends Menu {
         buyItem(player, LavaItem.MAJOR_INVINCIBILITY);
     }
 
+    @MenuItem(slot = 5, item = @ItemStackAnnotation(material = Material.WOOD, name = ""))
+    public void secondChance(MenuPlayer player) {
+        buyItem(player, LavaItem.SECOND_CHANCE);
+    }
+
     private void buyItem(MenuPlayer player, LavaItem item) {
         ItemStack is = item.createItem();
         Player p = player.getBukkit();

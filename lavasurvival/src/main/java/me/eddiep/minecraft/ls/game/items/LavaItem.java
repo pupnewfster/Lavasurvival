@@ -15,13 +15,15 @@ public abstract class LavaItem {
             new MinorHeal(),
             new MajorHeal(),
             new MinorInvincibility(),
-            new MajorInvincibility()
+            new MajorInvincibility(),
+            new SecondChance()
     };
     public static final LavaItem GENEROSITY = ITEMS[0];
     public static final LavaItem MINOR_HEAL = ITEMS[1];
     public static final LavaItem MAJOR_HEAL = ITEMS[2];
     public static final LavaItem MINOR_INVINCIBILITY = ITEMS[3];
     public static final LavaItem MAJOR_INVINCIBILITY = ITEMS[4];
+    public static final LavaItem SECOND_CHANCE = ITEMS[5];
 
     public abstract boolean consume(Player owner);
 
@@ -41,7 +43,7 @@ public abstract class LavaItem {
     }
 
     public boolean isItem(ItemStack item) {
-        return item.getItemMeta().getDisplayName().equals(name());
+        return item != null && item.hasItemMeta() && item.getItemMeta().getDisplayName().equals(name());
     }
 
     @SuppressWarnings("unused")

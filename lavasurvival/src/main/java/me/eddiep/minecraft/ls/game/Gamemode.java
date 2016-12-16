@@ -18,8 +18,6 @@ import me.eddiep.minecraft.ls.system.FileUtils;
 import me.eddiep.minecraft.ls.system.PhysicsListener;
 import me.eddiep.minecraft.ls.system.PlayerListener;
 import mkremins.fanciful.FancyMessage;
-import net.minecraft.server.v1_11_R1.IChatBaseComponent;
-import net.minecraft.server.v1_11_R1.PacketPlayOutTitle;
 import org.bukkit.*;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.block.Block;
@@ -28,7 +26,6 @@ import org.bukkit.boss.BarColor;
 import org.bukkit.boss.BarFlag;
 import org.bukkit.boss.BarStyle;
 import org.bukkit.craftbukkit.v1_11_R1.boss.CraftBossBar;
-import org.bukkit.craftbukkit.v1_11_R1.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
@@ -397,12 +394,7 @@ public abstract class Gamemode {
                 winners.put(p.getUniqueId(), blockCount);
                 Lavasurvival.INSTANCE.depositPlayer(p, reward);
                 p.getPlayer().sendMessage(ChatColor.GREEN + "+ " + ChatColor.GOLD + "You won " + ChatColor.BOLD + reward + ChatColor.RESET + "" + ChatColor.GOLD + " GGs!");
-                IChatBaseComponent titleJSON = IChatBaseComponent.ChatSerializer.a("{\"text\": \"You won!\"}");
-                IChatBaseComponent subtitleJSON = IChatBaseComponent.ChatSerializer.a("{\"text\": \"§6§l" + reward + "§6 GGs!\"}");
-                PacketPlayOutTitle titlePacket = new PacketPlayOutTitle(PacketPlayOutTitle.EnumTitleAction.TITLE, titleJSON, 0, 60, 0);
-                PacketPlayOutTitle subtitlePacket = new PacketPlayOutTitle(PacketPlayOutTitle.EnumTitleAction.SUBTITLE, subtitleJSON);
-                ((CraftPlayer) p).getHandle().playerConnection.sendPacket(titlePacket);
-                ((CraftPlayer) p).getHandle().playerConnection.sendPacket(subtitlePacket);
+                p.sendTitle("You won!", ChatColor.GOLD + "" + ChatColor.BOLD + reward + ChatColor.GOLD + " GGs!", 0, 60, 0);
             }
 
             if (Necessities.isTracking()) {
@@ -748,11 +740,8 @@ public abstract class Gamemode {
             player.getInventory().addItem(Lavasurvival.INSTANCE.getRules());
         ShopFactory.validateInventory(inv);
         u.giveBoughtBlocks();
-        if (!getCurrentMap().getCreator().equals("")) {
-            IChatBaseComponent titleJSON = IChatBaseComponent.ChatSerializer.a("{\"text\": \"§6Map created by " + getCurrentMap().getCreator() + "\"}");
-            PacketPlayOutTitle titlePacket = new PacketPlayOutTitle(PacketPlayOutTitle.EnumTitleAction.TITLE, titleJSON, 0, 60, 0);
-            ((CraftPlayer) player).getHandle().playerConnection.sendPacket(titlePacket);
-        }
+        if (!getCurrentMap().getCreator().equals(""))
+            player.sendTitle(ChatColor.GOLD + "Map created by " + getCurrentMap().getCreator(), "", 0, 60, 0);
     }
 
     public void addBars(Player p) {

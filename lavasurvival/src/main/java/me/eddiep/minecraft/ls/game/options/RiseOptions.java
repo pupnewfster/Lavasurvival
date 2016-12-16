@@ -2,6 +2,7 @@ package me.eddiep.minecraft.ls.game.options;
 
 import me.eddiep.minecraft.ls.game.LavaMap;
 
+@SuppressWarnings("CanBeFinal")
 public class RiseOptions extends FloodOptions {
     int minRiseTimeSeconds = 15, maxRiseTimeSeconds = 30, layerCount = 1;
 

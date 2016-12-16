@@ -26,6 +26,7 @@ class PlayerStatus {
                 this.isInvincible = false;
                 this.invincibleStart = 0;
                 this.invincibleDuration = 0;
+                p.setExp(0);
             }
         }
     }
