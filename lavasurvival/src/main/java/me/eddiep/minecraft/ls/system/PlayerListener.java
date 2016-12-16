@@ -10,9 +10,11 @@ import me.eddiep.minecraft.ls.game.status.PlayerStatusManager;
 import me.eddiep.minecraft.ls.ranks.UserInfo;
 import me.eddiep.minecraft.ls.ranks.UserManager;
 import me.eddiep.minecraft.ls.system.bank.BankInventory;
-import net.minecraft.server.v1_11_R1.*;
+import net.minecraft.server.v1_11_R1.EntityPlayer;
+import net.minecraft.server.v1_11_R1.IChatBaseComponent;
+import net.minecraft.server.v1_11_R1.PacketPlayInClientCommand;
+import net.minecraft.server.v1_11_R1.PacketPlayOutTitle;
 import org.bukkit.*;
-import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.craftbukkit.v1_11_R1.entity.CraftPlayer;
@@ -117,7 +119,7 @@ public class PlayerListener implements Listener {
             if (!event.getCause().equals(EntityDamageEvent.DamageCause.VOID)) {
                 event.setCancelled(true);
                 if (event.getCause().equals(EntityDamageEvent.DamageCause.LAVA))
-                    ((CraftPlayer) event.getEntity()).getHandle().damageEntity(DamageSource.OUT_OF_WORLD, (float) Gamemode.DAMAGE);
+                    Lavasurvival.INSTANCE.getUserManager().getUser(event.getEntity().getUniqueId()).damagePlayer();
                 else if (event.getCause().equals(EntityDamageEvent.DamageCause.FIRE) || event.getCause().equals(EntityDamageEvent.DamageCause.FIRE_TICK))
                     event.getEntity().setFireTicks(0);
             }
@@ -404,7 +406,7 @@ public class PlayerListener implements Listener {
                             to.getBlock().getRelative(BlockFace.UP).hasMetadata("classic_block"))) {
                 if (!u.isInWater()) {
                     if (!PlayerStatusManager.isInvincible(event.getPlayer()) && !event.getPlayer().getGameMode().equals(GameMode.CREATIVE) && !event.getPlayer().getGameMode().equals(GameMode.SPECTATOR))
-                        ((CraftPlayer) event.getPlayer()).getHandle().damageEntity(DamageSource.OUT_OF_WORLD, (float) Gamemode.DAMAGE);
+                        u.damagePlayer();
                     u.setInWater(true);
                 }
             } else if (u.isInWater())
@@ -423,12 +425,11 @@ public class PlayerListener implements Listener {
             UserInfo u = Lavasurvival.INSTANCE.getUserManager().getUser(p.getUniqueId());
             if (!u.isInWater()) {
                 if (!PlayerStatusManager.isInvincible(p) && !p.getGameMode().equals(GameMode.CREATIVE) && !p.getGameMode().equals(GameMode.SPECTATOR))
-                    ((CraftPlayer) p).getHandle().damageEntity(DamageSource.OUT_OF_WORLD, (float) Gamemode.DAMAGE);
+                    u.damagePlayer();
                 u.setInWater(true);
             }
         });
     }
-
 
     private static final String[] deathMessages = new String[]{"§c§lWasted!", "§a§lBetter luck next time!", "§c§lYou died!", "§c§lrip."};
 
