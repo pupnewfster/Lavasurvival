@@ -1,7 +1,6 @@
 package me.eddiep.handles.logic;
 
 import me.eddiep.ClassicPhysics;
-import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
@@ -19,13 +18,10 @@ abstract class AbstractLogicContainer implements LogicContainer {
     private boolean ticking;
 
     @Override
-    public synchronized void queueBlock(Location location) {
-        World containingWorld = location.getWorld();
-        if (Bukkit.getWorld(containingWorld.getName()) == null) {
-            this.worldQueues.remove(containingWorld);
+    public void queueBlock(Location location) {
+        if (location == null || location.getWorld() == null)
             return;
-        }
-
+        World containingWorld = location.getWorld();
         Queue<Location> queue;
         if (this.worldQueues.containsKey(containingWorld)) {
             queue = this.worldQueues.get(containingWorld);
@@ -82,17 +78,10 @@ abstract class AbstractLogicContainer implements LogicContainer {
     }
 
     @Override
-    public void blockUpdate(Location location) {
-        if (doesHandle(location.getBlock().getType()))
-            queueBlock(location);
-    }
-
-    @Override
     public void unloadFor(World world) {
         unloadQueue.add(world);
     }
 
-    @SuppressWarnings("unused")
     protected abstract void tickForBlock(Location location);
 
     void placeClassicBlock(Material material, Location location, Location from) {

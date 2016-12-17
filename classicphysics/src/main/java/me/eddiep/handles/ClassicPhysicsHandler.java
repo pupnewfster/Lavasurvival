@@ -93,7 +93,7 @@ public final class ClassicPhysicsHandler implements Listener {
             else if (size == 64)
                 packets.add(new PacketPlayOutMapChunk(((CraftWorld) this.world).getHandle().getChunkAt((int) (this.l >> 32), (int) this.l), size));
             else if (size < 64)
-                packets.add(new PacketPlayOutMultiBlockChange(size, getChanged(this.changes.subList(0, 64 > size ? size : 64)), ((CraftWorld) this.world).getHandle().getChunkAt((int) (this.l >> 32), (int) this.l)));
+                packets.add(new PacketPlayOutMultiBlockChange(size, getChanged(this.changes), ((CraftWorld) this.world).getHandle().getChunkAt((int) (this.l >> 32), (int) this.l)));
             else {
                 int i = 0, end;
                 while (i < size) {
@@ -151,7 +151,7 @@ public final class ClassicPhysicsHandler implements Listener {
     private final BukkitRunnable BLOCK_UPDATE_TICK = new BukkitRunnable() {
         @Override
         public void run() {
-            if (running)
+            if (running) //TODO: See if some of this can be made async to improve behavior with large amounts of block updates
                 return;
             running = true;
             for (ToAndFrom taf : locations.keySet()) {
@@ -229,7 +229,7 @@ public final class ClassicPhysicsHandler implements Listener {
                 }
             else
                 chunks.clear();
-            if (!packets.isEmpty())
+            if (!packets.isEmpty()) //TODO figure out why sometimes the packet does not get sent. Is it some over max amount?
                 for (Player p : Bukkit.getOnlinePlayers()) {
                     if (removePrevious)
                         break;
@@ -390,7 +390,10 @@ public final class ClassicPhysicsHandler implements Listener {
                     if (!newLoc.getBlock().hasMetadata("classic_block"))//|| !newLoc.getBlock().isLiquid()
                         continue;
                     for (LogicContainerHolder holder : logicContainers)
-                        holder.container.blockUpdate(newLoc);
+                        if (holder.container.doesHandle(newLoc.getBlock().getType())) {
+                            holder.container.queueBlock(newLoc);
+                            break;
+                        }
                 }
     }
 
