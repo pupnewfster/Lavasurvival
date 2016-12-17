@@ -269,7 +269,6 @@ public class JanetSlack {
         temp.add("!mute <name> ~ Mutes and unmutes <name>.");
         temp.add("!showchat ~ Toggles showing the in game chat. (Only available in private messages)");
         temp.add("!tps ~ Shows the in game ticks per second, and memory usage.");
-        temp.add("!reload ~ Reloads the server.");
         temp.add("!restart ~ Restarts the server.");
         temp.add("!consolecmd <command> ~ Perform a command through the console.");
         this.helpLists.put(1, (ArrayList<String>) temp.clone());//Admin
@@ -669,10 +668,6 @@ public class JanetSlack {
                     m += "World: " + w.getName() + "\n";
                     m += "    Entities Loaded: " + w.getEntities().size() + "\n";
                 }
-            } else if (message.startsWith("!reload") && info.isAdmin()) {
-                sendMessage("Reloading...", isPM, info);
-                Bukkit.getScheduler().scheduleSyncDelayedTask(Necessities.getInstance(), Bukkit::reload);
-                return;
             } else if (message.startsWith("!restart") && info.isAdmin()) {
                 sendMessage("Restarting...", isPM, info);
                 Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "endgame");

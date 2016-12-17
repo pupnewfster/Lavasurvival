@@ -72,7 +72,7 @@ class Initialization {
                     } catch (Exception ignored) {
                     }
                 }
-                Bukkit.getConsoleSender().sendMessage(ChatColor.AQUA + "Setting custom deny messages.");
+                Bukkit.getConsoleSender().sendMessage(ChatColor.AQUA + "Custom deny messages set.");
             });
     }
 

@@ -92,9 +92,8 @@ class Listeners implements Listener {
             } catch (Exception ignored) {
             }
         }
-        e.setJoinMessage((ChatColor.GREEN + " + " + ChatColor.YELLOW + ChatColor.translateAlternateColorCodes('&',
-                configLogIn.getString(uuid.toString()).replaceAll("\\{NAME}", p.getDisplayName()).replaceAll("\\{RANK}",
-                        um.getUser(p.getUniqueId()).getRank().getTitle()))).replaceAll(ChatColor.RESET + "", ChatColor.YELLOW + ""));
+        e.setJoinMessage((ChatColor.GREEN + " + " + ChatColor.YELLOW + ChatColor.translateAlternateColorCodes('&', configLogIn.getString(uuid.toString()).replaceAll("\\{NAME}",
+                p.getDisplayName()).replaceAll("\\{RANK}", um.getUser(p.getUniqueId()).getRank().getTitle()))).replaceAll(ChatColor.RESET + "", ChatColor.YELLOW + ""));
         Necessities.getBot().logIn(uuid);
         CmdHide hide = Necessities.getHide();
         hide.playerJoined(p);
@@ -127,9 +126,8 @@ class Listeners implements Listener {
         UUID uuid = e.getPlayer().getUniqueId();
         YamlConfiguration configLogOut = YamlConfiguration.loadConfiguration(new File(Necessities.getInstance().getDataFolder(), "logoutmessages.yml"));
         UserManager um = Necessities.getUM();
-        e.setQuitMessage((ChatColor.RED + " - " + ChatColor.YELLOW + ChatColor.translateAlternateColorCodes('&',
-                configLogOut.getString(uuid.toString()).replaceAll("\\{NAME}", e.getPlayer().getDisplayName()).replaceAll("\\{RANK}",
-                        um.getUser(e.getPlayer().getUniqueId()).getRank().getTitle()))).replaceAll(ChatColor.RESET + "", ChatColor.YELLOW + ""));
+        e.setQuitMessage((ChatColor.RED + " - " + ChatColor.YELLOW + ChatColor.translateAlternateColorCodes('&', configLogOut.getString(uuid.toString()).replaceAll("\\{NAME}",
+                e.getPlayer().getDisplayName()).replaceAll("\\{RANK}", um.getUser(e.getPlayer().getUniqueId()).getRank().getTitle()))).replaceAll(ChatColor.RESET + "", ChatColor.YELLOW + ""));
         CmdHide hide = Necessities.getHide();
         if (hide.isHidden(e.getPlayer())) {
             Bukkit.broadcast(Necessities.getVar().getMessages() + "To Ops -" + e.getQuitMessage(), "Necessities.opBroadcast");
@@ -155,7 +153,7 @@ class Listeners implements Listener {
         YamlConfiguration config = Necessities.getInstance().getConfig();
         if (config.contains("Necessities.WorldManager") && config.getBoolean("Necessities.WorldManager")) {
             Location from = e.getFrom(), to = e.getTo();
-            if (Math.abs(from.getX() - to.getX()) > 0.1 ||Math.abs(from.getY() - to.getY()) > 0.1 || Math.abs(from.getZ() - to.getZ()) > 0.1) {
+            if (Math.abs(from.getX() - to.getX()) > 0.1 || Math.abs(from.getY() - to.getY()) > 0.1 || Math.abs(from.getZ() - to.getZ()) > 0.1) {
                 Location destination = Necessities.getPM().portalDestination(to);
                 if (destination != null)
                     e.getPlayer().teleport(destination);
@@ -329,8 +327,7 @@ class Listeners implements Listener {
     public void onSneak(PlayerToggleSneakEvent e) {
         if (e.isCancelled())
             return;
-        User u = Necessities.getUM().getUser(e.getPlayer().getUniqueId());
-        Hat h = u.getHat();
+        Hat h = Necessities.getUM().getUser(e.getPlayer().getUniqueId()).getHat();
         if (h != null) {
             if (e.isSneaking())
                 h.move(0, -0.25, 0, 0, 0);

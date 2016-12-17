@@ -305,12 +305,11 @@ public final class ClassicPhysicsHandler implements Listener {
     public void onBlockPlace(BlockPlaceEvent event) {
         if (ClassicPhysics.TYPE == PhysicsType.DEFAULT)
             return;
-
         if (lplacers.contains(event.getPlayer())) {
-            forcePlaceClassicBlockAt(event.getBlockPlaced().getLocation(), Material.LAVA);
+            forcePlaceClassicBlockAt(event.getBlockPlaced().getLocation(), Material.STATIONARY_LAVA);
             event.setCancelled(true);
         } else if (wplacers.contains(event.getPlayer())) {
-            forcePlaceClassicBlockAt(event.getBlockPlaced().getLocation(), Material.WATER);
+            forcePlaceClassicBlockAt(event.getBlockPlaced().getLocation(), Material.STATIONARY_WATER);
             event.setCancelled(true);
         }
         if (event.getBlock().hasMetadata("classic_block"))
@@ -473,9 +472,8 @@ public final class ClassicPhysicsHandler implements Listener {
     public void onPhysicsUpdate(BlockPhysicsEvent event) {
         if (ClassicPhysics.TYPE.equals(PhysicsType.DEFAULT))
             return;
-        if (!event.getBlock().getType().toString().contains("DOOR") || !event.getChangedType().toString().contains("PLATE") ||
-                (event.getBlock().getType().toString().contains("DOOR") && event.getChangedType().toString().contains("PLATE") &&
-                        !event.getBlock().getType().equals(event.getBlock().getRelative(BlockFace.UP).getType())))
+        if (!event.getBlock().getType().toString().contains("DOOR") || !event.getChangedType().toString().contains("PLATE") || (event.getBlock().getType().toString().contains("DOOR") &&
+                event.getChangedType().toString().contains("PLATE") && !event.getBlock().getType().equals(event.getBlock().getRelative(BlockFace.UP).getType())))
             event.setCancelled(true);
     }
 

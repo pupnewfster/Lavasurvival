@@ -73,21 +73,21 @@ public class PlayerListener implements Listener {
                 else
                     player.sendMessage(ChatColor.RED + "" + ChatColor.BOLD + "You already voted!");
                 return;
+            } else {
+                try {
+                    int number = Integer.parseInt(event.getMessage());
+                    game.voteFor(number - 1, player);
+                    return;
+                } catch (Throwable t) {
+                    String map = event.getMessage();
+                    List<LavaMap> maps = game.getMapsInVote();
+                    for (int i = 0; i < maps.size(); i++)
+                        if (map.equalsIgnoreCase(maps.get(i).getName())) {
+                            game.voteFor(i, player);
+                            return;
+                        }
+                }
             }
-            try {
-                int number = Integer.parseInt(event.getMessage());
-                game.voteFor(number - 1, player);
-                return;
-            } catch (Throwable t) {
-                String map = event.getMessage();
-                List<LavaMap> maps = game.getMapsInVote();
-                for (int i = 0; i < maps.size(); i++)
-                    if (map.equalsIgnoreCase(maps.get(i).getName())) {
-                        game.voteFor(i, player);
-                        return;
-                    }
-            }
-
             if (!player.hasPermission("lavasurvival.voteSpeak"))
                 player.sendMessage(ChatColor.RED + "No talking during the vote!");
             else
@@ -97,21 +97,13 @@ public class PlayerListener implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void blockBreak(BlockBreakEvent event) {
-        if (Lavasurvival.INSTANCE.getSetups().containsKey(event.getPlayer().getUniqueId()))
-            return;
-        if (!event.getPlayer().getGameMode().equals(GameMode.CREATIVE))//Allows players in creative to edit maps
+        if (Gamemode.getCurrentGame() != null) //Cancel it mainly is only called so that classic physics knows to update around it
             event.setCancelled(true);
-        Material material = event.getBlock().getType();
-        if (invalidBlocks.contains(material) || (Gamemode.getCurrentGame() != null && Gamemode.getCurrentGame().isAlive(event.getPlayer())))
-            return;
-        if (Gamemode.getCurrentGame() != null)
-            event.getPlayer().sendMessage("You are " + ChatColor.RED + "DEAD" + ChatColor.RESET + ". You cannot delete or place blocks!");
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onPlayerDamage(EntityDamageEvent event) {
-        if ((event.getEntity() instanceof Player && PlayerStatusManager.isInvincible((Player) event.getEntity())) || (Gamemode.getCurrentGame() != null &&
-                Gamemode.getCurrentGame().hasEnded())) {
+        if ((event.getEntity() instanceof Player && PlayerStatusManager.isInvincible((Player) event.getEntity())) || (Gamemode.getCurrentGame() != null && Gamemode.getCurrentGame().hasEnded())) {
             event.setCancelled(true);
             return;
         }
@@ -132,9 +124,12 @@ public class PlayerListener implements Listener {
         if (is == null || is.getType().equals(Material.AIR))
             return;
         IChatBaseComponent infoJSON;
-        if (is.hasItemMeta() && is.getItemMeta().hasLore() && is.getItemMeta().getLore().size() == 1)
-            infoJSON = IChatBaseComponent.ChatSerializer.a("{\"text\": \"" + is.getItemMeta().getLore().get(0) + "\"}");
-        else {
+        if (is.hasItemMeta() && is.getItemMeta().hasLore() && !is.getItemMeta().getLore().get(0).contains("MeltTime")) {
+            String lore = "";
+            for (String l : is.getItemMeta().getLore())
+                lore += l + " ";
+            infoJSON = IChatBaseComponent.ChatSerializer.a("{\"text\": \"" + lore.trim() + "\"}");
+        } else {
             String lavaTime = ChatColor.GOLD + "Lava MeltTime" + ChatColor.RESET + ": " + PhysicsListener.getLavaMeltRangeTimeAsString(is.getData()),
                     waterTime = ChatColor.BLUE + "Water MeltTime" + ChatColor.RESET + ": " + PhysicsListener.getWaterMeltRangeTimeAsString(is.getData());
             infoJSON = IChatBaseComponent.ChatSerializer.a("{\"text\": \"" + lavaTime + "    " + waterTime + "\"}");
@@ -150,8 +145,6 @@ public class PlayerListener implements Listener {
             return;
         if ((event.getAction().equals(Action.RIGHT_CLICK_BLOCK) || event.getAction().equals(Action.RIGHT_CLICK_AIR)) && event.getItem() != null && event.getItem().getType().equals(Material.WRITTEN_BOOK))
             return;//Allow players to read the rule book
-        if (event.getPlayer().getGameMode().equals(GameMode.CREATIVE))//Allows players in creative to edit maps without being warned if they are too high
-            return;
         if (Gamemode.getCurrentGame() != null && Gamemode.getCurrentGame().isDead(event.getPlayer()))
             event.setCancelled(true);
         else if (Gamemode.getCurrentGame() != null && Gamemode.getCurrentGame().isAlive(event.getPlayer())) {
@@ -260,10 +253,8 @@ public class PlayerListener implements Listener {
         for (LavaItem item : LavaItem.ITEMS) {
             if (item.isItem(itemStack)) {
                 event.setCancelled(true);
-                if (item.consume(event.getPlayer())) {
-                    int index = event.getPlayer().getInventory().first(itemStack);
-                    event.getPlayer().getInventory().clear(index);
-                }
+                if (item.consume(event.getPlayer()))
+                    event.getPlayer().getInventory().clear(event.getPlayer().getInventory().first(itemStack));
                 break;
             }
         }
@@ -271,7 +262,7 @@ public class PlayerListener implements Listener {
 
     @EventHandler(priority = EventPriority.LOW)
     public void inventoryClosed(InventoryCloseEvent e) {
-        final Player p = (Player) e.getPlayer();
+        Player p = (Player) e.getPlayer();
         BankInventory view = BankInventory.from(p);
         if (view != null)
             view.end(p);
@@ -279,7 +270,7 @@ public class PlayerListener implements Listener {
 
     @EventHandler(priority = EventPriority.LOW)
     public void inventoryClicked(InventoryClickEvent e) {
-        final Player p = (Player) e.getWhoClicked();
+        Player p = (Player) e.getWhoClicked();
         int clickedSlot = e.getView().convertSlot(e.getRawSlot());
         BankInventory view = BankInventory.from(p);
         if (view != null) {
@@ -305,12 +296,10 @@ public class PlayerListener implements Listener {
     public void blockPlace(BlockPlaceEvent event) {
         if (event.getPlayer() == null || Lavasurvival.INSTANCE.getSetups().containsKey(event.getPlayer().getUniqueId()))
             return;
-        if (event.getPlayer().getGameMode().equals(GameMode.CREATIVE))//Allows players in creative to edit maps
-            return;
-        if (Gamemode.getCurrentGame() != null && Gamemode.getCurrentGame().isAlive(event.getPlayer()) &&
-                ((event.getBlock().getType().equals(Material.WOODEN_DOOR) && event.getPlayer().getInventory().contains(Material.WOOD_DOOR)) || event.getBlock().getType() != null ||
-                        event.getPlayer().getInventory().contains(event.getBlock().getType()) || event.getPlayer().getInventory().contains(Material.getMaterial(event.getBlock().getType().toString() + "_ITEM")) ||
-                        event.getPlayer().getInventory().contains(Material.getMaterial(event.getBlock().getType().toString().replaceAll("DOOR_BLOCK", "DOOR"))))) {
+        if (Gamemode.getCurrentGame() != null && Gamemode.getCurrentGame().isAlive(event.getPlayer()) && ((event.getBlock().getType().equals(Material.WOODEN_DOOR) &&
+                event.getPlayer().getInventory().contains(Material.WOOD_DOOR)) || event.getBlock().getType() != null || event.getPlayer().getInventory().contains(event.getBlock().getType()) ||
+                event.getPlayer().getInventory().contains(Material.getMaterial(event.getBlock().getType().toString() + "_ITEM")) ||
+                event.getPlayer().getInventory().contains(Material.getMaterial(event.getBlock().getType().toString().replaceAll("DOOR_BLOCK", "DOOR"))))) {
             if (event.getBlock().getLocation().getBlockY() >= Gamemode.getCurrentMap().getLavaY()) {
                 event.getPlayer().sendMessage(ChatColor.RED + "" + ChatColor.BOLD + "You are building too high!");
                 event.setBuild(false);
@@ -374,9 +363,6 @@ public class PlayerListener implements Listener {
                 if (!player.getLocation().getBlock().hasMetadata("classic_block") && !player.getEyeLocation().getBlock().hasMetadata("classic_block"))
                     player.teleport(Gamemode.getCurrentWorld().getSpawnLocation().clone());
             }
-        }
-
-        if (Gamemode.getCurrentGame() != null) {
             event.getPlayer().setScoreboard(Gamemode.getScoreboard());
             Gamemode.getCurrentGame().addBars(event.getPlayer());
         }
@@ -397,9 +383,11 @@ public class PlayerListener implements Listener {
     @SuppressWarnings("ConstantConditions")
     @EventHandler(priority = EventPriority.HIGHEST)
     public void playerMove(PlayerMoveEvent event) {
-        Location from = event.getFrom(), to = event.getTo();
-        boolean locationChanged = Math.abs(from.getX() - to.getX()) > 0.1 || Math.abs(from.getY() - to.getY()) > 0.1 || Math.abs(from.getZ() - to.getZ()) > 0.1;
-        if (locationChanged && Gamemode.getCurrentGame() != null && Gamemode.DAMAGE != 0 && Gamemode.getCurrentGame().isAlive(event.getPlayer())) {
+        if (Gamemode.getCurrentGame() != null && Gamemode.DAMAGE != 0 && Gamemode.getCurrentGame().isAlive(event.getPlayer())) {
+            Location from = event.getFrom(), to = event.getTo();
+            boolean locationChanged = Math.abs(from.getX() - to.getX()) > 0.1 || Math.abs(from.getY() - to.getY()) > 0.1 || Math.abs(from.getZ() - to.getZ()) > 0.1;
+            if (!locationChanged)
+                return;
             UserInfo u = Lavasurvival.INSTANCE.getUserManager().getUser(event.getPlayer().getUniqueId());
             if (((to.getBlock().getType().equals(Material.WATER) || to.getBlock().getType().equals(Material.STATIONARY_WATER)) && to.getBlock().hasMetadata("classic_block")) ||
                     ((to.getBlock().getRelative(BlockFace.UP).getType().equals(Material.WATER) || to.getBlock().getRelative(BlockFace.UP).getType().equals(Material.STATIONARY_WATER)) &&
@@ -417,8 +405,10 @@ public class PlayerListener implements Listener {
     @SuppressWarnings("ConstantConditions")
     @EventHandler(priority = EventPriority.HIGHEST)
     public void classicBlockPlace(ClassicBlockPlaceEvent event) {
+        if (Gamemode.getCurrentGame() != null && Gamemode.DAMAGE != 0)
+            return;
         Material type = event.getLocation().getBlock().getType();
-        if (Gamemode.getCurrentGame() != null && Gamemode.DAMAGE != 0 && !type.equals(Material.WATER) && !type.equals(Material.STATIONARY_WATER))
+        if (!type.equals(Material.WATER) && !type.equals(Material.STATIONARY_WATER))
             return;
         Location loc = event.getLocation().getBlock().getLocation();
         Bukkit.getOnlinePlayers().stream().filter(p -> Gamemode.getCurrentGame().isAlive(p) && (p.getLocation().getBlock().getLocation().equals(loc) || p.getLocation().getBlock().getRelative(BlockFace.UP).getLocation().equals(loc))).forEach(p -> {
@@ -431,11 +421,12 @@ public class PlayerListener implements Listener {
         });
     }
 
-    private static final String[] deathMessages = new String[]{"§c§lWasted!", "§a§lBetter luck next time!", "§c§lYou died!", "§c§lrip."};
+    private static final String[] deathMessages = new String[]{ChatColor.RED + "" + ChatColor.BOLD + "Wasted!", ChatColor.GREEN + "" + ChatColor.BOLD + "Better luck next time!",
+            ChatColor.RED + "" + ChatColor.BOLD + "You died!", ChatColor.RED + "" + ChatColor.BOLD + "rip."};
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void playerDeath(PlayerDeathEvent event) {
-        if (Gamemode.getCurrentGame() != null) {
+        if (Gamemode.getCurrentGame() != null && Gamemode.getCurrentGame().isAlive(event.getEntity())) {
             Gamemode.getCurrentGame().setDead(event.getEntity());
             if (event.getDeathMessage().contains("fell out of the world"))
                 event.setDeathMessage(event.getDeathMessage().replace("fell out of the world", ChatColor.YELLOW + "died to the elements."));
