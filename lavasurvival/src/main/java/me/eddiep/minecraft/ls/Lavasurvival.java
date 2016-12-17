@@ -145,7 +145,10 @@ public class Lavasurvival extends JavaPlugin {
             log("Stopping game..");
             Gamemode.getCurrentGame().forceEnd();
             log("Cleaning up..");
-            ubotCancelToken.cancel();
+            try {
+                ubotCancelToken.cancel();
+            } catch (Exception ignored) { //If ubot was never initialized don't show an error message
+            }
             Gamemode.cleanup();
             ShopFactory.cleanup();
             this.setups.keySet().forEach(uuid -> this.setups.get(uuid).end());

@@ -7,7 +7,6 @@ import com.crossge.necessities.RankManager.User;
 import com.crossge.necessities.RankManager.UserManager;
 import org.bukkit.*;
 import org.bukkit.block.CommandBlock;
-import org.bukkit.command.PluginCommand;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -148,18 +147,19 @@ class Listeners implements Listener {
     public void onPlayerMove(final PlayerMoveEvent e) {
         if (e.isCancelled())
             return;
-        User u = Necessities.getUM().getUser(e.getPlayer().getUniqueId());
-        Location from = e.getFrom();
-        Location to = e.getTo();
-        Hat h = u.getHat();
-        if (h != null)
+        Hat h = Necessities.getUM().getUser(e.getPlayer().getUniqueId()).getHat();
+        if (h != null) {
+            Location from = e.getFrom(), to = e.getTo();
             h.move(to.getX() - from.getX(), to.getY() - from.getY(), to.getZ() - from.getZ(), to.getYaw() - from.getYaw(), to.getPitch() - from.getPitch());
+        }
         YamlConfiguration config = Necessities.getInstance().getConfig();
-        boolean locationChanged = Math.abs(from.getX() - to.getX()) > 0.1 || Math.abs(from.getY() - to.getY()) > 0.1 || Math.abs(from.getZ() - to.getZ()) > 0.1;
-        if (config.contains("Necessities.WorldManager") && config.getBoolean("Necessities.WorldManager") && locationChanged) {
-            Location destination = Necessities.getPM().portalDestination(to);
-            if (destination != null)
-                e.getPlayer().teleport(destination);
+        if (config.contains("Necessities.WorldManager") && config.getBoolean("Necessities.WorldManager")) {
+            Location from = e.getFrom(), to = e.getTo();
+            if (Math.abs(from.getX() - to.getX()) > 0.1 ||Math.abs(from.getY() - to.getY()) > 0.1 || Math.abs(from.getZ() - to.getZ()) > 0.1) {
+                Location destination = Necessities.getPM().portalDestination(to);
+                if (destination != null)
+                    e.getPlayer().teleport(destination);
+            }
         }
     }
 
@@ -277,9 +277,8 @@ class Listeners implements Listener {
 
     @EventHandler
     public void onPlayerDeath(PlayerDeathEvent e) {
-        Player player = e.getEntity().getPlayer();
-        if (player != null)
-            Necessities.getBot().logDeath(player.getUniqueId(), e.getDeathMessage());
+        if (e.getEntity() != null)
+            Necessities.getBot().logDeath(e.getEntity().getUniqueId(), e.getDeathMessage());
     }
 
     @EventHandler
@@ -287,26 +286,12 @@ class Listeners implements Listener {
         if (e.isCancelled())
             return;
         Player player = e.getPlayer();
-        if (!e.getMessage().contains("login") && !e.getMessage().contains("register")) {
-            Necessities.getSpy().broadcast(player.getName(), e.getMessage());
-            String message = Necessities.getBot().logCom(player.getUniqueId(), e.getMessage());
+        Necessities.getSpy().broadcast(player.getName(), e.getMessage());
+        String message = Necessities.getBot().logCom(player.getUniqueId(), e.getMessage());
+        if (message.startsWith("/tps"))
+            e.setMessage(message.replaceFirst("tps", "necessities:tps"));
+        else
             e.setMessage(message);
-            if (e.getMessage().startsWith("/tps"))
-                e.setMessage(e.getMessage().replaceFirst("tps", "necessities:tps"));
-            YamlConfiguration config = Necessities.getInstance().getConfig();
-            if (config.contains("Necessities.customDeny") && config.getBoolean("Necessities.customDeny")) {
-                PluginCommand pc = null;
-                try {
-                    pc = Bukkit.getPluginCommand(e.getMessage().split(" ")[0].replaceFirst("/", ""));
-                } catch (Exception ignored) {
-                }//Invalid command
-                if (pc != null && !pc.testPermissionSilent(player)) {
-                    Variables var = Necessities.getVar();
-                    player.sendMessage(var.getEr() + "Error: " + var.getErMsg() + "You do not have permission to perform this command.");
-                    e.setCancelled(true);
-                }
-            }
-        }
     }
 
     @EventHandler
@@ -325,12 +310,11 @@ class Listeners implements Listener {
     public void onPlayerTeleport(PlayerTeleportEvent e) {
         if (e.isCancelled())
             return;
-        final User u = Necessities.getUM().getUser(e.getPlayer().getUniqueId());
-        Hat h = u.getHat();
+        Hat h = Necessities.getUM().getUser(e.getPlayer().getUniqueId()).getHat();
         if (h != null) {
             if (!e.getFrom().getWorld().equals(e.getTo().getWorld())) {
                 try {
-                    Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(Necessities.getInstance(), u::respawnHat);
+                    Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(Necessities.getInstance(), Necessities.getUM().getUser(e.getPlayer().getUniqueId())::respawnHat);
                 } catch (Exception ignored) {
                 }
             } else {

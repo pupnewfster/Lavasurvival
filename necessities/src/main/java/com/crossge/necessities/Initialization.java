@@ -2,10 +2,15 @@ package com.crossge.necessities;
 
 import com.crossge.necessities.Hats.HatType;
 import org.apache.commons.io.FileUtils;
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.command.PluginCommand;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.plugin.Plugin;
 
 import java.io.File;
 import java.util.Collections;
+import java.util.Map;
 
 class Initialization {
     @SuppressWarnings("ResultOfMethodCallIgnored")
@@ -50,6 +55,25 @@ class Initialization {
         Necessities.getSlack().init();
         Necessities.getAI().initiate();
         Necessities.getAnnouncer().init();
+
+        if (config.contains("Necessities.customDeny") && config.getBoolean("Necessities.customDeny")) //At the moment only is checked on startup
+            Bukkit.getScheduler().scheduleSyncDelayedTask(Necessities.getInstance(), () -> {
+                Bukkit.getConsoleSender().sendMessage(ChatColor.AQUA + "Setting custom deny messages.");
+                String msg = Necessities.getVar().getEr() + "Error: " + Necessities.getVar().getErMsg() + "You do not have permission to perform this command.";
+                for (Plugin p : Bukkit.getPluginManager().getPlugins()) {
+                    try {
+                        Map<String, Map<String, Object>> cmds = p.getDescription().getCommands();
+                        if (cmds != null)
+                            for (String k : cmds.keySet()) {
+                                PluginCommand pc = Bukkit.getPluginCommand(p.getName() + ":" + k);
+                                if (pc != null)
+                                    pc.setPermissionMessage(msg);
+                            }
+                    } catch (Exception ignored) {
+                    }
+                }
+                Bukkit.getConsoleSender().sendMessage(ChatColor.AQUA + "Setting custom deny messages.");
+            });
     }
 
     @SuppressWarnings("ResultOfMethodCallIgnored")
