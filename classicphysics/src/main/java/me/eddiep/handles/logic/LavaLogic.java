@@ -10,7 +10,7 @@ import org.bukkit.metadata.FixedMetadataValue;
 
 public class LavaLogic extends AbstractLogicContainer {
     @Override
-    protected void tickForBlock(Block block, Location location) {
+    protected void tickForBlock(Location location) {
         checkLocation(location.clone().add(1, 0, 0), location);
         checkLocation(location.clone().add(-1, 0, 0), location);
         checkLocation(location.clone().add(0, 0, 1), location);
@@ -49,7 +49,7 @@ public class LavaLogic extends AbstractLogicContainer {
                 block.setMetadata("classic_block", new FixedMetadataValue(ClassicPhysics.INSTANCE, true));
                 ClassicPhysics.INSTANCE.getServer().getPluginManager().callEvent(new ClassicBlockPlaceEvent(location));
                 if (doesHandle(block.getType()))
-                    queueBlock(block);
+                    queueBlock(location);
             }
         }
     }

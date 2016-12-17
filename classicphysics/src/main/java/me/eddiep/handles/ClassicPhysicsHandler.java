@@ -41,7 +41,7 @@ public final class ClassicPhysicsHandler implements Listener {
     private final ConcurrentHashMap<Location, ConcurrentLinkedQueue<ToAndFrom>> toFroms = new ConcurrentHashMap<>();
     private final ArrayList<Player> lplacers = new ArrayList<>();
     private final ArrayList<Player> wplacers = new ArrayList<>();
-    private boolean running = false, sendingPackets = false, removePrevious = false;
+    private boolean running = false, removePrevious = false;
     private World current = null;
     private ChunkEdit e = null;
     private final Plugin owner;
@@ -204,7 +204,7 @@ public final class ClassicPhysicsHandler implements Listener {
                 ClassicPhysics.INSTANCE.getServer().getPluginManager().callEvent(new ClassicBlockPlaceEvent(l));
                 for (LogicContainerHolder holder : logicContainers) {
                     if (holder.container.doesHandle(type)) {
-                        holder.container.queueBlock(blc);
+                        holder.container.queueBlock(blc.getLocation());
                         break;
                     }
                 }
@@ -219,14 +219,10 @@ public final class ClassicPhysicsHandler implements Listener {
                 toFroms.remove(l);
                 locations.remove(taf);
             }
-            running = false;
-            if (sendingPackets)
-                return;
-            sendingPackets = true;
             ArrayList<Packet> packets = new ArrayList<>();
             if (!Bukkit.getOnlinePlayers().isEmpty())
                 for (long l : chunks.keySet()) {
-                    if (!sendingPackets)
+                    if (!running)
                         break;
                     packets.addAll(chunks.get(l).getPackets());
                     chunks.remove(l);
@@ -248,7 +244,7 @@ public final class ClassicPhysicsHandler implements Listener {
                 }
             if (removePrevious)
                 removePrevious = false;
-            sendingPackets = false;
+            running = false;
         }
     };
 
@@ -295,8 +291,6 @@ public final class ClassicPhysicsHandler implements Listener {
         this.chunks.clear();
         if (running)
             running = false;
-        if (sendingPackets)
-            sendingPackets = false;
         if (!removePrevious)
             removePrevious = true;
     }
@@ -426,7 +420,7 @@ public final class ClassicPhysicsHandler implements Listener {
         ClassicPhysics.INSTANCE.getServer().getPluginManager().callEvent(new ClassicBlockPlaceEvent(location));
         for (LogicContainerHolder holder : logicContainers)
             if (holder.container.doesHandle(type)) {
-                holder.container.queueBlock(blc);
+                holder.container.queueBlock(blc.getLocation());
                 break;
             }
         PacketPlayOutBlockChange packet = new PacketPlayOutBlockChange(((CraftWorld) location.getWorld()).getHandle(), new BlockPosition(location.getBlockX(), location.getBlockY(), location.getBlockZ()));
