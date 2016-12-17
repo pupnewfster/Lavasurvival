@@ -247,8 +247,8 @@ public abstract class Gamemode {
 
     private void tick() {
         PlayerStatusManager.tick();
-        double multiplier = currentMap.getTimeOptions().getMultiplier();
         if (currentMap.getTimeOptions().isEnabled()) {
+            double multiplier = currentMap.getTimeOptions().getMultiplier();
             if (multiplier != 1.0) {
                 this.timeTickCount++;
                 long tick = (long) (this.timeTickCount * multiplier);
@@ -660,6 +660,7 @@ public abstract class Gamemode {
     }
 
     private void end() {
+        PlayerStatusManager.cleanup();
         this.tickTask.cancel();
         //Bukkit.getScheduler().cancelTasks(Lavasurvival.INSTANCE);
         globalMessage(ChatColor.GREEN + "The round has ended!");

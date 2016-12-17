@@ -4,12 +4,12 @@ import me.eddiep.minecraft.ls.Lavasurvival;
 import me.eddiep.minecraft.ls.game.Gamemode;
 import me.eddiep.minecraft.ls.game.options.FloodOptions;
 import me.eddiep.minecraft.ls.system.TimeUtils;
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.boss.BarColor;
 import org.bukkit.entity.Player;
+import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scoreboard.DisplaySlot;
 import org.bukkit.scoreboard.Objective;
 import org.bukkit.scoreboard.Score;
@@ -17,11 +17,13 @@ import org.bukkit.scoreboard.Score;
 import java.util.List;
 
 public class Fusion extends Gamemode {
-    private int lastMinute, bonus, lvl = 1, sched = 0;
+    private int lastMinute, bonus, lavaY, highestCurrentY = 0, layerCount;
     private long lastEvent, duration, timeOut;
     private Score bonusScore, layersLeft;
     private boolean doubleReward;
     private Objective objective;
+    private BukkitRunnable upTask;
+    private List<Location> locations;
 
     @Override
     public void onStart() {
@@ -52,6 +54,14 @@ public class Fusion extends Gamemode {
             globalMessage("but.." + ChatColor.RED + ChatColor.BOLD + "THE PREPARE TIME HAS BEEN CUT IN HALF");
             this.duration *= 0.5;
         }
+        this.lavaY = getCurrentMap().getRiseOptions().getHighestLocation().getBlockY();
+        this.layerCount = getCurrentMap().getRiseOptions().getLayerCount();
+        this.upTask = new BukkitRunnable() {
+            @Override
+            public void run() {
+                pourAndAdvance();
+            }
+        };
         /*if (Gamemode.getPlayerListener().survival)
             globalMessage("The building style will be " + ChatColor.RED + "" + ChatColor.BOLD + "SURVIVAL STYLE");
         else
@@ -85,7 +95,10 @@ public class Fusion extends Gamemode {
     public void endRound() {
         this.objective.unregister();
         this.objective = null;
-        Bukkit.getScheduler().cancelTask(this.sched);
+        try {
+            this.upTask.cancel();
+        } catch (Exception ignored) {//Not running
+        }
         super.endRound();
     }
 
@@ -93,43 +106,42 @@ public class Fusion extends Gamemode {
     public void onTick() {
         if (this.objective == null)
             return;
-        long since = System.currentTimeMillis() - this.lastEvent;
-        int minutes = (int) ((this.duration - since) / 60000), seconds = (int) (((this.duration - since) / 1000) % 60);
-        String time = (minutes < 10 ? "0" + minutes : minutes) + ":" + (seconds < 10 ? "0" + seconds : seconds);
-        if (isRoundEnding()) {
+        long since = System.currentTimeMillis() - this.lastEvent, dif = this.duration - since;
+        int seconds = (int) (dif / 1000 % 60);
+        String time = (int) (dif / 60000) + ":" + (seconds < 10 ? "0" + seconds : seconds);
+        if (isRoundEnding())
             this.objective.setDisplayName("Round Ends In: " + ChatColor.BOLD + time);
-            return;
-        }
-        this.objective.setDisplayName((!super.poured ? "Prepare Time: " : "Next Pour: ") + ChatColor.BOLD + time);
-        if (!super.poured && since < this.duration) {
-            int nextMinute = (int) Math.floor(since / 60000.0);
-            if (nextMinute != this.lastMinute) {
-                this.lastMinute = nextMinute;
-                List<Location> locations = getCurrentMap().getFusionOptions().getSpawnLocation(0, this.lvl - getCurrentMap().getHeight(), 0);
-                getCurrentWorld().strikeLightningEffect(locations.get(RANDOM.nextInt(locations.size()))); //Changed to just effect not to kill unknowing player nearby
-                globalMessage("The lava and water will rise in " + ChatColor.DARK_RED + TimeUtils.toFriendlyTime(this.duration - since));
+        else if (super.poured)
+            this.objective.setDisplayName("Next Pour: " + ChatColor.BOLD + time);
+        else {
+            this.objective.setDisplayName("Prepare Time: " + ChatColor.BOLD + time);
+            if (since < this.duration) {
+                int nextMinute = (int) since / 60000;
+                if (nextMinute != this.lastMinute) {
+                    this.lastMinute = nextMinute;
+                    this.locations = getCurrentMap().getFusionOptions().getSpawnLocation(0, 1 - getCurrentMap().getHeight(), 0);
+                    getCurrentWorld().strikeLightningEffect(this.locations.get(RANDOM.nextInt(this.locations.size()))); //Changed to just effect not to kill unknowing player nearby
+                    for (Location loc : this.locations)
+                        if (loc.getBlockY() > this.highestCurrentY)
+                            this.highestCurrentY = loc.getBlockY();
+                    globalMessage("The lava and water will rise in " + ChatColor.DARK_RED + TimeUtils.toFriendlyTime(dif));
+                }
+            } else {
+                super.poured = true;
+                globalMessage(ChatColor.DARK_RED + "Here comes the lava and water!");
+                this.duration = this.timeOut; //The duration will not change
+                this.objective.setDisplayName("Time Till Next Pour");
+                this.upTask.runTaskTimer(Lavasurvival.INSTANCE, 0, 20 * this.timeOut / 1000L);
             }
-        } else if (!super.poured) {
-            super.poured = true;
-            globalMessage(ChatColor.DARK_RED + "Here comes the lava and water!");
-            this.duration = this.timeOut; //The duration will not change
-            this.objective.setDisplayName("Time Till Next Pour");
-            pourAndAdvance(this.timeOut / 1000L);
         }
     }
 
-    private void liquidUp(final long time) {
-        this.sched = Bukkit.getScheduler().scheduleSyncDelayedTask(Lavasurvival.INSTANCE, () -> pourAndAdvance(time), 20 * time);
-    }
-
-    private void pourAndAdvance(long time) {
-        List<Location> locations = getCurrentMap().getFusionOptions().getSpawnLocation(0, this.lvl - getCurrentMap().getHeight(), 0);
-        int highestCurrentY = locations.get(0).getBlockY();
-        for (Location loc : locations)
-            if (loc.getBlockY() > highestCurrentY)
-                highestCurrentY = loc.getBlockY();
-        int lavaY = getCurrentMap().getFusionOptions().getHighestLocation().getBlockY();
-        if (highestCurrentY > lavaY) { //If we have passed the original lava spawn, that means the previous pour was the last one
+    private void pourAndAdvance() {
+        if (this.highestCurrentY > this.lavaY) { //If we have passed the original lava spawn, that means the previous pour was the last one
+            try {
+                this.upTask.cancel();
+            } catch (Exception ignored) {//Not running
+            }
             if (!isRoundEnding()) {
                 this.lastEvent = System.currentTimeMillis(); //Set the last event to now
                 this.duration = getCurrentMap().getFusionOptions().generateRandomEndTime() / 1000L;
@@ -139,11 +151,14 @@ public class Fusion extends Gamemode {
             return;
         }
         this.switchADoodle = RANDOM.nextInt();
-        locations.forEach(l -> Lavasurvival.INSTANCE.getPhysicsHandler().forcePlaceClassicBlockAt(l, getMat()));
+        getCurrentWorld().strikeLightningEffect(this.locations.get(RANDOM.nextInt(this.locations.size()))); //Actions are better than words :3
+        this.locations.forEach(l -> {
+            Lavasurvival.INSTANCE.getPhysicsHandler().forcePlaceClassicBlockAt(l, getMat());
+            l.add(0, this.layerCount, 0);
+        });
+        this.highestCurrentY += this.layerCount;
         this.lastEvent = System.currentTimeMillis(); //Set the last event to now
-        getCurrentWorld().strikeLightningEffect(locations.get(RANDOM.nextInt(locations.size()))); //Actions are better than words :3
-        this.lvl += getCurrentMap().getFusionOptions().getLayerCount();
-        this.layersLeft.setScore(lavaY - highestCurrentY);
+        this.layersLeft.setScore(this.lavaY - this.highestCurrentY);
         BarColor cur = this.bars.get(0).getColor();
         if (cur.equals(BarColor.RED)) {
             this.bars.get(0).setTitle(ChatColor.GOLD + "Gamemode: " + ChatColor.RED + "Fusion");
@@ -152,8 +167,6 @@ public class Fusion extends Gamemode {
             this.bars.get(0).setTitle(ChatColor.GOLD + "Gamemode: " + ChatColor.AQUA + "Fusion");
             this.bars.get(0).setColor(BarColor.RED);
         }
-        if (highestCurrentY <= lavaY)
-            liquidUp(time); //Only advance up if we are still less than the actual lava spawn or if we are at the lava spawn (the next check will end the game, see above)
     }
 
     @Override

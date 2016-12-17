@@ -11,7 +11,6 @@ public class PlayerStatusManager {
         status.keySet().forEach(p -> status.get(p).tick());
     }
 
-    @SuppressWarnings("unused")
     public static void cleanup() {
         status.clear();
     }
@@ -20,6 +19,11 @@ public class PlayerStatusManager {
         if (!status.containsKey(owner))
             status.put(owner, new PlayerStatus(owner));
         return status.get(owner);
+    }
+
+    static void removePlayer(Player owner) {
+        if (owner != null)
+            status.remove(owner);
     }
 
     @SuppressWarnings("UnusedReturnValue")

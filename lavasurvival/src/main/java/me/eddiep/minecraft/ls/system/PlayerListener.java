@@ -405,10 +405,8 @@ public class PlayerListener implements Listener {
     @SuppressWarnings("ConstantConditions")
     @EventHandler(priority = EventPriority.HIGHEST)
     public void classicBlockPlace(ClassicBlockPlaceEvent event) {
-        if (Gamemode.getCurrentGame() != null && Gamemode.DAMAGE != 0)
-            return;
         Material type = event.getLocation().getBlock().getType();
-        if (!type.equals(Material.WATER) && !type.equals(Material.STATIONARY_WATER))
+        if (Gamemode.getCurrentGame() == null || (!type.equals(Material.WATER) && !type.equals(Material.STATIONARY_WATER)) || Gamemode.DAMAGE == 0)
             return;
         Location loc = event.getLocation().getBlock().getLocation();
         Bukkit.getOnlinePlayers().stream().filter(p -> Gamemode.getCurrentGame().isAlive(p) && (p.getLocation().getBlock().getLocation().equals(loc) || p.getLocation().getBlock().getRelative(BlockFace.UP).getLocation().equals(loc))).forEach(p -> {

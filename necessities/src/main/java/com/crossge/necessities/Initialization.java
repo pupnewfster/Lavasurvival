@@ -33,29 +33,7 @@ class Initialization {
         createYaml();
         HatType.mapHats();
 
-        //RankManager
-        Necessities.getRM().setRanks();
-        Necessities.getRM().setSubranks();
-        Necessities.getRM().readRanks();
-        Necessities.getSBs().createScoreboard();
-
         YamlConfiguration config = Necessities.getInstance().getConfig();
-        //WorldManager
-        if (config.contains("Necessities.WorldManager") && config.getBoolean("Necessities.WorldManager")) {
-            Necessities.getWM().initiate();
-            Necessities.getWarps().initiate();
-            Necessities.getPM().initiate();
-        }
-
-        Necessities.getNet().readCustom();
-        Necessities.getBot().initiate();
-        Necessities.getSpy().init();
-        Necessities.getHide().init();
-        Necessities.getWarns().initiate();
-        Necessities.getSlack().init();
-        Necessities.getAI().initiate();
-        Necessities.getAnnouncer().init();
-
         if (config.contains("Necessities.customDeny") && config.getBoolean("Necessities.customDeny")) //At the moment only is checked on startup
             Bukkit.getScheduler().scheduleSyncDelayedTask(Necessities.getInstance(), () -> {
                 Bukkit.getConsoleSender().sendMessage(ChatColor.AQUA + "Setting custom deny messages.");
@@ -74,6 +52,28 @@ class Initialization {
                 }
                 Bukkit.getConsoleSender().sendMessage(ChatColor.AQUA + "Custom deny messages set.");
             });
+
+        //RankManager
+        Necessities.getRM().setRanks();
+        Necessities.getRM().setSubranks();
+        Necessities.getRM().readRanks();
+        Necessities.getSBs().createScoreboard();
+
+        //WorldManager
+        if (config.contains("Necessities.WorldManager") && config.getBoolean("Necessities.WorldManager")) {
+            Necessities.getWM().initiate();
+            Necessities.getWarps().initiate();
+            Necessities.getPM().initiate();
+        }
+
+        Necessities.getNet().readCustom();
+        Necessities.getBot().initiate();
+        Necessities.getSpy().init();
+        Necessities.getHide().init();
+        Necessities.getWarns().initiate();
+        Necessities.getSlack().init();
+        Necessities.getAI().initiate();
+        Necessities.getAnnouncer().init();
     }
 
     @SuppressWarnings("ResultOfMethodCallIgnored")
