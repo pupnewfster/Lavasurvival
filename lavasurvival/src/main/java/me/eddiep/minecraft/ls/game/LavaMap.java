@@ -29,13 +29,13 @@ public class LavaMap {
     private int lavax, lavay, lavaz, mapHeight, percent = 25;
     private Vector minSafeZone, maxSafeZone, mapSpawn;
     private int configVersion = 1; //Default version
-    private final boolean isThundering = false;
-    private final String creator = "";
-    private final double meltMultiplier = 0.5;
-    private final RiseOptions riseOptions = RiseOptions.defaults(this);
-    private final FloodOptions floodOptions = FloodOptions.defaults(this);
-    private final FusionOptions fusionOptions = FusionOptions.defaults(this, riseOptions);
-    private final TimeOptions time = TimeOptions.defaults();
+    private boolean isThundering = false;
+    private String creator = "";
+    private double meltMultiplier = 0.5;
+    private RiseOptions riseOptions = RiseOptions.defaults(this);
+    private FloodOptions floodOptions = FloodOptions.defaults(this);
+    private FusionOptions fusionOptions = FusionOptions.defaults(this, riseOptions);
+    private TimeOptions time = TimeOptions.defaults();
 
     private volatile World world;
     private volatile boolean poured;

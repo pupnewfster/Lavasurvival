@@ -9,8 +9,8 @@ import org.bukkit.command.CommandSender;
 
 public class CmdRanks implements RankCmd {
     public boolean commandUse(CommandSender sender, String[] args) {
-        Variables var = Necessities.getInstance().getVar();
-        RankManager rm = Necessities.getInstance().getRM();
+        Variables var = Necessities.getVar();
+        RankManager rm = Necessities.getRM();
         if (rm.getOrder().isEmpty())
             sender.sendMessage(var.getEr() + "Error: " + var.getErMsg() + "No ranks are set.");
         else {

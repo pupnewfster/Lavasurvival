@@ -15,9 +15,9 @@ import java.util.HashMap;
 
 public class CmdWho implements Cmd {
     public boolean commandUse(CommandSender sender, String[] args) {
-        Variables var = Necessities.getInstance().getVar();
-        RankManager rm = Necessities.getInstance().getRM();
-        UserManager um = Necessities.getInstance().getUM();
+        Variables var = Necessities.getVar();
+        RankManager rm = Necessities.getRM();
+        UserManager um = Necessities.getUM();
         if (sender instanceof Player && !sender.hasPermission("Necessities.seehidden")) {
             HashMap<Rank, String> online = new HashMap<>();
             int numbOnline = 1;
@@ -25,7 +25,7 @@ public class CmdWho implements Cmd {
                 online.put(rm.getRank(rm.getOrder().size() - 1), rm.getRank(rm.getOrder().size() - 1).getColor() + "Janet, ");
             if (!um.getUsers().isEmpty()) {
                 for (User u : um.getUsers().values())
-                    if (!Necessities.getInstance().getHide().isHidden(u.getPlayer())) {
+                    if (!Necessities.getHide().isHidden(u.getPlayer())) {
                         online.put(u.getRank(), online.containsKey(u.getRank()) ? online.get(u.getRank()) + u.getPlayer().getDisplayName() + ", " : u.getPlayer().getDisplayName() + ", ");
                         numbOnline++;
                     }
@@ -47,7 +47,7 @@ public class CmdWho implements Cmd {
             online.put(rm.getRank(rm.getOrder().size() - 1), rm.getRank(rm.getOrder().size() - 1).getColor() + "Janet, ");
         if (!um.getUsers().isEmpty())
             for (User u : um.getUsers().values())
-                if (Necessities.getInstance().getHide().isHidden(u.getPlayer()))
+                if (Necessities.getHide().isHidden(u.getPlayer()))
                     online.put(u.getRank(), online.containsKey(u.getRank()) ? online.get(u.getRank()) + "[HIDDEN]" + u.getPlayer().getDisplayName() + ", " : "[HIDDEN]" + u.getPlayer().getDisplayName() + ", ");
                 else
                     online.put(u.getRank(), online.containsKey(u.getRank()) ? online.get(u.getRank()) + u.getPlayer().getDisplayName() + ", " : u.getPlayer().getDisplayName() + ", ");

@@ -15,7 +15,7 @@ public class ScoreBoards {
 
     void createScoreboard() {
         this.man = Bukkit.getScoreboardManager();
-        RankManager rm = Necessities.getInstance().getRM();
+        RankManager rm = Necessities.getRM();
         this.b = this.man.getMainScoreboard();//Use main scoreboard instead of a new one for better compatibility with other plugins
         for (Rank r : rm.getOrder()) {
             Team t = this.b.getTeam(fromInt(rm.getOrder().size() - rm.getOrder().indexOf(r)));
@@ -28,7 +28,7 @@ public class ScoreBoards {
     public void addPlayer(User u) {
         if (u.getRank() == null || u.getPlayer() == null)
             return;
-        RankManager rm = Necessities.getInstance().getRM();
+        RankManager rm = Necessities.getRM();
         Team t = this.b.getTeam(fromInt(rm.getOrder().size() - rm.getOrder().indexOf(u.getRank())));
         if (t == null)
             return;
@@ -42,7 +42,7 @@ public class ScoreBoards {
             return;
         Team t = this.b.getTeam(u.getPlayer().getName());
         if (t == null) {
-            RankManager rm = Necessities.getInstance().getRM();
+            RankManager rm = Necessities.getRM();
             t = this.b.getTeam(fromInt(rm.getOrder().size() - rm.getOrder().indexOf(u.getRank())));
         }
         if (t == null)

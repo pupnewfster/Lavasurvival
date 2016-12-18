@@ -7,7 +7,7 @@ import org.bukkit.entity.Player;
 
 public class CmdWorldSpawn implements WorldCmd {
     public boolean commandUse(CommandSender sender, String[] args) {
-        Variables var = Necessities.getInstance().getVar();
+        Variables var = Necessities.getVar();
         if (sender instanceof Player) {
             Player p = (Player) sender;
             p.teleport(p.getWorld().getSpawnLocation());

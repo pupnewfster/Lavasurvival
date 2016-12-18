@@ -15,12 +15,12 @@ public class FloodOptions extends BaseOptions {
     private transient LavaMap owner;
 
     private final List<Vector> spawnPoints = new ArrayList<>();
-    private final int minPrepareTimeSeconds = 300;
-    private final int maxPrepareTimeSeconds = 480;
-    private final int minEndTimeSeconds = 180;
-    private final int maxEndTimeSeconds = 420;
-    private final boolean enableLava = true;
-    private final boolean enableWater = true;
+    private int minPrepareTimeSeconds = 300;
+    private int maxPrepareTimeSeconds = 480;
+    private int minEndTimeSeconds = 180;
+    private int maxEndTimeSeconds = 420;
+    private boolean enableLava = true;
+    private boolean enableWater = true;
 
     public static FloodOptions defaults(LavaMap lavaMap) {
         return new FloodOptions(lavaMap);

@@ -10,8 +10,8 @@ import java.util.UUID;
 
 public class CmdTpdeny implements Cmd {
     public boolean commandUse(CommandSender sender, String[] args) {
-        Variables var = Necessities.getInstance().getVar();
-        Teleports tps = Necessities.getInstance().getTPs();
+        Variables var = Necessities.getVar();
+        Teleports tps = Necessities.getTPs();
         if (sender instanceof Player) {
             Player p = (Player) sender;
             UUID uuid = null;
@@ -23,13 +23,13 @@ public class CmdTpdeny implements Cmd {
                 }
             }
             if (args.length > 0)
-                uuid = Necessities.getInstance().getUUID().getID(args[0]);
+                uuid = Necessities.getUUID().getID(args[0]);
             if (uuid == null) {
                 sender.sendMessage(var.getEr() + "Error: " + var.getErMsg() + "Invalid player.");
                 return true;
             }
             Player target = sender.getServer().getPlayer(uuid);
-            if (!p.hasPermission("Necessities.seehidden") && Necessities.getInstance().getHide().isHidden(target)) {
+            if (!p.hasPermission("Necessities.seehidden") && Necessities.getHide().isHidden(target)) {
                 sender.sendMessage(var.getEr() + "Error: " + var.getErMsg() + "Invalid player.");
                 return true;
             }

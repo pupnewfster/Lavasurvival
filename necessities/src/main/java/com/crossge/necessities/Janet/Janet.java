@@ -31,7 +31,7 @@ public class Janet {//TODO: Make the logic run async for performance reasons
         this.badwords.addAll(customConfigCensors.getStringList("badwords").stream().filter(word -> !word.equals("")).map(String::toUpperCase).collect(Collectors.toList()));
         this.goodwords.addAll(customConfigCensors.getStringList("goodwords").stream().filter(word -> !word.equals("")).map(String::toUpperCase).collect(Collectors.toList()));
         this.ips.addAll(customConfigCensors.getStringList("ips").stream().filter(ip -> !ip.equals("")).collect(Collectors.toList()));
-        RankManager rm = Necessities.getInstance().getRM();
+        RankManager rm = Necessities.getRM();
         String rank = "";
         if (!rm.getOrder().isEmpty())
             rank = rm.getRank(rm.getOrder().size() - 1).getTitle() + " ";
@@ -41,7 +41,7 @@ public class Janet {//TODO: Make the logic run async for performance reasons
     }
 
     public void unload() {//possibly empty the lists not sure if needed though
-        RankManager rm = Necessities.getInstance().getRM();
+        RankManager rm = Necessities.getRM();
         String rank = "";
         if (!rm.getOrder().isEmpty())
             rank = rm.getRank(rm.getOrder().size() - 1).getTitle() + " ";
@@ -49,7 +49,7 @@ public class Janet {//TODO: Make the logic run async for performance reasons
     }
 
     private void removePlayer(UUID uuid) {//called when player disconnects
-        Necessities.getInstance().getWarns().removePlayer(uuid);
+        Necessities.getWarns().removePlayer(uuid);
         this.lastChat.remove(uuid);
         this.lastCmd.remove(uuid);
     }
@@ -327,7 +327,7 @@ public class Janet {//TODO: Make the logic run async for performance reasons
         Player p = Bukkit.getPlayer(uuid);
         YamlConfiguration config = Necessities.getInstance().getConfig();
         if (config.contains("Necessities.log") && config.getBoolean("Necessities.log"))
-            Necessities.getInstance().getLog().log(p.getName() + ": " + message);
+            Necessities.getLog().log(p.getName() + ": " + message);
         boolean warn = true;
         String censored = message;
         if (config.getBoolean("Necessities.chatSpam") && !p.hasPermission("Necessities.spamchat"))
@@ -348,7 +348,7 @@ public class Janet {//TODO: Make the logic run async for performance reasons
         String messageOrig = message;
         YamlConfiguration config = Necessities.getInstance().getConfig();
         if (config.contains("Necessities.log") && config.getBoolean("Necessities.log"))
-            Necessities.getInstance().getLog().log(p.getName() + " issued server command: " + message);
+            Necessities.getLog().log(p.getName() + " issued server command: " + message);
         boolean warn = false;
         String censored = message.replaceFirst(message.split(" ")[0], "").trim();
         message = message.replaceFirst(message.split(" ")[0], "").trim();
@@ -374,26 +374,26 @@ public class Janet {//TODO: Make the logic run async for performance reasons
             message = "Console issued command: " + message;
         YamlConfiguration config = Necessities.getInstance().getConfig();
         if (config.contains("Necessities.log") && config.getBoolean("Necessities.log"))
-            Necessities.getInstance().getLog().log(message);
+            Necessities.getLog().log(message);
     }
 
     public void logIn(UUID uuid) {
         YamlConfiguration config = Necessities.getInstance().getConfig();
         if (config.contains("Necessities.log") && config.getBoolean("Necessities.log"))
-            Necessities.getInstance().getLog().log(" + " + playerInfo(Bukkit.getPlayer(uuid)) + " joined the game.");
+            Necessities.getLog().log(" + " + playerInfo(Bukkit.getPlayer(uuid)) + " joined the game.");
     }
 
     public void logDeath(UUID uuid, String cause) {
         YamlConfiguration config = Necessities.getInstance().getConfig();
         if (config.contains("Necessities.log") && config.getBoolean("Necessities.log"))
-            Necessities.getInstance().getLog().log(playerInfo(Bukkit.getPlayer(uuid)) + " " + cause);
+            Necessities.getLog().log(playerInfo(Bukkit.getPlayer(uuid)) + " " + cause);
     }
 
     public void logOut(UUID uuid) {
         removePlayer(uuid);
         YamlConfiguration config = Necessities.getInstance().getConfig();
         if (config.contains("Necessities.log") && config.getBoolean("Necessities.log"))
-            Necessities.getInstance().getLog().log(" - " + playerInfo(Bukkit.getPlayer(uuid)) + " Disconnected.");
+            Necessities.getLog().log(" - " + playerInfo(Bukkit.getPlayer(uuid)) + " Disconnected.");
     }
 
     private String playerInfo(Player p) {
@@ -402,6 +402,6 @@ public class Janet {//TODO: Make the logic run async for performance reasons
     }
 
     private void delayedWarn(final UUID uuid, final String reason) {
-        Bukkit.getScheduler().scheduleSyncDelayedTask(Necessities.getInstance(), () -> Necessities.getInstance().getWarns().warn(uuid, reason, "Janet"));
+        Bukkit.getScheduler().scheduleSyncDelayedTask(Necessities.getInstance(), () -> Necessities.getWarns().warn(uuid, reason, "Janet"));
     }
 }

@@ -8,8 +8,8 @@ import org.bukkit.command.CommandSender;
 
 public class CmdWarps implements WorldCmd {
     public boolean commandUse(CommandSender sender, String[] args) {
-        Variables var = Necessities.getInstance().getVar();
-        WarpManager warps = Necessities.getInstance().getWarps();
+        Variables var = Necessities.getVar();
+        WarpManager warps = Necessities.getWarps();
         sender.sendMessage((warps.getWarps().equals("") ? var.getEr() + "Error: " + var.getErMsg() + "There are no warps set." : var.getMessages() + "Available warps: " + ChatColor.WHITE + warps.getWarps()));
         return true;
     }

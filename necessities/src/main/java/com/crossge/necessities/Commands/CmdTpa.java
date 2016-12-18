@@ -11,13 +11,13 @@ import java.util.UUID;
 
 public class CmdTpa implements Cmd {
     public boolean commandUse(CommandSender sender, String[] args) {
-        Variables var = Necessities.getInstance().getVar();
+        Variables var = Necessities.getVar();
         if (sender instanceof Player) {
             if (args.length == 0) {
                 sender.sendMessage(var.getEr() + "Error: " + var.getErMsg() + "Format requires you enter a player to send a teleport request to.");
                 return true;
             }
-            UUID uuid = Necessities.getInstance().getUUID().getID(args[0]);
+            UUID uuid = Necessities.getUUID().getID(args[0]);
             if (uuid == null) {
                 sender.sendMessage(var.getEr() + "Error: " + var.getErMsg() + "Invalid player.");
                 return true;
@@ -29,9 +29,9 @@ public class CmdTpa implements Cmd {
                 sender.sendMessage(var.getEr() + "Error: " + var.getErMsg() + "You or the target are in the lava.");
                 return true;
             }
-            UserManager um = Necessities.getInstance().getUM();
+            UserManager um = Necessities.getUM();
             String tPrefix = um.getUser(uuid).getStatus(), pPrefix = um.getUser(p.getUniqueId()).getStatus();
-            if (!p.hasPermission("Necessities.seehidden") && Necessities.getInstance().getHide().isHidden(target)) {
+            if (!p.hasPermission("Necessities.seehidden") && Necessities.getHide().isHidden(target)) {
                 sender.sendMessage(var.getEr() + "Error: " + var.getErMsg() + "Invalid player.");
                 return true;
             } else if (!tPrefix.equals(pPrefix)) {
@@ -52,7 +52,7 @@ public class CmdTpa implements Cmd {
                 sender.sendMessage(var.getEr() + "Error: " + var.getErMsg() + "You are ignoring that user, so cannot send them a teleport request.");
                 return true;
             }
-            Necessities.getInstance().getTPs().addRequest(uuid, p.getUniqueId().toString() + " toMe");
+            Necessities.getTPs().addRequest(uuid, p.getUniqueId().toString() + " toMe");
             target.sendMessage(var.getObj() + p.getName() + var.getMessages() + " has requested to teleport to you.");
             target.sendMessage(var.getMessages() + "To teleport, type " + var.getObj() + "/tpaccept" + var.getMessages() + ".");
             target.sendMessage(var.getMessages() + "To deny this request, type " + var.getObj() + "/tpdeny" + var.getMessages() + ".");

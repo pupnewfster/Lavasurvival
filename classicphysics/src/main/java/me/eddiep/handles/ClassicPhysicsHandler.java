@@ -41,7 +41,7 @@ public final class ClassicPhysicsHandler implements Listener {
     private final ConcurrentHashMap<Location, ConcurrentLinkedQueue<ToAndFrom>> toFroms = new ConcurrentHashMap<>();
     private final ArrayList<Player> lplacers = new ArrayList<>();
     private final ArrayList<Player> wplacers = new ArrayList<>();
-    private boolean running = false, sendingPackets = false, removePrevious = false;
+    private boolean running = false, removePrevious = false;
     private World current = null;
     private ChunkEdit e = null;
     private final Plugin owner;
@@ -93,7 +93,7 @@ public final class ClassicPhysicsHandler implements Listener {
             else if (size == 64)
                 packets.add(new PacketPlayOutMapChunk(((CraftWorld) this.world).getHandle().getChunkAt((int) (this.l >> 32), (int) this.l), size));
             else if (size < 64)
-                packets.add(new PacketPlayOutMultiBlockChange(size, getChanged(this.changes.subList(0, 64 > size ? size : 64)), ((CraftWorld) this.world).getHandle().getChunkAt((int) (this.l >> 32), (int) this.l)));
+                packets.add(new PacketPlayOutMultiBlockChange(size, getChanged(this.changes), ((CraftWorld) this.world).getHandle().getChunkAt((int) (this.l >> 32), (int) this.l)));
             else {
                 int i = 0, end;
                 while (i < size) {
@@ -151,7 +151,7 @@ public final class ClassicPhysicsHandler implements Listener {
     private final BukkitRunnable BLOCK_UPDATE_TICK = new BukkitRunnable() {
         @Override
         public void run() {
-            if (running)
+            if (running) //TODO: See if some of this can be made async to improve behavior with large amounts of block updates
                 return;
             running = true;
             for (ToAndFrom taf : locations.keySet()) {
@@ -191,7 +191,7 @@ public final class ClassicPhysicsHandler implements Listener {
                     continue;
                 }
                 if (!blc.hasMetadata("classic_block"))
-                    blc.setMetadata("classic_block", new FixedMetadataValue(ClassicPhysics.INSTANCE, true));
+                    blc.setMetadata("classic_block", ClassicPhysics.METADATA);
                 e.setBlock(blc.getX(), blc.getY(), blc.getZ(), type);
                 long xz = (long) blc.getChunk().getX() << 32 | blc.getChunk().getZ() & 0xFFFFFFFFL;
                 if (!chunks.containsKey(xz))
@@ -204,7 +204,7 @@ public final class ClassicPhysicsHandler implements Listener {
                 ClassicPhysics.INSTANCE.getServer().getPluginManager().callEvent(new ClassicBlockPlaceEvent(l));
                 for (LogicContainerHolder holder : logicContainers) {
                     if (holder.container.doesHandle(type)) {
-                        holder.container.queueBlock(blc);
+                        holder.container.queueBlock(blc.getLocation());
                         break;
                     }
                 }
@@ -219,21 +219,17 @@ public final class ClassicPhysicsHandler implements Listener {
                 toFroms.remove(l);
                 locations.remove(taf);
             }
-            running = false;
-            if (sendingPackets)
-                return;
-            sendingPackets = true;
             ArrayList<Packet> packets = new ArrayList<>();
             if (!Bukkit.getOnlinePlayers().isEmpty())
                 for (long l : chunks.keySet()) {
-                    if (!sendingPackets)
+                    if (!running)
                         break;
                     packets.addAll(chunks.get(l).getPackets());
                     chunks.remove(l);
                 }
             else
                 chunks.clear();
-            if (!packets.isEmpty())
+            if (!packets.isEmpty()) //TODO figure out why sometimes the packet does not get sent. Is it some over max amount?
                 for (Player p : Bukkit.getOnlinePlayers()) {
                     if (removePrevious)
                         break;
@@ -248,7 +244,7 @@ public final class ClassicPhysicsHandler implements Listener {
                 }
             if (removePrevious)
                 removePrevious = false;
-            sendingPackets = false;
+            running = false;
         }
     };
 
@@ -295,8 +291,6 @@ public final class ClassicPhysicsHandler implements Listener {
         this.chunks.clear();
         if (running)
             running = false;
-        if (sendingPackets)
-            sendingPackets = false;
         if (!removePrevious)
             removePrevious = true;
     }
@@ -305,12 +299,11 @@ public final class ClassicPhysicsHandler implements Listener {
     public void onBlockPlace(BlockPlaceEvent event) {
         if (ClassicPhysics.TYPE == PhysicsType.DEFAULT)
             return;
-
         if (lplacers.contains(event.getPlayer())) {
-            forcePlaceClassicBlockAt(event.getBlockPlaced().getLocation(), Material.LAVA);
+            forcePlaceClassicBlockAt(event.getBlockPlaced().getLocation(), Material.STATIONARY_LAVA);
             event.setCancelled(true);
         } else if (wplacers.contains(event.getPlayer())) {
-            forcePlaceClassicBlockAt(event.getBlockPlaced().getLocation(), Material.WATER);
+            forcePlaceClassicBlockAt(event.getBlockPlaced().getLocation(), Material.STATIONARY_WATER);
             event.setCancelled(true);
         }
         if (event.getBlock().hasMetadata("classic_block"))
@@ -397,7 +390,10 @@ public final class ClassicPhysicsHandler implements Listener {
                     if (!newLoc.getBlock().hasMetadata("classic_block"))//|| !newLoc.getBlock().isLiquid()
                         continue;
                     for (LogicContainerHolder holder : logicContainers)
-                        holder.container.blockUpdate(newLoc);
+                        if (holder.container.doesHandle(newLoc.getBlock().getType())) {
+                            holder.container.queueBlock(newLoc);
+                            break;
+                        }
                 }
     }
 
@@ -414,7 +410,7 @@ public final class ClassicPhysicsHandler implements Listener {
             type = Material.STATIONARY_LAVA;
         Block blc = location.getBlock();
         if (!blc.hasMetadata("classic_block"))
-            blc.setMetadata("classic_block", new FixedMetadataValue(ClassicPhysics.INSTANCE, true));
+            blc.setMetadata("classic_block", ClassicPhysics.METADATA);
         if (current == null || !current.equals(blc.getWorld())) {
             e = new ChunkEdit(((CraftWorld) blc.getWorld()).getHandle());
             current = blc.getWorld();
@@ -427,7 +423,7 @@ public final class ClassicPhysicsHandler implements Listener {
         ClassicPhysics.INSTANCE.getServer().getPluginManager().callEvent(new ClassicBlockPlaceEvent(location));
         for (LogicContainerHolder holder : logicContainers)
             if (holder.container.doesHandle(type)) {
-                holder.container.queueBlock(blc);
+                holder.container.queueBlock(blc.getLocation());
                 break;
             }
         PacketPlayOutBlockChange packet = new PacketPlayOutBlockChange(((CraftWorld) location.getWorld()).getHandle(), new BlockPosition(location.getBlockX(), location.getBlockY(), location.getBlockZ()));
@@ -449,9 +445,9 @@ public final class ClassicPhysicsHandler implements Listener {
             if (holder.container.doesHandle(type)) {
                 ToAndFrom taf = new ToAndFrom(location, from);
                 locations.put(taf, type);
-                ConcurrentLinkedQueue<ToAndFrom> temp = new ConcurrentLinkedQueue<>();
-                if (toFroms.containsKey(location) && toFroms.get(location) != null && toFroms.get(location).size() > 0)
-                    temp = toFroms.get(location);
+                ConcurrentLinkedQueue<ToAndFrom> temp = toFroms.get(location);
+                if (temp == null || temp.isEmpty())
+                    temp = new ConcurrentLinkedQueue<>();
                 temp.add(taf);
                 toFroms.put(location, temp);
                 break;
@@ -473,9 +469,8 @@ public final class ClassicPhysicsHandler implements Listener {
     public void onPhysicsUpdate(BlockPhysicsEvent event) {
         if (ClassicPhysics.TYPE.equals(PhysicsType.DEFAULT))
             return;
-        if (!event.getBlock().getType().toString().contains("DOOR") || !event.getChangedType().toString().contains("PLATE") ||
-                (event.getBlock().getType().toString().contains("DOOR") && event.getChangedType().toString().contains("PLATE") &&
-                        !event.getBlock().getType().equals(event.getBlock().getRelative(BlockFace.UP).getType())))
+        if (!event.getBlock().getType().toString().contains("DOOR") || !event.getChangedType().toString().contains("PLATE") || (event.getBlock().getType().toString().contains("DOOR") &&
+                event.getChangedType().toString().contains("PLATE") && !event.getBlock().getType().equals(event.getBlock().getRelative(BlockFace.UP).getType())))
             event.setCancelled(true);
     }
 

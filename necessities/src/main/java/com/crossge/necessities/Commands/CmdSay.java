@@ -9,7 +9,7 @@ import org.bukkit.entity.Player;
 
 public class CmdSay implements Cmd {
     public boolean commandUse(CommandSender sender, String[] args) {
-        Variables var = Necessities.getInstance().getVar();
+        Variables var = Necessities.getVar();
         if (args.length == 0) {
             sender.sendMessage(var.getEr() + "Error: " + var.getErMsg() + "Must enter a message to send.");
             return true;
@@ -21,7 +21,7 @@ public class CmdSay implements Cmd {
             sender.sendMessage(var.getEr() + "Error: " + var.getErMsg() + "Must enter a message to send.");
             return true;
         }
-        Bukkit.broadcastMessage((sender instanceof Player ? "" : Necessities.getInstance().getConsole().getName() + ChatColor.WHITE + " ") + ChatColor.translateAlternateColorCodes('&', message.trim()));
+        Bukkit.broadcastMessage((sender instanceof Player ? "" : Necessities.getConsole().getName() + ChatColor.WHITE + " ") + ChatColor.translateAlternateColorCodes('&', message.trim()));
         return true;
     }
 }

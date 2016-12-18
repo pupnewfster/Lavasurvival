@@ -17,7 +17,7 @@ class PlayerStatus {
         Player p = this.owner.get();
         if (p == null)
             return;
-        if (isInvincible) {
+        if (this.isInvincible) {
             long dur = System.currentTimeMillis() - this.invincibleStart;
             if (dur < this.invincibleDuration) {
                 float percent = ((float) dur / (float) this.invincibleDuration);
@@ -26,6 +26,8 @@ class PlayerStatus {
                 this.isInvincible = false;
                 this.invincibleStart = 0;
                 this.invincibleDuration = 0;
+                p.setExp(0);
+                PlayerStatusManager.removePlayer(p);
             }
         }
     }

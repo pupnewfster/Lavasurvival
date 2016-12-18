@@ -11,7 +11,7 @@ import java.util.regex.Pattern;
 
 public class CmdUnbanIP implements Cmd {
     public boolean commandUse(CommandSender sender, String[] args) {
-        Variables var = Necessities.getInstance().getVar();
+        Variables var = Necessities.getVar();
         if (args.length == 0) {
             sender.sendMessage(var.getEr() + "Error: " + var.getErMsg() + "You must enter an ip to unban.");
             return true;
@@ -26,7 +26,7 @@ public class CmdUnbanIP implements Cmd {
             sender.sendMessage(var.getEr() + "Error: " + var.getErMsg() + "Invalid ip.");
             return true;
         }
-        String name = (sender instanceof Player ? sender.getName() : Necessities.getInstance().getConsole().getName().replaceAll(":", ""));
+        String name = (sender instanceof Player ? sender.getName() : Necessities.getConsole().getName().replaceAll(":", ""));
         BanList bans = Bukkit.getBanList(BanList.Type.IP);
         String theirIP = args[0];
         if (!bans.isBanned(theirIP)) {

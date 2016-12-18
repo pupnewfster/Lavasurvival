@@ -4,15 +4,14 @@ package me.eddiep.handles.logic;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
-import org.bukkit.block.Block;
 
 public interface LogicContainer {
     /**
      * Request a block to be queued for the next logic check
      *
-     * @param block The block to queue
+     * @param location The location of the block to queue
      */
-    void queueBlock(Block block);
+    void queueBlock(Location location);
 
     /**
      * Run a logic tick on all blocks in this {@link LogicContainer}
@@ -34,13 +33,6 @@ public interface LogicContainer {
      * @return True if this {@link Material} can be queued, otherwise false
      */
     boolean doesHandle(Material material);
-
-    /**
-     * Request a block change update at the specified location
-     *
-     * @param location The location to request an update
-     */
-    void blockUpdate(Location location);
 
     /**
      * Returns what this LogicContainer does physics for

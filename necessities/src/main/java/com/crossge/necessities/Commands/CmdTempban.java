@@ -15,12 +15,12 @@ import java.util.UUID;
 
 public class CmdTempban implements Cmd {
     public boolean commandUse(CommandSender sender, String[] args) {
-        Variables var = Necessities.getInstance().getVar();
+        Variables var = Necessities.getVar();
         if (args.length <= 1) {
             sender.sendMessage(var.getEr() + "Error: " + var.getErMsg() + "You must enter a player to ban and a duration in minutes.");
             return true;
         }
-        GetUUID get = Necessities.getInstance().getUUID();
+        GetUUID get = Necessities.getUUID();
         UUID uuid = get.getID(args[0]);
         if (uuid == null) {
             uuid = get.getOfflineID(args[0]);
@@ -30,7 +30,7 @@ public class CmdTempban implements Cmd {
             }
         }
         OfflinePlayer target = Bukkit.getOfflinePlayer(uuid);
-        String name = Necessities.getInstance().getConsole().getName().replaceAll(":", "");
+        String name = Necessities.getConsole().getName().replaceAll(":", "");
         if (sender instanceof Player) {
             Player p = (Player) sender;
             if (target.getPlayer() != null && target.getPlayer().hasPermission("Necessities.antiBan")) {

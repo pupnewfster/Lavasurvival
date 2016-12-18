@@ -8,7 +8,6 @@ import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.plugin.Plugin;
@@ -69,7 +68,6 @@ public class SetupMap implements Listener {
 
     public void end() {
         AsyncPlayerChatEvent.getHandlerList().unregister(this);
-        BlockBreakEvent.getHandlerList().unregister(this);
         BlockPlaceEvent.getHandlerList().unregister(this);
         this.setupPlayer = null;
         this.step = 0;

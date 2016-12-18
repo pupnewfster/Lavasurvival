@@ -9,12 +9,12 @@ import org.bukkit.command.CommandSender;
 
 public class CmdRankCmds implements RankCmd {
     public boolean commandUse(CommandSender sender, String[] args) {
-        Variables var = Necessities.getInstance().getVar();
+        Variables var = Necessities.getVar();
         if (args.length == 0) {
             sender.sendMessage(var.getEr() + "Error: " + var.getErMsg() + "You must enter a rank to view the commands of.");
             return true;
         }
-        Rank r = Necessities.getInstance().getRM().getRank(Utils.capFirst(args[0]));
+        Rank r = Necessities.getRM().getRank(Utils.capFirst(args[0]));
         if (r == null) {
             sender.sendMessage(var.getEr() + "Error: " + var.getErMsg() + "You must enter a valid rank.");
             return true;

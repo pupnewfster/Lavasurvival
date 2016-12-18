@@ -7,12 +7,12 @@ import org.bukkit.command.CommandSender;
 
 public class CmdRemoveWorld implements WorldCmd {
     public boolean commandUse(CommandSender sender, String[] args) {
-        Variables var = Necessities.getInstance().getVar();
+        Variables var = Necessities.getVar();
         if (args.length == 0) {
             sender.sendMessage(var.getEr() + "Error: " + var.getErMsg() + "You must enter a world name to remove from the files.");
             return true;
         }
-        WorldManager wm = Necessities.getInstance().getWM();
+        WorldManager wm = Necessities.getWM();
         if (wm.worldExists(args[0])) {
             sender.sendMessage(var.getEr() + "Error: " + var.getErMsg() + "That world is loaded before you remove a world from the configs unload it.");
             return true;

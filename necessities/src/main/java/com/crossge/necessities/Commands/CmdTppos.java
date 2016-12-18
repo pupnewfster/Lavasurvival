@@ -10,7 +10,7 @@ import org.bukkit.entity.Player;
 
 public class CmdTppos implements Cmd {
     public boolean commandUse(CommandSender sender, String[] args) {
-        Variables var = Necessities.getInstance().getVar();
+        Variables var = Necessities.getVar();
         if (args.length < 3) {
             sender.sendMessage(var.getEr() + "Error: " + var.getErMsg() + "Format requires you enter an x coordinate, a y coordinate, and a z coordinate to teleport to.");
             return true;

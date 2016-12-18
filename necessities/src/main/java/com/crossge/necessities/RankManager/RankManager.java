@@ -42,7 +42,7 @@ public class RankManager {
         }
         //If is an actual subrank not just base node in tree of a subrank
         configSubranks.getKeys(true).stream().filter(subrank -> !subrank.equals("") && !configSubranks.getStringList(subrank).isEmpty()).forEach(subrank -> this.subranks.put(subrank.toLowerCase(), subrank));
-        Necessities.getInstance().getUM().readUsers();
+        Necessities.getUM().readUsers();
         Bukkit.getScheduler().scheduleSyncDelayedTask(Necessities.getInstance(), () -> {
             Bukkit.getConsoleSender().sendMessage(ChatColor.AQUA + "Retrieving all permissions.");
             updatePerms();
@@ -64,7 +64,7 @@ public class RankManager {
     public void reloadPermissions() {
         for (Rank r : getOrder()) {
             r.refreshPerms();
-            Necessities.getInstance().getUM().refreshRankPerm(r);
+            Necessities.getUM().refreshRankPerm(r);
         }
     }
 
@@ -109,13 +109,13 @@ public class RankManager {
                 perms.add("");
             configRanks.set(r.getName() + ".permissions", perms);
             r.removePerm(permission);
-            Necessities.getInstance().getUM().delRankPerm(r, permission);
+            Necessities.getUM().delRankPerm(r, permission);
 
         } else {
             perms.add(permission);
             configRanks.set(r.getName() + ".permissions", perms);
             r.addPerm(permission);
-            Necessities.getInstance().getUM().addRankPerm(r, permission);
+            Necessities.getUM().addRankPerm(r, permission);
         }
         try {
             configRanks.save(this.configFileRanks);
@@ -146,7 +146,7 @@ public class RankManager {
         }
         this.order.stream().filter(r -> configRanks.contains(r.getName()) && configRanks.getStringList(r.getName() + ".subranks").contains(subrank)).forEach(r -> {
             r.refreshPerms();
-            Necessities.getInstance().getUM().refreshRankPerm(r);
+            Necessities.getUM().refreshRankPerm(r);
         });
     }
 
@@ -169,7 +169,7 @@ public class RankManager {
         } catch (Exception ignored) {
         }
         r.refreshPerms();
-        Necessities.getInstance().getUM().refreshRankPerm(r);
+        Necessities.getUM().refreshRankPerm(r);
     }
 
     public void addRank(String name, Rank previous, Rank next) {
@@ -201,7 +201,7 @@ public class RankManager {
     }
 
     public void removeRank(Rank rank) {
-        UserManager um = Necessities.getInstance().getUM();
+        UserManager um = Necessities.getUM();
         Rank previous = rank.getPrevious();
         Rank next = rank.getNext();
         um.getUsers().values().stream().filter(u -> u.getRank().equals(rank)).forEach(u -> {
@@ -246,7 +246,7 @@ public class RankManager {
     public void removeSubrank(String name) {
         if (name.equals(""))
             return;
-        UserManager um = Necessities.getInstance().getUM();
+        UserManager um = Necessities.getUM();
         um.getUsers().values().forEach(u -> um.updateUserSubrank(u.getUUID(), name, true));
         this.order.forEach(r -> updateRankSubrank(r, name, true));
         YamlConfiguration configSubranks = YamlConfiguration.loadConfiguration(this.configFileSubranks);

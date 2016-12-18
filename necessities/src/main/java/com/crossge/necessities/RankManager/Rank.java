@@ -22,7 +22,7 @@ public class Rank {
         if (configRanks.contains(getName() + ".rankTitle"))
             this.title = configRanks.getString(getName() + ".rankTitle");
         if (configRanks.contains(getName() + ".previousRank")) {
-            RankManager rm = Necessities.getInstance().getRM();
+            RankManager rm = Necessities.getRM();
             this.previous = rm.getRank(configRanks.getString(getName() + ".previousRank"));
             this.previous.setNext(this);
         }

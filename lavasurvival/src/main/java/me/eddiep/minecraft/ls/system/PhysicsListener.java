@@ -310,12 +310,9 @@ public class PhysicsListener implements Listener {
     @EventHandler(priority = EventPriority.MONITOR)
     public void onClassicPhysics(ClassicPhysicsEvent event) {
         synchronized (toTasks) {
-            if (Gamemode.getCurrentGame().hasEnded() || event.getLocation() == null || event.getLocation().getWorld() == null ||
-                    !event.getLocation().getChunk().isLoaded() || event.getLocation().getBlock() == null)
-                return;
-
-            if (Gamemode.getCurrentMap().isInSafeZone(event.getLocation())) {
-                event.setCancelled(true); //Do not allow physics inside the safe zone!
+            if (Gamemode.getCurrentGame() == null || Gamemode.getCurrentGame().hasEnded() || event.getLocation() == null || event.getLocation().getWorld() == null ||
+                    !event.getLocation().getChunk().isLoaded() || event.getLocation().getBlock() == null || Gamemode.getCurrentMap().isInSafeZone(event.getLocation())) {
+                event.setCancelled(true);
                 return;
             }
 

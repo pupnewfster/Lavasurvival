@@ -18,8 +18,6 @@ import me.eddiep.minecraft.ls.system.FileUtils;
 import me.eddiep.minecraft.ls.system.PhysicsListener;
 import me.eddiep.minecraft.ls.system.PlayerListener;
 import mkremins.fanciful.FancyMessage;
-import net.minecraft.server.v1_11_R1.IChatBaseComponent;
-import net.minecraft.server.v1_11_R1.PacketPlayOutTitle;
 import org.bukkit.*;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.block.Block;
@@ -28,7 +26,6 @@ import org.bukkit.boss.BarColor;
 import org.bukkit.boss.BarFlag;
 import org.bukkit.boss.BarStyle;
 import org.bukkit.craftbukkit.v1_11_R1.boss.CraftBossBar;
-import org.bukkit.craftbukkit.v1_11_R1.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
@@ -231,7 +228,7 @@ public abstract class Gamemode {
                 tick();
             }
         };
-        this.tickTask.runTaskTimer(Lavasurvival.INSTANCE, 0, 1);
+        this.tickTask.runTaskTimerAsynchronously(Lavasurvival.INSTANCE, 0, 1);
     }
 
     @SuppressWarnings("ResultOfMethodCallIgnored")
@@ -250,8 +247,8 @@ public abstract class Gamemode {
 
     private void tick() {
         PlayerStatusManager.tick();
-        double multiplier = currentMap.getTimeOptions().getMultiplier();
-        if (currentMap.getTimeOptions().isEnabled()) {
+        if (currentMap.getTimeOptions().isEnabled()) { //TODO test with async
+            double multiplier = currentMap.getTimeOptions().getMultiplier();
             if (multiplier != 1.0) {
                 this.timeTickCount++;
                 long tick = (long) (this.timeTickCount * multiplier);
@@ -345,7 +342,7 @@ public abstract class Gamemode {
         end();
         final UserManager um = Lavasurvival.INSTANCE.getUserManager();
         if (giveRewards) {
-            CmdHide hide = Necessities.getInstance().getHide();
+            CmdHide hide = Necessities.getHide();
             int amount = 0;
             for (UUID id : alive)
                 if (id != null && Bukkit.getPlayer(id) != null && !hide.isHidden(Bukkit.getPlayer(id)) && !isInSpawn(Bukkit.getPlayer(id)))
@@ -380,7 +377,7 @@ public abstract class Gamemode {
                 Player p = Bukkit.getPlayer(id);
                 if (p == null || hide.isHidden(p) || isInSpawn(Bukkit.getPlayer(id)) || p.getGameMode().equals(GameMode.CREATIVE) || p.getGameMode().equals(GameMode.SPECTATOR))
                     continue;
-                Rank rank = Necessities.getInstance().getUM().getUser(p.getUniqueId()).getRank();
+                Rank rank = Necessities.getUM().getUser(p.getUniqueId()).getRank();
                 Double[] array;
                 if (!avgs.containsKey(rank))
                     array = new Double[]{0.0, 0.0, 0.0};
@@ -397,12 +394,7 @@ public abstract class Gamemode {
                 winners.put(p.getUniqueId(), blockCount);
                 Lavasurvival.INSTANCE.depositPlayer(p, reward);
                 p.getPlayer().sendMessage(ChatColor.GREEN + "+ " + ChatColor.GOLD + "You won " + ChatColor.BOLD + reward + ChatColor.RESET + "" + ChatColor.GOLD + " GGs!");
-                IChatBaseComponent titleJSON = IChatBaseComponent.ChatSerializer.a("{\"text\": \"You won!\"}");
-                IChatBaseComponent subtitleJSON = IChatBaseComponent.ChatSerializer.a("{\"text\": \"§6§l" + reward + "§6 GGs!\"}");
-                PacketPlayOutTitle titlePacket = new PacketPlayOutTitle(PacketPlayOutTitle.EnumTitleAction.TITLE, titleJSON, 0, 60, 0);
-                PacketPlayOutTitle subtitlePacket = new PacketPlayOutTitle(PacketPlayOutTitle.EnumTitleAction.SUBTITLE, subtitleJSON);
-                ((CraftPlayer) p).getHandle().playerConnection.sendPacket(titlePacket);
-                ((CraftPlayer) p).getHandle().playerConnection.sendPacket(subtitlePacket);
+                p.sendTitle("You won!", ChatColor.GOLD + "" + ChatColor.BOLD + reward + ChatColor.GOLD + " GGs!", 0, 60, 0);
             }
 
             if (Necessities.isTracking()) {
@@ -668,6 +660,7 @@ public abstract class Gamemode {
     }
 
     private void end() {
+        PlayerStatusManager.cleanup();
         this.tickTask.cancel();
         //Bukkit.getScheduler().cancelTasks(Lavasurvival.INSTANCE);
         globalMessage(ChatColor.GREEN + "The round has ended!");
@@ -708,8 +701,8 @@ public abstract class Gamemode {
         if (onlinePlayer == null)
             return 0.0;
         double base = 100.0;
-        Rank rank = Necessities.getInstance().getUM().getUser(player.getUniqueId()).getRank();
-        double bonusAdd = (5 + Necessities.getInstance().getRM().getOrder().indexOf(rank)) / 2.0;
+        Rank rank = Necessities.getUM().getUser(player.getUniqueId()).getRank();
+        double bonusAdd = (5 + Necessities.getRM().getOrder().indexOf(rank)) / 2.0;
         //int blockCount = countAirBlocksAround(onlinePlayer, 20);
         //System.out.println(onlinePlayer.getName() + " had " + blockCount + " blocks around them!");
         return base + (bonusAdd * blockCount);
@@ -728,7 +721,7 @@ public abstract class Gamemode {
         setAlive(player);
         player.teleport(new Location(getCurrentWorld(), getCurrentMap().getMapSpawn().getX(), getCurrentMap().getMapSpawn().getY(), getCurrentMap().getMapSpawn().getZ()));
         player.setGameMode(GameMode.SURVIVAL);
-        player.getAttribute(Attribute.GENERIC_MAX_HEALTH).setBaseValue(getHealth(Necessities.getInstance().getUM().getUser(player.getUniqueId()).getRank()));
+        player.getAttribute(Attribute.GENERIC_MAX_HEALTH).setBaseValue(getHealth(Necessities.getUM().getUser(player.getUniqueId()).getRank()));
         player.setHealth(player.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue());
         player.setGlowing(true);
         UserManager um = Lavasurvival.INSTANCE.getUserManager();
@@ -748,11 +741,8 @@ public abstract class Gamemode {
             player.getInventory().addItem(Lavasurvival.INSTANCE.getRules());
         ShopFactory.validateInventory(inv);
         u.giveBoughtBlocks();
-        if (!getCurrentMap().getCreator().equals("")) {
-            IChatBaseComponent titleJSON = IChatBaseComponent.ChatSerializer.a("{\"text\": \"§6Map created by " + getCurrentMap().getCreator() + "\"}");
-            PacketPlayOutTitle titlePacket = new PacketPlayOutTitle(PacketPlayOutTitle.EnumTitleAction.TITLE, titleJSON, 0, 60, 0);
-            ((CraftPlayer) player).getHandle().playerConnection.sendPacket(titlePacket);
-        }
+        if (!getCurrentMap().getCreator().equals(""))
+            player.sendTitle(ChatColor.GOLD + "Map created by " + getCurrentMap().getCreator(), "", 0, 60, 0);
     }
 
     public void addBars(Player p) {
@@ -766,7 +756,7 @@ public abstract class Gamemode {
     public double getHealth(Rank r) {
         if (r == null)
             return 1;
-        switch (Necessities.getInstance().getRM().getOrder().indexOf(r)) {
+        switch (Necessities.getRM().getOrder().indexOf(r)) {
             case 0:
                 return 10;
             case 1:
@@ -792,7 +782,7 @@ public abstract class Gamemode {
             dead.remove(uuid);
         if (!alive.contains(uuid))
             alive.add(uuid);
-        Necessities.getInstance().getUM().getUser(uuid).setStatus("alive");
+        Necessities.getUM().getUser(uuid).setStatus("alive");
         player.setGameMode(GameMode.SURVIVAL);
         Lavasurvival.log(player.getName() + " has joined the alive team.");
     }
@@ -806,7 +796,7 @@ public abstract class Gamemode {
             alive.remove(uuid);
         if (!dead.contains(uuid))
             dead.add(uuid);
-        Necessities.getInstance().getUM().getUser(uuid).setStatus("dead");
+        Necessities.getUM().getUser(uuid).setStatus("dead");
         player.setGameMode(GameMode.SPECTATOR);
         Lavasurvival.log(player.getName() + " has joined the dead team.");
         if (allDead())
@@ -846,7 +836,7 @@ public abstract class Gamemode {
     }
 
     public boolean allDead() {
-        CmdHide hide = Necessities.getInstance().getHide();
+        CmdHide hide = Necessities.getHide();
         boolean allDead = Bukkit.getOnlinePlayers().size() != 0;
         for (Player p : Bukkit.getOnlinePlayers()) {
             if (isAlive(p) && !hide.isHidden(p)) {

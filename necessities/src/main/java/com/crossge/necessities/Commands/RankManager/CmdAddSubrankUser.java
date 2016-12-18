@@ -12,12 +12,12 @@ import java.util.UUID;
 
 public class CmdAddSubrankUser implements RankCmd {
     public boolean commandUse(CommandSender sender, String[] args) {
-        Variables var = Necessities.getInstance().getVar();
+        Variables var = Necessities.getVar();
         if (args.length != 2) {
             sender.sendMessage(var.getEr() + "Error: " + var.getErMsg() + "Format requires a user and a subrank to add for that user.");
             return true;
         }
-        GetUUID get = Necessities.getInstance().getUUID();
+        GetUUID get = Necessities.getUUID();
         UUID uuid = get.getID(args[0]);
         if (uuid == null) {
             uuid = get.getOfflineID(args[0]);
@@ -27,13 +27,13 @@ public class CmdAddSubrankUser implements RankCmd {
             }
         }
         String subrank = args[1];
-        RankManager rm = Necessities.getInstance().getRM();
+        RankManager rm = Necessities.getRM();
         if (rm.validSubrank(subrank)) {
             sender.sendMessage(var.getEr() + "Error: " + var.getErMsg() + "That subrank does not exist");
             return true;
         }
         subrank = rm.getSub(subrank);
-        Necessities.getInstance().getUM().updateUserSubrank(uuid, subrank, false);
+        Necessities.getUM().updateUserSubrank(uuid, subrank, false);
         sender.sendMessage(var.getMessages() + "Added " + var.getObj() + subrank + var.getMessages() + " to " + var.getObj() + Utils.ownerShip(get.nameFromString(uuid.toString())) + var.getMessages() + " subranks.");
         return true;
     }

@@ -2,16 +2,15 @@ package me.eddiep.minecraft.ls.game.status;
 
 import org.bukkit.entity.Player;
 
-import java.util.WeakHashMap;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class PlayerStatusManager {
-    private static final WeakHashMap<Player, PlayerStatus> status = new WeakHashMap<>();
+    private static final ConcurrentHashMap<Player, PlayerStatus> status = new ConcurrentHashMap<>();
 
     public static void tick() {
         status.keySet().forEach(p -> status.get(p).tick());
     }
 
-    @SuppressWarnings("unused")
     public static void cleanup() {
         status.clear();
     }
@@ -20,6 +19,11 @@ public class PlayerStatusManager {
         if (!status.containsKey(owner))
             status.put(owner, new PlayerStatus(owner));
         return status.get(owner);
+    }
+
+    static void removePlayer(Player owner) {
+        if (owner != null)
+            status.remove(owner);
     }
 
     @SuppressWarnings("UnusedReturnValue")

@@ -2,10 +2,15 @@ package com.crossge.necessities;
 
 import com.crossge.necessities.Hats.HatType;
 import org.apache.commons.io.FileUtils;
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.command.PluginCommand;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.plugin.Plugin;
 
 import java.io.File;
 import java.util.Collections;
+import java.util.Map;
 
 class Initialization {
     @SuppressWarnings("ResultOfMethodCallIgnored")
@@ -28,28 +33,47 @@ class Initialization {
         createYaml();
         HatType.mapHats();
 
-        //RankManager
-        Necessities.getInstance().getRM().setRanks();
-        Necessities.getInstance().getRM().setSubranks();
-        Necessities.getInstance().getRM().readRanks();
-        Necessities.getInstance().getSBs().createScoreboard();
-
         YamlConfiguration config = Necessities.getInstance().getConfig();
+        if (config.contains("Necessities.customDeny") && config.getBoolean("Necessities.customDeny")) //At the moment only is checked on startup
+            Bukkit.getScheduler().scheduleSyncDelayedTask(Necessities.getInstance(), () -> {
+                Bukkit.getConsoleSender().sendMessage(ChatColor.AQUA + "Setting custom deny messages.");
+                String msg = Necessities.getVar().getEr() + "Error: " + Necessities.getVar().getErMsg() + "You do not have permission to perform this command.";
+                for (Plugin p : Bukkit.getPluginManager().getPlugins()) {
+                    try {
+                        Map<String, Map<String, Object>> cmds = p.getDescription().getCommands();
+                        if (cmds != null)
+                            for (String k : cmds.keySet()) {
+                                PluginCommand pc = Bukkit.getPluginCommand(p.getName() + ":" + k);
+                                if (pc != null)
+                                    pc.setPermissionMessage(msg);
+                            }
+                    } catch (Exception ignored) {
+                    }
+                }
+                Bukkit.getConsoleSender().sendMessage(ChatColor.AQUA + "Custom deny messages set.");
+            });
+
+        //RankManager
+        Necessities.getRM().setRanks();
+        Necessities.getRM().setSubranks();
+        Necessities.getRM().readRanks();
+        Necessities.getSBs().createScoreboard();
+
         //WorldManager
         if (config.contains("Necessities.WorldManager") && config.getBoolean("Necessities.WorldManager")) {
-            Necessities.getInstance().getWM().initiate();
-            Necessities.getInstance().getWarps().initiate();
-            Necessities.getInstance().getPM().initiate();
+            Necessities.getWM().initiate();
+            Necessities.getWarps().initiate();
+            Necessities.getPM().initiate();
         }
 
-        Necessities.getInstance().getNet().readCustom();
-        Necessities.getInstance().getBot().initiate();
-        Necessities.getInstance().getSpy().init();
-        Necessities.getInstance().getHide().init();
-        Necessities.getInstance().getWarns().initiate();
-        Necessities.getInstance().getSlack().init();
-        Necessities.getInstance().getAI().initiate();
-        Necessities.getInstance().getAnnouncer().init();
+        Necessities.getNet().readCustom();
+        Necessities.getBot().initiate();
+        Necessities.getSpy().init();
+        Necessities.getHide().init();
+        Necessities.getWarns().initiate();
+        Necessities.getSlack().init();
+        Necessities.getAI().initiate();
+        Necessities.getAnnouncer().init();
     }
 
     @SuppressWarnings("ResultOfMethodCallIgnored")

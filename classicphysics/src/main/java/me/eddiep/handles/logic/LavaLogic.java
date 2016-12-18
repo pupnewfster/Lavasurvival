@@ -6,11 +6,10 @@ import me.eddiep.handles.ClassicPhysicsEvent;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
-import org.bukkit.metadata.FixedMetadataValue;
 
 public class LavaLogic extends AbstractLogicContainer {
     @Override
-    protected void tickForBlock(Block block, Location location) {
+    protected void tickForBlock(Location location) {
         checkLocation(location.clone().add(1, 0, 0), location);
         checkLocation(location.clone().add(-1, 0, 0), location);
         checkLocation(location.clone().add(0, 0, 1), location);
@@ -46,10 +45,10 @@ public class LavaLogic extends AbstractLogicContainer {
             if (newBlock != block.getType())
                 placeClassicBlock(newBlock, location, from);
             else if (!block.hasMetadata("classic_block")) {
-                block.setMetadata("classic_block", new FixedMetadataValue(ClassicPhysics.INSTANCE, true));
+                block.setMetadata("classic_block", ClassicPhysics.METADATA);
                 ClassicPhysics.INSTANCE.getServer().getPluginManager().callEvent(new ClassicBlockPlaceEvent(location));
                 if (doesHandle(block.getType()))
-                    queueBlock(block);
+                    queueBlock(location);
             }
         }
     }

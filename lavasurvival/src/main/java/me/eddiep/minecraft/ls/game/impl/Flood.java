@@ -83,38 +83,37 @@ public class Flood extends Gamemode {
     public void onTick() {
         if (this.objective == null)
             return;
-        long since = System.currentTimeMillis() - this.gameStart;
-        int minutes = (int) ((this.duration - since) / 60000), seconds = (int) (((this.duration - since) / 1000) % 60);
-        String time = (minutes < 10 ? "0" + minutes : minutes) + ":" + (seconds < 10 ? "0" + seconds : seconds);
+        long since = System.currentTimeMillis() - this.gameStart, dif = this.duration - since;
+        int seconds = (int) ((dif) / 1000 % 60);
+        String time = (int) ((dif) / 60000) + ":" + (seconds < 10 ? "0" + seconds : seconds);
         if (!super.poured)
             this.objective.setDisplayName((LAVA ? "Lava" : "Water") + " Pour: " + ChatColor.BOLD + time);
         else
             this.objective.setDisplayName("Round Ends In: " + ChatColor.BOLD + time);
-
-        if (!super.poured && since < this.duration) {
-            int nextMinute = (int) Math.floor(since / 60000.0);
+        if (super.poured) {
+            if (since < this.duration) {
+                int nextMinute = (int) since / 60000;
+                if (nextMinute != this.lastMinute) {
+                    this.lastMinute = nextMinute;
+                    getCurrentWorld().strikeLightningEffect(this.lavaPoints.get(RANDOM.nextInt(this.lavaPoints.size()))); //Changed to just effect not to kill unknowing player nearby
+                    globalMessage("The round will end in " + ChatColor.DARK_RED + TimeUtils.toFriendlyTime(dif));
+                }
+            } else
+                endRound();
+        } else if (since < this.duration) {
+            int nextMinute = (int) since / 60000;
             if (nextMinute != this.lastMinute) {
                 this.lastMinute = nextMinute;
                 getCurrentWorld().strikeLightningEffect(this.lavaPoints.get(RANDOM.nextInt(this.lavaPoints.size()))); //Changed to just effect not to kill unknowing player nearby
-                globalMessage("The " + (LAVA ? "lava" : "water") + " will pour in " + ChatColor.DARK_RED + TimeUtils.toFriendlyTime(this.duration - since));
+                globalMessage("The " + (LAVA ? "lava" : "water") + " will pour in " + ChatColor.DARK_RED + TimeUtils.toFriendlyTime(dif));
             }
-        } else if (!super.poured) {
+        } else {
             super.poured = true;
             globalMessage(ChatColor.DARK_RED + "Here comes the " + (LAVA ? "lava" : "water") + "!");
             this.gameStart = System.currentTimeMillis();
             this.lavaPoints.forEach(l -> Lavasurvival.INSTANCE.getPhysicsHandler().forcePlaceClassicBlockAt(l, getMat()));
             this.duration = getCurrentMap().getFloodOptions().generateRandomEndTime();
             this.objective.setDisplayName("Round Ends In: " + ChatColor.BOLD + time);
-        } else {
-            if (since < this.duration) {
-                int nextMinute = (int) Math.floor(since / 60000.0);
-                if (nextMinute != this.lastMinute) {
-                    this.lastMinute = nextMinute;
-                    getCurrentWorld().strikeLightningEffect(this.lavaPoints.get(RANDOM.nextInt(this.lavaPoints.size()))); //Changed to just effect not to kill unknowing player nearby
-                    globalMessage("The round will end in " + ChatColor.DARK_RED + TimeUtils.toFriendlyTime(this.duration - since));
-                }
-            } else
-                endRound();
         }
     }
 

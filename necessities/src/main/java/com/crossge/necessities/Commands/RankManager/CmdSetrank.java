@@ -16,12 +16,12 @@ import java.util.UUID;
 
 public class CmdSetrank implements RankCmd {
     public boolean commandUse(CommandSender sender, String[] args) {
-        Variables var = Necessities.getInstance().getVar();
+        Variables var = Necessities.getVar();
         if (args.length != 2) {
             sender.sendMessage(var.getEr() + "Error: " + var.getErMsg() + "Format requires you enter a user and a rank to set the user's rank to.");
             return true;
         }
-        GetUUID get = Necessities.getInstance().getUUID();
+        GetUUID get = Necessities.getUUID();
         UUID uuid = get.getID(args[0]);
         if (uuid == null) {
             uuid = get.getOfflineID(args[0]);
@@ -30,8 +30,8 @@ public class CmdSetrank implements RankCmd {
                 return true;
             }
         }
-        UserManager um = Necessities.getInstance().getUM();
-        RankManager rm = Necessities.getInstance().getRM();
+        UserManager um = Necessities.getUM();
+        RankManager rm = Necessities.getRM();
         User u = um.getUser(uuid);
         Rank r = rm.getRank(Utils.capFirst(args[1]));
         if (r == null) {

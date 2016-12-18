@@ -8,11 +8,11 @@ import org.bukkit.entity.Player;
 
 public class CmdSetWorldSpawn implements WorldCmd {
     public boolean commandUse(CommandSender sender, String[] args) {
-        Variables var = Necessities.getInstance().getVar();
+        Variables var = Necessities.getVar();
         if (sender instanceof Player) {
             Player p = (Player) sender;
             Location l = p.getLocation();
-            Necessities.getInstance().getWM().setWorldSpawn(l);
+            Necessities.getWM().setWorldSpawn(l);
             p.sendMessage(var.getMessages() + "Set spawn for " + var.getObj() + l.getWorld().getName() + var.getMessages() + " at: " + var.getObj() +
                     l.getBlockX() + var.getMessages() + ", " + var.getObj() + l.getBlockY() + var.getMessages() + ", " + var.getObj() + l.getBlockZ());
         } else

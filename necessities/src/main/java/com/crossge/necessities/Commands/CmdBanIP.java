@@ -16,13 +16,13 @@ import java.util.regex.Pattern;
 
 public class CmdBanIP implements Cmd {
     public boolean commandUse(CommandSender sender, String[] args) {
-        Variables var = Necessities.getInstance().getVar();
+        Variables var = Necessities.getVar();
         if (args.length == 0) {
             sender.sendMessage(var.getEr() + "Error: " + var.getErMsg() + "You must enter an player to ban.");
             return true;
         }
-        GetUUID get = Necessities.getInstance().getUUID();
-        String name = Necessities.getInstance().getConsole().getName().replaceAll(":", "");
+        GetUUID get = Necessities.getUUID();
+        String name = Necessities.getConsole().getName().replaceAll(":", "");
         UUID uuid = get.getID(args[0]);
         if (uuid != null) {
             Player target = Bukkit.getPlayer(uuid);

@@ -14,7 +14,7 @@ public class JanetWarn {
     private int warns;
 
     public void initiate() {
-        RankManager rm = Necessities.getInstance().getRM();
+        RankManager rm = Necessities.getRM();
         this.janetName = (!rm.getOrder().isEmpty() ? ChatColor.translateAlternateColorCodes('&', rm.getRank(rm.getOrder().size() - 1).getTitle() + " ") : "") + "Janet" + ChatColor.DARK_RED + ": " + ChatColor.WHITE;
         this.warns = Necessities.getInstance().getConfig().getInt("Necessities.warns");
     }
@@ -67,7 +67,7 @@ public class JanetWarn {
             }
             timesLeft(uuid);
         }
-        Necessities.getInstance().getLog().log("Janet: " + warning);
+        Necessities.getLog().log("Janet: " + warning);
     }
 
     private void timesLeft(UUID uuid) {

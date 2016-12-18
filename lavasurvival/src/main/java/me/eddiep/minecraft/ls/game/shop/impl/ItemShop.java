@@ -14,7 +14,6 @@ import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
-import org.bukkit.inventory.ItemStack;
 
 @SuppressWarnings("unused")
 @MenuInventory(slots = 9, name = "Item Shop")
@@ -48,15 +47,19 @@ public class ItemShop extends Menu {
         buyItem(player, LavaItem.MAJOR_INVINCIBILITY);
     }
 
+    @MenuItem(slot = 5, item = @ItemStackAnnotation(material = Material.WOOD, name = ""))
+    public void secondChance(MenuPlayer player) {
+        buyItem(player, LavaItem.SECOND_CHANCE);
+    }
+
     private void buyItem(MenuPlayer player, LavaItem item) {
-        ItemStack is = item.createItem();
         Player p = player.getBukkit();
         if (!Lavasurvival.INSTANCE.getEconomy().hasAccount(p) || Lavasurvival.INSTANCE.getEconomy().getBalance(p) < item.getPrice())
             p.sendMessage(ChatColor.RED + "You do not have enough money to buy the item " + item.name() + "..");
         else if (BukkitUtils.isInventoryFull(p.getInventory()))
             p.sendMessage(ChatColor.RED + "You do not have enough inventory space to buy any more items..");
         else {
-            p.getInventory().addItem(is);
+            p.getInventory().addItem(item.createItem());
             Lavasurvival.INSTANCE.withdrawAndUpdate(p, item.getPrice());
             p.sendMessage(ChatColor.GREEN + "You bought the item " + item.name() + "!");
         }
@@ -67,7 +70,7 @@ public class ItemShop extends Menu {
         for (int i = 0; i < LavaItem.ITEMS.length; i++) {
             if (i >= inv.getSize())
                 break;
-            inv.setItem(i, LavaItem.ITEMS[i].createItem());
+            inv.setItem(i, LavaItem.ITEMS[i].createItemWithPrice());
         }
     }
 }

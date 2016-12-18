@@ -10,7 +10,7 @@ import java.util.UUID;
 
 public class CmdFly implements Cmd {
     public boolean commandUse(CommandSender sender, String[] args) {
-        Variables var = Necessities.getInstance().getVar();
+        Variables var = Necessities.getVar();
         if (sender instanceof Player) {
             Player p = (Player) sender;
             if (args.length == 0) {
@@ -28,7 +28,7 @@ public class CmdFly implements Cmd {
             sender.sendMessage(var.getEr() + "Error: " + var.getErMsg() + "The console cannot fly.");
             return true;
         }
-        UUID uuid = Necessities.getInstance().getUUID().getID(args[0]);
+        UUID uuid = Necessities.getUUID().getID(args[0]);
         if (uuid == null) {
             sender.sendMessage(var.getEr() + "Error: " + var.getErMsg() + "Invalid player.");
             return true;

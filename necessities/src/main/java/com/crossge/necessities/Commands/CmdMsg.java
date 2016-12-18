@@ -15,14 +15,14 @@ import java.util.UUID;
 
 public class CmdMsg implements Cmd {
     public boolean commandUse(CommandSender sender, String[] args) {
-        Variables var = Necessities.getInstance().getVar();
+        Variables var = Necessities.getVar();
         if (args.length < 2) {
             sender.sendMessage(var.getEr() + "Error: " + var.getErMsg() + "You must enter a player to message and a message to send.");
             return true;
         }
-        GetUUID get = Necessities.getInstance().getUUID();
-        Console console = Necessities.getInstance().getConsole();
-        UserManager um = Necessities.getInstance().getUM();
+        GetUUID get = Necessities.getUUID();
+        Console console = Necessities.getConsole();
+        UserManager um = Necessities.getUM();
         if (sender instanceof Player) {
             Player p = (Player) sender;
             User self = um.getUser(p.getUniqueId());
