@@ -432,7 +432,7 @@ public class PlayerListener implements Listener {
                 event.setDeathMessage(event.getDeathMessage().replace("fell out of the world", ChatColor.YELLOW + "died to the elements."));
             UserInfo u = Lavasurvival.INSTANCE.getUserManager().getUser(event.getEntity().getUniqueId());
             u.setInWater(false);
-            event.getDrops().clear();
+            event.setKeepInventory(true);
             event.setDroppedExp(0);
             final Player p = event.getEntity();
             Bukkit.getScheduler().scheduleSyncDelayedTask(Lavasurvival.INSTANCE, () -> {

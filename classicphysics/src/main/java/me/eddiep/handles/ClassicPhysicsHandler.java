@@ -445,9 +445,9 @@ public final class ClassicPhysicsHandler implements Listener {
             if (holder.container.doesHandle(type)) {
                 ToAndFrom taf = new ToAndFrom(location, from);
                 locations.put(taf, type);
-                ConcurrentLinkedQueue<ToAndFrom> temp = new ConcurrentLinkedQueue<>();
-                if (toFroms.containsKey(location) && toFroms.get(location) != null && toFroms.get(location).size() > 0)
-                    temp = toFroms.get(location);
+                ConcurrentLinkedQueue<ToAndFrom> temp = toFroms.get(location);
+                if (temp == null || temp.isEmpty())
+                    temp = new ConcurrentLinkedQueue<>();
                 temp.add(taf);
                 toFroms.put(location, temp);
                 break;

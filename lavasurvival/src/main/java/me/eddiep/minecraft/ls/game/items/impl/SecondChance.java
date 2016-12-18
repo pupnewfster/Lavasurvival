@@ -33,6 +33,6 @@ public class SecondChance extends LavaItem {
 
     @Override
     public int getPrice() {
-        return 0;
+        return 1400;
     }
 }
