@@ -145,9 +145,8 @@ public class Rise extends Gamemode {
             }
             if (!isRoundEnding()) {
                 this.lastEvent = System.currentTimeMillis(); //Set the last event to now
-                this.duration = getCurrentMap().getRiseOptions().generateRandomEndTime() / 1000L;
-                super.endRoundIn(this.duration);
-                this.duration *= 1000L;
+                this.duration = getCurrentMap().getRiseOptions().generateRandomEndTime();
+                super.endRoundIn(this.duration / 1000L);
             }
             return;
         }

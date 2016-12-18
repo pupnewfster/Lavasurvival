@@ -6,7 +6,6 @@ import me.eddiep.handles.ClassicPhysicsEvent;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
-import org.bukkit.metadata.FixedMetadataValue;
 
 public class LavaLogic extends AbstractLogicContainer {
     @Override
@@ -46,7 +45,7 @@ public class LavaLogic extends AbstractLogicContainer {
             if (newBlock != block.getType())
                 placeClassicBlock(newBlock, location, from);
             else if (!block.hasMetadata("classic_block")) {
-                block.setMetadata("classic_block", new FixedMetadataValue(ClassicPhysics.INSTANCE, true));
+                block.setMetadata("classic_block", ClassicPhysics.METADATA);
                 ClassicPhysics.INSTANCE.getServer().getPluginManager().callEvent(new ClassicBlockPlaceEvent(location));
                 if (doesHandle(block.getType()))
                     queueBlock(location);

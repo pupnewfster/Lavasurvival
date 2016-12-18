@@ -54,8 +54,8 @@ public class Fusion extends Gamemode {
             globalMessage("but.." + ChatColor.RED + ChatColor.BOLD + "THE PREPARE TIME HAS BEEN CUT IN HALF");
             this.duration *= 0.5;
         }
-        this.lavaY = getCurrentMap().getRiseOptions().getHighestLocation().getBlockY();
-        this.layerCount = getCurrentMap().getRiseOptions().getLayerCount();
+        this.lavaY = getCurrentMap().getFusionOptions().getHighestLocation().getBlockY();
+        this.layerCount = getCurrentMap().getFusionOptions().getLayerCount();
         this.upTask = new BukkitRunnable() {
             @Override
             public void run() {
@@ -144,9 +144,8 @@ public class Fusion extends Gamemode {
             }
             if (!isRoundEnding()) {
                 this.lastEvent = System.currentTimeMillis(); //Set the last event to now
-                this.duration = getCurrentMap().getFusionOptions().generateRandomEndTime() / 1000L;
-                super.endRoundIn(this.duration);
-                this.duration *= 1000L;
+                this.duration = getCurrentMap().getFusionOptions().generateRandomEndTime();
+                super.endRoundIn(this.duration / 1000L);
             }
             return;
         }

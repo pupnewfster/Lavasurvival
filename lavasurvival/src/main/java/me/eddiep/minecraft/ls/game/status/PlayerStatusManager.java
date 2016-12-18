@@ -2,10 +2,10 @@ package me.eddiep.minecraft.ls.game.status;
 
 import org.bukkit.entity.Player;
 
-import java.util.WeakHashMap;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class PlayerStatusManager {
-    private static final WeakHashMap<Player, PlayerStatus> status = new WeakHashMap<>();
+    private static final ConcurrentHashMap<Player, PlayerStatus> status = new ConcurrentHashMap<>();
 
     public static void tick() {
         status.keySet().forEach(p -> status.get(p).tick());

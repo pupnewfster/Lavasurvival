@@ -191,7 +191,7 @@ public final class ClassicPhysicsHandler implements Listener {
                     continue;
                 }
                 if (!blc.hasMetadata("classic_block"))
-                    blc.setMetadata("classic_block", new FixedMetadataValue(ClassicPhysics.INSTANCE, true));
+                    blc.setMetadata("classic_block", ClassicPhysics.METADATA);
                 e.setBlock(blc.getX(), blc.getY(), blc.getZ(), type);
                 long xz = (long) blc.getChunk().getX() << 32 | blc.getChunk().getZ() & 0xFFFFFFFFL;
                 if (!chunks.containsKey(xz))
@@ -410,7 +410,7 @@ public final class ClassicPhysicsHandler implements Listener {
             type = Material.STATIONARY_LAVA;
         Block blc = location.getBlock();
         if (!blc.hasMetadata("classic_block"))
-            blc.setMetadata("classic_block", new FixedMetadataValue(ClassicPhysics.INSTANCE, true));
+            blc.setMetadata("classic_block", ClassicPhysics.METADATA);
         if (current == null || !current.equals(blc.getWorld())) {
             e = new ChunkEdit(((CraftWorld) blc.getWorld()).getHandle());
             current = blc.getWorld();

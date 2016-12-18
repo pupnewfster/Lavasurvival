@@ -228,7 +228,7 @@ public abstract class Gamemode {
                 tick();
             }
         };
-        this.tickTask.runTaskTimer(Lavasurvival.INSTANCE, 0, 1);
+        this.tickTask.runTaskTimerAsynchronously(Lavasurvival.INSTANCE, 0, 1);
     }
 
     @SuppressWarnings("ResultOfMethodCallIgnored")
@@ -247,7 +247,7 @@ public abstract class Gamemode {
 
     private void tick() {
         PlayerStatusManager.tick();
-        if (currentMap.getTimeOptions().isEnabled()) {
+        if (currentMap.getTimeOptions().isEnabled()) { //TODO test with async
             double multiplier = currentMap.getTimeOptions().getMultiplier();
             if (multiplier != 1.0) {
                 this.timeTickCount++;
