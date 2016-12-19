@@ -139,7 +139,7 @@ public class Economy { //TODO config option for format money as well as refresh 
             Connection conn = DriverManager.getConnection(this.dbURL, this.properties);
             Statement stmt = conn.createStatement();
             ResultSet rs = stmt.executeQuery("SELECT uuid,balance FROM users ORDER BY balance DESC");
-            if (rs.next())
+            while (rs.next())
                 this.balTop.add(rs.getString("uuid") + " " + rs.getDouble("balance"));
             rs.close();
             stmt.close();
@@ -150,7 +150,7 @@ public class Economy { //TODO config option for format money as well as refresh 
 
     public String balTop(int page, int time) {
         page *= 10;
-        return (this.balTop.size() < time + page + 1 || time == 10) ? null : balTop.get(page + time);
+        return (this.balTop.size() < time + page + 1 || time == 10) ? null : this.balTop.get(page + time);
     }
 
     public int baltopPages() {
