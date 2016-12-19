@@ -1,5 +1,6 @@
 package me.eddiep.minecraft.ls.game.shop.impl;
 
+import com.crossge.necessities.Necessities;
 import me.eddiep.minecraft.ls.Lavasurvival;
 import me.eddiep.minecraft.ls.game.items.LavaItem;
 import me.eddiep.minecraft.ls.system.BukkitUtils;
@@ -54,7 +55,7 @@ public class ItemShop extends Menu {
 
     private void buyItem(MenuPlayer player, LavaItem item) {
         Player p = player.getBukkit();
-        if (!Lavasurvival.INSTANCE.getEconomy().hasAccount(p) || Lavasurvival.INSTANCE.getEconomy().getBalance(p) < item.getPrice())
+        if (Necessities.getEconomy().getBalance(p.getUniqueId()) < item.getPrice())
             p.sendMessage(ChatColor.RED + "You do not have enough money to buy the item " + item.name() + "..");
         else if (BukkitUtils.isInventoryFull(p.getInventory()))
             p.sendMessage(ChatColor.RED + "You do not have enough inventory space to buy any more items..");

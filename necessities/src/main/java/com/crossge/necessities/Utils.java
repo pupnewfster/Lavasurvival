@@ -33,6 +33,10 @@ public class Utils {
         return new DecimalFormat("#,###").format(i);
     }
 
+    public static String formatMoney(double d) {
+        return new DecimalFormat("#,##0.00").format(d);
+    }
+
     public static String capFirst(String matName) {
         if (matName == null)
             return "";

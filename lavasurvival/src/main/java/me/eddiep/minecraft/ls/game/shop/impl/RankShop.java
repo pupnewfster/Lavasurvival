@@ -65,7 +65,7 @@ public class RankShop extends Menu {
             player.getBukkit().sendMessage(ChatColor.RED + "You cannot buy a lower rank..");
         else if (thisRank - 1 != curNum)
             player.getBukkit().sendMessage(ChatColor.RED + "You must first buy the " + manager.getRank(RANK).getPrevious().getName() + " rank!");
-        else if (!Lavasurvival.INSTANCE.getEconomy().hasAccount(player.getBukkit()) || Lavasurvival.INSTANCE.getEconomy().getBalance(player.getBukkit()) < price)
+        else if (Necessities.getEconomy().getBalance(player.getBukkit().getUniqueId()) < price)
             player.getBukkit().sendMessage(ChatColor.RED + "You do not have enough money to buy the " + manager.getRank(RANK).getName() + " rank!");
         else {
             user.setRank(user.getRank().getNext());

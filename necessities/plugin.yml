@@ -311,6 +311,26 @@ commands:
       usage: /<command> <name>
       permission: Necessities.worldmanager.removewarp
       aliases: [nremovewarp, rwarp, nrwarp, nremovelocation, removelocation, rlocation, nrlocation, deletewarp, ndeletewarp, dwarp, ndwarp, deletelocation, ndeletelocation, ndlocation, dlocation]
+   bal:
+      description: Shows your balance.
+      usage: /<command> <name>
+      permission: Necessities.economy.bal
+      aliases: [balance, money, nbal, nbalance, nmoney]
+   baltop:
+      description: Shows the balance of the top players.
+      usage: /<command> <page>
+      permission: Necessities.economy.baltop
+      aliases: [balancetop, moneytop, nbaltop, nbalancetop, nmoneytop]
+   pay:
+      description: Pays <name> $<amount>.
+      usage: /<command> <name> <amount>
+      permission: Necessities.economy.pay
+      aliases: [sendmoney, npay, nsendmoney]
+   eco:
+      description: A variety of commands to edit someones balance.
+      usage: /<command> <give|set|reset|take> <name> <amount>
+      permission: Necessities.economy.editbal
+      aliases: [economy, neconomy, neco]
    whois:
       description: Displays information about <player>.
       usage: /<command> <player>
@@ -530,6 +550,12 @@ permissions:
                 Necessities.worldmanager.world: true
                 Necessities.worldmanager.warps: true
                 Necessities.worldmanager.warp: true
+            Necessities.economy.*:
+              children:
+                Necessities.economy.editbal: true
+                Necessities.economy.baltop: true
+                Necessities.economy.pay: true
+                Necessities.economy.bal: true
     Necessities.faq:
         description: Allows you to view server faq.
         default: true
@@ -559,6 +585,15 @@ permissions:
         default: true
     Necessities.motd:
         description: Allows you to view the message of the day.
+        default: true
+    Necessities.economy.bal:
+        description: Lets you see your own balance.
+        default: true
+    Necessities.economy.baltop:
+        description: Allows you to look at the players with the most money.
+        default: true
+    Necessities.economy.pay:
+        description: Pays someone some money.
         default: true
     Necessities.suicide:
         description: Allows you to commit suicide.
@@ -670,6 +705,9 @@ permissions:
         default: op
     Necessities.slack:
         description: Allows you to enter slack chat.
+        default: op
+    Necessities.economy.editbal:
+        description: Allows you to edit other players balances.
         default: op
     Necessities.title:
         description: Allows you to give players titles.

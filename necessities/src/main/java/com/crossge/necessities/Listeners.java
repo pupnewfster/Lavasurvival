@@ -102,6 +102,7 @@ class Listeners implements Listener {
             e.setJoinMessage(null);
             hide.hidePlayer(e.getPlayer());
         }
+        Necessities.getEconomy().loadAccount(uuid);
         Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(Necessities.getInstance(), () -> {
             Necessities.getInstance().addHeader(p);
             Necessities.getInstance().addJanet(p);
@@ -136,6 +137,7 @@ class Listeners implements Listener {
         User u = um.getUser(e.getPlayer().getUniqueId());
         u.logOut();
         Necessities.getBot().logOut(uuid);
+        Necessities.getEconomy().unloadAccount(uuid);
         um.removeUser(uuid);
         hide.playerLeft(e.getPlayer());
         Necessities.getTPs().removeRequests(uuid);

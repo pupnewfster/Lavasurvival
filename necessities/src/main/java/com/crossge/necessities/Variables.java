@@ -35,4 +35,12 @@ public class Variables {
     public ChatColor getErMsg() {
         return ChatColor.DARK_RED;
     }
+
+    public ChatColor getMoney() {
+        return ChatColor.AQUA;
+    }
+
+    public ChatColor getCatalog() {
+        return ChatColor.BLUE;
+    }
 }

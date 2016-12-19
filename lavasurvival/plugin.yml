@@ -4,8 +4,7 @@ version: 0.3
 load: POSTWORLD
 authors: [hypereddie, pupnewfster]
 website: eddiep.me
-softdepend: [ClassicPhysics, Necessities]
-depend: [Vault]
+depend: [ClassicPhysics, Necessities]
 commands:
   setupmap:
     description: Setup and add a new lavasurvival map!

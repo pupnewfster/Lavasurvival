@@ -1,5 +1,6 @@
 package me.eddiep.minecraft.ls.ranks;
 
+import com.crossge.necessities.Necessities;
 import me.eddiep.minecraft.ls.Lavasurvival;
 import me.eddiep.minecraft.ls.game.Gamemode;
 import me.eddiep.minecraft.ls.game.items.LavaItem;
@@ -313,7 +314,7 @@ public class UserInfo {
             return;
         if (ownsBlock(dat))
             getPlayer().sendMessage(ChatColor.RED + "You already own that block..");
-        else if (!Lavasurvival.INSTANCE.getEconomy().hasAccount(getPlayer()) || Lavasurvival.INSTANCE.getEconomy().getBalance(getPlayer()) < price)
+        else if (Necessities.getEconomy().getBalance(this.userUUID) < price)
             getPlayer().sendMessage(ChatColor.RED + "You do not have enough money to buy the block type " + dat.getItemType().toString().replaceAll("_", " ").toLowerCase() +
                     (hasData ? " with data value " + dat.getData() : "") + "..");
         else {

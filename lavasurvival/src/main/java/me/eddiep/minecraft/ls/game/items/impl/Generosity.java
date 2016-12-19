@@ -1,5 +1,6 @@
 package me.eddiep.minecraft.ls.game.items.impl;
 
+import com.crossge.necessities.Necessities;
 import me.eddiep.minecraft.ls.Lavasurvival;
 import me.eddiep.minecraft.ls.game.Gamemode;
 import me.eddiep.minecraft.ls.game.items.LavaItem;
@@ -25,7 +26,7 @@ public class Generosity extends LavaItem {
             return false;
         }
         info.usedGenerosity();
-        double bal = Lavasurvival.INSTANCE.getEconomy().getBalance(owner);
+        double bal = Necessities.getEconomy().getBalance(owner.getUniqueId());
         double cost = Math.round(bal * 0.07);
         double bonus = Math.round(bal * 0.05);
         Lavasurvival.INSTANCE.withdrawAndUpdate(owner, cost);
