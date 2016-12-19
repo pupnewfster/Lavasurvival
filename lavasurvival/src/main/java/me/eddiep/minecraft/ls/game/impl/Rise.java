@@ -157,7 +157,10 @@ public class Rise extends Gamemode {
         });
         this.highestCurrentY += this.layerCount;
         this.lastEvent = System.currentTimeMillis(); //Set the last event to now
-        this.layersLeft.setScore(this.lavaY - this.highestCurrentY);
+        if (this.lavaY - this.highestCurrentY < 0)
+            this.layersLeft.setScore(0);
+        else
+            this.layersLeft.setScore(this.lavaY - this.highestCurrentY);
     }
 
     @Override
