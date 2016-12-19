@@ -3,8 +3,13 @@ package com.crossge.necessities;
 import com.TentacleLabs.GoogleAnalyticsPlugin.GoogleAnalyticsPlugin;
 import com.TentacleLabs.GoogleAnalyticsPlugin.Tracker;
 import com.crossge.necessities.Commands.*;
+import com.crossge.necessities.Commands.Economy.CmdBalance;
+import com.crossge.necessities.Commands.Economy.CmdBaltop;
+import com.crossge.necessities.Commands.Economy.CmdEco;
+import com.crossge.necessities.Commands.Economy.CmdPay;
 import com.crossge.necessities.Commands.RankManager.*;
 import com.crossge.necessities.Commands.WorldManager.*;
+import com.crossge.necessities.Economy.Economy;
 import com.crossge.necessities.Janet.*;
 import com.crossge.necessities.RankManager.RankManager;
 import com.crossge.necessities.RankManager.User;
@@ -62,6 +67,7 @@ public class Necessities extends JavaPlugin {
     private JanetAI ai;
     private JanetSlack slack;
     private Announcer announcer;
+    private Economy economy;
 
     File getConfigFile() {
         return new File(getDataFolder(), "config.yml");
@@ -341,6 +347,15 @@ public class Necessities extends JavaPlugin {
             com = new CmdRankCmds();
         else if (isEqual(name, "reloadpermissions"))
             com = new CmdReloadPermissions();
+            //Economy
+        else if (isEqual(name, "bal"))
+            com = new CmdBalance();
+        else if (isEqual(name, "baltop"))
+            com = new CmdBaltop();
+        else if (isEqual(name, "pay"))
+            com = new CmdPay();
+        else if (isEqual(name, "eco"))
+            com = new CmdEco();
             //WorldManager
         else if (isEqual(name, "createworld"))
             com = new CmdCreateWorld();
@@ -372,7 +387,6 @@ public class Necessities extends JavaPlugin {
             com = new CmdCreateWarp();
         else if (isEqual(name, "removewarp"))
             com = new CmdRemoveWarp();
-
         YamlConfiguration config = getConfig();
         if (com instanceof WorldCmd && config.contains("Necessities.WorldManager") && !config.getBoolean("Necessities.WorldManager"))
             com = new DisabledCmd();
@@ -496,5 +510,9 @@ public class Necessities extends JavaPlugin {
 
     public static Announcer getAnnouncer() {
         return INSTANCE.announcer == null ? INSTANCE.announcer = new Announcer() : INSTANCE.announcer;
+    }
+
+    public static Economy getEconomy() {
+        return INSTANCE.economy == null ? INSTANCE.economy = new Economy() : INSTANCE.economy;
     }
 }

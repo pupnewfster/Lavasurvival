@@ -348,9 +348,6 @@ public class PlayerListener implements Listener {
         player.setLevel(0);
         player.setExp(0);
 
-        if (!Lavasurvival.INSTANCE.getEconomy().hasAccount(player))
-            Lavasurvival.INSTANCE.getEconomy().createPlayerAccount(player);
-
         Lavasurvival.GGBAR.addPlayer(player);
 
         if (Gamemode.getCurrentGame() != null) {

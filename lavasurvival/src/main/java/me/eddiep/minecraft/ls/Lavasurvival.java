@@ -17,7 +17,6 @@ import me.eddiep.minecraft.ls.system.ubot.UBotLogger;
 import me.eddiep.minecraft.ls.system.ubot.Updater;
 import me.eddiep.ubot.UBot;
 import me.eddiep.ubot.utils.CancelToken;
-import net.milkbowl.vault.economy.Economy;
 import net.njay.MenuFramework;
 import net.njay.MenuRegistry;
 import org.bukkit.Bukkit;
@@ -35,7 +34,6 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.BookMeta;
 import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.ByteArrayOutputStream;
@@ -44,7 +42,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.*;
 
-@SuppressWarnings("unused")
 public class Lavasurvival extends JavaPlugin {
     public static final Gson GSON = new Gson();
     public static Lavasurvival INSTANCE;
@@ -53,7 +50,6 @@ public class Lavasurvival extends JavaPlugin {
 
     private Cmd[] commands;
     private final HashMap<UUID, SetupMap> setups = new HashMap<>();
-    private Economy econ;
     private ClassicPhysics physics;
     private UserManager userManager;
     private boolean running = false;
@@ -66,28 +62,24 @@ public class Lavasurvival extends JavaPlugin {
 
     private void updateMoneyView(Player player) {
         Inventory inv = player.getInventory();
-        int index = inv.contains(Material.GOLD_INGOT) ? inv.first(Material.GOLD_INGOT) : -1;
+        int index = inv.first(Material.GOLD_INGOT);
         if (index == -1) {
             ItemStack item = new ItemStack(Material.GOLD_INGOT);
             ItemMeta meta = item.getItemMeta();
             meta.setDisplayName(ChatColor.GOLD + "Balance");
-            ArrayList<String> lore = new ArrayList<>();
-            lore.add(ChatColor.GREEN + "" + ChatColor.ITALIC + "Current Balance: " + ChatColor.RESET + this.econ.format(this.econ.getBalance(player)));
-            meta.setLore(lore);
+            meta.setLore(Collections.singletonList(ChatColor.GREEN + "" + ChatColor.ITALIC + "Current Balance: " + ChatColor.RESET + Necessities.getEconomy().format(Necessities.getEconomy().getBalance(player.getUniqueId()))));
             item.setItemMeta(meta);
             inv.setItem(inv.firstEmpty(), item);
             return;
         }
         ItemStack item = inv.getItem(index);
         ItemMeta meta = item.getItemMeta();
-        ArrayList<String> lore = new ArrayList<>();
-        lore.add(ChatColor.GREEN + "" + ChatColor.ITALIC + "Current Balance: " + ChatColor.RESET + this.econ.format(this.econ.getBalance(player)));
-        meta.setLore(lore);
+        meta.setLore(Collections.singletonList(ChatColor.GREEN + "" + ChatColor.ITALIC + "Current Balance: " + ChatColor.RESET + Necessities.getEconomy().format(Necessities.getEconomy().getBalance(player.getUniqueId()))));
         item.setItemMeta(meta);
     }
 
     public void withdrawAndUpdate(Player player, double price) {
-        this.econ.withdrawPlayer(player, price);
+        Necessities.getEconomy().withdraw(player.getUniqueId(), price);
         updateMoneyView(player);
         if (Necessities.isTracking())
             Necessities.trackActionWithValue(player, -price, -price);
@@ -110,8 +102,8 @@ public class Lavasurvival extends JavaPlugin {
         init();
 
         log("Attaching to Vault..");
-        if (!setupEcon()) {
-            log("Disabling, no Vault dependency found!");
+        if (!Bukkit.getPluginManager().isPluginEnabled("Necessities")) {
+            log("Disabling, Necessities not found!");
             getServer().getPluginManager().disablePlugin(this);
             return;
         }
@@ -227,22 +219,8 @@ public class Lavasurvival extends JavaPlugin {
         this.properties.setProperty("autoReconnect", "true");
     }
 
-    private boolean setupEcon() {
-        if (getServer().getPluginManager().getPlugin("Vault") == null)
-            return false;
-        RegisteredServiceProvider<Economy> rsp = getServer().getServicesManager().getRegistration(Economy.class);
-        if (rsp == null)
-            return false;
-        this.econ = rsp.getProvider();
-        return (this.econ = rsp.getProvider()) != null;
-    }
-
     public ItemStack getRules() {
         return this.rules;
-    }
-
-    public Economy getEconomy() {
-        return this.econ;
     }
 
     public UserManager getUserManager() {
@@ -288,10 +266,6 @@ public class Lavasurvival extends JavaPlugin {
         return null;
     }
 
-    public ClassicPhysics getPhysics() {
-        return this.physics;
-    }
-
     public ClassicPhysicsHandler getPhysicsHandler() {
         return this.physics.getPhysicsHandler();
     }
@@ -315,7 +289,7 @@ public class Lavasurvival extends JavaPlugin {
     }
 
     public void depositPlayer(Player player, double reward) {
-        this.econ.depositPlayer(player, reward);
+        Necessities.getEconomy().deposit(player.getUniqueId(), reward);
         if (Necessities.isTracking())
             Necessities.trackActionWithValue(player, reward, reward);
     }

@@ -74,6 +74,7 @@ class Initialization {
         Necessities.getSlack().init();
         Necessities.getAI().initiate();
         Necessities.getAnnouncer().init();
+        Necessities.getEconomy().init();
     }
 
     @SuppressWarnings("ResultOfMethodCallIgnored")
