@@ -157,7 +157,10 @@ public class Fusion extends Gamemode {
         });
         this.highestCurrentY += this.layerCount;
         this.lastEvent = System.currentTimeMillis(); //Set the last event to now
-        this.layersLeft.setScore(this.lavaY - this.highestCurrentY);
+        if (this.lavaY - this.highestCurrentY < 0)
+            this.layersLeft.setScore(0);
+        else
+            this.layersLeft.setScore(this.lavaY - this.highestCurrentY);
         BarColor cur = this.bars.get(0).getColor();
         if (cur.equals(BarColor.RED)) {
             this.bars.get(0).setTitle(ChatColor.GOLD + "Gamemode: " + ChatColor.RED + "Fusion");
