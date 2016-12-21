@@ -1,7 +1,9 @@
 package me.eddiep.minecraft.ls.system;
 
 import com.crossge.necessities.Necessities;
+import me.eddiep.ClassicPhysics;
 import me.eddiep.handles.ClassicBlockPlaceEvent;
+import me.eddiep.handles.ClassicPhysicsHandler;
 import me.eddiep.minecraft.ls.Lavasurvival;
 import me.eddiep.minecraft.ls.game.Gamemode;
 import me.eddiep.minecraft.ls.game.LavaMap;
@@ -37,7 +39,6 @@ import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.metadata.FixedMetadataValue;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -183,8 +184,7 @@ public class PlayerListener implements Listener {
                     }
                 }
                 block.setType(Material.AIR);
-                if (block.hasMetadata("player_placed"))
-                    block.removeMetadata("player_placed", Lavasurvival.INSTANCE);
+                ClassicPhysics.INSTANCE.getPhysicsHandler().removePlayerPlaced(block.getLocation().toVector());
                 PhysicsListener.cancelLocation(block.getLocation());
                 Bukkit.getPluginManager().callEvent(new BlockBreakEvent(block, event.getPlayer()));
             }
@@ -311,9 +311,10 @@ public class PlayerListener implements Listener {
                 return;
             }
             event.setCancelled(false);
-            event.getBlock().setMetadata("player_placed", new FixedMetadataValue(Lavasurvival.INSTANCE, event.getPlayer().getUniqueId()));
-            if (event.getBlock().getType().toString().contains("DOOR") && event.getBlock().getRelative(BlockFace.UP).getType().equals(event.getBlock().getType()))
-                event.getBlock().getRelative(BlockFace.UP).setMetadata("player_placed", new FixedMetadataValue(Lavasurvival.INSTANCE, event.getPlayer().getUniqueId()));
+            Block b = event.getBlock();
+            ClassicPhysics.INSTANCE.getPhysicsHandler().addPlayerPlaced(b.getLocation().toVector()); //UUID would go here if was hashmap
+            if (b.getType().toString().contains("DOOR") && b.getRelative(BlockFace.UP).getType().equals(b.getType()))
+                ClassicPhysics.INSTANCE.getPhysicsHandler().addPlayerPlaced(b.getRelative(BlockFace.UP).getLocation().toVector());
             if (!this.survival) {
                 if (event.getHand().equals(EquipmentSlot.OFF_HAND))
                     event.getPlayer().getInventory().setItemInOffHand(event.getPlayer().getInventory().getItemInOffHand().clone());
@@ -357,7 +358,8 @@ public class PlayerListener implements Listener {
             }
             if (Gamemode.getCurrentGame().isAlive(player)) {
                 Necessities.getUM().getUser(player.getUniqueId()).setStatus("alive");
-                if (!player.getLocation().getBlock().hasMetadata("classic_block") && !player.getEyeLocation().getBlock().hasMetadata("classic_block"))
+                ClassicPhysicsHandler handler = ClassicPhysics.INSTANCE.getPhysicsHandler();
+                if (!handler.isClassicBlock(player.getLocation().getBlock().getLocation().toVector()) && !handler.isClassicBlock(player.getEyeLocation().getBlock().getLocation().toVector()))
                     player.teleport(Gamemode.getCurrentWorld().getSpawnLocation().clone());
             }
             event.getPlayer().setScoreboard(Gamemode.getScoreboard());
@@ -386,9 +388,9 @@ public class PlayerListener implements Listener {
             if (!locationChanged)
                 return;
             UserInfo u = Lavasurvival.INSTANCE.getUserManager().getUser(event.getPlayer().getUniqueId());
-            if (((to.getBlock().getType().equals(Material.WATER) || to.getBlock().getType().equals(Material.STATIONARY_WATER)) && to.getBlock().hasMetadata("classic_block")) ||
-                    ((to.getBlock().getRelative(BlockFace.UP).getType().equals(Material.WATER) || to.getBlock().getRelative(BlockFace.UP).getType().equals(Material.STATIONARY_WATER)) &&
-                            to.getBlock().getRelative(BlockFace.UP).hasMetadata("classic_block"))) {
+            Block b = to.getBlock(), above = b.getRelative(BlockFace.UP);
+            if (((b.getType().equals(Material.WATER) || b.getType().equals(Material.STATIONARY_WATER)) && ClassicPhysics.INSTANCE.getPhysicsHandler().isClassicBlock(b.getLocation().toVector())) ||
+                    ((above.getType().equals(Material.WATER) || above.getType().equals(Material.STATIONARY_WATER)) && ClassicPhysics.INSTANCE.getPhysicsHandler().isClassicBlock(above.getLocation().toVector()))) {
                 if (!u.isInWater()) {
                     if (!PlayerStatusManager.isInvincible(event.getPlayer()) && !event.getPlayer().getGameMode().equals(GameMode.CREATIVE) && !event.getPlayer().getGameMode().equals(GameMode.SPECTATOR))
                         u.damagePlayer();

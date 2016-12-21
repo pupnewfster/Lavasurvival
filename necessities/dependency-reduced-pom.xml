@@ -151,6 +151,12 @@
       <version>1.11-R0.1-SNAPSHOT</version>
       <scope>provided</scope>
     </dependency>
+    <dependency>
+      <groupId>me.eddiep.minecraft</groupId>
+      <artifactId>classicphysics</artifactId>
+      <version>1.0</version>
+      <scope>provided</scope>
+    </dependency>
   </dependencies>
 </project>
 

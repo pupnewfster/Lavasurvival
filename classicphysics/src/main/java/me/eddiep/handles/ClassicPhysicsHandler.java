@@ -26,8 +26,10 @@ import org.bukkit.event.world.WorldUnloadEvent;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.util.Vector;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
@@ -39,6 +41,7 @@ public final class ClassicPhysicsHandler implements Listener {
     private final ConcurrentHashMap<ToAndFrom, Material> locations = new ConcurrentHashMap<>();
     private final ConcurrentHashMap<Long, WorldCount> chunks = new ConcurrentHashMap<>();
     private final ConcurrentHashMap<Location, ConcurrentLinkedQueue<ToAndFrom>> toFroms = new ConcurrentHashMap<>();
+    private final HashSet<Vector> classicBlocks = new HashSet<>(), fusionBlocks = new HashSet<>(), playerPlaced = new HashSet<>();
     private final ArrayList<Player> lplacers = new ArrayList<>();
     private final ArrayList<Player> wplacers = new ArrayList<>();
     private boolean running = false, removePrevious = false;
@@ -154,7 +157,8 @@ public final class ClassicPhysicsHandler implements Listener {
                 Location l = taf.getTo();
                 //commentBlock
                 Block blc = l.getBlock();
-                if (!taf.getFrom().getBlock().hasMetadata("classic_block") || !taf.getFrom().getBlock().isLiquid() || /*type == null || */(blc.hasMetadata("classic_block") && blc.isLiquid())) {
+                Vector lv = l.toVector();
+                if (!classicBlocks.contains(taf.getFrom().toVector()) || !taf.getFrom().getBlock().isLiquid() || (classicBlocks.contains(lv) && blc.isLiquid())) {
                     ConcurrentLinkedQueue<ToAndFrom> queue = toFroms.get(l);
                     if (queue != null)
                         while (!queue.isEmpty())
@@ -163,15 +167,15 @@ public final class ClassicPhysicsHandler implements Listener {
                     locations.remove(taf);
                     continue;
                 }
-                if (!blc.hasMetadata("classic_block"))
-                    blc.setMetadata("classic_block", new FixedMetadataValue(ClassicPhysics.INSTANCE, true));
+                if (!classicBlocks.contains(lv))
+                    classicBlocks.add(lv);
                 Material type = locations.get(taf);
                 e.setBlock(l.getBlockX(), l.getBlockY(), l.getBlockZ(), type);
                 long xz = (long) l.getChunk().getX() << 32 | l.getChunk().getZ() & 0xFFFFFFFFL;
                 if (!chunks.containsKey(xz))
                     chunks.put(xz, new WorldCount(xz));
                 chunks.get(xz).addChange(l.getBlockX(), l.getBlockY(), l.getBlockZ());
-                if (!blc.isLiquid() && !blc.hasMetadata("fusion_block"))
+                if (!blc.isLiquid() && !fusionBlocks.contains(lv))
                     e.setBlock(l.getBlockX(), l.getBlockY(), l.getBlockZ(), type = Material.STATIONARY_WATER);
                 Bukkit.getPluginManager().callEvent(new ClassicBlockPlaceEvent(l));
                 if (running && current != null)
@@ -227,6 +231,27 @@ public final class ClassicPhysicsHandler implements Listener {
         addLogicContainer(new WaterLogic());
     }
 
+    public boolean isClassicBlock(Vector v) {
+        return classicBlocks.contains(v);
+    }
+
+    public void addClassicBlock(Vector v) { //Make sure that isClassicBlock is called before adding it through here
+        classicBlocks.add(v);
+    }
+
+    //Player placed is stored in classic physics now instead of ls so that we can clear it at the correct time
+    public boolean isPlayerPlaced(Vector v) { //If we want to know who placed the block it will need to go to a hash map instead
+        return playerPlaced.contains(v);
+    }
+
+    public void addPlayerPlaced(Vector v) { //Make sure that isPlayerPlaced is called before adding it through here
+        playerPlaced.add(v);
+    }
+
+    public void removePlayerPlaced(Vector v) {
+        playerPlaced.remove(v);
+    }
+
     public Plugin getOwner() {
         return owner;
     }
@@ -261,6 +286,9 @@ public final class ClassicPhysicsHandler implements Listener {
             this.locations.clear();
             this.toFroms.clear();//Because we don't call block placing in multiple worlds. If we ever start we need to make it check that it removes correct worlds
             this.chunks.clear();
+            classicBlocks.clear();
+            fusionBlocks.clear();
+            playerPlaced.clear();
             logicContainers.forEach(holder -> holder.container.unload());
         } else
             e = new ChunkEdit(((CraftWorld) w).getHandle());
@@ -283,8 +311,7 @@ public final class ClassicPhysicsHandler implements Listener {
             forcePlaceClassicBlockAt(event.getBlockPlaced().getLocation(), Material.STATIONARY_WATER);
             event.setCancelled(true);
         }
-        if (event.getBlock().hasMetadata("classic_block"))
-            event.getBlock().removeMetadata("classic_block", ClassicPhysics.INSTANCE);
+        classicBlocks.remove(event.getBlock().getLocation().toVector());
         requestUpdateAround(event.getBlock().getLocation());
     }
 
@@ -349,7 +376,7 @@ public final class ClassicPhysicsHandler implements Listener {
         if (ClassicPhysics.TYPE.equals(PhysicsType.DEFAULT))
             return;
         event.setCancelled(true);
-        if (event.getToBlock().hasMetadata("classic_block") && event.getBlock().hasMetadata("classic_block"))//To is really the from block it is labelled strangely
+        if (classicBlocks.contains(event.getToBlock().getLocation().toVector()) && classicBlocks.contains(event.getBlock().getLocation().toVector()))//To is really the from block it is labelled strangely
             placeClassicBlockAt(event.getBlock().getLocation(), event.getToBlock().getType(), event.getToBlock().getLocation());
     }
 
@@ -367,7 +394,7 @@ public final class ClassicPhysicsHandler implements Listener {
             for (int y = -1; y <= 1; y++)
                 for (int z = -1; z <= 1; z++) {
                     Location newLoc = location.clone().add(x, y, z);
-                    if (!newLoc.getBlock().hasMetadata("classic_block"))//|| !newLoc.getBlock().isLiquid()
+                    if (!classicBlocks.contains(newLoc.toVector()))//|| !newLoc.getBlock().isLiquid()
                         continue;
                     for (LogicContainerHolder holder : logicContainers)
                         if (holder.container.doesHandle(newLoc.getBlock().getType())) {
@@ -392,10 +419,11 @@ public final class ClassicPhysicsHandler implements Listener {
         else if (type.equals(Material.LAVA))
             type = Material.STATIONARY_LAVA;
         Block blc = location.getBlock();
-        if (!blc.hasMetadata("classic_block"))
-            blc.setMetadata("classic_block", new FixedMetadataValue(ClassicPhysics.INSTANCE, true));
+        Vector bv = blc.getLocation().toVector();
+        if (!classicBlocks.contains(bv))
+            classicBlocks.add(bv);
         e.setBlock(blc.getX(), blc.getY(), blc.getZ(), type);
-        if (!blc.isLiquid() && !blc.hasMetadata("fusion_block")) {
+        if (!blc.isLiquid() && !fusionBlocks.contains(bv)) {
             type = Material.STATIONARY_WATER;
             e.setBlock(blc.getX(), blc.getY(), blc.getZ(), type);
         }

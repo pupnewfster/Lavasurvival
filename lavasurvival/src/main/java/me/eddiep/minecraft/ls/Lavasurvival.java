@@ -2,8 +2,6 @@ package me.eddiep.minecraft.ls;
 
 import com.crossge.necessities.Necessities;
 import com.google.gson.Gson;
-import me.eddiep.ClassicPhysics;
-import me.eddiep.handles.ClassicPhysicsHandler;
 import me.eddiep.minecraft.ls.commands.*;
 import me.eddiep.minecraft.ls.game.Gamemode;
 import me.eddiep.minecraft.ls.game.LavaMap;
@@ -50,7 +48,6 @@ public class Lavasurvival extends JavaPlugin {
 
     private Cmd[] commands;
     private final HashMap<UUID, SetupMap> setups = new HashMap<>();
-    private ClassicPhysics physics;
     private UserManager userManager;
     private boolean running = false;
     private ItemStack rules;
@@ -109,7 +106,7 @@ public class Lavasurvival extends JavaPlugin {
         }
 
         log("Attaching to ClassicPhysics..");
-        if (!setupPhysics()) {
+        if (!Bukkit.getPluginManager().isPluginEnabled("ClassicPhysics")) {
             log("Disabling, no ClassicPhysics found!");
             getServer().getPluginManager().disablePlugin(this);
             return;
@@ -125,10 +122,6 @@ public class Lavasurvival extends JavaPlugin {
             this.running = true;
         } else //Only schedule a listener if no maps. If maps then it already is initialized through Gamemode.prepare()
             getServer().getPluginManager().registerEvents(new PlayerListener(), this);
-    }
-
-    private boolean setupPhysics() {
-        return (this.physics = (ClassicPhysics) Bukkit.getPluginManager().getPlugin("ClassicPhysics")) != null;
     }
 
     @Override
@@ -264,10 +257,6 @@ public class Lavasurvival extends JavaPlugin {
             if (possible.getName().equalsIgnoreCase(name))
                 return possible;
         return null;
-    }
-
-    public ClassicPhysicsHandler getPhysicsHandler() {
-        return this.physics.getPhysicsHandler();
     }
 
     public static void warn(String s) {

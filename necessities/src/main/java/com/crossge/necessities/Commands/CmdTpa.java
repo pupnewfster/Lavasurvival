@@ -4,6 +4,9 @@ import com.crossge.necessities.Necessities;
 import com.crossge.necessities.RankManager.User;
 import com.crossge.necessities.RankManager.UserManager;
 import com.crossge.necessities.Variables;
+import me.eddiep.ClassicPhysics;
+import me.eddiep.handles.ClassicPhysicsHandler;
+import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -24,10 +27,13 @@ public class CmdTpa implements Cmd {
             }
             Player p = (Player) sender;
             Player target = sender.getServer().getPlayer(uuid);
-            if (p.getLocation().getBlock().hasMetadata("classic_block") || p.getEyeLocation().getBlock().hasMetadata("classic_block") ||
-                    target.getLocation().getBlock().hasMetadata("classic_block") || target.getEyeLocation().getBlock().hasMetadata("classic_block")) {
-                sender.sendMessage(var.getEr() + "Error: " + var.getErMsg() + "You or the target are in the lava.");
-                return true;
+            if (Bukkit.getPluginManager().isPluginEnabled("ClassicPhysics")) {
+                ClassicPhysicsHandler handler = ClassicPhysics.INSTANCE.getPhysicsHandler();
+                if (handler.isClassicBlock(p.getLocation().getBlock().getLocation().toVector()) || handler.isClassicBlock(p.getEyeLocation().getBlock().getLocation().toVector()) ||
+                        handler.isClassicBlock(target.getLocation().getBlock().getLocation().toVector()) || handler.isClassicBlock(target.getEyeLocation().getBlock().getLocation().toVector())) {
+                    sender.sendMessage(var.getEr() + "Error: " + var.getErMsg() + "You or the target are in the lava.");
+                    return true;
+                }
             }
             UserManager um = Necessities.getUM();
             String tPrefix = um.getUser(uuid).getStatus(), pPrefix = um.getUser(p.getUniqueId()).getStatus();

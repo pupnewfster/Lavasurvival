@@ -4,6 +4,7 @@ import com.crossge.necessities.Commands.CmdHide;
 import com.crossge.necessities.Necessities;
 import com.crossge.necessities.RankManager.Rank;
 import com.crossge.necessities.Utils;
+import me.eddiep.ClassicPhysics;
 import me.eddiep.minecraft.ls.Lavasurvival;
 import me.eddiep.minecraft.ls.game.impl.Flood;
 import me.eddiep.minecraft.ls.game.impl.Fusion;
@@ -217,7 +218,7 @@ public abstract class Gamemode {
             else
                 new Thread(() -> restoreBackup(lastMap.getWorld())).start();
         }
-        Bukkit.getScheduler().scheduleSyncDelayedTask(Lavasurvival.INSTANCE, () -> Lavasurvival.INSTANCE.getPhysicsHandler().setPhysicsWorld(getCurrentWorld()), 20); //Delay it slightly to ensure things are set
+        Bukkit.getScheduler().scheduleSyncDelayedTask(Lavasurvival.INSTANCE, () -> ClassicPhysics.INSTANCE.getPhysicsHandler().setPhysicsWorld(getCurrentWorld()), 20); //Delay it slightly to ensure things are set
         Lavasurvival.INSTANCE.MONEY_VIEWER.run();
         this.tickTask = new BukkitRunnable() {
             @Override
@@ -665,7 +666,7 @@ public abstract class Gamemode {
         this.tickTask.cancel();
         //Bukkit.getScheduler().cancelTasks(Lavasurvival.INSTANCE);
         globalMessage(ChatColor.GREEN + "The round has ended!");
-        Lavasurvival.INSTANCE.getPhysicsHandler().setPhysicsWorld(null);
+        ClassicPhysics.INSTANCE.getPhysicsHandler().setPhysicsWorld(null);
         this.isEnding = false;
         this.hasEnded = true;
     }

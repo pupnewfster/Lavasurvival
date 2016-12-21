@@ -1,5 +1,6 @@
 package me.eddiep.minecraft.ls.game.impl;
 
+import me.eddiep.ClassicPhysics;
 import me.eddiep.minecraft.ls.Lavasurvival;
 import me.eddiep.minecraft.ls.game.Gamemode;
 import me.eddiep.minecraft.ls.game.options.FloodOptions;
@@ -156,7 +157,7 @@ public class Fusion extends Gamemode {
         this.switchADoodle = RANDOM.nextInt();
         getCurrentWorld().strikeLightningEffect(this.locations.get(RANDOM.nextInt(this.locations.size()))); //Actions are better than words :3
         this.locations.forEach(l -> {
-            Lavasurvival.INSTANCE.getPhysicsHandler().forcePlaceClassicBlockAt(l, getMat());
+            ClassicPhysics.INSTANCE.getPhysicsHandler().forcePlaceClassicBlockAt(l, getMat());
             l.add(0, this.layerCount, 0);
         });
         this.highestCurrentY += this.layerCount;

@@ -1,6 +1,7 @@
 package me.eddiep.minecraft.ls.ranks;
 
 import com.crossge.necessities.Necessities;
+import me.eddiep.ClassicPhysics;
 import me.eddiep.minecraft.ls.Lavasurvival;
 import me.eddiep.minecraft.ls.game.Gamemode;
 import me.eddiep.minecraft.ls.game.items.LavaItem;
@@ -209,10 +210,10 @@ public class UserInfo {
                 if (isInWater() && getPlayer() != null) {
                     if (!PlayerStatusManager.isInvincible(getPlayer()) && !getPlayer().getGameMode().equals(GameMode.CREATIVE) && !getPlayer().getGameMode().equals(GameMode.SPECTATOR))
                         damagePlayer();
-                    Block b = getPlayer().getLocation().getBlock();
-                    setInWater(((b.getType().equals(Material.WATER) || b.getType().equals(Material.STATIONARY_WATER)) && b.hasMetadata("classic_block")) ||
-                            ((b.getRelative(BlockFace.UP).getType().equals(Material.WATER) || b.getRelative(BlockFace.UP).getType().equals(Material.STATIONARY_WATER)) &&
-                                    b.getRelative(BlockFace.UP).hasMetadata("classic_block")));
+                    Block b = getPlayer().getLocation().getBlock(), above = b.getRelative(BlockFace.UP);
+                    setInWater(((b.getType().equals(Material.WATER) || b.getType().equals(Material.STATIONARY_WATER)) &&
+                            ClassicPhysics.INSTANCE.getPhysicsHandler().isClassicBlock(b.getLocation().toVector())) || ((above.getType().equals(Material.WATER) ||
+                            above.getType().equals(Material.STATIONARY_WATER)) && ClassicPhysics.INSTANCE.getPhysicsHandler().isClassicBlock(above.getLocation().toVector())));
                 }
             }, (int) (20 * Gamemode.DAMAGE_FREQUENCY));
     }
