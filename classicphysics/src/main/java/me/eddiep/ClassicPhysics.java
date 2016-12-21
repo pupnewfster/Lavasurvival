@@ -7,7 +7,6 @@ import org.bukkit.World;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.List;
@@ -17,14 +16,12 @@ public class ClassicPhysics extends JavaPlugin {
     public static final Object Sync = new Object();
     public static ClassicPhysics INSTANCE;
     public static PhysicsType TYPE = PhysicsType.CLASSIC;
-    public static FixedMetadataValue METADATA;
     private ClassicPhysicsHandler handler;
 
     @Override
     public void onEnable() {
         INSTANCE = this;
         handler = new ClassicPhysicsHandler(this);
-        METADATA = new FixedMetadataValue(this, true);
 
         List<World> worlds = getServer().getWorlds();
         for (World world : worlds) {

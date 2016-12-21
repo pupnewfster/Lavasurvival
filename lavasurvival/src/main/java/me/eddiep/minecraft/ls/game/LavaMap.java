@@ -108,6 +108,7 @@ public class LavaMap {
         this.world = loadOrGetWorld(this.worldName);
         this.world.setAutoSave(false);
         this.world.setPVP(false);
+        this.world.setAmbientSpawnLimit(0);
         this.world.setAnimalSpawnLimit(0);
         this.world.setWaterAnimalSpawnLimit(0);
         this.world.setMonsterSpawnLimit(0);

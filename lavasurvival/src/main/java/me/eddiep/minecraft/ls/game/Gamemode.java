@@ -217,6 +217,7 @@ public abstract class Gamemode {
             else
                 new Thread(() -> restoreBackup(lastMap.getWorld())).start();
         }
+        Bukkit.getScheduler().scheduleSyncDelayedTask(Lavasurvival.INSTANCE, () -> Lavasurvival.INSTANCE.getPhysicsHandler().setPhysicsWorld(getCurrentWorld()), 20); //Delay it slightly to ensure things are set
         Lavasurvival.INSTANCE.MONEY_VIEWER.run();
         this.tickTask = new BukkitRunnable() {
             @Override
@@ -664,6 +665,7 @@ public abstract class Gamemode {
         this.tickTask.cancel();
         //Bukkit.getScheduler().cancelTasks(Lavasurvival.INSTANCE);
         globalMessage(ChatColor.GREEN + "The round has ended!");
+        Lavasurvival.INSTANCE.getPhysicsHandler().setPhysicsWorld(null);
         this.isEnding = false;
         this.hasEnded = true;
     }

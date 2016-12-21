@@ -89,7 +89,10 @@ public class Flood extends Gamemode {
         if (!super.poured)
             this.objective.setDisplayName((LAVA ? "Lava" : "Water") + " Pour: " + ChatColor.BOLD + time);
         else
-            this.objective.setDisplayName("Round Ends In: " + ChatColor.BOLD + time);
+            try {
+                this.objective.setDisplayName("Round Ends In: " + ChatColor.BOLD + time);
+            } catch (Exception ignored) {
+            }
         if (super.poured) {
             if (since < this.duration) {
                 int nextMinute = (int) since / 60000;

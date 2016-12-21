@@ -6,6 +6,7 @@ import me.eddiep.handles.ClassicPhysicsEvent;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
+import org.bukkit.metadata.FixedMetadataValue;
 
 public class LavaLogic extends AbstractLogicContainer {
     @Override
@@ -23,10 +24,11 @@ public class LavaLogic extends AbstractLogicContainer {
                 if (location == null || location.getWorld() == null || location.getChunk() == null || !location.getChunk().isLoaded() || location.getBlock() == null)//World isn't loaded
                     return;
             } catch (Exception e) {
+                e.printStackTrace();
                 return;
             }
             Block block = location.getBlock();
-            if (block.hasMetadata("classic_block") && block.isLiquid())
+            if (block.hasMetadata("classic_block") && block.isLiquid()) //TODO should this check to make sure it is stationary or should it be done elsewhere
                 return;
             Material newBlock = block.getType();
 
@@ -45,7 +47,7 @@ public class LavaLogic extends AbstractLogicContainer {
             if (newBlock != block.getType())
                 placeClassicBlock(newBlock, location, from);
             else if (!block.hasMetadata("classic_block")) {
-                block.setMetadata("classic_block", ClassicPhysics.METADATA);
+                block.setMetadata("classic_block", new FixedMetadataValue(ClassicPhysics.INSTANCE, true));
                 ClassicPhysics.INSTANCE.getServer().getPluginManager().callEvent(new ClassicBlockPlaceEvent(location));
                 if (doesHandle(block.getType()))
                     queueBlock(location);

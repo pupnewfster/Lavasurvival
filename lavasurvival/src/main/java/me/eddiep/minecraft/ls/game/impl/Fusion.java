@@ -99,6 +99,7 @@ public class Fusion extends Gamemode {
             this.upTask.cancel();
         } catch (Exception ignored) {//Not running
         }
+        this.locations = null;
         super.endRound();
     }
 
@@ -110,7 +111,10 @@ public class Fusion extends Gamemode {
         int seconds = (int) (dif / 1000 % 60);
         String time = (int) (dif / 60000) + ":" + (seconds < 10 ? "0" + seconds : seconds);
         if (isRoundEnding())
-            this.objective.setDisplayName("Round Ends In: " + ChatColor.BOLD + time);
+            try {
+                this.objective.setDisplayName("Round Ends In: " + ChatColor.BOLD + time);
+            } catch (Exception ignored) {
+            }
         else if (super.poured)
             this.objective.setDisplayName("Next Pour: " + ChatColor.BOLD + time);
         else {
