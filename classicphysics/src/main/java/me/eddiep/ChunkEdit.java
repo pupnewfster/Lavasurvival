@@ -32,8 +32,8 @@ public class ChunkEdit {
         ChunkSection section;
         try {
             section = sections[chunkY];
-        } catch (Exception e) {
-            section = new ChunkSection(chunkY, true);
+        } catch (Exception e) {//Don't think this can ever happen
+            return;
         }
         if (section == null)
             section = new ChunkSection(chunkY, true);
@@ -41,12 +41,12 @@ public class ChunkEdit {
         try {
             blockLight = section.getEmittedLightArray();
         } catch (Exception e) {
-            blockLight = new NibbleArray();
+            return;
         }
         try {
             skyLight = section.getSkyLightArray();
         } catch (Exception e) {
-            skyLight = new NibbleArray();
+            return;
         }
         IBlockData d = Block.getByCombinedId(type.getId() + (data << 12));
         BlockPosition pos = new BlockPosition(x, y, z);
@@ -55,12 +55,10 @@ public class ChunkEdit {
             c.a(pos, d);
         else
             section.setType(blockX, blockY, blockZ, d);
-        blockLight.a(blockX, blockY, blockZ, getLight(type));
-        skyLight.a(blockX, blockY, blockZ, getSkyLight(x, y, z));
-        section.a(blockLight);
-        section.b(skyLight);
+        int bi = blockY << 8 | blockZ << 4 | blockX;
+        blockLight.a(bi, getLight(type));
+        skyLight.a(bi, getSkyLight(x, y, z));
         sections[chunkY] = section;
-        c.a(sections);
         //c.a(pos, d);
         //this.playerChunkMap.flagDirty(pos);//Makes it not need to send packets
         //lightAround(x, y, z, getLight(type));

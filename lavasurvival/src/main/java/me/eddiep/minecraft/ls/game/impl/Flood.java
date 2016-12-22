@@ -1,6 +1,6 @@
 package me.eddiep.minecraft.ls.game.impl;
 
-import me.eddiep.minecraft.ls.Lavasurvival;
+import me.eddiep.ClassicPhysics;
 import me.eddiep.minecraft.ls.game.Gamemode;
 import me.eddiep.minecraft.ls.system.TimeUtils;
 import org.bukkit.ChatColor;
@@ -89,7 +89,10 @@ public class Flood extends Gamemode {
         if (!super.poured)
             this.objective.setDisplayName((LAVA ? "Lava" : "Water") + " Pour: " + ChatColor.BOLD + time);
         else
-            this.objective.setDisplayName("Round Ends In: " + ChatColor.BOLD + time);
+            try {
+                this.objective.setDisplayName("Round Ends In: " + ChatColor.BOLD + time);
+            } catch (Exception ignored) {
+            }
         if (super.poured) {
             if (since < this.duration) {
                 int nextMinute = (int) since / 60000;
@@ -111,7 +114,7 @@ public class Flood extends Gamemode {
             super.poured = true;
             globalMessage(ChatColor.DARK_RED + "Here comes the " + (LAVA ? "lava" : "water") + "!");
             this.gameStart = System.currentTimeMillis();
-            this.lavaPoints.forEach(l -> Lavasurvival.INSTANCE.getPhysicsHandler().forcePlaceClassicBlockAt(l, getMat()));
+            this.lavaPoints.forEach(l -> ClassicPhysics.INSTANCE.getPhysicsHandler().forcePlaceClassicBlockAt(l, getMat()));
             this.duration = getCurrentMap().getFloodOptions().generateRandomEndTime();
             this.objective.setDisplayName("Round Ends In: " + ChatColor.BOLD + time);
         }

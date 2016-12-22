@@ -1,6 +1,8 @@
 package me.eddiep.minecraft.ls.system;
 
+import me.eddiep.ClassicPhysics;
 import me.eddiep.handles.ClassicPhysicsEvent;
+import me.eddiep.handles.ClassicPhysicsHandler;
 import me.eddiep.minecraft.ls.Lavasurvival;
 import me.eddiep.minecraft.ls.game.Gamemode;
 import org.bukkit.Location;
@@ -11,6 +13,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.material.MaterialData;
 import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.util.Vector;
 
 import java.util.HashMap;
 import java.util.Random;
@@ -317,7 +320,9 @@ public class PhysicsListener implements Listener {
             }
 
             Block blockChecking = event.getOldBlock();
-            if (blockChecking.getType().equals(Material.AIR) || blockChecking.hasMetadata("classic_block") || blockChecking.isLiquid())
+            Vector bv = blockChecking.getLocation().toVector();
+            ClassicPhysicsHandler handler = ClassicPhysics.INSTANCE.getPhysicsHandler();
+            if (blockChecking.getType().equals(Material.AIR) || handler.isClassicBlock(bv) || blockChecking.isLiquid())
                 return;
 
             HashMap<MaterialData, Integer> ticksToMelt;
@@ -345,7 +350,7 @@ public class PhysicsListener implements Listener {
                 else
                     meltTicks -= bonus;
 
-                if (!blockChecking.hasMetadata("player_placed"))
+                if (!handler.isPlayerPlaced(bv))
                     meltTicks *= Gamemode.getCurrentMap().getMeltMultiplier();
                 if (meltTicks <= 0)
                     return;
@@ -379,9 +384,8 @@ public class PhysicsListener implements Listener {
                                 final Block blockChecking = b.getOldBlock();
                                 if (blockChecking.getType().equals(Material.AIR))
                                     return;
-                                if (blockChecking.hasMetadata("player_placed"))
-                                    blockChecking.removeMetadata("player_placed", Lavasurvival.INSTANCE);
-                                Lavasurvival.INSTANCE.getPhysicsHandler().placeClassicBlockAt(loc, b.getLogicFor(), b.getFrom());
+                                ClassicPhysics.INSTANCE.getPhysicsHandler().removePlayerPlaced(blockChecking.getLocation().toVector());
+                                ClassicPhysics.INSTANCE.getPhysicsHandler().placeClassicBlockAt(loc, b.getLogicFor(), b.getFrom());
                                 cancelLocation(loc);
                             }
                             break;
@@ -391,8 +395,7 @@ public class PhysicsListener implements Listener {
     };
 
     static void cancelLocation(Location loc) {
-        if (toTasks.containsKey(loc))
-            toTasks.remove(loc);
+        toTasks.remove(loc);
     }
 
     public static String getLavaMeltTimeAsString(MaterialData data) {

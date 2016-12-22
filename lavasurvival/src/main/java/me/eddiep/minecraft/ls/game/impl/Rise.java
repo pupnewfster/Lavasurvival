@@ -1,5 +1,6 @@
 package me.eddiep.minecraft.ls.game.impl;
 
+import me.eddiep.ClassicPhysics;
 import me.eddiep.minecraft.ls.Lavasurvival;
 import me.eddiep.minecraft.ls.game.Gamemode;
 import me.eddiep.minecraft.ls.game.options.FloodOptions;
@@ -100,6 +101,7 @@ public class Rise extends Gamemode {
             this.upTask.cancel();
         } catch (Exception ignored) {//Not running
         }
+        this.locations = null;
         super.endRound();
     }
 
@@ -110,9 +112,12 @@ public class Rise extends Gamemode {
         long since = System.currentTimeMillis() - this.lastEvent, dif = this.duration - since;
         int seconds = (int) (dif / 1000 % 60);
         String time = (int) (dif / 60000) + ":" + (seconds < 10 ? "0" + seconds : seconds);
-        if (isRoundEnding())
-            this.objective.setDisplayName("Round Ends In: " + ChatColor.BOLD + time);
-        else if (super.poured)
+        if (isRoundEnding()) { //TODO double check this shows the correct amount
+            try {
+                this.objective.setDisplayName("Round Ends In: " + ChatColor.BOLD + time);
+            } catch (Exception ignored) {
+            }
+        } else if (super.poured)
             this.objective.setDisplayName("Next Pour: " + ChatColor.BOLD + time);
         else {
             this.objective.setDisplayName("Prepare Time: " + ChatColor.BOLD + time);
@@ -152,7 +157,7 @@ public class Rise extends Gamemode {
         }
         getCurrentWorld().strikeLightningEffect(this.locations.get(RANDOM.nextInt(this.locations.size()))); //Actions are better than words :3
         this.locations.forEach(l -> {
-            Lavasurvival.INSTANCE.getPhysicsHandler().forcePlaceClassicBlockAt(l, getMat());
+            ClassicPhysics.INSTANCE.getPhysicsHandler().forcePlaceClassicBlockAt(l, getMat());
             l.add(0, this.layerCount, 0);
         });
         this.highestCurrentY += this.layerCount;

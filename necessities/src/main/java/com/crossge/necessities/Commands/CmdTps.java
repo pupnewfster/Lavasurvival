@@ -20,6 +20,7 @@ public class CmdTps implements Cmd {
         for (World w : Bukkit.getWorlds()) {
             sender.sendMessage(var.getMessages() + "World: " + var.getObj() + w.getName());
             sender.sendMessage(var.getMessages() + "    Entities Loaded: " + var.getObj() + w.getEntities().size());
+            sender.sendMessage(var.getMessages() + "    Chunks Loaded: " + var.getObj() + w.getLoadedChunks().length);
         }
         return true;
     }
