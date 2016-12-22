@@ -19,7 +19,7 @@ public class CmdSpawn implements Cmd {
                 return true;
             }
             ClassicPhysicsHandler handler = ClassicPhysics.INSTANCE.getPhysicsHandler();
-            if (Gamemode.getCurrentGame().isAlive(player) && (handler.isClassicBlock(player.getLocation().getBlock().getLocation().toVector()) || handler.isClassicBlock(player.getEyeLocation().getBlock().getLocation().toVector()))) {
+            if (Gamemode.getCurrentGame().isAlive(player) && (handler.isClassicBlock(player.getLocation().toVector()) || handler.isClassicBlock(player.getEyeLocation().toVector()))) {
                 sender.sendMessage(ChatColor.DARK_RED + "Error: you are in the lava.");
                 return true;
             }

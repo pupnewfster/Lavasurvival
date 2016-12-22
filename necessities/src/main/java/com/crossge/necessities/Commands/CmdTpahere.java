@@ -29,8 +29,8 @@ public class CmdTpahere implements Cmd {
             Player p = (Player) sender;
             if (Bukkit.getPluginManager().isPluginEnabled("ClassicPhysics")) {
                 ClassicPhysicsHandler handler = ClassicPhysics.INSTANCE.getPhysicsHandler();
-                if (handler.isClassicBlock(p.getLocation().getBlock().getLocation().toVector()) || handler.isClassicBlock(p.getEyeLocation().getBlock().getLocation().toVector()) ||
-                        handler.isClassicBlock(target.getLocation().getBlock().getLocation().toVector()) || handler.isClassicBlock(target.getEyeLocation().getBlock().getLocation().toVector())) {
+                if (handler.isClassicBlock(p.getLocation().toVector()) || handler.isClassicBlock(p.getEyeLocation().toVector()) ||
+                        handler.isClassicBlock(target.getLocation().toVector()) || handler.isClassicBlock(target.getEyeLocation().toVector())) {
                     sender.sendMessage(var.getEr() + "Error: " + var.getErMsg() + "You or the target are in the lava.");
                     return true;
                 }

@@ -48,7 +48,7 @@ public class LavaLogic extends AbstractLogicContainer {
             if (newBlock != block.getType())
                 placeClassicBlock(newBlock, location, from);
             else if (!ClassicPhysics.INSTANCE.getPhysicsHandler().isClassicBlock(lv)) {
-                ClassicPhysics.INSTANCE.getPhysicsHandler().addClassicBlock(location.toVector());
+                ClassicPhysics.INSTANCE.getPhysicsHandler().addClassicBlock(lv);
                 ClassicPhysics.INSTANCE.getServer().getPluginManager().callEvent(new ClassicBlockPlaceEvent(location));
                 if (doesHandle(block.getType()))
                     queueBlock(location);

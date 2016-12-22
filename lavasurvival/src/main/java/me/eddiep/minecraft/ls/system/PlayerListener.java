@@ -359,7 +359,7 @@ public class PlayerListener implements Listener {
             if (Gamemode.getCurrentGame().isAlive(player)) {
                 Necessities.getUM().getUser(player.getUniqueId()).setStatus("alive");
                 ClassicPhysicsHandler handler = ClassicPhysics.INSTANCE.getPhysicsHandler();
-                if (!handler.isClassicBlock(player.getLocation().getBlock().getLocation().toVector()) && !handler.isClassicBlock(player.getEyeLocation().getBlock().getLocation().toVector()))
+                if (!handler.isClassicBlock(player.getLocation().toVector()) && !handler.isClassicBlock(player.getEyeLocation().toVector()))
                     player.teleport(Gamemode.getCurrentWorld().getSpawnLocation().clone());
             }
             event.getPlayer().setScoreboard(Gamemode.getScoreboard());
