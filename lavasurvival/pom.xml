@@ -10,15 +10,6 @@
 
     <repositories>
         <repository>
-            <id>libs</id>
-            <name>libs</name>
-            <releases>
-                <enabled>true</enabled>
-                <checksumPolicy>ignore</checksumPolicy>
-            </releases>
-            <url>file://${project.basedir}/../libs/</url>
-        </repository>
-        <repository>
             <id>maven-central</id>
             <url>http://central.maven.org/maven2/</url>
         </repository>
@@ -29,6 +20,15 @@
         <repository>
             <id>stealthyone-repo</id>
             <url>http://repo.stealthyone.com/content/groups/public</url>
+        </repository>
+        <repository>
+            <id>libs</id>
+            <name>libs</name>
+            <releases>
+                <enabled>true</enabled>
+                <checksumPolicy>ignore</checksumPolicy>
+            </releases>
+            <url>file://${project.basedir}/../libs/</url>
         </repository>
     </repositories>
 
