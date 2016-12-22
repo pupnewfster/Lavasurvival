@@ -98,7 +98,7 @@ public class Lavasurvival extends JavaPlugin {
         INSTANCE = this;
         init();
 
-        log("Attaching to Vault..");
+        log("Attaching to Necessities..");
         if (!Bukkit.getPluginManager().isPluginEnabled("Necessities")) {
             log("Disabling, Necessities not found!");
             getServer().getPluginManager().disablePlugin(this);
