@@ -312,7 +312,7 @@ public class PlayerListener implements Listener {
             }
             event.setCancelled(false);
             Block b = event.getBlock();
-            ClassicPhysics.INSTANCE.getPhysicsHandler().addPlayerPlaced(b.getLocation().toVector()); //UUID would go here if was hashmap
+            ClassicPhysics.INSTANCE.getPhysicsHandler().addPlayerPlaced(b.getLocation().toVector()); //UUID would go here if was hash map
             if (b.getType().toString().contains("DOOR") && b.getRelative(BlockFace.UP).getType().equals(b.getType()))
                 ClassicPhysics.INSTANCE.getPhysicsHandler().addPlayerPlaced(b.getRelative(BlockFace.UP).getLocation().toVector());
             if (!this.survival) {
