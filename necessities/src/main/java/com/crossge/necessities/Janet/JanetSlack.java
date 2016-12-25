@@ -156,6 +156,7 @@ public class JanetSlack {
         }
         setUsers();
         setUserChannels();
+        sendPost("https://slack.com/api/users.setPresence?token=" + this.token + "&presence=auto");
         this.isConnected = true;
         sendMessage("Connected.");
     }
