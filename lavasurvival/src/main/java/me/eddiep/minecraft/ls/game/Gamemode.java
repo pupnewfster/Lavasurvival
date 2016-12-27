@@ -583,12 +583,11 @@ public abstract class Gamemode {
                         found = true;
                         continue;
                     }
-                    for (LavaMap nextMap : this.nextMaps) {
+                    for (LavaMap nextMap : this.nextMaps)
                         if (nextMap != null && nextMap.getFile().equals(possibleNext)) {
                             found = true;
                             break;
                         }
-                    }
                 } while (found);
                 try {
                     this.nextMaps[i] = LavaMap.load(next);

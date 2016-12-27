@@ -1,6 +1,5 @@
 package net.njay;
 
-import com.google.common.base.Preconditions;
 import net.njay.annotation.*;
 import net.njay.listener.MenuListener;
 import net.njay.utils.ItemUtils;
@@ -30,7 +29,8 @@ public class MenuRegistry {
      */
     @SuppressWarnings("unchecked")
     public MenuRegistry(Plugin plugin, Class... menus) {
-        Preconditions.checkNotNull(plugin, "Plugin cannot be null");
+        if (plugin == null)
+            throw new NullPointerException("Plugin cannot be null");
         this.plugin = plugin;
         plugin.getServer().getPluginManager().registerEvents(new MenuListener(), plugin);
         for (Class menu : menus)
