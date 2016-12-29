@@ -22,6 +22,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.*;
 import org.bukkit.event.entity.EntityChangeBlockEvent;
+import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.world.WorldUnloadEvent;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.plugin.Plugin;
@@ -45,7 +46,7 @@ public final class ClassicPhysicsHandler implements Listener {
     private final HashSet<BlockVector> classicBlocks = new HashSet<>(), fusionBlocks = new HashSet<>(), playerPlaced = new HashSet<>();
     private final ArrayList<Player> lplacers = new ArrayList<>();
     private final ArrayList<Player> wplacers = new ArrayList<>();
-    private boolean running = false, removePrevious = false;
+    private boolean running = false, removePrevious = false, hasPlayers = false;
     private World current = null;
     private ChunkEdit e = null;
     private final Plugin owner;
@@ -152,6 +153,7 @@ public final class ClassicPhysicsHandler implements Listener {
             if (running || current == null) //TODO: See if some of this can be made async to improve behavior with large amounts of block updates
                 return;
             running = true;
+            hasPlayers = !Bukkit.getOnlinePlayers().isEmpty();
             for (ToAndFrom taf : locations.keySet()) {
                 if (!running || current == null)
                     break;
@@ -172,10 +174,12 @@ public final class ClassicPhysicsHandler implements Listener {
                     addClassicBlock(lv);
                 Material type = locations.get(taf);
                 e.setBlock(lv.getBlockX(), lv.getBlockY(), lv.getBlockZ(), type);
-                long xz = (long) l.getChunk().getX() << 32 | l.getChunk().getZ() & 0xFFFFFFFFL;
-                if (!chunks.containsKey(xz))
-                    chunks.put(xz, new WorldCount(xz));
-                chunks.get(xz).addChange(lv.getBlockX(), lv.getBlockY(), lv.getBlockZ());
+                if (hasPlayers) {
+                    long xz = (long) l.getChunk().getX() << 32 | l.getChunk().getZ() & 0xFFFFFFFFL;
+                    if (!chunks.containsKey(xz))
+                        chunks.put(xz, new WorldCount(xz));
+                    chunks.get(xz).addChange(lv.getBlockX(), lv.getBlockY(), lv.getBlockZ());
+                }
                 if (!blc.isLiquid() && !isFusionBlock(lv))
                     e.setBlock(lv.getBlockX(), lv.getBlockY(), lv.getBlockZ(), type = Material.STATIONARY_WATER);
                 Bukkit.getPluginManager().callEvent(new ClassicBlockPlaceEvent(l));
@@ -198,7 +202,7 @@ public final class ClassicPhysicsHandler implements Listener {
                 return;
             }
             ArrayList<Packet> packets = new ArrayList<>();
-            if (!Bukkit.getOnlinePlayers().isEmpty())
+            if (!Bukkit.getOnlinePlayers().isEmpty()) //Should this check this or use the estimate of hasPlayers
                 for (long l : chunks.keySet()) {
                     if (!running)
                         break;
@@ -299,6 +303,7 @@ public final class ClassicPhysicsHandler implements Listener {
             fusionBlocks.clear();
             playerPlaced.clear();
             logicContainers.forEach(holder -> holder.container.unload());
+            e = null;
         } else
             e = new ChunkEdit(((CraftWorld) w).getHandle());
     }
@@ -378,6 +383,11 @@ public final class ClassicPhysicsHandler implements Listener {
     public void onLeafDecay(LeavesDecayEvent event) {
         if (!ClassicPhysics.TYPE.equals(PhysicsType.DEFAULT))
             event.setCancelled(true);
+    }
+
+    @EventHandler
+    public void onPlayerJoin(PlayerJoinEvent event) {
+        hasPlayers = true;
     }
 
     @EventHandler

@@ -11,6 +11,8 @@ import org.bukkit.util.Vector;
 public class LavaLogic extends AbstractLogicContainer {
     @Override
     protected void tickForBlock(Location location) {
+        if (location == null)
+            return;
         checkLocation(location.clone().add(1, 0, 0), location);
         checkLocation(location.clone().add(-1, 0, 0), location);
         checkLocation(location.clone().add(0, 0, 1), location);
@@ -19,9 +21,11 @@ public class LavaLogic extends AbstractLogicContainer {
     }
 
     void checkLocation(Location location, Location from) {
+        if (location == null)
+            return;
         synchronized (ClassicPhysics.Sync) {
             try {
-                if (location == null || location.getWorld() == null || location.getChunk() == null || !location.getChunk().isLoaded() || location.getBlock() == null)//World isn't loaded
+                if (!location.getChunk().isLoaded())//World isn't loaded
                     return;
             } catch (Exception e) {
                 e.printStackTrace();
@@ -63,7 +67,7 @@ public class LavaLogic extends AbstractLogicContainer {
 
     @Override
     public boolean doesHandle(Material material) {
-        return material == Material.LAVA || material == Material.STATIONARY_LAVA;
+        return Material.LAVA.equals(material) || Material.STATIONARY_LAVA.equals(material);
     }
 
     @Override

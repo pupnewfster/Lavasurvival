@@ -39,6 +39,7 @@ import java.io.InputStreamReader;
 import java.lang.reflect.Field;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
@@ -119,14 +120,14 @@ public class Necessities extends JavaPlugin {
     }
 
     public boolean isDev(UUID uuid) {
-        for (DevInfo i : devs)
+        for (DevInfo i : this.devs)
             if (uuid.equals(i.getMCUUID()))
                 return true;
         return false;
     }
 
     public List<DevInfo> getDevs() {
-        return this.devs;
+        return Collections.unmodifiableList(this.devs);
     }
 
     private void getDevInfo() {
@@ -158,8 +159,9 @@ public class Necessities extends JavaPlugin {
     }
 
     public class DevInfo {
-        private UUID mcUUID;
-        private String slackID, name;
+        private final UUID mcUUID;
+        private final String slackID;
+        private final String name;
 
         private DevInfo(JsonObject dev) {
             this.mcUUID = UUID.fromString(dev.getString("mcUUID"));
@@ -173,10 +175,6 @@ public class Necessities extends JavaPlugin {
 
         public UUID getMCUUID() {
             return this.mcUUID;
-        }
-
-        public String getSlackID() {
-            return this.slackID;
         }
     }
 
