@@ -37,16 +37,15 @@ import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
-@SuppressWarnings("unused")
 public final class ClassicPhysicsHandler implements Listener {
     private final ArrayList<LogicContainerHolder> logicContainers = new ArrayList<>();
     private final ConcurrentHashMap<ToAndFrom, Material> locations = new ConcurrentHashMap<>();
     private final ConcurrentHashMap<Long, WorldCount> chunks = new ConcurrentHashMap<>();
     private final ConcurrentHashMap<Location, ConcurrentLinkedQueue<ToAndFrom>> toFroms = new ConcurrentHashMap<>();
-    private final HashSet<BlockVector> classicBlocks = new HashSet<>(), fusionBlocks = new HashSet<>(), playerPlaced = new HashSet<>();
+    private final HashSet<BlockVector> classicBlocks = new HashSet<>(), playerPlaced = new HashSet<>();
     private final ArrayList<Player> lplacers = new ArrayList<>();
     private final ArrayList<Player> wplacers = new ArrayList<>();
-    private boolean running = false, removePrevious = false, hasPlayers = false;
+    private boolean running = false, hasPlayers = false, sendingPackets  = false;
     private World current = null;
     private ChunkEdit e = null;
     private final Plugin owner;
@@ -150,8 +149,11 @@ public final class ClassicPhysicsHandler implements Listener {
     private final BukkitRunnable BLOCK_UPDATE_TICK = new BukkitRunnable() {
         @Override
         public void run() {
-            if (running || current == null) //TODO: See if some of this can be made async to improve behavior with large amounts of block updates
+            if (running || current == null)
                 return;
+            //TODO: Attempt to make the logic of what blocks should be updated smarter so that it stays smoother
+            //TODO: Or at least try to make it so that locations only has each destination once and ToAndFrom is really the possible froms instead of one for each
+            //TODO: This could be done by making it only have each destination location once and then modifying how the toFroms work
             running = true;
             hasPlayers = !Bukkit.getOnlinePlayers().isEmpty();
             for (ToAndFrom taf : locations.keySet()) {
@@ -180,7 +182,7 @@ public final class ClassicPhysicsHandler implements Listener {
                         chunks.put(xz, new WorldCount(xz));
                     chunks.get(xz).addChange(lv.getBlockX(), lv.getBlockY(), lv.getBlockZ());
                 }
-                if (!blc.isLiquid() && !isFusionBlock(lv))
+                if (!blc.isLiquid())// && !isFusionBlock(lv))
                     e.setBlock(lv.getBlockX(), lv.getBlockY(), lv.getBlockZ(), type = Material.STATIONARY_WATER);
                 Bukkit.getPluginManager().callEvent(new ClassicBlockPlaceEvent(l));
                 if (running && current != null)
@@ -198,13 +200,16 @@ public final class ClassicPhysicsHandler implements Listener {
             }
             if (current == null) {
                 running = false;
-                removePrevious = false;
                 return;
             }
+            running = false;
+            if (sendingPackets || !hasPlayers)
+                return;
+            sendingPackets = true;
             ArrayList<Packet> packets = new ArrayList<>();
             if (!Bukkit.getOnlinePlayers().isEmpty()) //Should this check this or use the estimate of hasPlayers
                 for (long l : chunks.keySet()) {
-                    if (!running)
+                    if (!sendingPackets)
                         break;
                     packets.addAll(chunks.get(l).getPackets());
                     chunks.remove(l);
@@ -213,20 +218,18 @@ public final class ClassicPhysicsHandler implements Listener {
                 chunks.clear();
             if (!packets.isEmpty()) //TODO figure out why sometimes the packet does not get sent. Is it some over max amount?
                 for (Player p : Bukkit.getOnlinePlayers()) {
-                    if (removePrevious)
+                    if (!sendingPackets)
                         break;
                     if (p != null) {
                         final EntityPlayer ep = ((CraftPlayer) p).getHandle();
                         for (Packet packet : packets) {
-                            if (removePrevious)//Check again in case player is mid getting sent
+                            if (!sendingPackets)//Check again in case player is mid getting sent
                                 break;
                             ep.playerConnection.sendPacket(packet);
                         }
                     }
                 }
-            if (removePrevious)
-                removePrevious = false;
-            running = false;
+            sendingPackets = false;
         }
     };
 
@@ -246,10 +249,6 @@ public final class ClassicPhysicsHandler implements Listener {
 
     private void removeClassicBlock(Vector v) {
         classicBlocks.remove(v.toBlockVector());
-    }
-
-    private boolean isFusionBlock(Vector v) {
-        return fusionBlocks.contains(v.toBlockVector());
     }
 
     //Player placed is stored in classic physics now instead of ls so that we can clear it at the correct time
@@ -295,12 +294,11 @@ public final class ClassicPhysicsHandler implements Listener {
         this.current = w;
         if (w == null) {
             running = false;
-            removePrevious = true;
+            sendingPackets = false;
             this.locations.clear();
             this.toFroms.clear();//Because we don't call block placing in multiple worlds. If we ever start we need to make it check that it removes correct worlds
             this.chunks.clear();
             classicBlocks.clear();
-            fusionBlocks.clear();
             playerPlaced.clear();
             logicContainers.forEach(holder -> holder.container.unload());
             e = null;
@@ -442,7 +440,7 @@ public final class ClassicPhysicsHandler implements Listener {
         if (!isClassicBlock(bv))
             addClassicBlock(bv);
         e.setBlock(blc.getX(), blc.getY(), blc.getZ(), type);
-        if (!blc.isLiquid() && !isFusionBlock(bv)) {
+        if (!blc.isLiquid()) {// && !isFusionBlock(bv)) {
             type = Material.STATIONARY_WATER;
             e.setBlock(blc.getX(), blc.getY(), blc.getZ(), type);
         }
@@ -478,7 +476,7 @@ public final class ClassicPhysicsHandler implements Listener {
                 ConcurrentLinkedQueue<ToAndFrom> temp = toFroms.get(location);
                 if (temp == null)
                     temp = new ConcurrentLinkedQueue<>();
-                temp.add(taf);
+                temp.offer(taf);
                 toFroms.put(location, temp);
                 break;
             }
