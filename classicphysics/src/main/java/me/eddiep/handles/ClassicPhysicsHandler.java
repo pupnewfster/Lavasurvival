@@ -39,9 +39,8 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 
 public final class ClassicPhysicsHandler implements Listener {
     private final ArrayList<LogicContainerHolder> logicContainers = new ArrayList<>();
-    private final ConcurrentHashMap<ToAndFrom, Material> locations = new ConcurrentHashMap<>();
+    private final ConcurrentHashMap<Location, ConcurrentLinkedQueue<Location>> locations = new ConcurrentHashMap<>();
     private final ConcurrentHashMap<Long, WorldCount> chunks = new ConcurrentHashMap<>();
-    private final ConcurrentHashMap<Location, ConcurrentLinkedQueue<ToAndFrom>> toFroms = new ConcurrentHashMap<>();
     private final HashSet<BlockVector> classicBlocks = new HashSet<>(), playerPlaced = new HashSet<>();
     private final ArrayList<Player> lplacers = new ArrayList<>();
     private final ArrayList<Player> wplacers = new ArrayList<>();
@@ -116,24 +115,6 @@ public final class ClassicPhysicsHandler implements Listener {
         }
     }
 
-    private class ToAndFrom {
-        final Location from;
-        final Location to;
-
-        ToAndFrom(Location to, Location from) {
-            this.to = to;
-            this.from = from;
-        }
-
-        public Location getTo() {
-            return this.to;
-        }
-
-        public Location getFrom() {
-            return this.from;
-        }
-    }
-
     private long tickCount;
     private final BukkitRunnable PHYSICS_TICK = new BukkitRunnable() {
         @Override
@@ -152,29 +133,46 @@ public final class ClassicPhysicsHandler implements Listener {
             if (running || current == null)
                 return;
             //TODO: Attempt to make the logic of what blocks should be updated smarter so that it stays smoother
-            //TODO: Or at least try to make it so that locations only has each destination once and ToAndFrom is really the possible froms instead of one for each
-            //TODO: This could be done by making it only have each destination location once and then modifying how the toFroms work
+            //TODO: How many of these need to be concurrent does the linked queues?
+            //TODO: Would it be smoother if there was two lists one it goes through then a second that it adds to while first is in progress
             running = true;
             hasPlayers = !Bukkit.getOnlinePlayers().isEmpty();
-            for (ToAndFrom taf : locations.keySet()) {
+            ArrayList<Location> toRemove = new ArrayList<>();
+            for (Location l : locations.keySet()) {
                 if (!running || current == null)
                     break;
-                Location l = taf.getTo();
-                //commentBlock
                 Block blc = l.getBlock();
                 Vector lv = l.toVector();
-                if (!isClassicBlock(taf.getFrom().toVector()) || !taf.getFrom().getBlock().isLiquid() || (isClassicBlock(lv) && blc.isLiquid())) {
-                    ConcurrentLinkedQueue<ToAndFrom> queue = toFroms.get(l);
-                    if (queue != null)
-                        while (!queue.isEmpty())
-                            locations.remove(queue.poll());
-                    toFroms.remove(l);
-                    locations.remove(taf);
+                if (isClassicBlock(lv) && blc.isLiquid()) {
+                    toRemove.add(l);
+                    continue;
+                }
+                Material type = null;
+                ConcurrentLinkedQueue<Location> queue = locations.get(l);
+                if (queue != null) {
+                    boolean fromClassic = false;
+                    while (!queue.isEmpty()) {
+                        Location from = queue.poll();
+                        if (isClassicBlock(from.toVector()) && from.getBlock().isLiquid()) {
+                            fromClassic = true;
+                            type = from.getBlock().getType();
+                            break;
+                        }
+                    }
+                    if (!fromClassic) {
+                        toRemove.add(l);
+                        continue;
+                    }
+                } else {
+                    toRemove.add(l);
+                    continue;
+                }
+                if (type == null) {
+                    toRemove.add(l);
                     continue;
                 }
                 if (!isClassicBlock(lv))
                     addClassicBlock(lv);
-                Material type = locations.get(taf);
                 e.setBlock(lv.getBlockX(), lv.getBlockY(), lv.getBlockZ(), type);
                 if (hasPlayers) {
                     long xz = (long) l.getChunk().getX() << 32 | l.getChunk().getZ() & 0xFFFFFFFFL;
@@ -191,17 +189,13 @@ public final class ClassicPhysicsHandler implements Listener {
                             holder.container.queueBlock(l);
                             break;
                         }
-                ConcurrentLinkedQueue<ToAndFrom> queue = toFroms.get(l);
-                if (queue != null) //TODO: figure out if this can be null
-                    while (!queue.isEmpty())
-                        locations.remove(queue.poll());
-                toFroms.remove(l);
-                locations.remove(taf);
+                toRemove.add(l);
             }
             if (current == null) {
                 running = false;
                 return;
             }
+            toRemove.forEach(locations::remove);
             running = false;
             if (sendingPackets || !hasPlayers)
                 return;
@@ -296,7 +290,6 @@ public final class ClassicPhysicsHandler implements Listener {
             running = false;
             sendingPackets = false;
             this.locations.clear();
-            this.toFroms.clear();//Because we don't call block placing in multiple worlds. If we ever start we need to make it check that it removes correct worlds
             this.chunks.clear();
             classicBlocks.clear();
             playerPlaced.clear();
@@ -471,13 +464,12 @@ public final class ClassicPhysicsHandler implements Listener {
             type = Material.STATIONARY_LAVA;
         for (LogicContainerHolder holder : logicContainers)
             if (holder.container.doesHandle(type)) {
-                ToAndFrom taf = new ToAndFrom(location, from);
-                locations.put(taf, type);
-                ConcurrentLinkedQueue<ToAndFrom> temp = toFroms.get(location);
+                ConcurrentLinkedQueue<Location> temp = locations.get(location);
                 if (temp == null)
-                    temp = new ConcurrentLinkedQueue<>();
-                temp.offer(taf);
-                toFroms.put(location, temp);
+                    locations.put(location, temp = new ConcurrentLinkedQueue<>());
+                    //temp = new ConcurrentLinkedQueue<>();
+                temp.offer(from.getBlock().getLocation());
+                //locations.put(location, temp);
                 break;
             }
     }
