@@ -30,16 +30,13 @@ import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.BlockVector;
 import org.bukkit.util.Vector;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 public final class ClassicPhysicsHandler implements Listener {
     private final ArrayList<LogicContainerHolder> logicContainers = new ArrayList<>();
-    private final ConcurrentHashMap<Location, ConcurrentLinkedQueue<Location>> locations = new ConcurrentHashMap<>();
+    private HashMap<Location, ConcurrentLinkedQueue<Location>> locations = new HashMap<>(), newLocations = new HashMap<>();
     private final ConcurrentHashMap<Long, WorldCount> chunks = new ConcurrentHashMap<>();
     private final HashSet<BlockVector> classicBlocks = new HashSet<>(), playerPlaced = new HashSet<>();
     private final ArrayList<Player> lplacers = new ArrayList<>();
@@ -134,19 +131,21 @@ public final class ClassicPhysicsHandler implements Listener {
                 return;
             //TODO: Attempt to make the logic of what blocks should be updated smarter so that it stays smoother
             //TODO: How many of these need to be concurrent does the linked queues?
-            //TODO: Would it be smoother if there was two lists one it goes through then a second that it adds to while first is in progress
+            //TODO: Does it have issues when a location already has been checked and marked as invalid but is now really valid
+            //TODO: is it better to store the from locations or the directions
+            //Direction would be less memory for storage but would have to get the relative block
+            //Perhaps have it be direction once we switch to a smarter logic
             running = true;
+            locations = newLocations;
+            newLocations = new HashMap<>();
             hasPlayers = !Bukkit.getOnlinePlayers().isEmpty();
-            ArrayList<Location> toRemove = new ArrayList<>();
             for (Location l : locations.keySet()) {
                 if (!running || current == null)
                     break;
                 Block blc = l.getBlock();
                 Vector lv = l.toVector();
-                if (isClassicBlock(lv) && blc.isLiquid()) {
-                    toRemove.add(l);
+                if (isClassicBlock(lv) && blc.isLiquid())//TODO: replace blc.isliquid with checking the stationary types
                     continue;
-                }
                 Material type = null;
                 ConcurrentLinkedQueue<Location> queue = locations.get(l);
                 if (queue != null) {
@@ -159,18 +158,12 @@ public final class ClassicPhysicsHandler implements Listener {
                             break;
                         }
                     }
-                    if (!fromClassic) {
-                        toRemove.add(l);
+                    if (!fromClassic)
                         continue;
-                    }
-                } else {
-                    toRemove.add(l);
+                } else
                     continue;
-                }
-                if (type == null) {
-                    toRemove.add(l);
+                if (type == null)
                     continue;
-                }
                 if (!isClassicBlock(lv))
                     addClassicBlock(lv);
                 e.setBlock(lv.getBlockX(), lv.getBlockY(), lv.getBlockZ(), type);
@@ -189,13 +182,12 @@ public final class ClassicPhysicsHandler implements Listener {
                             holder.container.queueBlock(l);
                             break;
                         }
-                toRemove.add(l);
             }
+            locations.clear();
             if (current == null) {
                 running = false;
                 return;
             }
-            toRemove.forEach(locations::remove);
             running = false;
             if (sendingPackets || !hasPlayers)
                 return;
@@ -290,6 +282,7 @@ public final class ClassicPhysicsHandler implements Listener {
             running = false;
             sendingPackets = false;
             this.locations.clear();
+            this.newLocations.clear();
             this.chunks.clear();
             classicBlocks.clear();
             playerPlaced.clear();
@@ -383,11 +376,8 @@ public final class ClassicPhysicsHandler implements Listener {
 
     @EventHandler
     public void onLiquidFlow(BlockFromToEvent event) {
-        if (ClassicPhysics.TYPE.equals(PhysicsType.DEFAULT))
-            return;
-        event.setCancelled(true);
-        if (isClassicBlock(event.getToBlock().getLocation().toVector()) && isClassicBlock(event.getBlock().getLocation().toVector()))//To is really the from block it is labelled strangely
-            placeClassicBlockAt(event.getBlock().getLocation(), event.getToBlock().getType(), event.getToBlock().getLocation());
+        if (!ClassicPhysics.TYPE.equals(PhysicsType.DEFAULT))
+            event.setCancelled(true);
     }
 
     private void requestUpdateAround(Location location) {
@@ -448,30 +438,22 @@ public final class ClassicPhysicsHandler implements Listener {
     }
 
     public void placeClassicBlockAt(Location location, Material type, Location from) {
+        //TODO make it check the type is valid from the containers again instead of just hardcoding it
+        if (current == null || location == null || !location.getWorld().equals(current) || (!type.equals(Material.WATER) && !type.equals(Material.STATIONARY_WATER) && !type.equals(Material.LAVA) &&
+                !type.equals(Material.STATIONARY_LAVA)))
+            return;
         try {
-            if (location == null || location.getWorld() == null || location.getChunk() == null || !location.getChunk().isLoaded() || location.getBlock() == null)//World isn't loaded
-                return; //TODO see how many of these checks are non necessary
+            if (!location.getChunk().isLoaded())
+                return;
         } catch (Exception e) {
             e.printStackTrace();
             return;
         }
-        if (!location.getWorld().equals(current))
-            return;
         location = location.getBlock().getLocation(); //make the x,y,z all ints
-        if (type.equals(Material.WATER))
-            type = Material.STATIONARY_WATER;
-        else if (type.equals(Material.LAVA))
-            type = Material.STATIONARY_LAVA;
-        for (LogicContainerHolder holder : logicContainers)
-            if (holder.container.doesHandle(type)) {
-                ConcurrentLinkedQueue<Location> temp = locations.get(location);
-                if (temp == null)
-                    locations.put(location, temp = new ConcurrentLinkedQueue<>());
-                    //temp = new ConcurrentLinkedQueue<>();
-                temp.offer(from.getBlock().getLocation());
-                //locations.put(location, temp);
-                break;
-            }
+        ConcurrentLinkedQueue<Location> temp = locations.get(location);
+        if (temp == null)
+            newLocations.put(location, temp = new ConcurrentLinkedQueue<>());
+        temp.offer(from.getBlock().getLocation());
     }
 
     private void addLogicContainer(LogicContainer container) {
