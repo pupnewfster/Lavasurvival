@@ -43,7 +43,7 @@ public final class ClassicPhysicsHandler implements Listener {
     private final HashSet<BlockVector> classicBlocks = new HashSet<>(), playerPlaced = new HashSet<>();
     private final ArrayList<Player> lplacers = new ArrayList<>();
     private final ArrayList<Player> wplacers = new ArrayList<>();
-    private boolean running = false, hasPlayers = false, sendingPackets  = false;
+    private boolean running = false, hasPlayers = false, sendingPackets = false;
     private World current = null;
     private ChunkEdit e = null;
     private final Plugin owner;
