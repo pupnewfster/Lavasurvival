@@ -31,10 +31,10 @@ public class LavaLogic extends AbstractLogicContainer {
                 e.printStackTrace();
                 return;
             }
-            Block block = location.getBlock();
             Vector lv = location.toVector();
-            if (ClassicPhysics.INSTANCE.getPhysicsHandler().isClassicBlock(lv) && block.isLiquid()) //TODO should this check to make sure it is stationary or should it be done elsewhere
+            if (ClassicPhysics.INSTANCE.getPhysicsHandler().isClassicBlock(lv))
                 return;
+            Block block = location.getBlock();
             Material newBlock = block.getType();
 
             if (!block.getType().isSolid() && !doesHandle(block.getType()))
@@ -50,7 +50,7 @@ public class LavaLogic extends AbstractLogicContainer {
                 return;
 
             if (newBlock != block.getType())
-                placeClassicBlock(newBlock, location, from);
+                ClassicPhysics.INSTANCE.getPhysicsHandler().placeClassicBlockAt(location, newBlock, from);
             else if (!ClassicPhysics.INSTANCE.getPhysicsHandler().isClassicBlock(lv)) {
                 ClassicPhysics.INSTANCE.getPhysicsHandler().addClassicBlock(lv);
                 ClassicPhysics.INSTANCE.getServer().getPluginManager().callEvent(new ClassicBlockPlaceEvent(location));

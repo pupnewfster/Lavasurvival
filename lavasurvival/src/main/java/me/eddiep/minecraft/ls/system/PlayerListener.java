@@ -409,7 +409,7 @@ public class PlayerListener implements Listener {
         Material type = event.getLocation().getBlock().getType();
         if (!type.equals(Material.WATER) && !type.equals(Material.STATIONARY_WATER))
             return;
-        Location loc = event.getLocation().getBlock().getLocation();
+        Location loc = event.getLocation();
         Bukkit.getOnlinePlayers().stream().filter(p -> Gamemode.getCurrentGame().isAlive(p) && (p.getLocation().getBlock().getLocation().equals(loc) || p.getLocation().getBlock().getRelative(BlockFace.UP).getLocation().equals(loc))).forEach(p -> {
             UserInfo u = Lavasurvival.INSTANCE.getUserManager().getUser(p.getUniqueId());
             if (!u.isInWater()) {
