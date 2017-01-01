@@ -30,7 +30,6 @@ import org.bukkit.util.BlockVector;
 import org.bukkit.util.Vector;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
@@ -38,12 +37,12 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 
 public final class ClassicPhysicsHandler implements Listener {
     private final ArrayList<LogicContainerHolder> logicContainers = new ArrayList<>();
-    private HashMap<BlockVector, ConcurrentLinkedQueue<Location>> locations = new HashMap<>(), newLocations = new HashMap<>();
+    private ConcurrentHashMap<BlockVector, ConcurrentLinkedQueue<Location>> newLocations = new ConcurrentHashMap<>();
     private final ConcurrentHashMap<Long, WorldCount> chunks = new ConcurrentHashMap<>();
     private final HashSet<BlockVector> classicBlocks = new HashSet<>(), playerPlaced = new HashSet<>();
     private final ArrayList<Player> lplacers = new ArrayList<>();
     private final ArrayList<Player> wplacers = new ArrayList<>();
-    private boolean running = false, hasPlayers = false, sendingPackets = false;
+    private boolean hasPlayers = false, sendingPackets = false;
     private World current = null;
     private ChunkEdit e = null;
     private final Plugin owner;
@@ -129,20 +128,19 @@ public final class ClassicPhysicsHandler implements Listener {
     private final BukkitRunnable BLOCK_UPDATE_TICK = new BukkitRunnable() {
         @Override
         public void run() {
-            if (running || current == null)
+            if (current == null)
                 return;
             //TODO: Attempt to make the logic of what blocks should be updated smarter so that it stays smoother
-            //TODO: How many of these need to be concurrent does the linked queues?
+            //TODO: How many of these need to be concurrent does the linked queues? CHECK THIS
             //TODO: Does it have issues when a location already has been checked and marked as invalid but is now really valid
             //TODO: is it better to store the from locations or the directions
             //Direction would be less memory for storage but would have to get the relative block
             //Perhaps have it be direction once we switch to a smarter logic
-            running = true;
-            locations = newLocations;
-            newLocations = new HashMap<>();
+            ConcurrentHashMap<BlockVector, ConcurrentLinkedQueue<Location>> locations = newLocations;
+            newLocations = new ConcurrentHashMap<>();
             hasPlayers = !Bukkit.getOnlinePlayers().isEmpty();
             for (BlockVector lv : locations.keySet()) {
-                if (!running || current == null)
+                if (current == null)
                     break;
                 if (classicBlocks.contains(lv)) //Don't use isClassicBlock here because it is already a block vector
                     continue;
@@ -176,20 +174,14 @@ public final class ClassicPhysicsHandler implements Listener {
                     chunks.get(xz).addChange(lv.getBlockX(), lv.getBlockY(), lv.getBlockZ());
                     Bukkit.getPluginManager().callEvent(new ClassicBlockPlaceEvent(l));
                 }
-                if (running && current != null) //Is this extra check necessary
+                if (current != null) //Is this extra check necessary
                     for (LogicContainerHolder holder : logicContainers)
                         if (holder.container.doesHandle(type)) {
                             holder.container.queueBlock(l);
                             break;
                         }
             }
-            locations.clear();
-            if (current == null) {
-                running = false;
-                return;
-            }
-            running = false;
-            if (sendingPackets || !hasPlayers)
+            if (current == null || sendingPackets || !hasPlayers)
                 return;
             sendingPackets = true;
             ArrayList<Packet> packets = new ArrayList<>();
@@ -279,9 +271,8 @@ public final class ClassicPhysicsHandler implements Listener {
     public void setPhysicsWorld(World w) {
         this.current = w;
         if (w == null) {
-            running = false;
             sendingPackets = false;
-            this.locations.clear();
+            //this.locations.clear();
             this.newLocations.clear();
             this.chunks.clear();
             classicBlocks.clear();
@@ -444,9 +435,8 @@ public final class ClassicPhysicsHandler implements Listener {
             e.printStackTrace();
             return;
         }
-        //location = location.getBlock().getLocation(); //make the x,y,z all ints
-        BlockVector bv = location.toVector().toBlockVector();
-        ConcurrentLinkedQueue<Location> temp = locations.get(bv);
+        BlockVector bv = location.toVector().toBlockVector();//make the x,y,z all ints
+        ConcurrentLinkedQueue<Location> temp = newLocations.get(bv);
         if (temp == null)
             newLocations.put(bv, temp = new ConcurrentLinkedQueue<>());
         temp.offer(from.getBlock().getLocation());
@@ -474,7 +464,7 @@ public final class ClassicPhysicsHandler implements Listener {
 
     public void enable() {
         PHYSICS_TICK.runTaskTimerAsynchronously(owner, 0, 1);
-        BLOCK_UPDATE_TICK.runTaskTimer(owner, 0, 20);//TODO: ability to change update rate of blocks
+        BLOCK_UPDATE_TICK.runTaskTimer(owner, 0, 20);
         owner.getServer().getPluginManager().registerEvents(this, owner);
     }
 
