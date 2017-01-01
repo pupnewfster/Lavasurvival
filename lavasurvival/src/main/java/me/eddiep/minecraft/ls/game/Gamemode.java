@@ -43,7 +43,6 @@ import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.*;
 
-@SuppressWarnings({"SameParameterValue", "unused"})
 public abstract class Gamemode {
     private static final Material[] DEFAULT_BLOCKS = new Material[]{
             Material.TORCH,
@@ -342,7 +341,6 @@ public abstract class Gamemode {
         if (this.hasEnded)
             return;
         end();
-        final UserManager um = Lavasurvival.INSTANCE.getUserManager();
         if (giveRewards) {
             CmdHide hide = Necessities.getHide();
             int amount = 0;
@@ -427,7 +425,8 @@ public abstract class Gamemode {
                 String[] files = LavaMap.getPossibleMaps();
                 if (this.nextGame == null)
                     this.nextGame = pickRandomGame(null);
-                this.nextGame.map = LavaMap.load(files[RANDOM.nextInt(files.length)]);
+                if (this.nextGame.map == null)
+                    this.nextGame.map = LavaMap.load(files[RANDOM.nextInt(files.length)]);
                 Bukkit.getScheduler().scheduleSyncDelayedTask(Lavasurvival.INSTANCE, () -> {
                     lastMap = getCurrentMap();
                     tryNextGame();
@@ -710,13 +709,39 @@ public abstract class Gamemode {
         return base + (bonusAdd * blockCount);
     }
 
-    protected void setNextGame(Gamemode game) {
+    private void setNextGame(Gamemode game) {
         this.nextGame = game;
     }
 
-    protected void setNextMap(LavaMap map) {
+    private void setNextMap(LavaMap map) {
         if (this.nextGame != null)
             this.nextGame.map = map;
+    }
+
+    public boolean setNextMap(String map, String type) {
+        String[] files = LavaMap.getPossibleMaps();
+        map = map.toLowerCase() + ".map";
+        for (String file : files)
+            if (file.toLowerCase().endsWith(map)) {
+                LavaMap lavaMap;
+                Gamemode g = null;
+                try {
+                    lavaMap = LavaMap.load(file);
+                    if (type != null) {
+                        type = type.toLowerCase();
+                        Class<? extends Gamemode>[] games = lavaMap.getEnabledGames();
+                        for (Class<? extends Gamemode> game : games)
+                            if (game.getName().toLowerCase().endsWith(type))
+                                g = game.newInstance();
+                    }
+                } catch (IOException | IllegalAccessException | InstantiationException ignored) {
+                    return false;
+                }
+                setNextGame(g == null ? pickRandomGame(lavaMap) : g);
+                setNextMap(lavaMap);
+                return true;
+            }
+        return false;
     }
 
     public void playerJoin(Player player) {

@@ -47,6 +47,7 @@ public final class ClassicPhysicsHandler implements Listener {
     private World current = null;
     private ChunkEdit e = null;
     private final Plugin owner;
+    private final int blockUpdateRate = 10; //TODO: test this as 10
 
     @SuppressWarnings("unused")
     private class WorldCount {
@@ -137,6 +138,7 @@ public final class ClassicPhysicsHandler implements Listener {
             //TODO: is it better to store the from locations or the directions
             //Direction would be less memory for storage but would have to get the relative block
             //Perhaps have it be direction once we switch to a smarter logic
+            //TODO: try to make this "multithreaded" as in that isntead of just setting running to true it has locations in a local map and then it can run things inn parallel
             running = true;
             locations = newLocations;
             newLocations = new HashMap<>();
@@ -474,7 +476,7 @@ public final class ClassicPhysicsHandler implements Listener {
 
     public void enable() {
         PHYSICS_TICK.runTaskTimerAsynchronously(owner, 0, 1);
-        BLOCK_UPDATE_TICK.runTaskTimer(owner, 0, 20);//TODO: ability to change update rate of blocks
+        BLOCK_UPDATE_TICK.runTaskTimer(owner, 0, blockUpdateRate);
         owner.getServer().getPluginManager().registerEvents(this, owner);
     }
 
