@@ -131,8 +131,6 @@ public final class ClassicPhysicsHandler implements Listener {
             if (current == null)
                 return;
             //TODO: Attempt to make the logic of what blocks should be updated smarter so that it stays smoother
-            //TODO: How many of these need to be concurrent does the linked queues? CHECK THIS
-            //TODO: Does it have issues when a location already has been checked and marked as invalid but is now really valid
             //TODO: is it better to store the from locations or the directions
             //Direction would be less memory for storage but would have to get the relative block
             //Perhaps have it be direction once we switch to a smarter logic
@@ -181,7 +179,7 @@ public final class ClassicPhysicsHandler implements Listener {
                             break;
                         }
             }
-            if (current == null || sendingPackets || !hasPlayers)
+            if (current == null || sendingPackets || !hasPlayers) //TODO: Is it because of the mid sending packets thing that makes it have air pockets because other stuff adds after it gets packets but before remove
                 return;
             sendingPackets = true;
             ArrayList<Packet> packets = new ArrayList<>();
@@ -272,7 +270,6 @@ public final class ClassicPhysicsHandler implements Listener {
         this.current = w;
         if (w == null) {
             sendingPackets = false;
-            //this.locations.clear();
             this.newLocations.clear();
             this.chunks.clear();
             classicBlocks.clear();
@@ -299,9 +296,12 @@ public final class ClassicPhysicsHandler implements Listener {
         } else if (wplacers.contains(event.getPlayer())) {
             forcePlaceClassicBlockAt(event.getBlockPlaced().getLocation(), Material.STATIONARY_WATER);
             event.setCancelled(true);
+        } else {
+            Vector v = event.getBlock().getLocation().toVector();
+            removeClassicBlock(v);
+            newLocations.remove(v.toBlockVector());
+            requestUpdateAround(event.getBlock().getLocation());
         }
-        removeClassicBlock(event.getBlock().getLocation().toVector());
-        requestUpdateAround(event.getBlock().getLocation());
     }
 
     @EventHandler(priority = EventPriority.MONITOR)
@@ -381,17 +381,20 @@ public final class ClassicPhysicsHandler implements Listener {
             e.printStackTrace();
             return;
         }
-        for (int x = -1; x <= 1; x++)
-            for (int y = -1; y <= 1; y++)
-                for (int z = -1; z <= 1; z++) {
-                    Location newLoc = location.clone().add(x, y, z);
-                    if (!isClassicBlock(newLoc.toVector()))
-                        continue;
-                    for (LogicContainerHolder holder : logicContainers)
-                        if (holder.container.doesHandle(newLoc.getBlock().getType())) {
-                            holder.container.queueBlock(newLoc);
-                            break;
-                        }
+        checkLocation(location.clone().add(1, 0, 0));
+        checkLocation(location.clone().add(-1, 0, 0));
+        checkLocation(location.clone().add(0, 0, 1));
+        checkLocation(location.clone().add(0, 0, -1));
+        checkLocation(location.clone().add(0, 1, 0));
+        checkLocation(location.clone().add(0, -1, 0));
+    }
+
+    private void checkLocation(Location l) {
+        if (isClassicBlock(l.toVector()))
+            for (LogicContainerHolder holder : logicContainers)
+                if (holder.container.doesHandle(l.getBlock().getType())) {
+                    holder.container.queueBlock(l);
+                    break;
                 }
     }
 
