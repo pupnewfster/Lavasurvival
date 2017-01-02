@@ -1,7 +1,5 @@
 package com.crossge.necessities;
 
-import com.TentacleLabs.GoogleAnalyticsPlugin.GoogleAnalyticsPlugin;
-import com.TentacleLabs.GoogleAnalyticsPlugin.Tracker;
 import com.crossge.necessities.Commands.*;
 import com.crossge.necessities.Commands.Economy.CmdBalance;
 import com.crossge.necessities.Commands.Economy.CmdBaltop;
@@ -20,6 +18,10 @@ import com.crossge.necessities.WorldManager.WorldManager;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
 import net.minecraft.server.v1_11_R1.*;
+import net.nyvaria.googleanalytics.hit.EventHit;
+import net.nyvaria.googleanalytics.hit.Hit;
+import net.nyvaria.openanalytics.bukkit.OpenAnalytics;
+import net.nyvaria.openanalytics.bukkit.OpenAnalyticsTracker;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -46,7 +48,7 @@ import java.util.UUID;
 public class Necessities extends JavaPlugin {
     private static Necessities INSTANCE;
     private final List<String> devs = Arrays.asList("pupnewfster", "Mod_Chris", "hypereddie10");
-    private Tracker googleAnalyticsTracker;
+    private OpenAnalyticsTracker googleAnalyticsTracker;
     private PacketPlayOutPlayerInfo janetInfo;
     private CmdCommandSpy spy;
     private PortalManager pm;
@@ -103,8 +105,8 @@ public class Necessities extends JavaPlugin {
     }
 
     private boolean hookGoogle() {
-        GoogleAnalyticsPlugin plugin;
-        if ((plugin = (GoogleAnalyticsPlugin) getServer().getPluginManager().getPlugin("GoogleAnalyticsPlugin")) == null)
+        OpenAnalytics plugin;
+        if ((plugin = (OpenAnalytics) getServer().getPluginManager().getPlugin("OpenAnalytics")) == null)
             return false;
         googleAnalyticsTracker = plugin.getTracker();
         return true;
@@ -114,7 +116,7 @@ public class Necessities extends JavaPlugin {
         return getTracker() != null;
     }
 
-    private static Tracker getTracker() {
+    private static OpenAnalyticsTracker getTracker() {
         return INSTANCE == null ? null : getInstance().googleAnalyticsTracker;
     }
 
@@ -404,35 +406,11 @@ public class Necessities extends JavaPlugin {
         getLogger().info("Necessities disabled.");
     }
 
-    @SuppressWarnings("ConstantConditions")
-    public static void trackAction(String action, Object label) {
-        String clientVersion = Bukkit.getVersion().substring("git-Bukkit".length());
-        String clientName = "Minecraft " + clientVersion.substring(0, clientVersion.indexOf("-"));
-        getTracker().TrackAction(clientName, "LS", "127.0.0.1", "LS", action, label.toString());
-    }
-
-    @SuppressWarnings("ConstantConditions")
-    public static void trackActionWithValue(String action, Object label, Object value) {
-        String clientVersion = Bukkit.getVersion().substring("git-Bukkit".length());
-        String clientName = "Minecraft " + clientVersion.substring(0, clientVersion.indexOf("-"));
-        getTracker().TrackActionWithValue(clientName, "LS", "127.0.0.1", "LS", action, label.toString(), value.toString());
-    }
-
-    @SuppressWarnings("ConstantConditions")
-    public static void trackAction(Player p, Object label) {
-        String clientId = p.getName(), ip = (p.getAddress() != null ? p.getAddress().toString().substring(1) : "0.0.0.0");
-        boolean usesPluginChannel = p.getListeningPluginChannels().size() != 0;
-        String clientVersion = Bukkit.getVersion().substring("git-Bukkit".length());
-        getTracker().TrackAction("Minecraft " + clientVersion.substring(0, clientVersion.indexOf("-")) + (usesPluginChannel ? " [Supports Plugin Channels]" : ""), clientId, ip, clientId, "vote", label.toString());
-    }
-
-    @SuppressWarnings("ConstantConditions")
-    public static void trackActionWithValue(Player p, Object label, Object value) {
-        String clientId = p.getName(), ip = (p.getAddress() != null ? p.getAddress().toString().substring(1) : "0.0.0.0");
-        boolean usesPluginChannel = p.getListeningPluginChannels().size() != 0;
-        String clientVersion = Bukkit.getVersion().substring("git-Bukkit".length());
-        String clientName = "Minecraft " + clientVersion.substring(0, clientVersion.indexOf("-")) + (usesPluginChannel ? " [Supports Plugin Channels]" : "");
-        getTracker().TrackActionWithValue(clientName, clientId, ip, clientId, "Economy", label.toString(), value.toString());
+    public static void trackAction(Hit hit) {
+        OpenAnalyticsTracker tracker;
+        if ((tracker = getTracker()) != null) {
+            tracker.trackHit(hit);
+        }
     }
 
 

@@ -17,6 +17,8 @@ import me.eddiep.ubot.UBot;
 import me.eddiep.ubot.utils.CancelToken;
 import net.njay.MenuFramework;
 import net.njay.MenuRegistry;
+import net.nyvaria.googleanalytics.hit.EventHit;
+import net.nyvaria.openanalytics.bukkit.client.Client;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -78,8 +80,12 @@ public class Lavasurvival extends JavaPlugin {
     public void withdrawAndUpdate(Player player, double price) {
         Necessities.getEconomy().withdraw(player.getUniqueId(), price);
         updateMoneyView(player);
-        if (Necessities.isTracking())
-            Necessities.trackActionWithValue(player, -price, -price);
+        if (Necessities.isTracking()) {
+            EventHit hit = new EventHit(new Client(player), "economy", "economy");
+            hit.event_value = (int)-price;
+
+            Necessities.trackAction(hit);
+        }
     }
 
     public static void log(String message) {
@@ -279,7 +285,11 @@ public class Lavasurvival extends JavaPlugin {
 
     public void depositPlayer(Player player, double reward) {
         Necessities.getEconomy().deposit(player.getUniqueId(), reward);
-        if (Necessities.isTracking())
-            Necessities.trackActionWithValue(player, reward, reward);
+        if (Necessities.isTracking()) {
+            EventHit hit = new EventHit(new Client(player), "economy", "economy");
+            hit.event_value = (int)reward;
+
+            Necessities.trackAction(hit);
+        }
     }
 }

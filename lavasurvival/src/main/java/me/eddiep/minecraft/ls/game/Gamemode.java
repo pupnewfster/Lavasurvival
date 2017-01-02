@@ -19,6 +19,9 @@ import me.eddiep.minecraft.ls.system.FileUtils;
 import me.eddiep.minecraft.ls.system.PhysicsListener;
 import me.eddiep.minecraft.ls.system.PlayerListener;
 import mkremins.fanciful.FancyMessage;
+import net.nyvaria.googleanalytics.hit.EventHit;
+import net.nyvaria.googleanalytics.hit.SocialInteractionHit;
+import net.nyvaria.openanalytics.bukkit.client.Client;
 import org.bukkit.*;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.block.Block;
@@ -91,6 +94,7 @@ public abstract class Gamemode {
     private Gamemode nextGame;
     private LavaMap map;
     private boolean endGame;
+    private long startTime;
     private List<Block> spongeLocations = new ArrayList<>();
 
     protected static PlayerListener getPlayerListener() {
@@ -190,9 +194,17 @@ public abstract class Gamemode {
     protected void onStart() {
         Lavasurvival.log("New game on " + getCurrentWorld().getName());
         if (Necessities.isTracking()) {
-            if (isRewardDoubled())
-                Necessities.trackAction("DoubleRound", getCurrentMap().getName());
-            Necessities.trackAction("RoundStart", getCurrentMap().getName());
+            EventHit hit;
+            if (isRewardDoubled()) {
+                hit = new EventHit(null, "GameReward", "DoubleRound");
+            } else {
+                hit = new EventHit(null, "GameReward", "NormalRound");
+            }
+
+            EventHit roundStart = new EventHit(null, "GameInfo", "RoundStart");
+            startTime = System.currentTimeMillis();
+            Necessities.trackAction(hit);
+            Necessities.trackAction(roundStart);
         }
         this.isEnding = false;
         this.hasEnded = false;
@@ -404,8 +416,15 @@ public abstract class Gamemode {
                     Double[] array = avgs.get(rank);
                     array[0] = array[0] / array[2];
                     array[1] = array[1] / array[2];
-                    Necessities.trackActionWithValue("AverageReward", rank.getName(), array[1]);
-                    Necessities.trackActionWithValue("AverageAir", rank.getName(), array[0]);
+
+                    EventHit rewardAvg = new EventHit(null, "GameInfo", "AverageReward-" + rank.getName());
+                    rewardAvg.event_value = (int)array[1].doubleValue();
+
+                    EventHit airAvg = new EventHit(null, "GameInfo", "AverageAir-" + rank.getName());
+                    airAvg.event_value = (int)array[0].doubleValue();
+
+                    Necessities.trackAction(rewardAvg);
+                    Necessities.trackAction(airAvg);
                 }
             }
             avgs.clear();
@@ -556,7 +575,8 @@ public abstract class Gamemode {
         this.voteCount++;
         player.sendMessage(ChatColor.GREEN + "+ " + ChatColor.RESET + "" + ChatColor.BOLD + "You voted for " + this.nextMaps[number].getName() + "!");
         if (Necessities.isTracking()) {
-            Necessities.trackAction(player, this.nextMaps[number].getName());
+            SocialInteractionHit vote = new SocialInteractionHit(new Client(player), "voter", "vote", this.nextMaps[number].getName());
+            Necessities.trackAction(vote);
         }
     }
 
@@ -669,6 +689,14 @@ public abstract class Gamemode {
         ClassicPhysics.INSTANCE.getPhysicsHandler().setPhysicsWorld(null);
         this.isEnding = false;
         this.hasEnded = true;
+        long duration = System.currentTimeMillis() - startTime;
+
+        duration /= 1000;
+
+        if (Necessities.isTracking()) {
+            EventHit endRound = new EventHit(null, "GameInfo", "RoundEnd");
+            endRound.event_value = (int)duration;
+        }
     }
 
     private Gamemode pickRandomGame(LavaMap map) {

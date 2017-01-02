@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>net.nyvaria</groupId>
+    <artifactId>OpenAnalytics-parent</artifactId>
+    <version>1.1.01-SNAPSHOT</version>
+    <packaging>pom</packaging>
+
+    <name>OpenAnalytics-Parent</name>
+    <url>https://github.com/nyvaria/OpenAnalytics</url>
+    <description>Parent project for all OpenAnalytics modules</description>
+    <inceptionYear>2014</inceptionYear>
+
+    <issueManagement>
+        <system>GitHub</system>
+        <url>https://github.com/nyvaria/OpenAnalytics/issues</url>
+    </issueManagement>
+
+    <developers>
+        <developer>
+            <id>captbunzo</id>
+            <name>Paul Thompson</name>
+            <email>captbunzo@gmail.com</email>
+            <url>https://github.com/captbunzo/</url>
+            <roles>
+                <role>developer</role>
+            </roles>
+        </developer>
+    </developers>
+
+    <organization>
+        <name>Nyvaria</name>
+        <url>http://www.nyvaria.net</url>
+    </organization>
+
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
+
+    <distributionManagement>
+        <repository>
+            <id>pjt-repo-releases</id>
+            <name>repo.pjt.me Releases</name>
+            <url>http://repo.pjt.me/content/repositories/releases/</url>
+        </repository>
+        <snapshotRepository>
+            <id>pjt-repo-snapshots</id>
+            <name>repo.pjt.me Snapshots</name>
+            <url>http://repo.pjt.me/content/repositories/snapshots/</url>
+        </snapshotRepository>
+    </distributionManagement>
+
+    <repositories>
+        <repository>
+            <id>bukkit-repo</id>
+            <url>http://repo.bukkit.org/content/groups/public</url>
+        </repository>
+        <repository>
+            <id>pjt-repo</id>
+            <url>http://repo.pjt.me/content/groups/public/</url>
+        </repository>
+        <repository>
+            <id>libs</id>
+            <name>libs</name>
+            <releases>
+                <enabled>true</enabled>
+                <checksumPolicy>ignore</checksumPolicy>
+            </releases>
+            <url>file://${project.basedir}/../../libs/</url>
+        </repository>
+    </repositories>
+
+    <modules>
+        <module>bukkit</module>
+    </modules>
+
+</project>

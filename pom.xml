@@ -34,6 +34,7 @@
         <module>classicphysics</module>
         <module>lavasurvival</module>
         <module>necessities</module>
+        <module>openanalytics</module>
     </modules>
 
 </project>

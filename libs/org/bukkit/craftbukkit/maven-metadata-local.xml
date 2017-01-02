@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!--suppress XmlUnboundNsPrefix, XmlUnboundNsPrefix -->
 <metadata>
-    <groupId>org.bukkit</groupId>
-    <artifactId>craftbukkit</artifactId>
-    <versioning>
-        <versions>
-            <version>1.11-R0.1-SNAPSHOT</version>
-        </versions>
-        <lastUpdated>20161125204053</lastUpdated>
-    </versioning>
+  <groupId>org.bukkit</groupId>
+  <artifactId>craftbukkit</artifactId>
+  <versioning>
+    <versions>
+      <version>1.11-R0.1-SNAPSHOT</version>
+      <version>1.11.2-R0.1-SNAPSHOT</version>
+    </versions>
+    <lastUpdated>20170102224337</lastUpdated>
+  </versioning>
 </metadata>

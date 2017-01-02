@@ -76,7 +76,7 @@
     <dependency>
       <groupId>org.spigotmc</groupId>
       <artifactId>spigot-api</artifactId>
-      <version>1.11-R0.1-SNAPSHOT</version>
+      <version>1.11.2-R0.1-SNAPSHOT</version>
       <scope>provided</scope>
       <exclusions>
         <exclusion>
@@ -104,7 +104,7 @@
     <dependency>
       <groupId>org.bukkit</groupId>
       <artifactId>bukkit</artifactId>
-      <version>1.11-R0.1-SNAPSHOT</version>
+      <version>1.11.2-R0.1-SNAPSHOT</version>
       <scope>provided</scope>
       <exclusions>
         <exclusion>
@@ -126,9 +126,15 @@
       </exclusions>
     </dependency>
     <dependency>
+      <groupId>net.nyvaria</groupId>
+      <artifactId>OpenAnalytics-bukkit</artifactId>
+      <version>1.1.01-SNAPSHOT</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
       <groupId>org.bukkit</groupId>
       <artifactId>craftbukkit</artifactId>
-      <version>1.11-R0.1-SNAPSHOT</version>
+      <version>1.11.2-R0.1-SNAPSHOT</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
@@ -136,6 +142,20 @@
       <artifactId>necessities</artifactId>
       <version>1.0</version>
       <scope>provided</scope>
+      <exclusions>
+        <exclusion>
+          <artifactId>java-string-similarity</artifactId>
+          <groupId>info.debatty</groupId>
+        </exclusion>
+        <exclusion>
+          <artifactId>nv-websocket-client</artifactId>
+          <groupId>com.neovisionaries</groupId>
+        </exclusion>
+        <exclusion>
+          <artifactId>json-simple</artifactId>
+          <groupId>com.github.cliftonlabs</groupId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>me.eddiep.minecraft</groupId>
