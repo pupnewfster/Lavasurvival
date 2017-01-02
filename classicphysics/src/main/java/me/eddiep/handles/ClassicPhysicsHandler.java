@@ -464,7 +464,7 @@ public final class ClassicPhysicsHandler implements Listener {
 
     public void enable() {
         PHYSICS_TICK.runTaskTimerAsynchronously(owner, 0, 1);
-        BLOCK_UPDATE_TICK.runTaskTimer(owner, 0, 20);
+        BLOCK_UPDATE_TICK.runTaskTimer(owner, 0, logicContainers.get(0).container.updateRate());
         owner.getServer().getPluginManager().registerEvents(this, owner);
     }
 

@@ -62,7 +62,7 @@ public class LavaLogic extends AbstractLogicContainer {
 
     @Override
     public int updateRate() {
-        return 20; //Every other tick
+        return 10;
     }
 
     @Override
