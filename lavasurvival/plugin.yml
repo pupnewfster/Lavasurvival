@@ -19,8 +19,8 @@ commands:
     permission-message: You don't have <permission>
     aliases: [vote, v]
   endgame:
-    description: Ends the current game.
-    usage: /<command>
+    description: Ends the current game, and sets it to <map> with the specified <gamemode>.
+    usage: /<command> <map> <gamemode>
     permission: lavasurvival.endGame
     permission-message: You don't have <permission>
     aliases: [end]

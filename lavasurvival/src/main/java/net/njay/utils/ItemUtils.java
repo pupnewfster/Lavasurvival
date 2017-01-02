@@ -1,7 +1,5 @@
 package net.njay.utils;
 
-import com.google.common.base.Splitter;
-import com.google.common.collect.Lists;
 import net.njay.annotation.ItemStackAnnotation;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -101,13 +99,15 @@ public class ItemUtils {
     private static Map<Enchantment, Integer> parseEnchantment(String parse) {
         Map<Enchantment, Integer> result = new HashMap<>();
         int level = 1;
-        List<String> parts = Lists.newArrayList(Splitter.on(":").limit(2).split(parse));
-        Enchantment enchant = Enchantment.getByName(parts.get(0).toUpperCase().replace(" ", "_"));
+        String[] parts = parse.split(":");
+        if (parts.length == 0)
+            return null;
+        Enchantment enchant = Enchantment.getByName(parts[0].toUpperCase().replace(" ", "_"));
         if (enchant == null)
             return null;
-        if (parts.size() > 1)
+        if (parts.length > 1)
             try {
-                level = Integer.parseInt(parts.get(1));
+                level = Integer.parseInt(parts[1]);
             } catch (NumberFormatException e) {
                 e.printStackTrace();
             }

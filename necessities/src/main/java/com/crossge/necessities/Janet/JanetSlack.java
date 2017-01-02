@@ -156,6 +156,7 @@ public class JanetSlack {
         }
         setUsers();
         setUserChannels();
+        sendPost("https://slack.com/api/users.setPresence?token=" + this.token + "&presence=auto");
         this.isConnected = true;
         sendMessage("Connected.");
     }
@@ -410,9 +411,9 @@ public class JanetSlack {
                 }
             } else if (message.startsWith("!devs")) {
                 String d = var.getMessages() + "The Devs for Necessities are: ";
-                List<String> devs = Necessities.getInstance().getDevs();
+                List<Necessities.DevInfo> devs = Necessities.getInstance().getDevs();
                 for (int i = 0; i < devs.size(); i++)
-                    d += (i + 1 >= devs.size() ? "and " + devs.get(i) + "." : devs.get(i) + ", ");
+                    d += (i + 1 >= devs.size() ? "and " + devs.get(i).getName() + "." : devs.get(i).getName() + ", ");
                 m += d + "\n";
             } else if (message.startsWith("!warn ")) {
                 message = message.replaceFirst("!warn ", "");

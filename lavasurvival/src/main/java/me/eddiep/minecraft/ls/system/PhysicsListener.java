@@ -313,8 +313,8 @@ public class PhysicsListener implements Listener {
     @EventHandler(priority = EventPriority.MONITOR)
     public void onClassicPhysics(ClassicPhysicsEvent event) {
         synchronized (toTasks) {
-            if (Gamemode.getCurrentGame() == null || Gamemode.getCurrentGame().hasEnded() || event.getLocation() == null || event.getLocation().getWorld() == null ||
-                    !event.getLocation().getChunk().isLoaded() || event.getLocation().getBlock() == null || Gamemode.getCurrentMap().isInSafeZone(event.getLocation())) {
+            if (Gamemode.getCurrentGame() == null || Gamemode.getCurrentGame().hasEnded() || event.getLocation() == null || !event.getLocation().getChunk().isLoaded() ||
+                    Gamemode.getCurrentMap().isInSafeZone(event.getLocation())) {
                 event.setCancelled(true);
                 return;
             }
@@ -355,17 +355,15 @@ public class PhysicsListener implements Listener {
                 if (meltTicks <= 0)
                     return;
                 event.setCancelled(true);
-                ConcurrentLinkedQueue<BlockTaskInfo> temp;
                 Location location = event.getLocation();
-                if (toTasks.containsKey(location) && toTasks.get(location) != null && toTasks.get(location).size() > 0) {
-                    temp = toTasks.get(location);
-                    long lticks = temp.isEmpty() ? 0 : ((BlockTaskInfo) temp.toArray()[0]).getTicksToMelt();
-                    if (lticks != 0)
-                        meltTicks = lticks;
-                } else
-                    temp = new ConcurrentLinkedQueue<>();
-                temp.add(new BlockTaskInfo(event.getLogicContainer().logicFor(), event.getFrom(), blockChecking, meltTicks));
-                toTasks.put(event.getLocation(), temp);
+                ConcurrentLinkedQueue<BlockTaskInfo> temp = toTasks.get(location);
+                if (temp == null)
+                    toTasks.put(event.getLocation(), temp = new ConcurrentLinkedQueue<>());
+                long lticks = temp.isEmpty() ? 0 : ((BlockTaskInfo) temp.toArray()[0]).getTicksToMelt();
+                if (lticks != 0)
+                    meltTicks = lticks;
+                temp.offer(new BlockTaskInfo(event.getLogicContainer().logicFor(), event.getFrom(), blockChecking, meltTicks));
+                //toTasks.put(event.getLocation(), temp);
             }
         }
     }

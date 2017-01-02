@@ -3,6 +3,7 @@ ubotpatcher/target/*
 *.DS_STORE
 classicphysics/target/*
 lavasurvival/target/*
+openanalytics/bukkit/target/*
 
 *.class
 .idea/*

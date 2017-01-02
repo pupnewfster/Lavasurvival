@@ -2,7 +2,6 @@ package me.eddiep;
 
 import net.minecraft.server.v1_11_R1.*;
 import org.bukkit.Material;
-import org.bukkit.block.BlockFace;
 
 public class ChunkEdit {
     private final World world;
@@ -40,18 +39,13 @@ public class ChunkEdit {
         NibbleArray blockLight, skyLight;
         try {
             blockLight = section.getEmittedLightArray();
-        } catch (Exception e) {
-            return;
-        }
-        try {
             skyLight = section.getSkyLightArray();
         } catch (Exception e) {
             return;
         }
         IBlockData d = Block.getByCombinedId(type.getId() + (data << 12));
         BlockPosition pos = new BlockPosition(x, y, z);
-        TileEntity tileEntity = this.world.getTileEntity(pos);
-        if (tileEntity != null)
+        if (this.world.getTileEntity(pos) != null)
             c.a(pos, d);
         else
             section.setType(blockX, blockY, blockZ, d);
@@ -91,14 +85,11 @@ public class ChunkEdit {
             return this.world.getWorld().isThundering() ? 10 : 15;
     }
 
-    @SuppressWarnings("unused")
-    private void lightAround(int x, int y, int z, int lvl) {
+    /*private void lightAround(int x, int y, int z, int lvl) {
         //TODO: update light levels slightly around the block so no flickering if near a natural light source such as in cave with a radius of more than one
-        for (int xAdd = -1; xAdd < 1; xAdd++) {
-            for (int zAdd = -1; zAdd < 1; zAdd++) {
+        for (int xAdd = -1; xAdd < 1; xAdd++)
+            for (int zAdd = -1; zAdd < 1; zAdd++)
                 setLight(x + xAdd, y, z + zAdd, light(getDir(xAdd, zAdd), lvl));
-            }
-        }
     }
 
     private BlockFace getDir(int x, int z) {
@@ -126,7 +117,7 @@ public class ChunkEdit {
         if (dir.equals(BlockFace.SELF))
             return cur;
         return cur - (dir.equals(BlockFace.NORTH) || dir.equals(BlockFace.EAST) || dir.equals(BlockFace.SOUTH) || dir.equals(BlockFace.WEST) ? 1 : 2);
-    }
+    }*/
 
     private int getLight(Material type) {
         switch (type) {
@@ -140,7 +131,8 @@ public class ChunkEdit {
             case REDSTONE_LAMP_ON:
             case SEA_LANTERN:
                 return 15;
-            case TORCH:// case END_ROD:
+            case TORCH:
+            case END_ROD:
                 return 14;
             case BURNING_FURNACE:
                 return 13;
@@ -151,6 +143,8 @@ public class ChunkEdit {
             case ENDER_CHEST:
             case REDSTONE_TORCH_ON:
                 return 7;
+            case MAGMA:
+                return 3;
             case BREWING_STAND:
             case BROWN_MUSHROOM:
             case DRAGON_EGG:
@@ -161,7 +155,7 @@ public class ChunkEdit {
         }
     }
 
-    private void setLight(int x, int y, int z, int value) {
+    /*private void setLight(int x, int y, int z, int value) {
         int columnX = x >> 4, columnZ = z >> 4, chunkY = y >> 4, blockX = x % 16, blockY = y % 16, blockZ = z % 16;
         if (blockX < 0)
             blockX += 16;
@@ -192,5 +186,5 @@ public class ChunkEdit {
         section.b(skyLight);
         sections[chunkY] = section;
         c.a(sections);
-    }
+    }*/
 }

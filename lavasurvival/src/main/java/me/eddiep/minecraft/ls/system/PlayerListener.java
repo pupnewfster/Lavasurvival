@@ -312,7 +312,7 @@ public class PlayerListener implements Listener {
             }
             event.setCancelled(false);
             Block b = event.getBlock();
-            ClassicPhysics.INSTANCE.getPhysicsHandler().addPlayerPlaced(b.getLocation().toVector()); //UUID would go here if was hashmap
+            ClassicPhysics.INSTANCE.getPhysicsHandler().addPlayerPlaced(b.getLocation().toVector()); //UUID would go here if was hash map
             if (b.getType().toString().contains("DOOR") && b.getRelative(BlockFace.UP).getType().equals(b.getType()))
                 ClassicPhysics.INSTANCE.getPhysicsHandler().addPlayerPlaced(b.getRelative(BlockFace.UP).getLocation().toVector());
             if (!this.survival) {
@@ -409,7 +409,7 @@ public class PlayerListener implements Listener {
         Material type = event.getLocation().getBlock().getType();
         if (!type.equals(Material.WATER) && !type.equals(Material.STATIONARY_WATER))
             return;
-        Location loc = event.getLocation().getBlock().getLocation();
+        Location loc = event.getLocation();
         Bukkit.getOnlinePlayers().stream().filter(p -> Gamemode.getCurrentGame().isAlive(p) && (p.getLocation().getBlock().getLocation().equals(loc) || p.getLocation().getBlock().getRelative(BlockFace.UP).getLocation().equals(loc))).forEach(p -> {
             UserInfo u = Lavasurvival.INSTANCE.getUserManager().getUser(p.getUniqueId());
             if (!u.isInWater()) {

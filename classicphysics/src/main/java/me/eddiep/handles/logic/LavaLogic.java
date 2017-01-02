@@ -11,6 +11,8 @@ import org.bukkit.util.Vector;
 public class LavaLogic extends AbstractLogicContainer {
     @Override
     protected void tickForBlock(Location location) {
+        if (location == null)
+            return;
         checkLocation(location.clone().add(1, 0, 0), location);
         checkLocation(location.clone().add(-1, 0, 0), location);
         checkLocation(location.clone().add(0, 0, 1), location);
@@ -19,18 +21,20 @@ public class LavaLogic extends AbstractLogicContainer {
     }
 
     void checkLocation(Location location, Location from) {
+        if (location == null)
+            return;
         synchronized (ClassicPhysics.Sync) {
             try {
-                if (location == null || location.getWorld() == null || location.getChunk() == null || !location.getChunk().isLoaded() || location.getBlock() == null)//World isn't loaded
+                if (!location.getChunk().isLoaded())//World isn't loaded
                     return;
             } catch (Exception e) {
                 e.printStackTrace();
                 return;
             }
-            Block block = location.getBlock();
             Vector lv = location.toVector();
-            if (ClassicPhysics.INSTANCE.getPhysicsHandler().isClassicBlock(lv) && block.isLiquid()) //TODO should this check to make sure it is stationary or should it be done elsewhere
+            if (ClassicPhysics.INSTANCE.getPhysicsHandler().isClassicBlock(lv))
                 return;
+            Block block = location.getBlock();
             Material newBlock = block.getType();
 
             if (!block.getType().isSolid() && !doesHandle(block.getType()))
@@ -46,7 +50,7 @@ public class LavaLogic extends AbstractLogicContainer {
                 return;
 
             if (newBlock != block.getType())
-                placeClassicBlock(newBlock, location, from);
+                ClassicPhysics.INSTANCE.getPhysicsHandler().placeClassicBlockAt(location, newBlock, from);
             else if (!ClassicPhysics.INSTANCE.getPhysicsHandler().isClassicBlock(lv)) {
                 ClassicPhysics.INSTANCE.getPhysicsHandler().addClassicBlock(lv);
                 ClassicPhysics.INSTANCE.getServer().getPluginManager().callEvent(new ClassicBlockPlaceEvent(location));
@@ -58,12 +62,12 @@ public class LavaLogic extends AbstractLogicContainer {
 
     @Override
     public int updateRate() {
-        return 20; //Every other tick
+        return 10;
     }
 
     @Override
     public boolean doesHandle(Material material) {
-        return material == Material.LAVA || material == Material.STATIONARY_LAVA;
+        return Material.LAVA.equals(material) || Material.STATIONARY_LAVA.equals(material);
     }
 
     @Override

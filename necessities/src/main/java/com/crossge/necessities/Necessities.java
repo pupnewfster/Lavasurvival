@@ -40,15 +40,12 @@ import java.io.File;
 import java.io.InputStreamReader;
 import java.lang.reflect.Field;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 public class Necessities extends JavaPlugin {
     private static Necessities INSTANCE;
-    private final List<String> devs = Arrays.asList("pupnewfster", "Mod_Chris", "hypereddie10");
     private OpenAnalyticsTracker googleAnalyticsTracker;
+    private final List<DevInfo> devs = new ArrayList<>();
     private PacketPlayOutPlayerInfo janetInfo;
     private CmdCommandSpy spy;
     private PortalManager pm;
@@ -93,7 +90,6 @@ public class Necessities extends JavaPlugin {
         Initialization init = new Initialization();
         init.initiateFiles();
         getServer().getPluginManager().registerEvents(new Listeners(), this);
-        getLogger().info("Necessities enabled.");
         GameProfile janetProfile = new GameProfile(UUID.randomUUID(), "Janet");
         janetProfile.getProperties().put("textures", getSkin());
         MinecraftServer server = ((CraftServer) Bukkit.getServer()).getServer();
@@ -102,6 +98,8 @@ public class Necessities extends JavaPlugin {
         EntityPlayer player = new EntityPlayer(server, world, janetProfile, manager);
         player.listName = formatMessage(ChatColor.translateAlternateColorCodes('&', rm.getRank(rm.getOrder().size() - 1).getTitle() + " ") + "Janet");
         this.janetInfo = new PacketPlayOutPlayerInfo(PacketPlayOutPlayerInfo.EnumPlayerInfoAction.ADD_PLAYER, player);
+        getDevInfo();
+        getLogger().info("Necessities enabled.");
     }
 
     private boolean hookGoogle() {
@@ -120,12 +118,63 @@ public class Necessities extends JavaPlugin {
         return INSTANCE == null ? null : getInstance().googleAnalyticsTracker;
     }
 
-    public boolean isDev(String name) {
-        return devs.contains(name);
+    public boolean isDev(UUID uuid) {
+        for (DevInfo i : this.devs)
+            if (uuid.equals(i.getMCUUID()))
+                return true;
+        return false;
     }
 
-    public List<String> getDevs() {
-        return this.devs;
+    public List<DevInfo> getDevs() {
+        return Collections.unmodifiableList(this.devs);
+    }
+
+    private void getDevInfo() {
+        try {
+            BufferedReader in = new BufferedReader(new InputStreamReader(new URL("http://galaxygaming.gg/staff.json").openConnection().getInputStream()));
+            String inputLine;
+            StringBuilder response = new StringBuilder();
+            while ((inputLine = in.readLine()) != null)
+                response.append(inputLine);
+            in.close();
+            JsonObject json = Jsoner.deserialize(response.toString(), new JsonObject());
+            JsonArray ar = (JsonArray) json.get("devs");
+            JsonObject ls = (JsonObject) json.get("Lavasurvival");
+            JsonArray lsDevs = (JsonArray) ls.get("devs");
+            for (int i = 0; i < lsDevs.size(); i++) {
+                JsonObject dev = null;
+                int devID = lsDevs.getInteger(i);
+                for (Object a : ar)
+                    if (devID == ((JsonObject) a).getInteger("devID")) {
+                        dev = (JsonObject) a;
+                        break;
+                    }
+                if (dev != null)
+                    this.devs.add(new DevInfo(dev));
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public class DevInfo {
+        private final UUID mcUUID;
+        private final String slackID;
+        private final String name;
+
+        private DevInfo(JsonObject dev) {
+            this.mcUUID = UUID.fromString(dev.getString("mcUUID"));
+            this.slackID = dev.getString("slackID");
+            this.name = dev.getString("name");
+        }
+
+        public String getName() {
+            return this.name;
+        }
+
+        public UUID getMCUUID() {
+            return this.mcUUID;
+        }
     }
 
     private IChatBaseComponent formatMessage(String message) {

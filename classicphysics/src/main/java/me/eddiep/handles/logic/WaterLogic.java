@@ -4,10 +4,9 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 
 public class WaterLogic extends LavaLogic {
-
     @Override
     public boolean doesHandle(Material material) {
-        return material == Material.WATER || material == Material.STATIONARY_WATER;
+        return Material.WATER.equals(material) || Material.STATIONARY_WATER.equals(material);
     }
 
     @Override

@@ -1,8 +1,6 @@
 package me.eddiep.handles.logic;
 
-import me.eddiep.ClassicPhysics;
 import org.bukkit.Location;
-import org.bukkit.Material;
 
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -42,8 +40,4 @@ abstract class AbstractLogicContainer implements LogicContainer {
     }
 
     protected abstract void tickForBlock(Location location);
-
-    void placeClassicBlock(Material material, Location location, Location from) {
-        ClassicPhysics.INSTANCE.getPhysicsHandler().placeClassicBlockAt(location, material, from);
-    }
 }
