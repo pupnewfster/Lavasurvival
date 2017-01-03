@@ -81,7 +81,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.1</version>
+                <version>3.6.0</version>
                 <configuration>
                     <fork>true</fork>
                     <showDeprecation>true</showDeprecation>
@@ -92,7 +92,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
-                <version>2.9.1</version>
+                <version>2.10.4</version>
                 <configuration>
                     <links>
                         <link>http://jd.bukkit.org/apidocs</link>
@@ -111,7 +111,8 @@
                         </goals>
                         <configuration>
                             <minimizeJar>true</minimizeJar>
-                            <dependencyReducedPomLocation>${basedir}/target/dependency-reduced-pom.xml</dependencyReducedPomLocation>
+                            <dependencyReducedPomLocation>${basedir}/target/dependency-reduced-pom.xml
+                            </dependencyReducedPomLocation>
                             <relocations>
                                 <relocation>
                                     <pattern>net.nyvaria.component</pattern>

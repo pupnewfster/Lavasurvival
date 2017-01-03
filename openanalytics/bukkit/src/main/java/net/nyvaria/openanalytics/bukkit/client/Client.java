@@ -1,23 +1,19 @@
 /**
  * Copyright (c) 2013-2014
  * Paul Thompson <captbunzo@gmail.com> / Nyvaria <geeks@nyvaria.net>
- *
+ * <p>
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
+ * <p>
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- *
+ * <p>
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */
-
-/**
- *
  */
 package net.nyvaria.openanalytics.bukkit.client;
 
@@ -54,7 +50,6 @@ public class Client extends NyvariaPlayer {
     }
 
     public boolean isOptedIn() {
-
         return config.isOptedIn();
     }
 
@@ -64,16 +59,13 @@ public class Client extends NyvariaPlayer {
 
     public static void setOptOut(OfflinePlayer offlinePlayer, boolean optout) {
         if (offlinePlayer.getPlayer() != null) {
-            // See if we need to set an online player as opted out
+            //See if we need to set an online player as opted out
             Client client = OpenAnalytics.getInstance().getClientList().get(offlinePlayer.getPlayer());
-            if (client != null) {
+            if (client != null)
                 client.setOptOut(optout);
-            }
         }
-
-        // And create a throwaway client config and set the value
-        ClientConfig config = new ClientConfig(offlinePlayer);
-        config.setOptOut(optout);
+        //And create a throwaway client config and set the value
+        new ClientConfig(offlinePlayer).setOptOut(optout);
     }
 
     public static void setOptOut(Player player, boolean optout) {
@@ -83,7 +75,6 @@ public class Client extends NyvariaPlayer {
     /**
      * Event Hit Creation
      */
-
     public EventHit createPlayerJoinHit() {
         EventHit eventHit = new EventHit(this, "Player Connection", "Join");
         eventHit.event_label = "Player Join";
@@ -114,7 +105,6 @@ public class Client extends NyvariaPlayer {
     /**
      * Page View Hit Creation
      */
-
     public PageViewHit createWorldHit() {
         PageViewHit worldHit = new PageViewHit(this);
         worldHit.document_location_url = getWorldURL();
@@ -125,12 +115,8 @@ public class Client extends NyvariaPlayer {
     /**
      * Supporting Methods
      */
-
     private String getWorldURL() {
-        return "http://"
-                + MeasurementProtocolClient.getInstance().document_host_name
-                + "/world/"
-                + getPlayer().getLocation().getWorld().getName();
+        return "http://" + MeasurementProtocolClient.getInstance().document_host_name + "/world/" + getPlayer().getLocation().getWorld().getName();
     }
 
     private String getWorldTitle() {

@@ -47,10 +47,8 @@ public final class ClassicPhysicsHandler implements Listener {
     private ChunkEdit e = null;
     private final Plugin owner;
 
-    @SuppressWarnings("unused")
     private class WorldCount {
-        private final ArrayList<Short> changes = new ArrayList<>();
-        private int x, y, z;
+        private ArrayList<Short> changes = new ArrayList<>();
         private final long l;
 
         WorldCount(long l) {
@@ -58,15 +56,7 @@ public final class ClassicPhysicsHandler implements Listener {
         }
 
         void addChange(int x, int y, int z) {
-            this.x = x;
-            this.y = y;
-            this.z = z;
-            int blockX = x % 16, blockZ = z % 16;
-            if (blockX < 0)
-                blockX += 16;
-            if (blockZ < 0)
-                blockZ += 16;
-            short loc = (short) ((blockX << 12) | (blockZ << 8) | (y));
+            short loc = (short) ((x & 15) << 12 | (z & 15) << 8 | y);
             if (!this.changes.contains(loc))
                 this.changes.add(loc);
         }
@@ -78,38 +68,17 @@ public final class ClassicPhysicsHandler implements Listener {
             return temp;
         }
 
-        List<Packet> getPackets() {
-            List<Packet> packets = new ArrayList<>();
-            if (current == null || this.changes.size() == 0)
+        Packet getPacket() {
+            if (current == null || this.changes.isEmpty())
                 return null;
-            int size = this.changes.size();
+            List<Short> changes = this.changes;
+            this.changes = new ArrayList<>();
+            int size = changes.size();
             if (size == 1)
-                packets.add(new PacketPlayOutBlockChange(((CraftWorld) current).getHandle(), new BlockPosition(this.x, this.y, this.z)));
-            else if (size == 64)
-                packets.add(new PacketPlayOutMapChunk(((CraftWorld) current).getHandle().getChunkAt((int) (this.l >> 32), (int) this.l), size));
-            else if (size < 64)
-                packets.add(new PacketPlayOutMultiBlockChange(size, getChanged(this.changes), ((CraftWorld) current).getHandle().getChunkAt((int) (this.l >> 32), (int) this.l)));
-            else {
-                int i = 0, end;
-                while (i < size) {
-                    end = i + 64 > size ? size : i + 64;
-                    packets.add(new PacketPlayOutMultiBlockChange(end - i, getChanged(this.changes.subList(i, end)), ((CraftWorld) current).getHandle().getChunkAt((int) (this.l >> 32), (int) this.l)));
-                    i += 64;
-                }
-            }
-            return packets;
-        }
-
-        int getX() {
-            return this.x;
-        }
-
-        int getY() {
-            return this.y;
-        }
-
-        int getZ() {
-            return this.z;
+                return new PacketPlayOutBlockChange(((CraftWorld) current).getHandle(), new BlockPosition((changes.get(0) >> 12 & 15) + (int) (this.l >> 32) * 16, changes.get(0) & 255,
+                        (changes.get(0) >> 8 & 15) + (int) this.l * 16));
+            else
+                return new PacketPlayOutMultiBlockChange(size, getChanged(changes), ((CraftWorld) current).getHandle().getChunkAt((int) (this.l >> 32), (int) this.l));
         }
     }
 
@@ -131,8 +100,6 @@ public final class ClassicPhysicsHandler implements Listener {
             if (current == null)
                 return;
             //TODO: Attempt to make the logic of what blocks should be updated smarter so that it stays smoother
-            //TODO: How many of these need to be concurrent does the linked queues? CHECK THIS
-            //TODO: Does it have issues when a location already has been checked and marked as invalid but is now really valid
             //TODO: is it better to store the from locations or the directions
             //Direction would be less memory for storage but would have to get the relative block
             //Perhaps have it be direction once we switch to a smarter logic
@@ -181,7 +148,7 @@ public final class ClassicPhysicsHandler implements Listener {
                             break;
                         }
             }
-            if (current == null || sendingPackets || !hasPlayers)
+            if (current == null || !hasPlayers)
                 return;
             sendingPackets = true;
             ArrayList<Packet> packets = new ArrayList<>();
@@ -189,8 +156,9 @@ public final class ClassicPhysicsHandler implements Listener {
                 for (long l : chunks.keySet()) {
                     if (!sendingPackets)
                         break;
-                    packets.addAll(chunks.get(l).getPackets());
-                    chunks.remove(l);
+                    Packet packet = chunks.get(l).getPacket();
+                    if (packet != null)
+                        packets.add(packet);
                 }
             else
                 chunks.clear();
@@ -207,7 +175,7 @@ public final class ClassicPhysicsHandler implements Listener {
                         }
                     }
                 }
-            sendingPackets = false;
+            //sendingPackets = false;
         }
     };
 
@@ -272,7 +240,6 @@ public final class ClassicPhysicsHandler implements Listener {
         this.current = w;
         if (w == null) {
             sendingPackets = false;
-            //this.locations.clear();
             this.newLocations.clear();
             this.chunks.clear();
             classicBlocks.clear();
@@ -299,9 +266,12 @@ public final class ClassicPhysicsHandler implements Listener {
         } else if (wplacers.contains(event.getPlayer())) {
             forcePlaceClassicBlockAt(event.getBlockPlaced().getLocation(), Material.STATIONARY_WATER);
             event.setCancelled(true);
+        } else {
+            Vector v = event.getBlock().getLocation().toVector();
+            removeClassicBlock(v);
+            newLocations.remove(v.toBlockVector());
+            requestUpdateAround(event.getBlock().getLocation());
         }
-        removeClassicBlock(event.getBlock().getLocation().toVector());
-        requestUpdateAround(event.getBlock().getLocation());
     }
 
     @EventHandler(priority = EventPriority.MONITOR)
@@ -349,8 +319,12 @@ public final class ClassicPhysicsHandler implements Listener {
     @EventHandler
     public void blockFall(EntityChangeBlockEvent event) {
         if (!ClassicPhysics.TYPE.equals(PhysicsType.DEFAULT) && event.getEntity() instanceof FallingBlock) {
-            event.setCancelled(true);
-            event.getBlock().getState().update(true, false);
+            if (!((FallingBlock) event.getEntity()).getMaterial().equals(Material.BOOKSHELF)) {
+                event.setCancelled(true);
+                event.getBlock().getState().update(true, false);
+            } else {
+                //setBookShelf(event.getBlock().getLocation().toVector()); //TODO set it as a bookshelf to not be destroyed
+            }
         }
     }
 
@@ -381,17 +355,20 @@ public final class ClassicPhysicsHandler implements Listener {
             e.printStackTrace();
             return;
         }
-        for (int x = -1; x <= 1; x++)
-            for (int y = -1; y <= 1; y++)
-                for (int z = -1; z <= 1; z++) {
-                    Location newLoc = location.clone().add(x, y, z);
-                    if (!isClassicBlock(newLoc.toVector()))
-                        continue;
-                    for (LogicContainerHolder holder : logicContainers)
-                        if (holder.container.doesHandle(newLoc.getBlock().getType())) {
-                            holder.container.queueBlock(newLoc);
-                            break;
-                        }
+        checkLocation(location.clone().add(1, 0, 0));
+        checkLocation(location.clone().add(-1, 0, 0));
+        checkLocation(location.clone().add(0, 0, 1));
+        checkLocation(location.clone().add(0, 0, -1));
+        checkLocation(location.clone().add(0, 1, 0));
+        checkLocation(location.clone().add(0, -1, 0));
+    }
+
+    private void checkLocation(Location l) {
+        if (isClassicBlock(l.toVector()))
+            for (LogicContainerHolder holder : logicContainers)
+                if (holder.container.doesHandle(l.getBlock().getType())) {
+                    holder.container.queueBlock(l);
+                    break;
                 }
     }
 

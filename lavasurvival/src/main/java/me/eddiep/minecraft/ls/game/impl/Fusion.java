@@ -24,7 +24,7 @@ public class Fusion extends Gamemode {
     private long lastEvent, duration, timeOut;
     private Score bonusScore, layersLeft;
     private boolean doubleReward;
-    private Objective objective;
+    private Objective objective = null;
     private BukkitRunnable upTask;
     private List<Location> locations;
 
@@ -94,6 +94,20 @@ public class Fusion extends Gamemode {
         return this.doubleReward;
     }
 
+    private void setObjectiveDisplay(String display) {
+        if (display == null || this.objective == null)
+            return;
+        try {
+            this.objective.setDisplayName(display);
+        } catch (IllegalStateException e) {
+            if (getScoreboard().getObjective("game") == null)
+                this.objective = getScoreboard().registerNewObjective("game", "dummy");
+            else
+                this.objective = getScoreboard().getObjective("game");
+            this.objective.setDisplayName(display);
+        }
+    }
+
     @Override
     public void endRound() {
         this.objective.unregister();
@@ -114,14 +128,11 @@ public class Fusion extends Gamemode {
         int seconds = (int) (dif / 1000 % 60);
         String time = (int) (dif / 60000) + ":" + (seconds < 10 ? "0" + seconds : seconds);
         if (isRoundEnding())
-            try {
-                this.objective.setDisplayName("Round Ends In: " + ChatColor.BOLD + time);
-            } catch (Exception ignored) {
-            }
+            setObjectiveDisplay("Round Ends In: " + ChatColor.BOLD + time);
         else if (super.poured)
-            this.objective.setDisplayName("Next Pour: " + ChatColor.BOLD + time);
+            setObjectiveDisplay("Next Pour: " + ChatColor.BOLD + time);
         else {
-            this.objective.setDisplayName("Prepare Time: " + ChatColor.BOLD + time);
+            setObjectiveDisplay("Prepare Time: " + ChatColor.BOLD + time);
             if (since < this.duration) {
                 int nextMinute = (int) since / 60000;
                 if (nextMinute != this.lastMinute) {

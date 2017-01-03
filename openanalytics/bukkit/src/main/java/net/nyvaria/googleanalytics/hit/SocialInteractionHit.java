@@ -1,23 +1,19 @@
 /**
  * Copyright (c) 2013-2014
  * Paul Thompson <captbunzo@gmail.com> / Nyvaria <geeks@nyvaria.net>
- *
+ * <p>
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
+ * <p>
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- *
+ * <p>
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */
-
-/**
- *
  */
 package net.nyvaria.googleanalytics.hit;
 
@@ -35,7 +31,6 @@ public class SocialInteractionHit extends Hit {
     /**
      * Constructor & Methods
      */
-
     public SocialInteractionHit(Client client, String social_network, String social_action, String social_action_target) {
         super(client, SocialInteractionHit.HIT_TYPE);
         this.social_network = social_network;
@@ -46,7 +41,6 @@ public class SocialInteractionHit extends Hit {
     /**
      * Social Interaction Parameters
      */
-
     @Parameter(format = Parameter.FORMAT_TEXT, required = true, name = MeasurementProtocol.SOCIAL_NETWORK)
     public String social_network;
 

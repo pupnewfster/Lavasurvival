@@ -1,23 +1,19 @@
 /**
  * Copyright (c) 2013-2014
  * Paul Thompson <captbunzo@gmail.com> / Nyvaria <geeks@nyvaria.net>
- *
+ * <p>
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
+ * <p>
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- *
+ * <p>
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */
-
-/**
- *
  */
 package net.nyvaria.openanalytics.bukkit.cmd.analytics;
 
@@ -43,9 +39,9 @@ import java.util.List;
  */
 public class OptOutSubCommand extends NyvariaSubCommand {
     public static final String CMD_OPTOUT = "optout";
-    public static final String CMD_OPTIN  = "optin";
+    public static final String CMD_OPTIN = "optin";
 
-    public static final String PERM_OPTOUT       = OpenAnalytics.PERM_ROOT + "." + CMD_OPTOUT;
+    public static final String PERM_OPTOUT = OpenAnalytics.PERM_ROOT + "." + CMD_OPTOUT;
     public static final String PERM_OPTOUT_OTHER = OpenAnalytics.PERM_ROOT + "." + CMD_OPTOUT + ".other";
 
     public OptOutSubCommand(NyvariaCommand parentCmd) {
@@ -54,8 +50,7 @@ public class OptOutSubCommand extends NyvariaSubCommand {
 
     @Override
     public boolean match(String subCmdName) {
-        return (subCmdName != null)
-                && (subCmdName.equalsIgnoreCase(CMD_OPTOUT) || subCmdName.equalsIgnoreCase(CMD_OPTIN));
+        return subCmdName != null && (subCmdName.equalsIgnoreCase(CMD_OPTOUT) || subCmdName.equalsIgnoreCase(CMD_OPTIN));
     }
 
     @Override
@@ -65,30 +60,25 @@ public class OptOutSubCommand extends NyvariaSubCommand {
 
     @Override
     public List<String> getCommands(String prefix) {
-        List<String> commands = new ArrayList<String>();
-        if ((prefix == null) || CMD_OPTOUT.startsWith(prefix.toLowerCase())) commands.add(CMD_OPTOUT);
-        if ((prefix == null) || CMD_OPTIN.startsWith(prefix.toLowerCase())) commands.add(CMD_OPTIN);
+        List<String> commands = new ArrayList<>();
+        if (prefix == null || CMD_OPTOUT.startsWith(prefix.toLowerCase()))
+            commands.add(CMD_OPTOUT);
+        if (prefix == null || CMD_OPTIN.startsWith(prefix.toLowerCase()))
+            commands.add(CMD_OPTIN);
         return commands;
     }
 
     @Override
     public List<String> onTabComplete(CommandSender sender, Command cmd, String[] args, int nextArgIndex) {
-        List<String> completions = new ArrayList<String>();
-
-        // If we have one argument, the first is a partial player name
-        if (args.length == nextArgIndex + 1) {
-            if (sender.hasPermission(PERM_OPTOUT) && sender.hasPermission(PERM_OPTOUT_OTHER)) {
-                String partialPlayerName = args[nextArgIndex];
-
-                if (!partialPlayerName.isEmpty()) {
-                    for (OfflinePlayer nextMatchingOfflinePlayer : NyvariaPlayer.matchOfflinePlayer(partialPlayerName)) {
-                        completions.add(nextMatchingOfflinePlayer.getName());
-                    }
-                    Collections.sort(completions);
-                }
+        List<String> completions = new ArrayList<>();
+        //If we have one argument, the first is a partial player name
+        if (args.length == nextArgIndex + 1 && sender.hasPermission(PERM_OPTOUT) && sender.hasPermission(PERM_OPTOUT_OTHER)) {
+            String partialPlayerName = args[nextArgIndex];
+            if (!partialPlayerName.isEmpty()) {
+                NyvariaPlayer.matchOfflinePlayer(partialPlayerName).forEach(nextMatchingOfflinePlayer -> completions.add(nextMatchingOfflinePlayer.getName()));
+                Collections.sort(completions);
             }
         }
-
         return completions;
     }
 
@@ -101,71 +91,57 @@ public class OptOutSubCommand extends NyvariaSubCommand {
         String cmdName = args[nextArgIndex - 1];
         boolean optout = getOptOutInFromSubCmd(cmdName);
 
-        // Check if the sender has permission to run this command
-        if (!NyvariaCommand.hasCommandPermission(sender, PERM_OPTOUT)) {
+        //Check if the sender has permission to run this command
+        if (!NyvariaCommand.hasCommandPermission(sender, PERM_OPTOUT))
             return true;
-        }
 
-        // Process commands lacking a player argument
+        //Process commands lacking a player argument
         if (args.length == nextArgIndex) {
             if (sender instanceof Player) {
                 sender.sendMessage(ChatColor.YELLOW + String.format("Setting %1$s to %2$s of analytics", "yourself", cmdName));
                 Client.setOptOut((Player) sender, optout);
                 return true;
             }
-
-            // We have a player name argument and the sender can opt out/in other people
+            //We have a player name argument and the sender can opt out/in other people
         } else if ((args.length == nextArgIndex + 1) && sender.hasPermission(PERM_OPTOUT_OTHER)) {
             String partialPlayerName = args[nextArgIndex];
             List<OfflinePlayer> matches = NyvariaPlayer.matchOfflinePlayer(partialPlayerName, sender);
-
             if (matches.size() == 1) {
                 OfflinePlayer match = matches.get(0);
                 Client client;
-
-                if (match.isOnline()) {
+                if (match.isOnline())
                     client = OpenAnalytics.getInstance().getClientList().get(match);
-                } else {
+                else
                     client = new Client(match);
-                }
-
                 sender.sendMessage(ChatColor.YELLOW + String.format("Setting %1$s to %2$s of analytics", client.getIPAddress() + ChatColor.YELLOW, cmdName));
                 client.setOptOut(optout);
             }
-
             return true;
         }
-
-        // If we have gotten this far, then there was a problem with the command usage
+        //If we have gotten this far, then there was a problem with the command usage
         usage(sender, cmd, args, nextArgIndex);
         return true;
     }
 
     @Override
     public void usage(CommandSender sender, Command cmd, String[] args, int nextArgIndex) {
-        if (!sender.hasPermission(PERM_OPTOUT)) {
+        if (!sender.hasPermission(PERM_OPTOUT))
             return;
-        }
+        String cmdName = args.length >= nextArgIndex ? args[nextArgIndex - 1] : null;
 
-        String cmdName = (args.length >= nextArgIndex ? args[nextArgIndex - 1] : null);
-
-        if ((cmdName == null) || !match(cmdName)) {
+        if (cmdName == null || !match(cmdName))
             cmdName = "<" + CMD_OPTOUT + "|" + CMD_OPTIN + ">";
-        }
 
-        // Player usage
+        //Player usage
         if (sender instanceof Player) {
-            if (sender.hasPermission(PERM_OPTOUT_OTHER)) {
+            if (sender.hasPermission(PERM_OPTOUT_OTHER))
                 sender.sendMessage(ChatColor.YELLOW + String.format("Usage: /%1$s %2$s [<player>]", AnalyticsCommand.CMD, cmdName));
-            } else {
+            else
                 sender.sendMessage(ChatColor.YELLOW + String.format("Usage: /%1$s %2$s", AnalyticsCommand.CMD, cmdName));
-            }
             return;
         }
-
-        // Console usage
-        if (sender instanceof ConsoleCommandSender) {
+        //Console usage
+        if (sender instanceof ConsoleCommandSender)
             sender.sendMessage(ChatColor.YELLOW + String.format("Usage: /%1$s %2$s <player>", AnalyticsCommand.CMD, cmdName));
-        }
     }
 }

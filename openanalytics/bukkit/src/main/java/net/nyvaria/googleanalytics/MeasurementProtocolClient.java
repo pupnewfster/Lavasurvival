@@ -1,23 +1,19 @@
 /**
  * Copyright (c) 2013-2014
  * Paul Thompson <captbunzo@gmail.com> / Nyvaria <geeks@nyvaria.net>
- *
+ * <p>
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
+ * <p>
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- *
+ * <p>
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */
-
-/**
- *
  */
 package net.nyvaria.googleanalytics;
 
@@ -55,14 +51,13 @@ public class MeasurementProtocolClient {
     }
 
     public static MeasurementProtocolClient getInstance(String host_name, String tracking_id) {
-        if (instance == null) {
+        if (instance == null)
             try {
                 instance = new MeasurementProtocolClient(host_name, tracking_id);
             } catch (MalformedURLException e) {
                 OpenAnalytics.getInstance().log(Level.WARNING, "MalformedURLException while initializing Measurement Protocol Client (" + MeasurementProtocol.ENDPOINT + ")");
                 e.printStackTrace();
             }
-        }
         return instance;
     }
 
@@ -74,24 +69,23 @@ public class MeasurementProtocolClient {
         HttpURLConnection connection = null;
         String payload_data = StringUtils.join(hit.getParameterList(), "&");
 
-        // Log the query string for now
+        //Log the query string for now
         OpenAnalytics.getInstance().log(Level.FINE, "Sending data to Google Analytics: " + payload_data);
-
         try {
-            // Create and setup the connection
+            //Create and setup the connection
             connection = (HttpURLConnection) endpoint_url.openConnection();
             connection.setRequestMethod(MeasurementProtocol.ENDPOINT_REQUEST_METHOD);
             connection.setUseCaches(false);
             connection.setDoInput(true);
             connection.setDoOutput(true);
 
-            // Send request
+            //Send request
             OutputStreamWriter requestWriter = new OutputStreamWriter(connection.getOutputStream(), MeasurementProtocol.ENDPOINT_ENCODING);
             requestWriter.write(payload_data);
             requestWriter.flush();
             requestWriter.close();
 
-            // Get the response code
+            //Get the response code
             int responseCode = connection.getResponseCode();
             OpenAnalytics.getInstance().log(Level.FINE, "HTTP Response Code " + responseCode);
 
@@ -103,7 +97,7 @@ public class MeasurementProtocolClient {
              * quantity of non-2xx response codes.                                  *
              ************************************************************************/
 
-            // Read response
+            //Read response
             //BufferedReader responseReader = new BufferedReader(new InputStreamReader(connection.getInputStream(), MeasurementProtocol.ENDPOINT_ENCODING));
             //
             //String responseLine;
@@ -112,44 +106,29 @@ public class MeasurementProtocolClient {
             //	response.append(responseLine).append('\n');
             //}
             //responseReader.close();
-
         } catch (UnsupportedEncodingException uee) {
             OpenAnalytics.getInstance().log(Level.WARNING, "UnsupportedEncodingException while sending data to Google Analytics");
             uee.printStackTrace();
-
         } catch (ProtocolException pe) {
             OpenAnalytics.getInstance().log(Level.WARNING, "ProtocolException while sending data to Google Analytics");
             pe.printStackTrace();
-
         } catch (IOException ioe) {
             OpenAnalytics.getInstance().log(Level.WARNING, "IOException while sending data to Google Analytics");
             ioe.printStackTrace();
         }
-
-        if (connection != null) {
+        if (connection != null)
             connection.disconnect();
-        }
     }
 
     public void send(List<Hit> hitList) {
-        for (Hit hit : hitList) {
-            send(hit);
-        }
+        hitList.forEach(this::send);
     }
 
     public void sendAsynchronously(final Hit hit) {
-        OpenAnalytics.getInstance().getServer().getScheduler().runTaskAsynchronously(OpenAnalytics.getInstance(), new Runnable() {
-            public void run() {
-                send(hit);
-            }
-        });
+        OpenAnalytics.getInstance().getServer().getScheduler().runTaskAsynchronously(OpenAnalytics.getInstance(), () -> send(hit));
     }
 
     public void sendAsynchronously(final List<Hit> hitList) {
-        OpenAnalytics.getInstance().getServer().getScheduler().runTaskAsynchronously(OpenAnalytics.getInstance(), new Runnable() {
-            public void run() {
-                send(hitList);
-            }
-        });
+        OpenAnalytics.getInstance().getServer().getScheduler().runTaskAsynchronously(OpenAnalytics.getInstance(), () -> send(hitList));
     }
 }
