@@ -66,7 +66,6 @@ public class AnalyticsCommand extends NyvariaCommand implements CommandExecutor,
     }
 
     public void usage(CommandSender sender, Command cmd, String[] args) {
-        for (NyvariaSubCommand subcmd : subcmds)
-            subcmd.usage(sender, cmd, args, nextArgIndex + 1);
+        subcmds.forEach(subcmd -> subcmd.usage(sender, cmd, args, nextArgIndex + 1));
     }
 }

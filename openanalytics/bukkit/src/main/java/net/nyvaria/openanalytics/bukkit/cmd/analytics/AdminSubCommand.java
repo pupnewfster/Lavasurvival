@@ -84,15 +84,13 @@ public class AdminSubCommand extends NyvariaSubCommand {
                 return subcmd.onCommand(sender, cmd, args, nextArgIndex + 1);
 
         //Must not have matched a sub-command, show the usage
-        for (NyvariaSubCommand subcmd : subcmds)
-            subcmd.usage(sender, cmd, args, nextArgIndex + 1);
+        subcmds.forEach(subcmd -> subcmd.usage(sender, cmd, args, nextArgIndex + 1));
         return true;
     }
 
     @Override
     public void usage(CommandSender sender, Command cmd, String[] args, int nextArgIndex) {
         if (sender.hasPermission(PERM_ADMIN))
-            for (NyvariaSubCommand subcmd : subcmds)
-                subcmd.usage(sender, cmd, args, nextArgIndex + 1);
+            subcmds.forEach(subcmd -> subcmd.usage(sender, cmd, args, nextArgIndex + 1));
     }
 }

@@ -60,8 +60,7 @@ public abstract class NyvariaCommand implements CommandExecutor {
         List<String> completions = new ArrayList<>();
         //First, if there is no sub-command ... return all sub-commands
         if (args.length < nextArgIndex + 1) {
-            for (NyvariaSubCommand subcmd : subcmds)
-                completions.addAll(subcmd.getCommands());
+            subcmds.forEach(subcmd -> completions.addAll(subcmd.getCommands()));
             Collections.sort(completions);
             return completions;
         }
@@ -74,8 +73,7 @@ public abstract class NyvariaCommand implements CommandExecutor {
                     return subcmd.onTabComplete(sender, cmd, args, nextArgIndex + 1);
 
         //Last, return all sub-commands that match the sub-command prefix given as an argument
-        for (NyvariaSubCommand subcmd : subcmds)
-            completions.addAll(subcmd.getCommands(subCmdName));
+        subcmds.forEach(subcmd -> completions.addAll(subcmd.getCommands(subCmdName)));
         Collections.sort(completions);
         return completions;
     }

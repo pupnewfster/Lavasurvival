@@ -75,8 +75,7 @@ public class OptOutSubCommand extends NyvariaSubCommand {
         if (args.length == nextArgIndex + 1 && sender.hasPermission(PERM_OPTOUT) && sender.hasPermission(PERM_OPTOUT_OTHER)) {
             String partialPlayerName = args[nextArgIndex];
             if (!partialPlayerName.isEmpty()) {
-                for (OfflinePlayer nextMatchingOfflinePlayer : NyvariaPlayer.matchOfflinePlayer(partialPlayerName))
-                    completions.add(nextMatchingOfflinePlayer.getName());
+                NyvariaPlayer.matchOfflinePlayer(partialPlayerName).forEach(nextMatchingOfflinePlayer -> completions.add(nextMatchingOfflinePlayer.getName()));
                 Collections.sort(completions);
             }
         }
