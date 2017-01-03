@@ -16,7 +16,7 @@ public class Flood extends Gamemode {
     private long gameStart, duration;
     private int lastMinute, bonus;
     private boolean doubleReward;
-    private Objective objective;
+    private Objective objective = null;
     private Score bonusScore;
     private List<Location> lavaPoints;
 
@@ -74,9 +74,24 @@ public class Flood extends Gamemode {
 
     @Override
     public void endRound() {
-        this.objective.unregister();
+        if (this.objective != null)
+            this.objective.unregister();
         this.objective = null;
         super.endRound();
+    }
+
+    private void setObjectiveDisplay(String display) {
+        if (display == null || this.objective == null)
+            return;
+        try {
+            this.objective.setDisplayName(display);
+        } catch (IllegalStateException e) {
+            if (getScoreboard().getObjective("game") == null)
+                this.objective = getScoreboard().registerNewObjective("game", "dummy");
+            else
+                this.objective = getScoreboard().getObjective("game");
+            this.objective.setDisplayName(display);
+        }
     }
 
     @Override
@@ -87,12 +102,9 @@ public class Flood extends Gamemode {
         int seconds = (int) ((dif) / 1000 % 60);
         String time = (int) ((dif) / 60000) + ":" + (seconds < 10 ? "0" + seconds : seconds);
         if (!super.poured)
-            this.objective.setDisplayName((LAVA ? "Lava" : "Water") + " Pour: " + ChatColor.BOLD + time);
+            setObjectiveDisplay((LAVA ? "Lava" : "Water") + " Pour: " + ChatColor.BOLD + time);
         else
-            try {
-                this.objective.setDisplayName("Round Ends In: " + ChatColor.BOLD + time);
-            } catch (Exception ignored) {
-            }
+            setObjectiveDisplay("Round Ends In: " + ChatColor.BOLD + time);
         if (super.poured) {
             if (since < this.duration) {
                 int nextMinute = (int) since / 60000;

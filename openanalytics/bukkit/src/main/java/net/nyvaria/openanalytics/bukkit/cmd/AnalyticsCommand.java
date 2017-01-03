@@ -1,23 +1,19 @@
 /**
  * Copyright (c) 2013-2014
  * Paul Thompson <captbunzo@gmail.com> / Nyvaria <geeks@nyvaria.net>
- *
+ * <p>
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
+ * <p>
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- *
+ * <p>
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */
-
-/**
- *
  */
 package net.nyvaria.openanalytics.bukkit.cmd;
 
@@ -36,11 +32,11 @@ import java.util.List;
  */
 public class AnalyticsCommand extends NyvariaCommand implements CommandExecutor, TabCompleter {
     public static final String CMD = "analytics";
-    private List<NyvariaSubCommand> subcmds;
+    private final List<NyvariaSubCommand> subcmds;
     private final int nextArgIndex = 0;
 
     public AnalyticsCommand() {
-        subcmds = new ArrayList<NyvariaSubCommand>();
+        subcmds = new ArrayList<>();
         subcmds.add(new AdminSubCommand(this));
         subcmds.add(new OptOutSubCommand(this));
     }
@@ -51,30 +47,25 @@ public class AnalyticsCommand extends NyvariaCommand implements CommandExecutor,
 
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
-        // Check if we have enough arguments
+        //Check if we have enough arguments
         if (args.length < 1) {
             usage(sender, cmd, args);
             return true;
         }
 
-        // Get the sub-command name
+        //Get the sub-command name
         String subCmdName = args[nextArgIndex];
 
-        // Iterate through the sub-commands
-        for (NyvariaSubCommand subcmd : subcmds) {
-            if (subcmd.match(subCmdName)) {
+        //Iterate through the sub-commands
+        for (NyvariaSubCommand subcmd : subcmds)
+            if (subcmd.match(subCmdName))
                 return subcmd.onCommand(sender, cmd, args, nextArgIndex + 1);
-            }
-        }
-
-        // Must not have matched a sub-command, show the usage
+        //Must not have matched a sub-command, show the usage
         usage(sender, cmd, args);
         return true;
     }
 
     public void usage(CommandSender sender, Command cmd, String[] args) {
-        for (NyvariaSubCommand subcmd : subcmds) {
-            subcmd.usage(sender, cmd, args, nextArgIndex + 1);
-        }
+        subcmds.forEach(subcmd -> subcmd.usage(sender, cmd, args, nextArgIndex + 1));
     }
 }

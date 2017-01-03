@@ -18,7 +18,6 @@ import com.crossge.necessities.WorldManager.WorldManager;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
 import net.minecraft.server.v1_11_R1.*;
-import net.nyvaria.googleanalytics.hit.EventHit;
 import net.nyvaria.googleanalytics.hit.Hit;
 import net.nyvaria.openanalytics.bukkit.OpenAnalytics;
 import net.nyvaria.openanalytics.bukkit.OpenAnalyticsTracker;
@@ -40,7 +39,10 @@ import java.io.File;
 import java.io.InputStreamReader;
 import java.lang.reflect.Field;
 import java.net.URL;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.UUID;
 
 public class Necessities extends JavaPlugin {
     private static Necessities INSTANCE;
@@ -457,9 +459,8 @@ public class Necessities extends JavaPlugin {
 
     public static void trackAction(Hit hit) {
         OpenAnalyticsTracker tracker;
-        if ((tracker = getTracker()) != null) {
+        if ((tracker = getTracker()) != null)
             tracker.trackHit(hit);
-        }
     }
 
 

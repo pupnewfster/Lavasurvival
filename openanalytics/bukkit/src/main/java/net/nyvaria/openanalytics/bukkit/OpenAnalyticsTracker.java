@@ -1,30 +1,26 @@
 /**
  * Copyright (c) 2013-2014
  * Paul Thompson <captbunzo@gmail.com> / Nyvaria <geeks@nyvaria.net>
- *
+ * <p>
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
+ * <p>
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- *
+ * <p>
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */
-
-/**
- *
  */
 package net.nyvaria.openanalytics.bukkit;
 
 import net.nyvaria.googleanalytics.MeasurementProtocolClient;
-import net.nyvaria.googleanalytics.hit.EventHit;
 import net.nyvaria.googleanalytics.hit.Hit;
 import net.nyvaria.openanalytics.bukkit.client.Client;
+import org.bukkit.Bukkit;
 import org.bukkit.scheduler.BukkitTask;
 
 import java.util.logging.Level;
@@ -53,30 +49,26 @@ public class OpenAnalyticsTracker {
         return instance;
     }
 
+    @SuppressWarnings("UnusedReturnValue")
     public boolean initializeMeasurementProtocol() {
         if (!is_tracking) {
-            // Create the measurements protocol client
+            //Create the measurements protocol client
             tracking_id = OpenAnalyticsConfig.getTrackingID();
             host_name = OpenAnalyticsConfig.getHostName();
 
-            // Check if any of the required config is missing
+            //Check if any of the required config is missing
             if ((tracking_id == null) || (host_name == null)) {
-                if (tracking_id == null) {
+                if (tracking_id == null)
                     OpenAnalytics.getInstance().log(Level.SEVERE, String.format("Configuration missing for %s", OpenAnalyticsConfig.TRACKING_ID));
-                }
-
-                if (host_name == null) {
+                if (host_name == null)
                     OpenAnalytics.getInstance().log(Level.SEVERE, String.format("Configuration missing for %s", OpenAnalyticsConfig.HOST_NAME));
-                }
-
                 return false;
             }
 
-            // Otherwise log a happy message and create the measurement protocol client
+            //Otherwise log a happy message and create the measurement protocol client
             OpenAnalytics.getInstance().log(String.format("Creating Google Analytics Measurement Protocol client for %s / %s", host_name, tracking_id));
             mpClient = MeasurementProtocolClient.getInstance(host_name, tracking_id);
         }
-
         return (is_tracking = true);
     }
 
@@ -101,53 +93,41 @@ public class OpenAnalyticsTracker {
     }
 
     public void trackPlayerJoin(Client client) {
-        if (is_tracking && client.isOptedIn()) {
+        if (is_tracking && client != null && client.isOptedIn()) {
             mpClient.sendAsynchronously(client.createPlayerJoinHit());
             mpClient.sendAsynchronously(client.createWorldHit());
         }
     }
 
     public void trackPlayerQuit(Client client) {
-        if (is_tracking && client.isOptedIn()) {
+        if (is_tracking && client != null && client.isOptedIn())
             mpClient.sendAsynchronously(client.createPlayerQuitHit());
-        }
     }
 
     public void trackPlayerKick(Client client) {
-        if (is_tracking && client.isOptedIn()) {
+        if (is_tracking && client != null && client.isOptedIn())
             mpClient.sendAsynchronously(client.createPlayerKickHit());
-        }
     }
 
     public void trackPlayerChangedWorld(Client client) {
-        if (is_tracking && client.isOptedIn()) {
+        if (is_tracking && client != null && client.isOptedIn())
             mpClient.sendAsynchronously(client.createWorldHit());
-        }
     }
 
     public void trackHit(Hit hit) {
-        if (is_tracking && hit.getClient().isOptedIn()) {
+        if (is_tracking && (hit.getClient() == null || hit.getClient().isOptedIn()))
             mpClient.sendAsynchronously(hit);
-        }
     }
 
     public void scheduleAsynchronousTask() {
         if (is_tracking) {
             int interval_secs = 60;
             int interval_ticks = interval_secs * 20;
-
-            scheduled_task = plugin.getServer().getScheduler()
-                    .runTaskTimerAsynchronously(this.plugin, new ScheduledAsynchronousTask(), interval_ticks, interval_ticks);
-        }
-    }
-
-    private class ScheduledAsynchronousTask implements Runnable {
-        public void run() {
-            for (Client client : OpenAnalytics.getInstance().getClientList()) {
-                if (client.isOptedIn()) {
-                    OpenAnalyticsTracker.getMeasurementProtocolClient().send(client.createWorldHit());
-                }
-            }
+            scheduled_task = Bukkit.getScheduler().runTaskTimerAsynchronously(this.plugin, () -> {
+                for (Client client : OpenAnalytics.getInstance().getClientList())
+                    if (client.isOptedIn())
+                        OpenAnalyticsTracker.getMeasurementProtocolClient().send(client.createWorldHit());
+            }, interval_ticks, interval_ticks);
         }
     }
 }

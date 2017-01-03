@@ -1,24 +1,25 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!--suppress XmlUnboundNsPrefix, XmlUnboundNsPrefix -->
 <metadata modelVersion="1.1.0">
-  <groupId>org.bukkit</groupId>
-  <artifactId>craftbukkit</artifactId>
-  <version>1.11.2-R0.1-SNAPSHOT</version>
-  <versioning>
-    <snapshot>
-      <localCopy>true</localCopy>
-    </snapshot>
-    <lastUpdated>20170102224337</lastUpdated>
-    <snapshotVersions>
-      <snapshotVersion>
-        <extension>jar</extension>
-        <value>1.11.2-R0.1-SNAPSHOT</value>
-        <updated>20170102224337</updated>
-      </snapshotVersion>
-      <snapshotVersion>
-        <extension>pom</extension>
-        <value>1.11.2-R0.1-SNAPSHOT</value>
-        <updated>20170102224337</updated>
-      </snapshotVersion>
-    </snapshotVersions>
-  </versioning>
+    <groupId>org.bukkit</groupId>
+    <artifactId>craftbukkit</artifactId>
+    <version>1.11.2-R0.1-SNAPSHOT</version>
+    <versioning>
+        <snapshot>
+            <localCopy>true</localCopy>
+        </snapshot>
+        <lastUpdated>20170102224337</lastUpdated>
+        <snapshotVersions>
+            <snapshotVersion>
+                <extension>jar</extension>
+                <value>1.11.2-R0.1-SNAPSHOT</value>
+                <updated>20170102224337</updated>
+            </snapshotVersion>
+            <snapshotVersion>
+                <extension>pom</extension>
+                <value>1.11.2-R0.1-SNAPSHOT</value>
+                <updated>20170102224337</updated>
+            </snapshotVersion>
+        </snapshotVersions>
+    </versioning>
 </metadata>

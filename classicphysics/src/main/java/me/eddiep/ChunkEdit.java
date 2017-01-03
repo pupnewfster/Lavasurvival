@@ -15,16 +15,10 @@ public class ChunkEdit {
 
     @SuppressWarnings("deprecation")
     private void setBlock(int x, int y, int z, Material type, byte data) {
-        int columnX = x >> 4, columnZ = z >> 4, chunkY = y >> 4, blockX = x % 16, blockY = y % 16, blockZ = z % 16;
-        if (blockX < 0)
-            blockX += 16;
-        if (blockY < 0)
-            blockY += 16;
-        if (blockZ < 0)
-            blockZ += 16;
-        if (chunkY < 0 || chunkY > 15)
+        int chunkY = y >> 4;
+        if (chunkY < 0 || chunkY > 15) //TODO is this still needed
             return;//It is a bad location
-        Chunk c = this.world.getChunkIfLoaded(columnX, columnZ);
+        Chunk c = this.world.getChunkIfLoaded(x >> 4, z >> 4);
         if (c == null)
             return;
         ChunkSection[] sections = c.getSections();
@@ -45,6 +39,7 @@ public class ChunkEdit {
         }
         IBlockData d = Block.getByCombinedId(type.getId() + (data << 12));
         BlockPosition pos = new BlockPosition(x, y, z);
+        int blockX = x & 15, blockY = y & 15, blockZ = z & 15;
         if (this.world.getTileEntity(pos) != null)
             c.a(pos, d);
         else
