@@ -47,10 +47,8 @@ public final class ClassicPhysicsHandler implements Listener {
     private ChunkEdit e = null;
     private final Plugin owner;
 
-    @SuppressWarnings("unused")
     private class WorldCount {
-        private final ArrayList<Short> changes = new ArrayList<>();
-        private int x, y, z;
+        private ArrayList<Short> changes = new ArrayList<>();
         private final long l;
 
         WorldCount(long l) {
@@ -58,15 +56,7 @@ public final class ClassicPhysicsHandler implements Listener {
         }
 
         void addChange(int x, int y, int z) {
-            this.x = x;
-            this.y = y;
-            this.z = z;
-            int blockX = x % 16, blockZ = z % 16;
-            if (blockX < 0)
-                blockX += 16;
-            if (blockZ < 0)
-                blockZ += 16;
-            short loc = (short) ((blockX << 12) | (blockZ << 8) | (y));
+            short loc = (short) ((x & 15) << 12 | (z & 15) << 8 | y);
             if (!this.changes.contains(loc))
                 this.changes.add(loc);
         }
@@ -78,38 +68,17 @@ public final class ClassicPhysicsHandler implements Listener {
             return temp;
         }
 
-        List<Packet> getPackets() {
-            List<Packet> packets = new ArrayList<>();
-            if (current == null || this.changes.size() == 0)
+        Packet getPacket() {
+            if (current == null || this.changes.isEmpty())
                 return null;
-            int size = this.changes.size();
+            List<Short> changes = this.changes;
+            this.changes = new ArrayList<>();
+            int size = changes.size();
             if (size == 1)
-                packets.add(new PacketPlayOutBlockChange(((CraftWorld) current).getHandle(), new BlockPosition(this.x, this.y, this.z)));
-            else if (size == 64)
-                packets.add(new PacketPlayOutMapChunk(((CraftWorld) current).getHandle().getChunkAt((int) (this.l >> 32), (int) this.l), size));
-            else if (size < 64)
-                packets.add(new PacketPlayOutMultiBlockChange(size, getChanged(this.changes), ((CraftWorld) current).getHandle().getChunkAt((int) (this.l >> 32), (int) this.l)));
-            else {
-                int i = 0, end;
-                while (i < size) {
-                    end = i + 64 > size ? size : i + 64;
-                    packets.add(new PacketPlayOutMultiBlockChange(end - i, getChanged(this.changes.subList(i, end)), ((CraftWorld) current).getHandle().getChunkAt((int) (this.l >> 32), (int) this.l)));
-                    i += 64;
-                }
-            }
-            return packets;
-        }
-
-        int getX() {
-            return this.x;
-        }
-
-        int getY() {
-            return this.y;
-        }
-
-        int getZ() {
-            return this.z;
+                return new PacketPlayOutBlockChange(((CraftWorld) current).getHandle(), new BlockPosition((changes.get(0) >> 12 & 15) + (int) (this.l >> 32) * 16, changes.get(0) & 255,
+                        (changes.get(0) >> 8 & 15) + (int) this.l * 16));
+            else
+                return new PacketPlayOutMultiBlockChange(size, getChanged(changes), ((CraftWorld) current).getHandle().getChunkAt((int) (this.l >> 32), (int) this.l));
         }
     }
 
@@ -179,7 +148,7 @@ public final class ClassicPhysicsHandler implements Listener {
                             break;
                         }
             }
-            if (current == null || sendingPackets || !hasPlayers) //TODO: Is it because of the mid sending packets thing that makes it have air pockets because other stuff adds after it gets packets but before remove
+            if (current == null || !hasPlayers)
                 return;
             sendingPackets = true;
             ArrayList<Packet> packets = new ArrayList<>();
@@ -187,8 +156,9 @@ public final class ClassicPhysicsHandler implements Listener {
                 for (long l : chunks.keySet()) {
                     if (!sendingPackets)
                         break;
-                    packets.addAll(chunks.get(l).getPackets());
-                    chunks.remove(l);
+                    Packet packet = chunks.get(l).getPacket();
+                    if (packet != null)
+                        packets.add(packet);
                 }
             else
                 chunks.clear();
@@ -205,7 +175,7 @@ public final class ClassicPhysicsHandler implements Listener {
                         }
                     }
                 }
-            sendingPackets = false;
+            //sendingPackets = false;
         }
     };
 
