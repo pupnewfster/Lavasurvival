@@ -1,23 +1,19 @@
 /**
  * Copyright (c) 2013-2014
  * Paul Thompson <captbunzo@gmail.com> / Nyvaria <geeks@nyvaria.net>
- *
+ * <p>
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
+ * <p>
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- *
+ * <p>
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */
-
-/**
- *
  */
 package net.nyvaria.openanalytics.bukkit.client;
 
@@ -53,14 +49,14 @@ public class ClientConfig {
     }
 
     public ClientConfig(OfflinePlayer offlinePlayer) {
-        // Set the player
+        //Set the player
         this.offlinePlayer = offlinePlayer;
 
-        // Load the config
+        //Load the config
         playerConfig = loadPlayerConfig();
         boolean changed = false;
 
-        // Create attributes in the player config if they are missing
+        //Create attributes in the player config if they are missing
         if (!playerConfig.contains(ANONYMIZED_ID)) {
             playerConfig.set(ANONYMIZED_ID, UUID.randomUUID().toString());
             changed = true;
@@ -71,11 +67,10 @@ public class ClientConfig {
             changed = true;
         }
 
-        if (changed) {
+        if (changed)
             savePlayerConfig();
-        }
 
-        // And set the attributes
+        //And set the attributes
         this.anonymizedID = UUID.fromString(playerConfig.getString(ANONYMIZED_ID));
         this.clientId = anonymizedID.toString();
         this.optout = playerConfig.getBoolean(OPT_OUT);
@@ -99,12 +94,9 @@ public class ClientConfig {
         savePlayerConfig();
     }
 
-    // Private methods
-
+    //Private methods
     private String getPlayerConfigPath() {
-        return OpenAnalytics.getInstance().getDataFolder().getPath()
-                + File.separator + "players"
-                + File.separator + offlinePlayer.getName() + ".yml";
+        return OpenAnalytics.getInstance().getDataFolder().getPath() + File.separator + "players" + File.separator + offlinePlayer.getName() + ".yml";
     }
 
     private FileConfiguration loadPlayerConfig() {
@@ -112,7 +104,7 @@ public class ClientConfig {
         playerConfigFile = new File(getPlayerConfigPath());
 
         if (playerConfigFile.isFile()) {
-            // Attempt to load the player configuration file
+            //Attempt to load the player configuration file
             try {
                 OpenAnalytics.getInstance().log(Level.FINE, "Loading player configuration file - %1$s", playerConfigFile.getName());
                 config.load(playerConfigFile);
@@ -125,9 +117,8 @@ public class ClientConfig {
                 OpenAnalytics.getInstance().log(Level.WARNING, "Invalid player configuration file - %1$s", playerConfigFile.getName());
                 e.printStackTrace();
             }
-
         } else {
-            // Attempt to create a new player configuration file
+            //Attempt to create a new player configuration file
             try {
                 OpenAnalytics.getInstance().log(Level.INFO, "Player configuration file not found");
                 OpenAnalytics.getInstance().log(Level.INFO, "Creating new player configuration file - %1$s", playerConfigFile.getName());
@@ -138,7 +129,6 @@ public class ClientConfig {
                 e.printStackTrace();
             }
         }
-
         return config;
     }
 

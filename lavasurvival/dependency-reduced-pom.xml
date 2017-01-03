@@ -150,20 +150,6 @@
       <artifactId>necessities</artifactId>
       <version>1.0</version>
       <scope>provided</scope>
-      <exclusions>
-        <exclusion>
-          <artifactId>java-string-similarity</artifactId>
-          <groupId>info.debatty</groupId>
-        </exclusion>
-        <exclusion>
-          <artifactId>nv-websocket-client</artifactId>
-          <groupId>com.neovisionaries</groupId>
-        </exclusion>
-        <exclusion>
-          <artifactId>json-simple</artifactId>
-          <groupId>com.github.cliftonlabs</groupId>
-        </exclusion>
-      </exclusions>
     </dependency>
     <dependency>
       <groupId>me.eddiep.minecraft</groupId>
