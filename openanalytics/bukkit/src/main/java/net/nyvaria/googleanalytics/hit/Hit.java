@@ -1,23 +1,19 @@
 /**
  * Copyright (c) 2013-2014
  * Paul Thompson <captbunzo@gmail.com> / Nyvaria <geeks@nyvaria.net>
- *
+ * <p>
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
+ * <p>
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- *
+ * <p>
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */
-
-/**
- *
  */
 package net.nyvaria.googleanalytics.hit;
 
@@ -43,7 +39,6 @@ public abstract class Hit {
     /**
      * Constructor & Methods
      */
-
     public Hit(Client client, String hit_type) {
         this.client = client;
         this.protocol_version = MeasurementProtocol.ENDPOINT_PROTOCOL_VERSION;
@@ -52,9 +47,8 @@ public abstract class Hit {
         if (client != null) {
             this.client_id = client.getClientID();
             this.ip_override = client.getIPAddress();
-        } else {
+        } else
             this.client_id = "SERVER";
-        }
     }
 
     public Client getClient() {
@@ -62,50 +56,37 @@ public abstract class Hit {
     }
 
     public List<String> getParameterList() {
-        List<String> list = new ArrayList<String>();
-
+        List<String> list = new ArrayList<>();
         for (Field field : this.getClass().getFields()) {
             Parameter parameter = field.getAnnotation(Parameter.class);
-
             if (parameter != null) {
                 Object value = null;
-
                 try {
                     value = field.get(this);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
-
                 String result = formatParameter(parameter, value);
-                if (result != null) {
+                if (result != null)
                     list.add(result);
-                }
             }
         }
-
         return list;
     }
 
+    @SuppressWarnings("ConstantConditions")
     protected String formatParameter(Parameter parameter, Object value) {
         String result = null;
-
         if (parameter.required() || value != null) {
             String text = null;
-
-            if (parameter.format().equals(Parameter.FORMAT_TEXT)) {
+            if (parameter.format().equals(Parameter.FORMAT_TEXT))
                 text = (String) value;
-
-            } else if (parameter.format().equals(Parameter.FORMAT_BOOLEAN)) {
+            else if (parameter.format().equals(Parameter.FORMAT_BOOLEAN))
                 text = (Boolean) value ? "1" : "0";
-
-            } else if (parameter.format().equals(Parameter.FORMAT_INTEGER)) {
+            else if (parameter.format().equals(Parameter.FORMAT_INTEGER))
                 text = String.format("%d", (Integer) value);
-
-            } else if (parameter.format().equals(Parameter.FORMAT_CURRENCY)) {
+            else if (parameter.format().equals(Parameter.FORMAT_CURRENCY))
                 text = String.format("%.2f", (Float) value);
-
-            }
-
             try {
                 result = parameter.name() + "=" + URLEncoder.encode(text, MeasurementProtocol.ENDPOINT_ENCODING);
             } catch (UnsupportedEncodingException e) {
@@ -113,14 +94,12 @@ public abstract class Hit {
                 e.printStackTrace();
             }
         }
-
         return result;
     }
 
     /**
      * Required Parameters
      */
-
     @Parameter(format = Parameter.FORMAT_TEXT, required = true, name = MeasurementProtocol.PROTOCOL_VERSION)
     public String protocol_version;
 
@@ -136,7 +115,6 @@ public abstract class Hit {
     /**
      * General Parameters
      */
-
     @Parameter(format = Parameter.FORMAT_BOOLEAN, required = false, name = MeasurementProtocol.ANONYMIZE_IP)
     public Boolean anonymize_ip;
 
@@ -155,14 +133,12 @@ public abstract class Hit {
     /**
      * Session Parameters
      */
-
     @Parameter(format = Parameter.FORMAT_TEXT, required = false, name = MeasurementProtocol.SESSION_CONTROL)
     public String session_control;
 
     /**
      * Traffic Source Parameters
      */
-
     @Parameter(format = Parameter.FORMAT_TEXT, required = false, name = MeasurementProtocol.DOCUMENT_REFERRER)
     public String document_referrer;
 
@@ -193,7 +169,6 @@ public abstract class Hit {
     /**
      * System Info Parameters
      */
-
     @Parameter(format = Parameter.FORMAT_TEXT, required = false, name = MeasurementProtocol.SCREEN_RESOLUTION)
     public String screen_resolution;
 
@@ -218,14 +193,12 @@ public abstract class Hit {
     /**
      * Hit Parameters
      */
-
     @Parameter(format = Parameter.FORMAT_BOOLEAN, required = false, name = MeasurementProtocol.NON_INTERACTION_HIT)
     public Boolean non_interaction_hit;
 
     /**
      * Content Information Parameters
      */
-
     @Parameter(format = Parameter.FORMAT_TEXT, required = false, name = MeasurementProtocol.DOCUMENT_LOCATION_URL)
     public String document_location_url;
 
@@ -247,15 +220,13 @@ public abstract class Hit {
     /**
      * Custom Dimensions / Metric Parameters
      */
-
-    // Not Supported Yet
+    //Not Supported Yet
     //public HashMap<Integer, String>  custom_dimension;
     //public HashMap<Integer, Integer> custom_metric;
 
     /**
      * Content Experiment Parameters
      */
-
     @Parameter(format = Parameter.FORMAT_TEXT, required = false, name = MeasurementProtocol.EXPERIMENT_ID)
     public String experiment_id;
 

@@ -176,9 +176,8 @@ public abstract class Gamemode {
                     boolean success = Bukkit.unloadWorld(lastMap.getWorld(), false);
                     if (!success)
                         Lavasurvival.log("Failed to unload last map! A manual unload may be required..");
-                    else {
+                    else
                         restoreBackup(lastMap.getWorld());
-                    }
                 }
                 //Restart
                 //Should this use Bukkit.spigot().restart(); instead of will that cause issues
@@ -195,12 +194,10 @@ public abstract class Gamemode {
         Lavasurvival.log("New game on " + getCurrentWorld().getName());
         if (Necessities.isTracking()) {
             EventHit hit;
-            if (isRewardDoubled()) {
+            if (isRewardDoubled())
                 hit = new EventHit(null, "GameReward", "DoubleRound");
-            } else {
+            else
                 hit = new EventHit(null, "GameReward", "NormalRound");
-            }
-
             EventHit roundStart = new EventHit(null, "GameInfo", "RoundStart");
             startTime = System.currentTimeMillis();
             Necessities.trackAction(hit);
@@ -417,10 +414,10 @@ public abstract class Gamemode {
                     array[1] = array[1] / array[2];
 
                     EventHit rewardAvg = new EventHit(null, "GameInfo", "AverageReward-" + rank.getName());
-                    rewardAvg.event_value = (int)array[1].doubleValue();
+                    rewardAvg.event_value = (int) array[1].doubleValue();
 
                     EventHit airAvg = new EventHit(null, "GameInfo", "AverageAir-" + rank.getName());
-                    airAvg.event_value = (int)array[0].doubleValue();
+                    airAvg.event_value = (int) array[0].doubleValue();
 
                     Necessities.trackAction(rewardAvg);
                     Necessities.trackAction(airAvg);
@@ -694,7 +691,7 @@ public abstract class Gamemode {
 
         if (Necessities.isTracking()) {
             EventHit endRound = new EventHit(null, "GameInfo", "RoundEnd");
-            endRound.event_value = (int)duration;
+            endRound.event_value = (int) duration;
         }
     }
 

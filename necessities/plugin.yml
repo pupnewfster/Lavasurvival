@@ -3,7 +3,7 @@ main: com.crossge.necessities.Necessities
 version: 3.0.0
 description: Adds the necessities a server needs
 authors: [pupnewfster]
-softdepend: [GoogleAnalyticsPlugin, ClassicPhysics]
+softdepend: [OpenAnalytics, ClassicPhysics]
 
 commands:
    reloadannouncer:

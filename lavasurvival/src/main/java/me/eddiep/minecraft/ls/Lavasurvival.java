@@ -82,7 +82,7 @@ public class Lavasurvival extends JavaPlugin {
         updateMoneyView(player);
         if (Necessities.isTracking()) {
             EventHit hit = new EventHit(new Client(player), "economy", "economy");
-            hit.event_value = (int)-price;
+            hit.event_value = (int) -price;
 
             Necessities.trackAction(hit);
         }
@@ -146,6 +146,13 @@ public class Lavasurvival extends JavaPlugin {
             this.setups.clear();
             this.userManager.saveAll();
             log("Disabled");
+            for (Player p : Bukkit.getOnlinePlayers()) {
+                try {
+                    changeServer(p, "lobby");
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
         }
         GGBAR.removeAll();
         this.running = false;
@@ -287,8 +294,7 @@ public class Lavasurvival extends JavaPlugin {
         Necessities.getEconomy().deposit(player.getUniqueId(), reward);
         if (Necessities.isTracking()) {
             EventHit hit = new EventHit(new Client(player), "economy", "economy");
-            hit.event_value = (int)reward;
-
+            hit.event_value = (int) reward;
             Necessities.trackAction(hit);
         }
     }

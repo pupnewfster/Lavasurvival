@@ -1,28 +1,25 @@
 /**
  * Copyright (c) 2013-2014
  * Paul Thompson <captbunzo@gmail.com> / Nyvaria <geeks@nyvaria.net>
- *
+ * <p>
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
+ * <p>
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- *
+ * <p>
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */
-
-/**
- *
  */
 package net.nyvaria.openanalytics.bukkit.listener;
 
 import net.nyvaria.openanalytics.bukkit.OpenAnalytics;
 import org.apache.commons.lang.Validate;
+import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -40,7 +37,7 @@ public final class OpenAnalyticsListener implements Listener {
     public OpenAnalyticsListener(OpenAnalytics plugin) {
         Validate.notNull(plugin, "OpenAnalyticsListener cannot have a null plugin");
         this.plugin = plugin;
-        this.plugin.getServer().getPluginManager().registerEvents(this, this.plugin);
+        Bukkit.getPluginManager().registerEvents(this, this.plugin);
     }
 
     @EventHandler(priority = EventPriority.MONITOR)
@@ -51,7 +48,7 @@ public final class OpenAnalyticsListener implements Listener {
 
     @EventHandler(priority = EventPriority.MONITOR)
     public void onPlayerQuit(PlayerQuitEvent event) {
-        // When a PlayerQuitEvent is called following a PlayerKickEvent, we do not want to do this
+        //When a PlayerQuitEvent is called following a PlayerKickEvent, we do not want to do this
         if (plugin.getClientList().containsKey(event.getPlayer())) {
             plugin.getTracker().trackPlayerQuit(plugin.getClientList().get(event.getPlayer()));
             plugin.getClientList().remove(event.getPlayer());
@@ -68,5 +65,4 @@ public final class OpenAnalyticsListener implements Listener {
     public void onPlayerChangedWorld(PlayerChangedWorldEvent event) {
         plugin.getTracker().trackPlayerChangedWorld(plugin.getClientList().get(event.getPlayer()));
     }
-
 }
