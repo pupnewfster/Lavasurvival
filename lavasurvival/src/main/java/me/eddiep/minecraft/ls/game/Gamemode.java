@@ -906,7 +906,7 @@ public abstract class Gamemode {
     }
 
     public void spawnBookshelf(int x, int z) {
-        FallingBlock b = getCurrentWorld().spawnFallingBlock(new Location(getCurrentWorld(), x + 0.5, getCurrentMap().getHeight(), z + 0.5), new MaterialData(Material.BOOKSHELF));
+        FallingBlock b = getCurrentWorld().spawnFallingBlock(new Location(getCurrentWorld(), x + 0.5, getCurrentMap().getLavaY(), z + 0.5), new MaterialData(Material.BOOKSHELF));
         b.setGlowing(true);
     }
 

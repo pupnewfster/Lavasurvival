@@ -19,7 +19,6 @@ public class CmdAirc implements Cmd {
                 sender.sendMessage(ChatColor.DARK_RED + "Error: there is no game running.");
                 return true;
             }
-
             int count = game.countAirBlocksAround(player, 10);
             player.sendMessage("You have " + count + " air blocks around you!");
 

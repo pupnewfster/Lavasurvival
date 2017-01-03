@@ -319,8 +319,12 @@ public final class ClassicPhysicsHandler implements Listener {
     @EventHandler
     public void blockFall(EntityChangeBlockEvent event) {
         if (!ClassicPhysics.TYPE.equals(PhysicsType.DEFAULT) && event.getEntity() instanceof FallingBlock) {
-            event.setCancelled(true);
-            event.getBlock().getState().update(true, false);
+            if (!((FallingBlock) event.getEntity()).getMaterial().equals(Material.BOOKSHELF)) {
+                event.setCancelled(true);
+                event.getBlock().getState().update(true, false);
+            } else {
+                //setBookShelf(event.getBlock().getLocation().toVector()); //TODO set it as a bookshelf to not be destroyed
+            }
         }
     }
 
