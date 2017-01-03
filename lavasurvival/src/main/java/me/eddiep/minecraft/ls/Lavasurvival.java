@@ -101,9 +101,9 @@ public class Lavasurvival extends JavaPlugin {
 
     public static void spawnParticleEffect(Location location, int ticks, Color color) {
         AreaEffectCloud e = (AreaEffectCloud) Gamemode.getCurrentWorld().spawnEntity(location, EntityType.AREA_EFFECT_CLOUD);
+        e.setColor(color);
         e.setRadius((float) 0.75);
         e.setDuration(ticks);
-        e.setColor(color);
     }
 
     @Override

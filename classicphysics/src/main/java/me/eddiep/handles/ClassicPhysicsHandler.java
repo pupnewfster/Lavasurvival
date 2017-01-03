@@ -175,7 +175,6 @@ public final class ClassicPhysicsHandler implements Listener {
                         }
                     }
                 }
-            //sendingPackets = false;
         }
     };
 
@@ -193,7 +192,7 @@ public final class ClassicPhysicsHandler implements Listener {
         classicBlocks.add(v.toBlockVector().clone());
     }
 
-    private void removeClassicBlock(Vector v) {
+    public void removeClassicBlock(Vector v) {
         classicBlocks.remove(v.toBlockVector());
     }
 
@@ -363,7 +362,7 @@ public final class ClassicPhysicsHandler implements Listener {
         checkLocation(location.clone().add(0, -1, 0));
     }
 
-    private void checkLocation(Location l) {
+    public void checkLocation(Location l) {
         if (isClassicBlock(l.toVector()))
             for (LogicContainerHolder holder : logicContainers)
                 if (holder.container.doesHandle(l.getBlock().getType())) {
