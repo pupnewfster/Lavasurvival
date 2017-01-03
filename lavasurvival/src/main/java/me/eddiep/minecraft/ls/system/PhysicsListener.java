@@ -5,6 +5,8 @@ import me.eddiep.handles.ClassicPhysicsEvent;
 import me.eddiep.handles.ClassicPhysicsHandler;
 import me.eddiep.minecraft.ls.Lavasurvival;
 import me.eddiep.minecraft.ls.game.Gamemode;
+import net.minecraft.server.v1_11_R1.BlockLog1;
+import org.bukkit.Color;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -15,8 +17,7 @@ import org.bukkit.material.MaterialData;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 
-import java.util.HashMap;
-import java.util.Random;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
@@ -25,6 +26,9 @@ public class PhysicsListener implements Listener {
     private static final HashMap<MaterialData, Integer> waterTicksToMelt = new HashMap<>();
     private static final ConcurrentHashMap<Location, ConcurrentLinkedQueue<BlockTaskInfo>> toTasks = new ConcurrentHashMap<>();
     private static final Random RANDOM = new Random();
+
+    private HashMap<Location, BlockedLocation> blockedLocations = new HashMap<>();
+    private HashSet<SpongeInfo> sponges = new HashSet<>();
 
     public PhysicsListener() {
         setup();
@@ -309,6 +313,54 @@ public class PhysicsListener implements Listener {
             waterTicksToMelt.put(data, water);
     }
 
+    public boolean placeSponge(Location location, boolean forLava) {
+        ArrayList<BlockedLocation> locations = new ArrayList<>();
+        for (int x = -5; x <= 5; x++) {
+            for (int y = -5; y <= 5; y++) {
+                for (int z = -5; z <= 5; z++) {
+                    Location blockedLocation = location.clone().add(x, y, z);
+                    BlockedLocation blocked = addBlockedLocation(blockedLocation, 15 * 1000, forLava);
+                    if (blocked == null) {
+                        locations.clear();
+                        return false;
+                    }
+
+                    locations.add(blocked);
+                }
+            }
+        }
+
+        SpongeInfo spongeInfo = new SpongeInfo(location, forLava, locations);
+        sponges.add(spongeInfo);
+
+        return true;
+    }
+
+    public BlockedLocation addBlockedLocation(Location location, long duration, boolean forLava) {
+        if (Gamemode.getCurrentMap().isLocationNearLavaSpawn(location)) {
+            return null;
+        }
+
+        BlockedLocation blocked = new BlockedLocation(location, duration, forLava);
+        blockedLocations.put(location, blocked);
+
+        Block curentBlock = location.getBlock();
+
+        if (forLava && (curentBlock.getType() == Material.LAVA || curentBlock.getType() == Material.STATIONARY_LAVA)) {
+            curentBlock.setType(Material.AIR);
+            //TODO Remove classicblock metadata
+        } else if (!forLava && (curentBlock.getType() == Material.WATER || curentBlock.getType() == Material.STATIONARY_WATER)) {
+            curentBlock.setType(Material.AIR);
+            //TODO Remove classicblock metadata
+        }
+
+        return blocked;
+    }
+
+    public void clearBlockedLocations() {
+        blockedLocations.clear();
+    }
+
     @SuppressWarnings({"deprecation", "unused"})
     @EventHandler(priority = EventPriority.MONITOR)
     public void onClassicPhysics(ClassicPhysicsEvent event) {
@@ -320,13 +372,27 @@ public class PhysicsListener implements Listener {
             }
 
             Block blockChecking = event.getOldBlock();
+            Material type = event.getLogicContainer().logicFor();
             Vector bv = blockChecking.getLocation().toVector();
             ClassicPhysicsHandler handler = ClassicPhysics.INSTANCE.getPhysicsHandler();
             if (blockChecking.getType().equals(Material.AIR) || handler.isClassicBlock(bv) || blockChecking.isLiquid())
                 return;
 
+            if (blockedLocations.containsKey(blockChecking.getLocation())) {
+                BlockedLocation info = blockedLocations.get(blockChecking.getLocation());
+
+                if (System.currentTimeMillis() - info.getPlaceTime() >= info.getDuration()) {
+                    blockedLocations.remove(blockChecking.getLocation());
+                } else if (info.forLava && (type == Material.LAVA || type == Material.STATIONARY_LAVA)) {
+                    event.setCancelled(true);
+                    return;
+                } else if (!info.forLava && (type == Material.WATER || type == Material.STATIONARY_WATER)) {
+                    event.setCancelled(true);
+                    return;
+                }
+            }
+
             HashMap<MaterialData, Integer> ticksToMelt;
-            Material type = event.getLogicContainer().logicFor();
             if (type == Material.LAVA || type == Material.STATIONARY_LAVA)
                 ticksToMelt = lavaTicksToMelt;
             else
@@ -389,6 +455,28 @@ public class PhysicsListener implements Listener {
                             break;
                         }
             }
+
+            long spongeDuration = 15 * 1000;
+            Iterator<SpongeInfo> spongeInfoIterator = sponges.iterator();
+            while (spongeInfoIterator.hasNext()) {
+                SpongeInfo sponge = spongeInfoIterator.next();
+
+                long time = System.currentTimeMillis();
+                if (time - sponge.placeTime >= spongeDuration) {
+                    Lavasurvival.spawnParticleEffect(sponge.location, (int) (20 * 3), Color.RED);
+
+                    //Remove all blocked locations
+                    for (BlockedLocation location : sponge.blockingLocations) {
+                        blockedLocations.remove(location.getLocation());
+                    }
+                    sponge.blockingLocations.clear();
+                    spongeInfoIterator.remove();
+                } else if (time - sponge.placeTime >= spongeDuration / 2) {
+                    sponge.spawnParticles(Color.PURPLE);
+                } else {
+                    sponge.spawnParticles(Color.LIME);
+                }
+            }
         }
     };
 
@@ -448,6 +536,8 @@ public class PhysicsListener implements Listener {
         PHYSICS_TICK.runTaskTimerAsynchronously(Lavasurvival.INSTANCE, 0, 1);
     }
 
+
+
     private class BlockTaskInfo {
         private final long ticksToMelt;
         private final long startTick;
@@ -481,6 +571,94 @@ public class PhysicsListener implements Listener {
 
         Block getOldBlock() {
             return this.oldBlock;
+        }
+    }
+
+    public class BlockedLocation {
+        private Location location;
+        private long duration;
+        private long placeTime;
+        private boolean forLava;
+
+        private BlockedLocation(Location location, long duration, boolean forLava) {
+            this.location = location;
+            this.duration = duration;
+            this.forLava = forLava;
+
+            this.placeTime = System.currentTimeMillis();
+        }
+
+        public boolean isForLava() {
+            return forLava;
+        }
+
+        public Location getLocation() {
+            return location;
+        }
+
+        public long getDuration() {
+            return duration;
+        }
+
+        public long getPlaceTime() {
+            return placeTime;
+        }
+    }
+
+    public class SpongeInfo {
+        private Location location;
+        private long placeTime;
+        private List<BlockedLocation> blockingLocations;
+        private boolean forLava;
+        private long lastParticle;
+
+
+        public SpongeInfo(Location location, boolean forLava, List<BlockedLocation> blocked) {
+            this.location = location;
+            this.placeTime = System.currentTimeMillis();
+            this.blockingLocations = blocked;
+            this.forLava = forLava;
+        }
+
+        public List<BlockedLocation> getBlockingLocations() {
+            return blockingLocations;
+        }
+
+        public boolean isForLava() {
+            return forLava;
+        }
+
+        public Location getLocation() {
+            return location;
+        }
+
+        public long getPlaceTime() {
+            return placeTime;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+
+            SpongeInfo that = (SpongeInfo) o;
+
+            return location != null ? location.equals(that.location) : that.location == null;
+
+        }
+
+        @Override
+        public int hashCode() {
+            return location != null ? location.hashCode() : 0;
+        }
+
+        void spawnParticles(Color color) {
+            if (System.currentTimeMillis() - lastParticle < 1500)
+                return;
+
+            lastParticle = System.currentTimeMillis();
+
+            Lavasurvival.spawnParticleEffect(location, (int) (20 * 1.5), color);
         }
     }
 }

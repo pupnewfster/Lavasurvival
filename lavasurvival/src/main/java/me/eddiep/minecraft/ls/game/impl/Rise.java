@@ -16,6 +16,8 @@ import org.bukkit.scoreboard.Score;
 import java.util.List;
 
 public class Rise extends Gamemode {
+    public static final String TYPE = "Rise";
+
     private int lastMinute, bonus, lavaY, highestCurrentY = 0, layerCount;
     private long lastEvent, duration, timeOut;
     private Score bonusScore, layersLeft;
@@ -35,7 +37,7 @@ public class Rise extends Gamemode {
         this.objective.setDisplayName("Prepare Time");
         this.bonusScore = this.objective.getScore(ChatColor.GOLD + "" + ChatColor.BOLD + "Reward Bonus");
         this.layersLeft = this.objective.getScore(ChatColor.RED + "" + ChatColor.BOLD + "Layers Left");
-        this.type = "Rise";
+        this.type = TYPE;
         super.onStart();
         this.duration = getCurrentMap().getRiseOptions().generateRandomPrepareTime();
         this.timeOut = getCurrentMap().getRiseOptions().generateRandomRiseTime();

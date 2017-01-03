@@ -19,9 +19,7 @@ import net.njay.MenuFramework;
 import net.njay.MenuRegistry;
 import net.nyvaria.googleanalytics.hit.EventHit;
 import net.nyvaria.openanalytics.bukkit.client.Client;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.Material;
+import org.bukkit.*;
 import org.bukkit.boss.BarColor;
 import org.bukkit.boss.BarStyle;
 import org.bukkit.boss.BossBar;
@@ -29,6 +27,8 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.craftbukkit.v1_11_R1.boss.CraftBossBar;
+import org.bukkit.entity.AreaEffectCloud;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
@@ -97,6 +97,13 @@ public class Lavasurvival extends JavaPlugin {
             Gamemode.getCurrentGame().globalMessage(message);
         else //Sends to everyone if no game to send to
             Bukkit.broadcastMessage(message);
+    }
+
+    public static void spawnParticleEffect(Location location, int ticks, Color color) {
+        AreaEffectCloud e = (AreaEffectCloud) Gamemode.getCurrentWorld().spawnEntity(location, EntityType.AREA_EFFECT_CLOUD);
+        e.setRadius((float) 0.75);
+        e.setDuration(ticks);
+        e.setColor(color);
     }
 
     @Override

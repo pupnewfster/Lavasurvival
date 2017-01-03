@@ -18,6 +18,8 @@ import org.bukkit.scoreboard.Score;
 import java.util.List;
 
 public class Fusion extends Gamemode {
+    public static final String TYPE = "Fusion";
+
     private int lastMinute, bonus, lavaY, highestCurrentY = 0, layerCount;
     private long lastEvent, duration, timeOut;
     private Score bonusScore, layersLeft;
@@ -37,7 +39,7 @@ public class Fusion extends Gamemode {
         this.objective.setDisplayName("Prepare Time");
         this.bonusScore = objective.getScore(ChatColor.GOLD + "" + ChatColor.BOLD + "Reward Bonus");
         this.layersLeft = objective.getScore(ChatColor.RED + "" + ChatColor.BOLD + "Layers Left");
-        this.type = "Fusion";
+        this.type = TYPE;
         super.onStart();
         this.duration = getCurrentMap().getFusionOptions().generateRandomPrepareTime();
         this.timeOut = getCurrentMap().getFusionOptions().generateRandomFusionTime();

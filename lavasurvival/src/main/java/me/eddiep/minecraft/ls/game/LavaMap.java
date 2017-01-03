@@ -69,6 +69,33 @@ public class LavaMap {
         return maps.toArray(new String[maps.size()]);
     }
 
+    public FloodOptions getCurrentGamemodeOptions() {
+        switch (Gamemode.getCurrentGame().type) {
+            case Flood.TYPE:
+                return floodOptions;
+            case Rise.TYPE:
+                return riseOptions;
+            case Fusion.TYPE:
+                return fusionOptions;
+            default:
+                return null;
+        }
+    }
+
+    public boolean isLocationNearLavaSpawn(Location location) {
+        return isLocationNearLavaSpawn(location, 30);
+    }
+
+    public boolean isLocationNearLavaSpawn(Location location, double limit) {
+        FloodOptions options = getCurrentGamemodeOptions();
+
+        for (Location spawnPoint : options.getSpawnLocations()) {
+            if (spawnPoint.distanceSquared(location) >= limit)
+                return true;
+        }
+        return false;
+    }
+
     private void restoreBackup() {
         File directoy = new File(this.worldName);
         File backup = new File(Lavasurvival.INSTANCE.getDataFolder(), this.worldName);

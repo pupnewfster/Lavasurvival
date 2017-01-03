@@ -311,6 +311,24 @@ public class PlayerListener implements Listener {
                 return;
             }
             event.setCancelled(false);
+            ItemStack itemPlacing = event.getPlayer().getInventory().getItemInMainHand();
+
+            if (itemPlacing.getType() == Material.SPONGE) {
+                boolean forLava = itemPlacing.getDurability() == 1;
+                boolean success = Gamemode.getPhysicsListener().placeSponge(event.getBlock().getLocation(), forLava);
+
+                if (!success) {
+                    event.setCancelled(true);
+                    event.setBuild(false);
+                    event.getPlayer().sendMessage(ChatColor.RED + "" + ChatColor.BOLD + "You can't place a sponge so close to a lava/water spawn!");
+                    return;
+                }
+
+                ClassicPhysics.INSTANCE.getPhysicsHandler().addPlayerPlaced(event.getBlock().getLocation().toVector());
+                Lavasurvival.INSTANCE.getUserManager().getUser(event.getPlayer().getUniqueId()).incrementBlockCount();
+                return;
+            }
+
             Block b = event.getBlock();
             ClassicPhysics.INSTANCE.getPhysicsHandler().addPlayerPlaced(b.getLocation().toVector()); //UUID would go here if was hash map
             if (b.getType().toString().contains("DOOR") && b.getRelative(BlockFace.UP).getType().equals(b.getType()))

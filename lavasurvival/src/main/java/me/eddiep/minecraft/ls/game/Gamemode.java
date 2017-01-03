@@ -116,6 +116,10 @@ public abstract class Gamemode {
         return scoreboard;
     }
 
+    public static PhysicsListener getPhysicsListener() {
+        return physicsListener;
+    }
+
     public static void cleanup() {
         if (listener != null)
             listener.cleanup();

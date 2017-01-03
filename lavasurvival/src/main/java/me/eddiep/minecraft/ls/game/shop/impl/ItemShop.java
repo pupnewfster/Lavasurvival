@@ -53,6 +53,16 @@ public class ItemShop extends Menu {
         buyItem(player, LavaItem.SECOND_CHANCE);
     }
 
+    @MenuItem(slot = 6, item = @ItemStackAnnotation(material = Material.WOOD, name = ""))
+    public void waterSponge(MenuPlayer player) {
+        buyItem(player, LavaItem.WATER_SPONGE);
+    }
+
+    @MenuItem(slot = 7, item = @ItemStackAnnotation(material = Material.WOOD, name = ""))
+    public void lavaSponge(MenuPlayer player) {
+        buyItem(player, LavaItem.LAVA_SPONGE);
+    }
+
     private void buyItem(MenuPlayer player, LavaItem item) {
         Player p = player.getBukkit();
         if (Necessities.getEconomy().getBalance(p.getUniqueId()) < item.getPrice())

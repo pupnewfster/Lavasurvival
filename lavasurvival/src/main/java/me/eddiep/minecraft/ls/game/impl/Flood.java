@@ -13,6 +13,8 @@ import org.bukkit.scoreboard.Score;
 import java.util.List;
 
 public class Flood extends Gamemode {
+    public static final String TYPE = "Flood";
+
     private long gameStart, duration;
     private int lastMinute, bonus;
     private boolean doubleReward;
@@ -30,7 +32,7 @@ public class Flood extends Gamemode {
         this.objective.setDisplaySlot(DisplaySlot.SIDEBAR);
         this.objective.setDisplayName((LAVA ? "Lava" : "Water") + "Pour");
         this.bonusScore = this.objective.getScore(ChatColor.GOLD + "" + ChatColor.BOLD + "Reward Bonus");
-        this.type = "Flood";
+        this.type = TYPE;
         super.onStart();
         this.duration = getCurrentMap().getFloodOptions().generateRandomPrepareTime();
         this.lavaPoints = getCurrentMap().getFloodOptions().getSpawnLocations();
