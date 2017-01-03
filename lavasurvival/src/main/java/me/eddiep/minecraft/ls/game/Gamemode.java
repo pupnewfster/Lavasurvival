@@ -696,6 +696,8 @@ public abstract class Gamemode {
         if (Necessities.isTracking()) {
             EventHit endRound = new EventHit(null, "GameInfo", "RoundEnd");
             endRound.event_value = (int) duration;
+
+            Necessities.trackAction(endRound);
         }
     }
 
