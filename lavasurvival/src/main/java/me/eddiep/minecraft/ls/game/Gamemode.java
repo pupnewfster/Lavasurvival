@@ -262,7 +262,7 @@ public abstract class Gamemode {
 
     private void tick() {
         PlayerStatusManager.tick();
-        if (currentMap.getTimeOptions().isEnabled()) { //TODO test with async
+        if (currentMap.getTimeOptions().isEnabled()) {
             double multiplier = currentMap.getTimeOptions().getMultiplier();
             if (multiplier != 1.0) {
                 this.timeTickCount++;
@@ -689,6 +689,7 @@ public abstract class Gamemode {
         ClassicPhysics.INSTANCE.getPhysicsHandler().setPhysicsWorld(null);
         this.isEnding = false;
         this.hasEnded = true;
+        getPhysicsListener().clearBlockedLocations();
         long duration = System.currentTimeMillis() - startTime;
 
         duration /= 1000;

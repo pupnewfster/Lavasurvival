@@ -88,11 +88,9 @@ public class LavaMap {
 
     public boolean isLocationNearLavaSpawn(Location location, double limit) {
         FloodOptions options = getCurrentGamemodeOptions();
-
-        for (Location spawnPoint : options.getSpawnLocations()) {
-            if (spawnPoint.distanceSquared(location) >= limit)
+        for (Location spawnPoint : options.getSpawnLocations())
+            if (spawnPoint.distanceSquared(location) <= limit)
                 return true;
-        }
         return false;
     }
 

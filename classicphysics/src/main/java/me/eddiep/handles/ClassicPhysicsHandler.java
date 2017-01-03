@@ -175,7 +175,6 @@ public final class ClassicPhysicsHandler implements Listener {
                         }
                     }
                 }
-            //sendingPackets = false;
         }
     };
 
@@ -193,7 +192,7 @@ public final class ClassicPhysicsHandler implements Listener {
         classicBlocks.add(v.toBlockVector().clone());
     }
 
-    private void removeClassicBlock(Vector v) {
+    public void removeClassicBlock(Vector v) {
         classicBlocks.remove(v.toBlockVector());
     }
 
@@ -345,7 +344,7 @@ public final class ClassicPhysicsHandler implements Listener {
             event.setCancelled(true);
     }
 
-    private void requestUpdateAround(Location location) {
+    public void requestUpdateAround(Location location) {
         if (current == null || location == null || !location.getWorld().equals(current))
             return;
         try {

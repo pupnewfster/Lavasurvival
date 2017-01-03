@@ -80,7 +80,11 @@ public abstract class Hit {
         if (parameter.required() || value != null) {
             String text = null;
             if (parameter.format().equals(Parameter.FORMAT_TEXT))
-                text = (String) value;
+                try {
+                    text = (String) value;
+                } catch (ClassCastException e) {
+                    text = Integer.toString((Integer) value);
+                }
             else if (parameter.format().equals(Parameter.FORMAT_BOOLEAN))
                 text = (Boolean) value ? "1" : "0";
             else if (parameter.format().equals(Parameter.FORMAT_INTEGER))
