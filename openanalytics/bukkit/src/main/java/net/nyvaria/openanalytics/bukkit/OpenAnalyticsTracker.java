@@ -93,24 +93,24 @@ public class OpenAnalyticsTracker {
     }
 
     public void trackPlayerJoin(Client client) {
-        if (is_tracking && client.isOptedIn()) {
+        if (is_tracking && client != null && client.isOptedIn()) {
             mpClient.sendAsynchronously(client.createPlayerJoinHit());
             mpClient.sendAsynchronously(client.createWorldHit());
         }
     }
 
     public void trackPlayerQuit(Client client) {
-        if (is_tracking && client.isOptedIn())
+        if (is_tracking && client != null && client.isOptedIn())
             mpClient.sendAsynchronously(client.createPlayerQuitHit());
     }
 
     public void trackPlayerKick(Client client) {
-        if (is_tracking && client.isOptedIn())
+        if (is_tracking && client != null && client.isOptedIn())
             mpClient.sendAsynchronously(client.createPlayerKickHit());
     }
 
     public void trackPlayerChangedWorld(Client client) {
-        if (is_tracking && client.isOptedIn())
+        if (is_tracking && client != null && client.isOptedIn())
             mpClient.sendAsynchronously(client.createWorldHit());
     }
 

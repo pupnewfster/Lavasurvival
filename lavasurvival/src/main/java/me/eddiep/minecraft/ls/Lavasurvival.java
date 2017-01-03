@@ -146,13 +146,6 @@ public class Lavasurvival extends JavaPlugin {
             this.setups.clear();
             this.userManager.saveAll();
             log("Disabled");
-            for (Player p : Bukkit.getOnlinePlayers()) {
-                try {
-                    changeServer(p, "lobby");
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
         }
         GGBAR.removeAll();
         this.running = false;
