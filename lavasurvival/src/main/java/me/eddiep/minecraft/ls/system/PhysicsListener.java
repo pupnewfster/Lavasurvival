@@ -315,22 +315,26 @@ public class PhysicsListener implements Listener {
 
     public boolean placeSponge(Location location, boolean forLava) {
         ArrayList<BlockedLocation> locations = new ArrayList<>();
-        for (int x = -5; x <= 5; x++) {
-            for (int y = -5; y <= 5; y++) {
-                for (int z = -5; z <= 5; z++) {
+        ArrayList<Location> outerLocations = new ArrayList<>();
+        for (int x = -6; x <= 6; x++) {
+            for (int y = -6; y <= 6; y++) {
+                for (int z = -6; z <= 6; z++) {
                     Location blockedLocation = location.clone().add(x, y, z);
-                    BlockedLocation blocked = addBlockedLocation(blockedLocation, spongeDuration, forLava);
-                    if (blocked == null) {
-                        locations.clear();
-                        return false;
+                    if (Math.abs(x) == 6 || Math.abs(y) == 6 || Math.abs(z) == 6)
+                        outerLocations.add(blockedLocation);
+                    else {
+                        BlockedLocation blocked = addBlockedLocation(blockedLocation, spongeDuration, forLava);
+                        if (blocked == null) {
+                            locations.clear();
+                            return false;
+                        }
+                        locations.add(blocked);
                     }
-
-                    locations.add(blocked);
                 }
             }
         }
 
-        SpongeInfo spongeInfo = new SpongeInfo(location, forLava, locations);
+        SpongeInfo spongeInfo = new SpongeInfo(location, forLava, locations, outerLocations);
         sponges.add(spongeInfo);
 
         return true;
@@ -467,11 +471,10 @@ public class PhysicsListener implements Listener {
                     Lavasurvival.spawnParticleEffect(sponge.location, 20 * 3, Color.RED);
 
                     //Remove all blocked locations
-                    for (BlockedLocation location : sponge.blockingLocations) {
-                        blockedLocations.remove(location.getLocation().toVector().toBlockVector());
-                        ClassicPhysics.INSTANCE.getPhysicsHandler().requestUpdateAround(location.getLocation()); //TODO Try to come up with a more efficient way than an aoe around every block
-                    }
+                    sponge.blockingLocations.forEach(location -> blockedLocations.remove(location.getLocation().toVector().toBlockVector()));
                     sponge.blockingLocations.clear();
+                    sponge.outerLocations.forEach(l -> ClassicPhysics.INSTANCE.getPhysicsHandler().checkLocation(l));
+                    sponge.outerLocations.clear();
                     spongeInfoIterator.remove();
                 } else if (time - sponge.placeTime >= spongeDuration / 2)
                     sponge.spawnParticles(Color.fromRGB(244, 66, 244));
@@ -609,15 +612,17 @@ public class PhysicsListener implements Listener {
         private Location location;
         private long placeTime;
         private List<BlockedLocation> blockingLocations;
+        private List<Location> outerLocations;
         private boolean forLava;
         private long lastParticle;
 
 
-        public SpongeInfo(Location location, boolean forLava, List<BlockedLocation> blocked) {
+        public SpongeInfo(Location location, boolean forLava, List<BlockedLocation> blocked, List<Location> outerLocations) {
             this.location = location;
             this.placeTime = System.currentTimeMillis();
             this.blockingLocations = blocked;
             this.forLava = forLava;
+            this.outerLocations = outerLocations;
         }
 
         public List<BlockedLocation> getBlockingLocations() {

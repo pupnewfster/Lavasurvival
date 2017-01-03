@@ -344,7 +344,7 @@ public final class ClassicPhysicsHandler implements Listener {
             event.setCancelled(true);
     }
 
-    public void requestUpdateAround(Location location) {
+    private void requestUpdateAround(Location location) {
         if (current == null || location == null || !location.getWorld().equals(current))
             return;
         try {
@@ -362,7 +362,7 @@ public final class ClassicPhysicsHandler implements Listener {
         checkLocation(location.clone().add(0, -1, 0));
     }
 
-    private void checkLocation(Location l) {
+    public void checkLocation(Location l) {
         if (isClassicBlock(l.toVector()))
             for (LogicContainerHolder holder : logicContainers)
                 if (holder.container.doesHandle(l.getBlock().getType())) {
