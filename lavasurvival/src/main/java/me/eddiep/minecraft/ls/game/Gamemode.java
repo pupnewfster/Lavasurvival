@@ -30,6 +30,7 @@ import org.bukkit.boss.BarColor;
 import org.bukkit.boss.BarFlag;
 import org.bukkit.boss.BarStyle;
 import org.bukkit.craftbukkit.v1_11_R1.boss.CraftBossBar;
+import org.bukkit.entity.FallingBlock;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
@@ -782,6 +783,7 @@ public abstract class Gamemode {
         UserManager um = Lavasurvival.INSTANCE.getUserManager();
         UserInfo u = um.getUser(player.getUniqueId());
         u.resetGenerosity();
+        u.resetBlockChangeCount();
         Inventory inv = player.getInventory();
         for (Material DEFAULT_BLOCK : DEFAULT_BLOCKS) {
             ItemStack toGive = new ItemStack(DEFAULT_BLOCK, 1);
@@ -904,6 +906,11 @@ public abstract class Gamemode {
 
     public boolean isEndGame() {
         return this.endGame;
+    }
+
+    public void spawnBookshelf(int x, int z) {
+        FallingBlock b = getCurrentWorld().spawnFallingBlock(new Location(getCurrentWorld(), x + 0.5, getCurrentMap().getHeight(), z + 0.5), new MaterialData(Material.BOOKSHELF));
+        b.setGlowing(true);
     }
 
     public abstract void addToBonus(double takeOut);
