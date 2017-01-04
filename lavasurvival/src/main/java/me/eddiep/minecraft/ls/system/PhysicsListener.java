@@ -9,6 +9,7 @@ import org.bukkit.Color;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
+import org.bukkit.entity.AreaEffectCloud;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -29,6 +30,7 @@ public class PhysicsListener implements Listener {
 
     private HashMap<BlockVector, BlockedLocation> blockedLocations = new HashMap<>();
     private HashSet<SpongeInfo> sponges = new HashSet<>();
+    private HashSet<BlockVector> brokenSponges = new HashSet<>();
 
     public PhysicsListener() {
         setup();
@@ -321,7 +323,7 @@ public class PhysicsListener implements Listener {
                 for (int z = -6; z <= 6; z++) {
                     Location blockedLocation = location.clone().add(x, y, z);
                     if (Math.abs(x) == 6 || Math.abs(y) == 6 || Math.abs(z) == 6)
-                        outerLocations.add(blockedLocation);
+                        outerLocations.add(blockedLocation.getBlock().getLocation()); //Make the x,y,z be ints
                     else {
                         BlockedLocation blocked = addBlockedLocation(blockedLocation, spongeDuration, forLava);
                         if (blocked == null) {
@@ -333,10 +335,7 @@ public class PhysicsListener implements Listener {
                 }
             }
         }
-
-        SpongeInfo spongeInfo = new SpongeInfo(location, forLava, locations, outerLocations);
-        sponges.add(spongeInfo);
-
+        sponges.add(new SpongeInfo(location, forLava, locations, outerLocations));
         return true;
     }
 
@@ -360,8 +359,14 @@ public class PhysicsListener implements Listener {
         return blocked;
     }
 
+    public void addBrokeSponge(Location l) {
+        brokenSponges.add(l.toVector().toBlockVector());
+    }
+
     public void clearBlockedLocations() {
         blockedLocations.clear();
+        brokenSponges.clear();
+        sponges.clear();
     }
 
     @SuppressWarnings({"deprecation", "unused"})
@@ -465,10 +470,15 @@ public class PhysicsListener implements Listener {
             Iterator<SpongeInfo> spongeInfoIterator = sponges.iterator();
             while (spongeInfoIterator.hasNext()) {
                 SpongeInfo sponge = spongeInfoIterator.next();
-
+                BlockVector bv = sponge.getLocation().toVector().toBlockVector();
+                boolean remove = brokenSponges.contains(bv);
+                if (remove) {
+                    brokenSponges.remove(bv);
+                    sponge.curParticle.remove();
+                }
                 long time = System.currentTimeMillis();
-                if (time - sponge.placeTime >= spongeDuration) {
-                    Lavasurvival.spawnParticleEffect(sponge.location, 20 * 3, Color.RED);
+                if (time - sponge.placeTime >= spongeDuration || remove) {
+                    Lavasurvival.spawnParticleEffect(sponge.location.clone().add(0.5, 0.5, 0.5), 20 * 3, Color.RED);
 
                     //Remove all blocked locations
                     sponge.blockingLocations.forEach(location -> blockedLocations.remove(location.getLocation().toVector().toBlockVector()));
@@ -476,9 +486,11 @@ public class PhysicsListener implements Listener {
                     sponge.outerLocations.forEach(l -> ClassicPhysics.INSTANCE.getPhysicsHandler().checkLocation(l));
                     sponge.outerLocations.clear();
                     spongeInfoIterator.remove();
-                } else if (time - sponge.placeTime >= spongeDuration / 2)
+                    sponge.getLocation().getBlock().setType(Material.AIR);
+                    ClassicPhysics.INSTANCE.getPhysicsHandler().removePlayerPlaced(sponge.getLocation().toVector());
+                } else if (time - sponge.placeTime >= spongeDuration / 2) {
                     sponge.spawnParticles(Color.fromRGB(244, 66, 244));
-                else
+                } else
                     sponge.spawnParticles(Color.LIME);
             }
         }
@@ -615,6 +627,7 @@ public class PhysicsListener implements Listener {
         private List<Location> outerLocations;
         private boolean forLava;
         private long lastParticle;
+        private AreaEffectCloud curParticle;
 
 
         public SpongeInfo(Location location, boolean forLava, List<BlockedLocation> blocked, List<Location> outerLocations) {
@@ -660,7 +673,7 @@ public class PhysicsListener implements Listener {
             if (System.currentTimeMillis() - lastParticle < 1500)
                 return;
             lastParticle = System.currentTimeMillis();
-            Lavasurvival.spawnParticleEffect(location.clone().add(0.5, 0.5, 0.5), (int) (20 * 1.5), color); //Center it in the block
+            curParticle = Lavasurvival.spawnParticleEffect(location.clone().add(0.5, 0.5, 0.5), (int) (20 * 1.5), color); //Center it in the block
         }
     }
 }
