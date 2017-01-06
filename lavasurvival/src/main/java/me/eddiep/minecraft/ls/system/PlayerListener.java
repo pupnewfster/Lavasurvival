@@ -12,6 +12,7 @@ import me.eddiep.minecraft.ls.game.status.PlayerStatusManager;
 import me.eddiep.minecraft.ls.ranks.UserInfo;
 import me.eddiep.minecraft.ls.ranks.UserManager;
 import me.eddiep.minecraft.ls.system.bank.BankInventory;
+import me.eddiep.minecraft.ls.system.specialblocks.SpecialInventory;
 import net.minecraft.server.v1_11_R1.IChatBaseComponent;
 import net.minecraft.server.v1_11_R1.PacketPlayInClientCommand;
 import net.minecraft.server.v1_11_R1.PacketPlayOutTitle;
@@ -19,6 +20,8 @@ import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.craftbukkit.v1_11_R1.entity.CraftPlayer;
+import org.bukkit.entity.EntityType;
+import org.bukkit.entity.FallingBlock;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -225,6 +228,15 @@ public class PlayerListener implements Listener {
         }
     }
 
+    @EventHandler
+    public void onSpecialClick(PlayerInteractEntityEvent event) {
+        if (event.getHand().equals(EquipmentSlot.HAND)) {
+            event.setCancelled(true);
+            if (Gamemode.getCurrentGame() != null && Gamemode.getCurrentGame().isAlive(event.getPlayer()) && event.getRightClicked().getType().equals(EntityType.FALLING_BLOCK))
+                Gamemode.getCurrentGame().interactSpecial(event.getPlayer(), (FallingBlock) event.getRightClicked());
+        }
+    }
+
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onBedEnter(PlayerBedEnterEvent event) {
         event.setCancelled(true);
@@ -268,6 +280,8 @@ public class PlayerListener implements Listener {
         BankInventory view = BankInventory.from(p);
         if (view != null)
             view.end(p);
+        else
+            SpecialInventory.tryClose(p);
     }
 
     @EventHandler(priority = EventPriority.LOW)
@@ -275,10 +289,10 @@ public class PlayerListener implements Listener {
         Player p = (Player) e.getWhoClicked();
         int clickedSlot = e.getView().convertSlot(e.getRawSlot());
         BankInventory view = BankInventory.from(p);
+        ItemStack currentItem = e.getCurrentItem();
+        if (currentItem == null)
+            return;
         if (view != null) {
-            if (e.getCurrentItem() == null)
-                return;
-            ItemStack currentItem = e.getCurrentItem();
             if (view.isNextPageButton(currentItem)) {
                 view.nextPage();
                 e.setCancelled(true);
@@ -288,6 +302,13 @@ public class PlayerListener implements Listener {
             } else { //Only let blocks that can be placed be stored in the bank
                 Material type = currentItem.getType();
                 if (type != null && !type.equals(Material.AIR) && (!currentItem.hasItemMeta() || !currentItem.getItemMeta().hasLore() || !currentItem.getItemMeta().getLore().get(0).contains("MeltTime")))
+                    e.setCancelled(true);
+            }
+        } else {
+            FallingBlock b = SpecialInventory.from(p);
+            if (b != null) {
+                Material type = currentItem.getType();
+                if (type != null && !type.equals(Material.AIR) && (!currentItem.hasItemMeta() || !currentItem.getItemMeta().hasLore() || !currentItem.getItemMeta().getLore().get(0).equals("Special")))
                     e.setCancelled(true);
             }
         }
