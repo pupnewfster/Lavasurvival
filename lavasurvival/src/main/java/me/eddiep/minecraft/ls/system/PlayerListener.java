@@ -201,9 +201,10 @@ public class PlayerListener implements Listener {
                 for (Entity e : entities) {
                     if (e.getType().equals(EntityType.FALLING_BLOCK)) {
                         boolean wasGood = false;
-                        int x = e.getLocation().getBlockX(), y = e.getLocation().getBlockY(), z = e.getLocation().getBlockZ();
+                        int x = e.getLocation().getBlockX(), y = e.getLocation().getBlockY(), z = e.getLocation().getBlockZ();//should it have a slightly larger check for y if it is not at .0
+                        int upY = e.getLocation().getY() >= y + 0.5 && e.getLocation().getY() < y + 0.6 ? y + 1 : y;
                         for (Location cur : visible)
-                            if (x == cur.getBlockX() && y == cur.getBlockY() && z == cur.getBlockZ()) {
+                            if (x == cur.getBlockX() && (y == cur.getBlockY() || upY == cur.getBlockY()) && z == cur.getBlockZ()) {
                                 wasGood = true;
                                 break;
                             }

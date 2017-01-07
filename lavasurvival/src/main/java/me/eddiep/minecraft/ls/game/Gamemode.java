@@ -31,6 +31,7 @@ import org.bukkit.block.BlockFace;
 import org.bukkit.boss.BarColor;
 import org.bukkit.boss.BarStyle;
 import org.bukkit.craftbukkit.v1_11_R1.boss.CraftBossBar;
+import org.bukkit.craftbukkit.v1_11_R1.entity.CraftFallingBlock;
 import org.bukkit.entity.FallingBlock;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
@@ -978,9 +979,11 @@ public abstract class Gamemode {
             tier = InventoryTiers.UNCOMMON;
         else if (data.equals(rare)) //Give them some rare items/blocks
             tier = InventoryTiers.RARE;
-        if (tier == null)
+        if (tier == null) {
+            if (scoreboard != null)
+                scoreboard.getTeam("Special").removeEntry(b.getUniqueId().toString());
             b.remove();
-        else {
+        } else {
             SpecialInventory inv = SpecialInventory.from(b);
             if (inv == null)
                 inv = SpecialInventory.create(b, tier);
@@ -1027,6 +1030,9 @@ public abstract class Gamemode {
         FallingBlock b = getCurrentWorld().spawnFallingBlock(new Location(getCurrentWorld(), x + 0.5, y, z + 0.5), data); //Should y be + 0.5 as well probably not
         b.setGlowing(true);
         b.setDropItem(true);
+        b.setGravity(gravity);
+        if (!gravity) //If no gravity make the block not expire after 30 seconds
+            ((CraftFallingBlock) b).getHandle().ticksLived = -2147483648; //Bypass the spigot check of it being negative
         if (scoreboard != null)
             scoreboard.getTeam("Special").addEntry(b.getUniqueId().toString());
     }

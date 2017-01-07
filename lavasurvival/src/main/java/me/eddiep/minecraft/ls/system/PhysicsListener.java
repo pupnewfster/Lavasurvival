@@ -318,7 +318,7 @@ public class PhysicsListener implements Listener {
     public boolean placeSponge(Location location, BlockingType blockingType) {
         ArrayList<BlockedLocation> locations = new ArrayList<>();
         ArrayList<Location> outerLocations = new ArrayList<>();
-        int range = blockingType.equals(BlockingType.BOTH) ? 10 : 5;
+        int range = blockingType.equals(BlockingType.BOTH) ? 10 : 5; //TODO make this a param if we end up making a sponge with a range other than 10 that can block both
         range++;//add the outside rim
         for (int x = -range; x <= range; x++) {
             for (int y = -range; y <= range; y++) {
@@ -486,6 +486,7 @@ public class PhysicsListener implements Listener {
 
                     //Remove all blocked locations
                     sponge.blockingLocations.forEach(location -> blockedLocations.remove(location.getLocation().toVector().toBlockVector()));
+                    //TODO: not remove the blocked locations that still have a sponge near them
                     sponge.blockingLocations.clear();
                     sponge.outerLocations.forEach(l -> ClassicPhysics.INSTANCE.getPhysicsHandler().checkLocation(l));
                     sponge.outerLocations.clear();

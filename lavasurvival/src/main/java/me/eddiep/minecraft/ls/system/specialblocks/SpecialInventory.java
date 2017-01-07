@@ -1,5 +1,6 @@
 package me.eddiep.minecraft.ls.system.specialblocks;
 
+import me.eddiep.minecraft.ls.game.Gamemode;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.FallingBlock;
@@ -75,6 +76,8 @@ public class SpecialInventory {
         }
         if (close != null) {
             INSTANCERS.remove(close);
+            if (Gamemode.getScoreboard() != null)
+                Gamemode.getScoreboard().getTeam("Special").removeEntry(close.getUniqueId().toString());
             close.remove();
         }
     }
