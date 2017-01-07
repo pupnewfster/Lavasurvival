@@ -60,10 +60,6 @@
       <url>https://hub.spigotmc.org/nexus/content/repositories/snapshots/</url>
     </repository>
     <repository>
-      <id>stealthyone-repo</id>
-      <url>http://repo.stealthyone.com/content/groups/public</url>
-    </repository>
-    <repository>
       <releases>
         <checksumPolicy>ignore</checksumPolicy>
       </releases>

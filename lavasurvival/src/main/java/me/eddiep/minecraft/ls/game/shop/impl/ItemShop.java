@@ -79,7 +79,7 @@ public class ItemShop extends Menu {
     @PreProcessor
     public void process(Inventory inv) {
         for (int i = 0; i < LavaItem.ITEMS.length; i++) {
-            if (i >= inv.getSize())
+            if (i >= inv.getSize() || inv.getItem(i) == null)
                 break;
             inv.setItem(i, LavaItem.ITEMS[i].createItemWithPrice());
         }

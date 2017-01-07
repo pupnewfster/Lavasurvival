@@ -318,7 +318,7 @@ public class PhysicsListener implements Listener {
     public boolean placeSponge(Location location, BlockingType blockingType) {
         ArrayList<BlockedLocation> locations = new ArrayList<>();
         ArrayList<Location> outerLocations = new ArrayList<>();
-        int range = blockingType.equals(BlockingType.BOTH) ? 10 : 5;
+        int range = blockingType.equals(BlockingType.BOTH) ? 10 : 5; //TODO make this a param if we end up making a sponge with a range other than 10 that can block both
         range++;//add the outside rim
         for (int x = -range; x <= range; x++) {
             for (int y = -range; y <= range; y++) {
@@ -350,16 +350,14 @@ public class PhysicsListener implements Listener {
         BlockedLocation blocked = new BlockedLocation(location, duration, blockingType);
         blockedLocations.put(location.toVector().toBlockVector(), blocked);
 
-        Block curentBlock = location.getBlock();
-
-        if ((blockingType == BlockingType.LAVA || blockingType == BlockingType.BOTH) && (curentBlock.getType() == Material.LAVA || curentBlock.getType() == Material.STATIONARY_LAVA)) {
+        Block currentBlock = location.getBlock();
+        if ((blockingType == BlockingType.LAVA || blockingType == BlockingType.BOTH) && (currentBlock.getType() == Material.LAVA || currentBlock.getType() == Material.STATIONARY_LAVA)) {
             ClassicPhysics.INSTANCE.getPhysicsHandler().removeClassicBlock(location.toVector());
-            curentBlock.setType(Material.AIR, false);
-        } else if ((blockingType == BlockingType.WATER || blockingType == BlockingType.BOTH) && (curentBlock.getType() == Material.WATER || curentBlock.getType() == Material.STATIONARY_WATER)) {
+            currentBlock.setType(Material.AIR, false);
+        } else if ((blockingType == BlockingType.WATER || blockingType == BlockingType.BOTH) && (currentBlock.getType() == Material.WATER || currentBlock.getType() == Material.STATIONARY_WATER)) {
             ClassicPhysics.INSTANCE.getPhysicsHandler().removeClassicBlock(location.toVector());
-            curentBlock.setType(Material.AIR, false);
+            currentBlock.setType(Material.AIR, false);
         }
-
         return blocked;
     }
 
@@ -488,6 +486,7 @@ public class PhysicsListener implements Listener {
 
                     //Remove all blocked locations
                     sponge.blockingLocations.forEach(location -> blockedLocations.remove(location.getLocation().toVector().toBlockVector()));
+                    //TODO: not remove the blocked locations that still have a sponge near them
                     sponge.blockingLocations.clear();
                     sponge.outerLocations.forEach(l -> ClassicPhysics.INSTANCE.getPhysicsHandler().checkLocation(l));
                     sponge.outerLocations.clear();
