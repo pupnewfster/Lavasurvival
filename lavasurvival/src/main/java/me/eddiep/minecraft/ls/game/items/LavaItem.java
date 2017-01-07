@@ -59,7 +59,7 @@ public abstract class LavaItem {
         List<String> lore = meta.getLore();
         if (lore == null)
             lore = new ArrayList<>();
-        
+
         lore.addAll(Arrays.asList(description().split("\n")));
         if (intrinsic() == Intrinsic.EPIC) {
             lore.add(EPIC_TEXT);

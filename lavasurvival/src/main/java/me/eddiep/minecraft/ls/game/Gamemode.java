@@ -3,6 +3,7 @@ package me.eddiep.minecraft.ls.game;
 import com.crossge.necessities.Commands.CmdHide;
 import com.crossge.necessities.Necessities;
 import com.crossge.necessities.RankManager.Rank;
+import com.crossge.necessities.RankManager.RankManager;
 import com.crossge.necessities.Utils;
 import me.eddiep.ClassicPhysics;
 import me.eddiep.minecraft.ls.Lavasurvival;
@@ -18,6 +19,8 @@ import me.eddiep.minecraft.ls.system.BukkitUtils;
 import me.eddiep.minecraft.ls.system.FileUtils;
 import me.eddiep.minecraft.ls.system.PhysicsListener;
 import me.eddiep.minecraft.ls.system.PlayerListener;
+import me.eddiep.minecraft.ls.system.specialblocks.InventoryTiers;
+import me.eddiep.minecraft.ls.system.specialblocks.SpecialInventory;
 import mkremins.fanciful.FancyMessage;
 import net.nyvaria.googleanalytics.hit.EventHit;
 import net.nyvaria.googleanalytics.hit.SocialInteractionHit;
@@ -38,6 +41,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.material.MaterialData;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scoreboard.Scoreboard;
+import org.bukkit.scoreboard.Team;
 
 import java.io.File;
 import java.io.IOException;
@@ -94,6 +98,7 @@ public abstract class Gamemode {
     private Gamemode nextGame;
     private LavaMap map;
     private boolean endGame;
+    private final ChatColor specialColor = ChatColor.GREEN;
     private long startTime;
     private List<Block> spongeLocations = new ArrayList<>();
 
@@ -126,11 +131,16 @@ public abstract class Gamemode {
             listener.cleanup();
         if (physicsListener != null)
             physicsListener.cleanup();
+        if (scoreboard != null)
+            scoreboard.getTeam("Special").unregister();
     }
 
     public final void prepare() {
-        if (scoreboard == null)
+        if (scoreboard == null) {
             scoreboard = Bukkit.getScoreboardManager().getMainScoreboard();
+            Team t = scoreboard.registerNewTeam("Special");
+            t.setPrefix(specialColor + "");
+        }
         if (listener == null) {
             listener = new PlayerListener();
             Lavasurvival.INSTANCE.getServer().getPluginManager().registerEvents(listener, Lavasurvival.INSTANCE);
@@ -231,7 +241,10 @@ public abstract class Gamemode {
             else
                 new Thread(() -> restoreBackup(lastMap.getWorld())).start();
         }
-        Bukkit.getScheduler().scheduleSyncDelayedTask(Lavasurvival.INSTANCE, () -> ClassicPhysics.INSTANCE.getPhysicsHandler().setPhysicsWorld(getCurrentWorld()), 20); //Delay it slightly to ensure things are set
+        Bukkit.getScheduler().scheduleSyncDelayedTask(Lavasurvival.INSTANCE, () -> {
+            ClassicPhysics.INSTANCE.getPhysicsHandler().setPhysicsWorld(getCurrentWorld());
+            spawnSpecialBlocks(false);
+        }, 20); //Delay it slightly to ensure things are set
         Lavasurvival.INSTANCE.MONEY_VIEWER.run();
         this.tickTask = new BukkitRunnable() {
             @Override
@@ -339,6 +352,8 @@ public abstract class Gamemode {
         if (this.isEnding)
             return;
         this.isEnding = true;
+        if (Math.random() <= 0.3)
+            spawnSpecialBlocks(true);
         Bukkit.getScheduler().scheduleSyncDelayedTask(Lavasurvival.INSTANCE, this::endRound, seconds * 20L);
     }
 
@@ -684,6 +699,11 @@ public abstract class Gamemode {
     private void end() {
         PlayerStatusManager.cleanup();
         this.tickTask.cancel();
+        if (scoreboard != null) {
+            scoreboard.getTeam("Special").unregister();
+            Team t = scoreboard.registerNewTeam("Special");
+            t.setPrefix(specialColor + "");
+        }
         //Bukkit.getScheduler().cancelTasks(Lavasurvival.INSTANCE);
         globalMessage(ChatColor.GREEN + "The round has ended!");
         ClassicPhysics.INSTANCE.getPhysicsHandler().setPhysicsWorld(null);
@@ -755,7 +775,7 @@ public abstract class Gamemode {
         String[] files = LavaMap.getPossibleMaps();
         map = map.toLowerCase() + ".map";
         for (String file : files)
-            if (file.toLowerCase().endsWith(map)) {
+            if (file.toLowerCase().replaceAll(" ", "").endsWith(map)) {
                 LavaMap lavaMap;
                 Gamemode g = null;
                 try {
@@ -797,6 +817,11 @@ public abstract class Gamemode {
             im.setLore(Arrays.asList("Lava MeltTime: " + PhysicsListener.getLavaMeltTimeAsString(toGive.getData()), "Water MeltTime: " + PhysicsListener.getWaterMeltTimeAsString(toGive.getData())));
             toGive.setItemMeta(im);
             player.getInventory().addItem(toGive);
+        }
+        for (int i = 0; i < inv.getSize(); i++) {
+            ItemStack item = inv.getItem(i);
+            if (item != null && item.hasItemMeta() && item.getItemMeta().hasLore() && item.getItemMeta().getLore().get(0).equalsIgnoreCase("Special"))
+                inv.remove(item);
         }
         if (!player.getInventory().contains(Material.WRITTEN_BOOK))
             player.getInventory().addItem(Lavasurvival.INSTANCE.getRules());
@@ -877,7 +902,8 @@ public abstract class Gamemode {
     }
 
     public void globalMessage(String message) {
-        getCurrentWorld().getPlayers().forEach(p -> p.sendMessage(ChatColor.RED + "[Lavasurvival] " + ChatColor.RESET + message));
+        if (getCurrentWorld() != null)
+            getCurrentWorld().getPlayers().forEach(p -> p.sendMessage(ChatColor.RED + "[Lavasurvival] " + ChatColor.RESET + message));
     }
 
     private void globalMessageNoPrefix(String message) {
@@ -912,9 +938,93 @@ public abstract class Gamemode {
         return this.endGame;
     }
 
-    public void spawnBookshelf(int x, int z) {
-        FallingBlock b = getCurrentWorld().spawnFallingBlock(new Location(getCurrentWorld(), x + 0.5, getCurrentMap().getLavaY(), z + 0.5), new MaterialData(Material.BOOKSHELF));
+    private final MaterialData money = new MaterialData(Material.BOOKSHELF);
+    private final MaterialData common = new MaterialData(Material.IRON_BLOCK);
+    private final MaterialData uncommon = new MaterialData(Material.GOLD_BLOCK);
+    private final MaterialData rare = new MaterialData(Material.DIAMOND_BLOCK);
+
+    public void interactSpecial(Player p, FallingBlock b) {
+        MaterialData data = new MaterialData(b.getMaterial(), b.getBlockData());
+        InventoryTiers tier = null;
+        //TODO: Should it announce that someone got something and what they got
+        if (data.equals(money)) { //Give them money and calculate how much
+            int baseDistribution = 0;
+            if (this instanceof Flood)
+                baseDistribution = (int) (Math.log(1 - RANDOM.nextDouble()) / -0.47) + 1;
+            else {
+                int totalLayers = getCurrentMap().getHeight();
+                int layersLeft = 0;
+                if (this instanceof Rise)
+                    layersLeft = ((Rise) this).layersLeft.getScore();
+                else if (this instanceof Fusion)
+                    layersLeft = ((Fusion) this).layersLeft.getScore();
+                if (layersLeft <= 0)
+                    layersLeft = 1;
+                double inverseLayersLeft = (double) layersLeft / (double) totalLayers;
+                baseDistribution = (int) (Math.log(1 - RANDOM.nextDouble()) / -(Math.abs(inverseLayersLeft - 1) <= 0.15 ? 0.909 : inverseLayersLeft / 1.1)) + 1;
+            }
+            int reward = baseDistribution * 100;
+            if (isRewardDoubled())
+                reward *= 2;
+            globalMessage(ChatColor.GOLD + p.getName() + ChatColor.GREEN + " found " + Necessities.getEconomy().format(reward));
+            Lavasurvival.INSTANCE.depositPlayer(p, reward);
+        } else if (data.equals(common)) //Give them some common items/blocks
+            tier = InventoryTiers.COMMON;
+        else if (data.equals(uncommon)) //Give them some uncommon items/blocks
+            tier = InventoryTiers.UNCOMMON;
+        else if (data.equals(rare)) //Give them some rare items/blocks
+            tier = InventoryTiers.RARE;
+        if (tier == null)
+            b.remove();
+        else {
+            SpecialInventory inv = SpecialInventory.from(b);
+            if (inv == null)
+                inv = SpecialInventory.create(b, tier);
+            inv.openFor(p);
+        }
+    }
+
+    protected void spawnSpecialBlocks(boolean isEndWave) {
+        LavaMap cmap = getCurrentMap();
+        int minX = cmap.getMinX(), maxX = cmap.getMaxX(), minZ = cmap.getMinZ(), maxZ = cmap.getMaxZ();
+        int difX = maxX - minX, difZ = maxZ - minZ;
+        if (difX < 0 || difZ < 0)
+            return; //There is an error in the config
+        //Increment by one so that the random is inclusive and that if number > 1 it does not have to recalculate the +1
+        difX++;
+        difZ++;
+        com.crossge.necessities.RankManager.UserManager um = Necessities.getUM();
+        RankManager rm = Necessities.getRM();
+        int survivor = rm.getOrder().indexOf(rm.getRank("Survivor"));
+        int min = 1, max = alive.size() / 3;
+        for (UUID uuid : alive)
+            if (rm.getOrder().indexOf(um.getUser(uuid).getRank()) >= survivor) {
+                min = 0;
+                break;
+            }
+        if (max < min)
+            max = alive.size();
+        if (max <= 0)
+            max = 1;
+        int number = RANDOM.nextInt(max - min + 1) + min, y = getCurrentMap().getSpecialY();
+        for (int i = 0; i < number; i++) {
+            //TODO: use some probability to decide which kind to spawn instead of just spawning a money one, this also can be moved into the spawn instead of passing data
+            MaterialData data = money;
+            if (isEndWave) {
+                //TODO: Make things spawning in open areas (not falling)
+                //Be sure to use false for the gravity variable to make it not fall
+            } else
+                spawnSpecialBlock(minX + RANDOM.nextInt(difX), y, minZ + RANDOM.nextInt(difZ), data, true);
+        }
+    }
+
+    public void spawnSpecialBlock(int x, int y, int z, MaterialData data, boolean gravity) {
+        //TODO: Announce what type of block is falling
+        FallingBlock b = getCurrentWorld().spawnFallingBlock(new Location(getCurrentWorld(), x + 0.5, y, z + 0.5), data); //Should y be + 0.5 as well probably not
         b.setGlowing(true);
+        b.setDropItem(true);
+        if (scoreboard != null)
+            scoreboard.getTeam("Special").addEntry(b.getUniqueId().toString());
     }
 
     public abstract void addToBonus(double takeOut);

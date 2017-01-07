@@ -13,6 +13,7 @@ import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.BlockFace;
 import org.bukkit.craftbukkit.v1_11_R1.CraftWorld;
+import org.bukkit.craftbukkit.v1_11_R1.entity.CraftFallingBlock;
 import org.bukkit.craftbukkit.v1_11_R1.entity.CraftPlayer;
 import org.bukkit.entity.FallingBlock;
 import org.bukkit.entity.Player;
@@ -21,11 +22,14 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.*;
 import org.bukkit.event.entity.EntityChangeBlockEvent;
+import org.bukkit.event.entity.ItemSpawnEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.world.WorldUnloadEvent;
+import org.bukkit.material.MaterialData;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.scoreboard.Team;
 import org.bukkit.util.BlockVector;
 import org.bukkit.util.Vector;
 
@@ -318,11 +322,37 @@ public final class ClassicPhysicsHandler implements Listener {
     @EventHandler
     public void blockFall(EntityChangeBlockEvent event) {
         if (!ClassicPhysics.TYPE.equals(PhysicsType.DEFAULT) && event.getEntity() instanceof FallingBlock) {
-            if (!((FallingBlock) event.getEntity()).getMaterial().equals(Material.BOOKSHELF)) {
-                event.setCancelled(true);
+            FallingBlock f = (FallingBlock) event.getEntity();
+            event.setCancelled(true);
+            if (!f.isGlowing())
                 event.getBlock().getState().update(true, false);
-            } else {
-                //setBookShelf(event.getBlock().getLocation().toVector()); //TODO set it as a bookshelf to not be destroyed
+            else {
+                String uid = f.getUniqueId().toString();
+                f = f.getWorld().spawnFallingBlock(f.getLocation(), new MaterialData(f.getMaterial(), f.getBlockData()));
+                f.setGlowing(true);
+                f.setGravity(false);
+                ((CraftFallingBlock) f).getHandle().ticksLived = -2147483648; //Bypass the spigot check of it being negative
+                Team t = Bukkit.getScoreboardManager().getMainScoreboard().getTeam("Special");
+                if (t != null) {
+                    t.removeEntry(uid);
+                    t.addEntry(f.getUniqueId().toString());
+                }
+            }
+        }
+    }
+
+    @EventHandler
+    public void itemSpawn(ItemSpawnEvent event) {
+        if (!ClassicPhysics.TYPE.equals(PhysicsType.DEFAULT)) {
+            org.bukkit.entity.Item i = event.getEntity();
+            if (i.getTicksLived() == 0) {
+                FallingBlock f = i.getWorld().spawnFallingBlock(i.getLocation(), i.getItemStack().getData());
+                f.setGlowing(true);
+                f.setGravity(false);
+                ((CraftFallingBlock) f).getHandle().ticksLived = -2147483648; //Bypass the spigot check of it being negative
+                Team t = Bukkit.getScoreboardManager().getMainScoreboard().getTeam("Special");
+                if (t != null)
+                    t.addEntry(f.getUniqueId().toString());
             }
         }
     }

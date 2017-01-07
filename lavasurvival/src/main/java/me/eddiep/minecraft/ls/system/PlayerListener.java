@@ -12,6 +12,7 @@ import me.eddiep.minecraft.ls.game.status.PlayerStatusManager;
 import me.eddiep.minecraft.ls.ranks.UserInfo;
 import me.eddiep.minecraft.ls.ranks.UserManager;
 import me.eddiep.minecraft.ls.system.bank.BankInventory;
+import me.eddiep.minecraft.ls.system.specialblocks.SpecialInventory;
 import net.minecraft.server.v1_11_R1.IChatBaseComponent;
 import net.minecraft.server.v1_11_R1.PacketPlayInClientCommand;
 import net.minecraft.server.v1_11_R1.PacketPlayOutTitle;
@@ -19,6 +20,9 @@ import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.craftbukkit.v1_11_R1.entity.CraftPlayer;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.EntityType;
+import org.bukkit.entity.FallingBlock;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -39,11 +43,9 @@ import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.util.BlockIterator;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 
 @SuppressWarnings("unused")
 public class PlayerListener implements Listener {
@@ -142,32 +144,33 @@ public class PlayerListener implements Listener {
     @SuppressWarnings("deprecation")
     @EventHandler(priority = EventPriority.HIGHEST)
     public void blockInteract(PlayerInteractEvent event) {
-        if (Lavasurvival.INSTANCE.getSetups().containsKey(event.getPlayer().getUniqueId()))
+        Player p = event.getPlayer();
+        if (Lavasurvival.INSTANCE.getSetups().containsKey(p.getUniqueId()))
             return;
         if ((event.getAction().equals(Action.RIGHT_CLICK_BLOCK) || event.getAction().equals(Action.RIGHT_CLICK_AIR)) && event.getItem() != null && event.getItem().getType().equals(Material.WRITTEN_BOOK))
             return;//Allow players to read the rule book
-        if (Gamemode.getCurrentGame() != null && Gamemode.getCurrentGame().isDead(event.getPlayer()))
+        if (Gamemode.getCurrentGame() != null && Gamemode.getCurrentGame().isDead(p))
             event.setCancelled(true);
-        else if (Gamemode.getCurrentGame() != null && Gamemode.getCurrentGame().isAlive(event.getPlayer())) {
+        else if (Gamemode.getCurrentGame() != null && Gamemode.getCurrentGame().isAlive(p)) {
             if (event.getAction().equals(Action.LEFT_CLICK_BLOCK)) {
                 Block block = event.getClickedBlock();
                 if (invalidBlocks.contains(block.getType()))
                     return;
                 if (block.getLocation().getBlockY() >= Gamemode.getCurrentMap().getLavaY()) {
-                    event.getPlayer().sendMessage(ChatColor.RED + "" + ChatColor.BOLD + "You are building too high!");
+                    p.sendMessage(ChatColor.RED + "" + ChatColor.BOLD + "You are building too high!");
                     return;
                 }
                 if (Gamemode.getCurrentMap().isInSafeZone(block.getLocation())) {
-                    event.getPlayer().sendMessage(ChatColor.RED + "" + ChatColor.BOLD + "You are not allowed to build in spawn!");
+                    p.sendMessage(ChatColor.RED + "" + ChatColor.BOLD + "You are not allowed to build in spawn!");
                     return;
                 }
-                UserInfo u = Lavasurvival.INSTANCE.getUserManager().getUser(event.getPlayer().getUniqueId());
+                UserInfo u = Lavasurvival.INSTANCE.getUserManager().getUser(p.getUniqueId());
                 if (System.currentTimeMillis() - u.getLastBreak() <= 100)//So that two blocks don't break instantly, may need to be adjusted
                     return;
                 u.setLastBreak(System.currentTimeMillis());
                 u.incrementBlockCount();
                 if (this.survival) {
-                    Inventory inventory = event.getPlayer().getInventory();
+                    Inventory inventory = p.getInventory();
                     int index = inventory.first(block.getType());
                     if (index == -1)
                         index = inventory.firstEmpty();
@@ -188,14 +191,35 @@ public class PlayerListener implements Listener {
                 block.setType(Material.AIR);
                 ClassicPhysics.INSTANCE.getPhysicsHandler().removePlayerPlaced(block.getLocation().toVector());
                 PhysicsListener.cancelLocation(block.getLocation());
-                Bukkit.getPluginManager().callEvent(new BlockBreakEvent(block, event.getPlayer()));
+                Bukkit.getPluginManager().callEvent(new BlockBreakEvent(block, p));
+            } else if (event.getAction().equals(Action.LEFT_CLICK_AIR)) {
+                List<Entity> entities = p.getNearbyEntities(5, 5, 5);
+                ArrayList<Location> visible = new ArrayList<>();
+                Iterator<Block> itr = new BlockIterator(p, 5);
+                while (itr.hasNext())
+                    visible.add(itr.next().getLocation());
+                for (Entity e : entities) {
+                    if (e.getType().equals(EntityType.FALLING_BLOCK)) {
+                        boolean wasGood = false;
+                        int x = e.getLocation().getBlockX(), y = e.getLocation().getBlockY(), z = e.getLocation().getBlockZ();
+                        for (Location cur : visible)
+                            if (x == cur.getBlockX() && y == cur.getBlockY() && z == cur.getBlockZ()) {
+                                wasGood = true;
+                                break;
+                            }
+                        if (wasGood) {
+                            Gamemode.getCurrentGame().interactSpecial(event.getPlayer(), (FallingBlock) e);
+                            break;
+                        }
+                    }
+                }
             }
         }
         if (event.getClickedBlock() == null)
             return;
         Material type = event.getClickedBlock().getType();
         if (event.getAction() == Action.RIGHT_CLICK_BLOCK) {
-            if (!event.getPlayer().isSneaking() && (event.getClickedBlock() instanceof InventoryHolder || type.equals(Material.WORKBENCH) ||
+            if (!p.isSneaking() && (event.getClickedBlock() instanceof InventoryHolder || type.equals(Material.WORKBENCH) ||
                     type.equals(Material.ANVIL) || type.equals(Material.ENCHANTMENT_TABLE) || type.equals(Material.ENDER_CHEST) || type.equals(Material.BEACON)) || type.equals(Material.BED_BLOCK) ||
                     type.equals(Material.CHEST) || type.equals(Material.TRAPPED_CHEST) || type.equals(Material.FURNACE) || type.equals(Material.BEACON) || type.equals(Material.BREWING_STAND) ||
                     type.equals(Material.DISPENSER) || type.equals(Material.DROPPER) || type.equals(Material.HOPPER))
@@ -222,6 +246,15 @@ public class PlayerListener implements Listener {
                     }
                 }
             }*/
+        }
+    }
+
+    @EventHandler
+    public void onSpecialClick(PlayerInteractEntityEvent event) {
+        if (event.getHand().equals(EquipmentSlot.HAND)) {
+            event.setCancelled(true);
+            if (Gamemode.getCurrentGame() != null && Gamemode.getCurrentGame().isAlive(event.getPlayer()) && event.getRightClicked().getType().equals(EntityType.FALLING_BLOCK))
+                Gamemode.getCurrentGame().interactSpecial(event.getPlayer(), (FallingBlock) event.getRightClicked());
         }
     }
 
@@ -268,6 +301,8 @@ public class PlayerListener implements Listener {
         BankInventory view = BankInventory.from(p);
         if (view != null)
             view.end(p);
+        else
+            SpecialInventory.tryClose(p);
     }
 
     @EventHandler(priority = EventPriority.LOW)
@@ -275,10 +310,10 @@ public class PlayerListener implements Listener {
         Player p = (Player) e.getWhoClicked();
         int clickedSlot = e.getView().convertSlot(e.getRawSlot());
         BankInventory view = BankInventory.from(p);
+        ItemStack currentItem = e.getCurrentItem();
+        if (currentItem == null)
+            return;
         if (view != null) {
-            if (e.getCurrentItem() == null)
-                return;
-            ItemStack currentItem = e.getCurrentItem();
             if (view.isNextPageButton(currentItem)) {
                 view.nextPage();
                 e.setCancelled(true);
@@ -288,6 +323,13 @@ public class PlayerListener implements Listener {
             } else { //Only let blocks that can be placed be stored in the bank
                 Material type = currentItem.getType();
                 if (type != null && !type.equals(Material.AIR) && (!currentItem.hasItemMeta() || !currentItem.getItemMeta().hasLore() || !currentItem.getItemMeta().getLore().get(0).contains("MeltTime")))
+                    e.setCancelled(true);
+            }
+        } else {
+            FallingBlock b = SpecialInventory.from(p);
+            if (b != null) {
+                Material type = currentItem.getType();
+                if (type != null && !type.equals(Material.AIR) && (!currentItem.hasItemMeta() || !currentItem.getItemMeta().hasLore() || !currentItem.getItemMeta().getLore().get(0).equals("Special")))
                     e.setCancelled(true);
             }
         }
@@ -317,9 +359,8 @@ public class PlayerListener implements Listener {
 
             if (itemPlacing.getType() == Material.SPONGE) {
                 BlockingType blockingType = itemPlacing.getDurability() == 1 ? BlockingType.LAVA : BlockingType.WATER;
-                if (itemPlacing.getItemMeta().getLore().contains(LavaItem.EPIC_TEXT)) {
+                if (itemPlacing.getItemMeta().getLore().contains(LavaItem.EPIC_TEXT))
                     blockingType = BlockingType.BOTH;
-                }
                 boolean success = Gamemode.getPhysicsListener().placeSponge(event.getBlock().getLocation(), blockingType);
 
                 if (!success) {

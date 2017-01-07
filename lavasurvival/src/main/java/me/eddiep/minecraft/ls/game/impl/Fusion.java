@@ -20,9 +20,10 @@ import java.util.List;
 public class Fusion extends Gamemode {
     public static final String TYPE = "Fusion";
 
-    private int lastMinute, bonus, lavaY, highestCurrentY = 0, layerCount;
+    private int lastMinute, bonus, lavaY, highestCurrentY = 0, layerCount, specialLayers, specialGap, specialDelay;
     private long lastEvent, duration, timeOut;
-    private Score bonusScore, layersLeft;
+    private Score bonusScore;
+    public Score layersLeft;
     private boolean doubleReward;
     private Objective objective = null;
     private BukkitRunnable upTask;
@@ -59,6 +60,11 @@ public class Fusion extends Gamemode {
         }
         this.lavaY = getCurrentMap().getFusionOptions().getHighestLocation().getBlockY();
         this.layerCount = getCurrentMap().getFusionOptions().getLayerCount();
+        this.specialLayers = Gamemode.RANDOM.nextInt(5);
+        if (this.specialLayers > 0) {
+            this.specialGap = (getCurrentMap().getHeight() / this.layerCount) / this.specialLayers;
+            this.specialDelay = (getCurrentMap().getHeight() / this.layerCount) % this.specialLayers;
+        }
         this.upTask = new BukkitRunnable() {
             @Override
             public void run() {
@@ -142,6 +148,7 @@ public class Fusion extends Gamemode {
                     for (Location loc : this.locations)
                         if (loc.getBlockY() > this.highestCurrentY)
                             this.highestCurrentY = loc.getBlockY();
+                    this.specialDelay = this.highestCurrentY;
                     globalMessage("The lava and water will rise in " + ChatColor.DARK_RED + TimeUtils.toFriendlyTime(dif));
                 }
             } else {
@@ -173,8 +180,10 @@ public class Fusion extends Gamemode {
             ClassicPhysics.INSTANCE.getPhysicsHandler().forcePlaceClassicBlockAt(l, getMat());
             l.add(0, this.layerCount, 0);
         });
-        this.highestCurrentY += this.layerCount;
-        this.lastEvent = System.currentTimeMillis(); //Set the last event to now
+        if (this.specialLayers > 0 && (this.highestCurrentY - this.specialDelay) % this.specialGap == 0) {
+            spawnSpecialBlocks(false);
+            this.specialLayers--;
+        }
         if (this.lavaY - this.highestCurrentY < 0)
             this.layersLeft.setScore(0);
         else
@@ -187,6 +196,8 @@ public class Fusion extends Gamemode {
             this.bars.get(0).setTitle(ChatColor.GOLD + "Gamemode: " + ChatColor.AQUA + "Fusion");
             this.bars.get(0).setColor(BarColor.RED);
         }
+        this.highestCurrentY += this.layerCount;
+        this.lastEvent = System.currentTimeMillis(); //Set the last event to now
     }
 
     @Override

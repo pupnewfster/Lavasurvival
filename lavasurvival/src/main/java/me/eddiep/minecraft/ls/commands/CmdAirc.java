@@ -21,7 +21,6 @@ public class CmdAirc implements Cmd {
             }
             int count = game.countAirBlocksAround(player, 10);
             player.sendMessage("You have " + count + " air blocks around you!");
-
             ArrayList<Rank> ranks = Necessities.getRM().getOrder();
             for (Rank rank : ranks) {
                 double bonusAdd = (5 + ranks.indexOf(rank)) / 2.0;

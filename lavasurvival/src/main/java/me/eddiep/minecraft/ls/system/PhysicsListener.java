@@ -318,11 +318,13 @@ public class PhysicsListener implements Listener {
     public boolean placeSponge(Location location, BlockingType blockingType) {
         ArrayList<BlockedLocation> locations = new ArrayList<>();
         ArrayList<Location> outerLocations = new ArrayList<>();
-        for (int x = -6; x <= 6; x++) {
-            for (int y = -6; y <= 6; y++) {
-                for (int z = -6; z <= 6; z++) {
+        int range = blockingType.equals(BlockingType.BOTH) ? 10 : 5;
+        range++;//add the outside rim
+        for (int x = -range; x <= range; x++) {
+            for (int y = -range; y <= range; y++) {
+                for (int z = -range; z <= range; z++) {
                     Location blockedLocation = location.clone().add(x, y, z);
-                    if (Math.abs(x) == 6 || Math.abs(y) == 6 || Math.abs(z) == 6)
+                    if (Math.abs(x) == range || Math.abs(y) == range || Math.abs(z) == range)
                         outerLocations.add(blockedLocation.getBlock().getLocation()); //Make the x,y,z be ints
                     else {
                         BlockedLocation blocked = addBlockedLocation(blockedLocation, spongeDuration, blockingType);
