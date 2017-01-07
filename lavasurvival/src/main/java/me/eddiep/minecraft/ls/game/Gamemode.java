@@ -947,7 +947,7 @@ public abstract class Gamemode {
         InventoryTiers tier = null;
         //TODO: Should it announce that someone got something and what they got
         if (data.equals(money)) { //Give them money and calculate how much
-            int baseDistribution = 0;
+            int baseDistribution;
             if (this instanceof Flood)
                 baseDistribution = (int) (Math.log(1 - RANDOM.nextDouble()) / -0.47) + 1;
             else {

@@ -350,16 +350,14 @@ public class PhysicsListener implements Listener {
         BlockedLocation blocked = new BlockedLocation(location, duration, blockingType);
         blockedLocations.put(location.toVector().toBlockVector(), blocked);
 
-        Block curentBlock = location.getBlock();
-
-        if ((blockingType == BlockingType.LAVA || blockingType == BlockingType.BOTH) && (curentBlock.getType() == Material.LAVA || curentBlock.getType() == Material.STATIONARY_LAVA)) {
+        Block currentBlock = location.getBlock();
+        if ((blockingType == BlockingType.LAVA || blockingType == BlockingType.BOTH) && (currentBlock.getType() == Material.LAVA || currentBlock.getType() == Material.STATIONARY_LAVA)) {
             ClassicPhysics.INSTANCE.getPhysicsHandler().removeClassicBlock(location.toVector());
-            curentBlock.setType(Material.AIR, false);
-        } else if ((blockingType == BlockingType.WATER || blockingType == BlockingType.BOTH) && (curentBlock.getType() == Material.WATER || curentBlock.getType() == Material.STATIONARY_WATER)) {
+            currentBlock.setType(Material.AIR, false);
+        } else if ((blockingType == BlockingType.WATER || blockingType == BlockingType.BOTH) && (currentBlock.getType() == Material.WATER || currentBlock.getType() == Material.STATIONARY_WATER)) {
             ClassicPhysics.INSTANCE.getPhysicsHandler().removeClassicBlock(location.toVector());
-            curentBlock.setType(Material.AIR, false);
+            currentBlock.setType(Material.AIR, false);
         }
-
         return blocked;
     }
 

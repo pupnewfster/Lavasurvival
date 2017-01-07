@@ -34,7 +34,7 @@ public abstract class LavaItem {
     public static final LavaItem WATER_SPONGE = ITEMS[6];
     public static final LavaItem LAVA_SPONGE = ITEMS[7];
     public static final LavaItem EPIC_HEAL = ITEMS[8];
-    public static final LavaItem EPIC_INVINCIBLITY = ITEMS[9];
+    public static final LavaItem EPIC_INVINCIBILITY = ITEMS[9];
     public static final LavaItem EPIC_SPONGE = ITEMS[10];
     public static final String EPIC_TEXT = "" + ChatColor.BOLD + ChatColor.GREEN + "EPIC" + ChatColor.RESET;
 
@@ -61,9 +61,8 @@ public abstract class LavaItem {
             lore = new ArrayList<>();
 
         lore.addAll(Arrays.asList(description().split("\n")));
-        if (intrinsic() == Intrinsic.EPIC) {
+        if (intrinsic() == Intrinsic.EPIC)
             lore.add(EPIC_TEXT);
-        }
         meta.setLore(lore);
 
         item.setItemMeta(meta);
