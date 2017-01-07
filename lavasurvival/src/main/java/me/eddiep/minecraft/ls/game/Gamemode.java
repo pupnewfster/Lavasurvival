@@ -30,7 +30,6 @@ import org.bukkit.attribute.Attribute;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.boss.BarColor;
-import org.bukkit.boss.BarFlag;
 import org.bukkit.boss.BarStyle;
 import org.bukkit.craftbukkit.v1_11_R1.boss.CraftBossBar;
 import org.bukkit.entity.FallingBlock;
@@ -225,9 +224,9 @@ public abstract class Gamemode {
             bar.removeAll();
         }
         this.bars.clear();
-        BarFlag[] flags = new BarFlag[0];
-        addBar(new CraftBossBar(ChatColor.GOLD + "Gamemode: " + (LAVA ? ChatColor.RED : ChatColor.AQUA) + getType(), LAVA ? BarColor.RED : BarColor.BLUE, BarStyle.SEGMENTED_6, flags));
-        addBar(new CraftBossBar(ChatColor.GOLD + "Reward is " + (isRewardDoubled() ? "double" : "normal"), BarColor.WHITE, BarStyle.SEGMENTED_20, flags));
+        addBar(new CraftBossBar(ChatColor.GOLD + "Gamemode: " + (LAVA ? ChatColor.RED : ChatColor.AQUA) + getType(), LAVA ? BarColor.RED : BarColor.BLUE, BarStyle.SEGMENTED_6));
+        if (isRewardDoubled())
+            addBar(new CraftBossBar(ChatColor.GOLD + "Reward is double", BarColor.WHITE, BarStyle.SEGMENTED_20));
         alive = new ArrayList<>();
         dead = new ArrayList<>();
         Bukkit.getOnlinePlayers().forEach(this::playerJoin);
