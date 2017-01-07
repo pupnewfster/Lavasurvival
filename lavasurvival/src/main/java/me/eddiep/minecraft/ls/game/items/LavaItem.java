@@ -6,6 +6,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -56,6 +57,9 @@ public abstract class LavaItem {
         meta.setDisplayName(name());
 
         List<String> lore = meta.getLore();
+        if (lore == null)
+            lore = new ArrayList<>();
+        
         lore.addAll(Arrays.asList(description().split("\n")));
         if (intrinsic() == Intrinsic.EPIC) {
             lore.add(EPIC_TEXT);
