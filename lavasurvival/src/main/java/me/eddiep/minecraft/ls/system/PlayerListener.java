@@ -183,6 +183,8 @@ public class PlayerListener implements Listener {
                         stack.setAmount(stack.getAmount() + 1);
                     }
                 }
+                if (block.getType().equals(Material.SPONGE))
+                    Gamemode.getPhysicsListener().addBrokeSponge(block.getLocation());
                 block.setType(Material.AIR);
                 ClassicPhysics.INSTANCE.getPhysicsHandler().removePlayerPlaced(block.getLocation().toVector());
                 PhysicsListener.cancelLocation(block.getLocation());
