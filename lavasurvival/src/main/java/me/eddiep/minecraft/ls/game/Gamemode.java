@@ -946,6 +946,8 @@ public abstract class Gamemode {
     private final MaterialData rare = new MaterialData(Material.DIAMOND_BLOCK);
 
     public void interactSpecial(Player p, FallingBlock b) {
+        if (b.hasGravity()) //Make it so that the block has to have landed already. This way we don't have to worry about dupes
+            return;
         MaterialData data = new MaterialData(b.getMaterial(), b.getBlockData());
         InventoryTiers tier = null;
         //TODO: Should it announce that someone got something and what they got
