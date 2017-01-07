@@ -7,7 +7,7 @@ public class EpicHeal extends Heal {
     public String name() {
         return "Full Heal";
     }
-    
+
     @Override
     public Intrinsic intrinsic() {
         return Intrinsic.EPIC;
