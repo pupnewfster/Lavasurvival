@@ -113,16 +113,18 @@ public class Rise extends Gamemode {
     }
 
     private void setObjectiveDisplay(String display) {
-        if (display == null || this.objective == null)
+        if (display == null)
             return;
-        try {
-            this.objective.setDisplayName(display);
-        } catch (IllegalStateException e) {
+        if (this.objective == null) {
             if (getScoreboard().getObjective("game") == null)
                 this.objective = getScoreboard().registerNewObjective("game", "dummy");
             else
                 this.objective = getScoreboard().getObjective("game");
+        }
+        try {
             this.objective.setDisplayName(display);
+        } catch (IllegalStateException e) {
+            e.printStackTrace();
         }
     }
 

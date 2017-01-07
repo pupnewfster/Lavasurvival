@@ -30,7 +30,6 @@ import org.bukkit.attribute.Attribute;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.boss.BarColor;
-import org.bukkit.boss.BarFlag;
 import org.bukkit.boss.BarStyle;
 import org.bukkit.craftbukkit.v1_11_R1.boss.CraftBossBar;
 import org.bukkit.entity.FallingBlock;
@@ -225,9 +224,9 @@ public abstract class Gamemode {
             bar.removeAll();
         }
         this.bars.clear();
-        BarFlag[] flags = new BarFlag[0];
-        addBar(new CraftBossBar(ChatColor.GOLD + "Gamemode: " + (LAVA ? ChatColor.RED : ChatColor.AQUA) + getType(), LAVA ? BarColor.RED : BarColor.BLUE, BarStyle.SEGMENTED_6, flags));
-        addBar(new CraftBossBar(ChatColor.GOLD + "Reward is " + (isRewardDoubled() ? "double" : "normal"), BarColor.WHITE, BarStyle.SEGMENTED_20, flags));
+        addBar(new CraftBossBar(ChatColor.GOLD + "Gamemode: " + (LAVA ? ChatColor.RED : ChatColor.AQUA) + getType(), LAVA ? BarColor.RED : BarColor.BLUE, BarStyle.SEGMENTED_6));
+        if (isRewardDoubled())
+            addBar(new CraftBossBar(ChatColor.GOLD + "Reward is double", BarColor.WHITE, BarStyle.SEGMENTED_20));
         alive = new ArrayList<>();
         dead = new ArrayList<>();
         Bukkit.getOnlinePlayers().forEach(this::playerJoin);
@@ -996,10 +995,10 @@ public abstract class Gamemode {
         com.crossge.necessities.RankManager.UserManager um = Necessities.getUM();
         RankManager rm = Necessities.getRM();
         int survivor = rm.getOrder().indexOf(rm.getRank("Survivor"));
-        int min = 1, max = alive.size() / 3;
+        int min = alive.size() == 0 ? 1 : 0, max = alive.size() / 3;
         for (UUID uuid : alive)
-            if (rm.getOrder().indexOf(um.getUser(uuid).getRank()) >= survivor) {
-                min = 0;
+            if (rm.getOrder().indexOf(um.getUser(uuid).getRank()) < survivor) {
+                min = 1;
                 break;
             }
         if (max < min)
