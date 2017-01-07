@@ -313,13 +313,13 @@ public class PhysicsListener implements Listener {
             waterTicksToMelt.put(data, water);
     }
 
-    public boolean placeSponge(Location location, boolean forLava) {
+    public boolean placeSponge(Location location, BlockingType blockingType) {
         ArrayList<BlockedLocation> locations = new ArrayList<>();
         for (int x = -5; x <= 5; x++) {
             for (int y = -5; y <= 5; y++) {
                 for (int z = -5; z <= 5; z++) {
                     Location blockedLocation = location.clone().add(x, y, z);
-                    BlockedLocation blocked = addBlockedLocation(blockedLocation, 15 * 1000, forLava);
+                    BlockedLocation blocked = addBlockedLocation(blockedLocation, 15 * 1000, blockingType);
                     if (blocked == null) {
                         locations.clear();
                         return false;
@@ -330,26 +330,26 @@ public class PhysicsListener implements Listener {
             }
         }
 
-        SpongeInfo spongeInfo = new SpongeInfo(location, forLava, locations);
+        SpongeInfo spongeInfo = new SpongeInfo(location, blockingType, locations);
         sponges.add(spongeInfo);
 
         return true;
     }
 
-    public BlockedLocation addBlockedLocation(Location location, long duration, boolean forLava) {
+    public BlockedLocation addBlockedLocation(Location location, long duration, BlockingType blockingType) {
         if (Gamemode.getCurrentMap().isLocationNearLavaSpawn(location)) {
             return null;
         }
 
-        BlockedLocation blocked = new BlockedLocation(location, duration, forLava);
+        BlockedLocation blocked = new BlockedLocation(location, duration, blockingType);
         blockedLocations.put(location, blocked);
 
         Block curentBlock = location.getBlock();
 
-        if (forLava && (curentBlock.getType() == Material.LAVA || curentBlock.getType() == Material.STATIONARY_LAVA)) {
+        if ((blockingType == BlockingType.LAVA || blockingType == BlockingType.BOTH) && (curentBlock.getType() == Material.LAVA || curentBlock.getType() == Material.STATIONARY_LAVA)) {
             curentBlock.setType(Material.AIR);
             //TODO Remove classicblock metadata
-        } else if (!forLava && (curentBlock.getType() == Material.WATER || curentBlock.getType() == Material.STATIONARY_WATER)) {
+        } else if ((blockingType == BlockingType.WATER || blockingType == BlockingType.BOTH) && (curentBlock.getType() == Material.WATER || curentBlock.getType() == Material.STATIONARY_WATER)) {
             curentBlock.setType(Material.AIR);
             //TODO Remove classicblock metadata
         }
@@ -380,13 +380,14 @@ public class PhysicsListener implements Listener {
 
             if (blockedLocations.containsKey(blockChecking.getLocation())) {
                 BlockedLocation info = blockedLocations.get(blockChecking.getLocation());
+                BlockingType blockingType = info.getBlockingType();
 
                 if (System.currentTimeMillis() - info.getPlaceTime() >= info.getDuration()) {
                     blockedLocations.remove(blockChecking.getLocation());
-                } else if (info.forLava && (type == Material.LAVA || type == Material.STATIONARY_LAVA)) {
+                } else if ((blockingType == BlockingType.LAVA || blockingType == BlockingType.BOTH) && (type == Material.LAVA || type == Material.STATIONARY_LAVA)) {
                     event.setCancelled(true);
                     return;
-                } else if (!info.forLava && (type == Material.WATER || type == Material.STATIONARY_WATER)) {
+                } else if ((blockingType == BlockingType.WATER || blockingType == BlockingType.BOTH) && (type == Material.WATER || type == Material.STATIONARY_WATER)) {
                     event.setCancelled(true);
                     return;
                 }
@@ -578,18 +579,18 @@ public class PhysicsListener implements Listener {
         private Location location;
         private long duration;
         private long placeTime;
-        private boolean forLava;
+        private BlockingType blockingType;
 
-        private BlockedLocation(Location location, long duration, boolean forLava) {
+        private BlockedLocation(Location location, long duration, BlockingType blockingType) {
             this.location = location;
             this.duration = duration;
-            this.forLava = forLava;
+            this.blockingType = blockingType;
 
             this.placeTime = System.currentTimeMillis();
         }
 
-        public boolean isForLava() {
-            return forLava;
+        public BlockingType getBlockingType() {
+            return blockingType;
         }
 
         public Location getLocation() {
@@ -609,23 +610,23 @@ public class PhysicsListener implements Listener {
         private Location location;
         private long placeTime;
         private List<BlockedLocation> blockingLocations;
-        private boolean forLava;
+        private BlockingType blockingType;
         private long lastParticle;
 
 
-        public SpongeInfo(Location location, boolean forLava, List<BlockedLocation> blocked) {
+        public SpongeInfo(Location location, BlockingType blockingType, List<BlockedLocation> blocked) {
             this.location = location;
             this.placeTime = System.currentTimeMillis();
             this.blockingLocations = blocked;
-            this.forLava = forLava;
+            this.blockingType = blockingType;
         }
 
         public List<BlockedLocation> getBlockingLocations() {
             return blockingLocations;
         }
 
-        public boolean isForLava() {
-            return forLava;
+        public BlockingType getBlockingType() {
+            return blockingType;
         }
 
         public Location getLocation() {

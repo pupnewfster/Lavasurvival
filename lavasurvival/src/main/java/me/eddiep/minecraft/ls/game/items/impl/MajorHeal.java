@@ -1,5 +1,7 @@
 package me.eddiep.minecraft.ls.game.items.impl;
 
+import me.eddiep.minecraft.ls.game.items.Intrinsic;
+
 public class MajorHeal extends Heal {
     @Override
     public double getPercent() {
@@ -14,5 +16,11 @@ public class MajorHeal extends Heal {
     @Override
     public int getPrice() {
         return 900;
+    }
+
+
+    @Override
+    public Intrinsic intrinsic() {
+        return Intrinsic.UNCOMMON;
     }
 }

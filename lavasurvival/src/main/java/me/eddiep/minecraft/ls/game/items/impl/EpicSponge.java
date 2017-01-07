@@ -6,7 +6,7 @@ import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
-public class LavaSponge extends LavaItem {
+public class EpicSponge extends LavaItem {
     @Override
     public boolean consume(Player owner) {
         return false; //This item can't be consumed
@@ -15,28 +15,28 @@ public class LavaSponge extends LavaItem {
     @Override
     protected ItemStack displayItem() {
         ItemStack item = new ItemStack(Material.SPONGE);
-        item.setDurability((short) 1);
+        item.setDurability((short) 0);
         return item;
     }
 
     @Override
     public String name() {
-        return "Lava Sponge";
+        return "Epic Sponge";
     }
 
     @Override
     protected String description() {
-        return "Absorb lava in a 5 block radius for 15 seconds";
-    }
-
-    @Override
-    public int getPrice() {
-        return 600;
+        return "Absorb water AND lava in a 10 block radius for 25 seconds";
     }
 
 
     @Override
     public Intrinsic intrinsic() {
-        return Intrinsic.UNCOMMON;
+        return Intrinsic.EPIC;
+    }
+
+    @Override
+    public int getPrice() {
+        return 1600;
     }
 }

@@ -314,8 +314,11 @@ public class PlayerListener implements Listener {
             ItemStack itemPlacing = event.getPlayer().getInventory().getItemInMainHand();
 
             if (itemPlacing.getType() == Material.SPONGE) {
-                boolean forLava = itemPlacing.getDurability() == 1;
-                boolean success = Gamemode.getPhysicsListener().placeSponge(event.getBlock().getLocation(), forLava);
+                BlockingType blockingType = itemPlacing.getDurability() == 1 ? BlockingType.LAVA : BlockingType.WATER;
+                if (itemPlacing.getItemMeta().getLore().contains(LavaItem.EPIC_TEXT)) {
+                    blockingType = BlockingType.BOTH;
+                }
+                boolean success = Gamemode.getPhysicsListener().placeSponge(event.getBlock().getLocation(), blockingType);
 
                 if (!success) {
                     event.setCancelled(true);
