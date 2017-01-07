@@ -21,7 +21,6 @@ import me.eddiep.minecraft.ls.system.PhysicsListener;
 import me.eddiep.minecraft.ls.system.PlayerListener;
 import me.eddiep.minecraft.ls.system.specialblocks.InventoryTiers;
 import me.eddiep.minecraft.ls.system.specialblocks.SpecialInventory;
-import mkremins.fanciful.FancyMessage;
 import net.nyvaria.googleanalytics.hit.EventHit;
 import net.nyvaria.googleanalytics.hit.SocialInteractionHit;
 import net.nyvaria.openanalytics.bukkit.client.Client;
@@ -605,7 +604,7 @@ public abstract class Gamemode {
             return;
         String[] files = LavaMap.getPossibleMaps();
         if (files.length > 1) {
-            FancyMessage message = new FancyMessage("");
+            String extra = "";
             for (int i = 0; i < this.nextMaps.length; i++) {
                 this.votes[i] = 0; //reset votes
                 boolean found;
@@ -629,7 +628,10 @@ public abstract class Gamemode {
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
-                message.then((i + 1) + ". " + this.nextMaps[i].getName()).style(ChatColor.UNDERLINE).command("/lvote " + (i + 1)).tooltip("Vote for " + this.nextMaps[i].getName()).then(" ");
+                if (!extra.equals(""))
+                    extra += ",{\"text\":\" \"},";
+                extra += "{\"text\":\"" + (i + 1) + ". " + this.nextMaps[i].getName() + "\",\"underlined\":true,\"clickEvent\":{\"action\":\"run_command\",\"value\":\"/lvote " + (i + 1) +
+                        "\"},\"hoverEvent\":{\"action\":\"show_text\",\"value\":\"Vote for " + this.nextMaps[i].getName() + "\"}}";
             }
             this.voted.clear();
             globalMessage(ChatColor.GREEN + "It's time to vote for the next map!");
@@ -637,7 +639,8 @@ public abstract class Gamemode {
             globalMessage(ChatColor.BOLD + "No talking will be allowed during the vote.");
             globalMessageNoPrefix(ChatColor.BOLD + "" + ChatColor.UNDERLINE + "Click the map you want to vote for:");
             globalMessageNoPrefix(" ");
-            globalRawMessage(message);
+            if (!extra.equals(""))
+                globalRawMessage("{\"text\":\"\",\"extra\":[" + extra + "]}");
             globalMessageNoPrefix(" ");
             long start = System.currentTimeMillis();
             while (true) {
@@ -909,8 +912,8 @@ public abstract class Gamemode {
         getCurrentWorld().getPlayers().forEach(p -> p.sendMessage(message));
     }
 
-    private void globalRawMessage(FancyMessage rawMessage) {
-        getCurrentWorld().getPlayers().forEach(rawMessage::send);
+    private void globalRawMessage(String rawMessage) {
+        getCurrentWorld().getPlayers().forEach(p -> Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "tellraw " + p.getName() + " " + rawMessage));
     }
 
     protected Material getMat() {
