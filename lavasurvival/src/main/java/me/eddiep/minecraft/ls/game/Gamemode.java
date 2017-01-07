@@ -3,6 +3,7 @@ package me.eddiep.minecraft.ls.game;
 import com.crossge.necessities.Commands.CmdHide;
 import com.crossge.necessities.Necessities;
 import com.crossge.necessities.RankManager.Rank;
+import com.crossge.necessities.RankManager.RankManager;
 import com.crossge.necessities.Utils;
 import me.eddiep.ClassicPhysics;
 import me.eddiep.minecraft.ls.Lavasurvival;
@@ -240,7 +241,10 @@ public abstract class Gamemode {
             else
                 new Thread(() -> restoreBackup(lastMap.getWorld())).start();
         }
-        Bukkit.getScheduler().scheduleSyncDelayedTask(Lavasurvival.INSTANCE, () -> ClassicPhysics.INSTANCE.getPhysicsHandler().setPhysicsWorld(getCurrentWorld()), 20); //Delay it slightly to ensure things are set
+        Bukkit.getScheduler().scheduleSyncDelayedTask(Lavasurvival.INSTANCE, () -> {
+            ClassicPhysics.INSTANCE.getPhysicsHandler().setPhysicsWorld(getCurrentWorld());
+            spawnSpecialBlocks(false);
+        }, 20); //Delay it slightly to ensure things are set
         Lavasurvival.INSTANCE.MONEY_VIEWER.run();
         this.tickTask = new BukkitRunnable() {
             @Override
@@ -348,6 +352,8 @@ public abstract class Gamemode {
         if (this.isEnding)
             return;
         this.isEnding = true;
+        if (Math.random() <= 0.3)
+            spawnSpecialBlocks(true);
         Bukkit.getScheduler().scheduleSyncDelayedTask(Lavasurvival.INSTANCE, this::endRound, seconds * 20L);
     }
 
@@ -769,7 +775,7 @@ public abstract class Gamemode {
         String[] files = LavaMap.getPossibleMaps();
         map = map.toLowerCase() + ".map";
         for (String file : files)
-            if (file.toLowerCase().endsWith(map)) {
+            if (file.toLowerCase().replaceAll(" ", "").endsWith(map)) {
                 LavaMap lavaMap;
                 Gamemode g = null;
                 try {
@@ -811,6 +817,11 @@ public abstract class Gamemode {
             im.setLore(Arrays.asList("Lava MeltTime: " + PhysicsListener.getLavaMeltTimeAsString(toGive.getData()), "Water MeltTime: " + PhysicsListener.getWaterMeltTimeAsString(toGive.getData())));
             toGive.setItemMeta(im);
             player.getInventory().addItem(toGive);
+        }
+        for (int i = 0; i < inv.getSize(); i++) {
+            ItemStack item = inv.getItem(i);
+            if (item != null && item.hasItemMeta() && item.getItemMeta().hasLore() && item.getItemMeta().getLore().get(0).equalsIgnoreCase("Special"))
+                inv.remove(item);
         }
         if (!player.getInventory().contains(Material.WRITTEN_BOOK))
             player.getInventory().addItem(Lavasurvival.INSTANCE.getRules());
@@ -928,17 +939,33 @@ public abstract class Gamemode {
     }
 
     private final MaterialData money = new MaterialData(Material.BOOKSHELF);
-    private final MaterialData common = new MaterialData(Material.COAL_BLOCK);
-    private final MaterialData uncommon = new MaterialData(Material.IRON_BLOCK);
-    private final MaterialData rare = new MaterialData(Material.GOLD_BLOCK);
-    private final MaterialData legendary = new MaterialData(Material.DIAMOND_BLOCK);
+    private final MaterialData common = new MaterialData(Material.IRON_BLOCK);
+    private final MaterialData uncommon = new MaterialData(Material.GOLD_BLOCK);
+    private final MaterialData rare = new MaterialData(Material.DIAMOND_BLOCK);
 
     public void interactSpecial(Player p, FallingBlock b) {
         MaterialData data = new MaterialData(b.getMaterial(), b.getBlockData());
         InventoryTiers tier = null;
         //TODO: Should it announce that someone got something and what they got
         if (data.equals(money)) { //Give them money and calculate how much
-            double reward = 0;
+            int baseDistribution = 0;
+            if (this instanceof Flood)
+                baseDistribution = (int) (Math.log(1 - RANDOM.nextDouble()) / -0.47) + 1;
+            else {
+                int totalLayers = getCurrentMap().getHeight();
+                int layersLeft = 0;
+                if (this instanceof Rise)
+                    layersLeft = ((Rise) this).layersLeft.getScore();
+                else if (this instanceof Fusion)
+                    layersLeft = ((Fusion) this).layersLeft.getScore();
+                if (layersLeft <= 0)
+                    layersLeft = 1;
+                double inverseLayersLeft = (double) layersLeft / (double) totalLayers;
+                baseDistribution = (int) (Math.log(1 - RANDOM.nextDouble()) / -(Math.abs(inverseLayersLeft - 1) <= 0.15 ? 0.909 : inverseLayersLeft / 1.1)) + 1;
+            }
+            int reward = baseDistribution * 100;
+            if (isRewardDoubled())
+                reward *= 2;
             globalMessage(ChatColor.GOLD + p.getName() + ChatColor.GREEN + " found " + Necessities.getEconomy().format(reward));
             Lavasurvival.INSTANCE.depositPlayer(p, reward);
         } else if (data.equals(common)) //Give them some common items/blocks
@@ -947,8 +974,6 @@ public abstract class Gamemode {
             tier = InventoryTiers.UNCOMMON;
         else if (data.equals(rare)) //Give them some rare items/blocks
             tier = InventoryTiers.RARE;
-        else if (data.equals(legendary)) //Give them some legendary items/blocks
-            tier = InventoryTiers.LEGENDARY;
         if (tier == null)
             b.remove();
         else {
@@ -959,15 +984,43 @@ public abstract class Gamemode {
         }
     }
 
-    public void spawnSpecialBlock(int x, int z) {
-        //TODO: Announce what type of block is falling
-        //TODO: use some probability to decide which kind to spawn instead of just spawning a money one
-        MaterialData data = money;
-        spawnSpecialBlock(x, z, data);
+    protected void spawnSpecialBlocks(boolean isEndWave) {
+        LavaMap cmap = getCurrentMap();
+        int minX = cmap.getMinX(), maxX = cmap.getMaxX(), minZ = cmap.getMinZ(), maxZ = cmap.getMaxZ();
+        int difX = maxX - minX, difZ = maxZ - minZ;
+        if (difX < 0 || difZ < 0)
+            return; //There is an error in the config
+        //Increment by one so that the random is inclusive and that if number > 1 it does not have to recalculate the +1
+        difX++;
+        difZ++;
+        com.crossge.necessities.RankManager.UserManager um = Necessities.getUM();
+        RankManager rm = Necessities.getRM();
+        int survivor = rm.getOrder().indexOf(rm.getRank("Survivor"));
+        int min = 1, max = alive.size() / 3;
+        for (UUID uuid : alive)
+            if (rm.getOrder().indexOf(um.getUser(uuid).getRank()) >= survivor) {
+                min = 0;
+                break;
+            }
+        if (max < min)
+            max = alive.size();
+        if (max <= 0)
+            max = 1;
+        int number = RANDOM.nextInt(max - min + 1) + min, y = getCurrentMap().getSpecialY();
+        for (int i = 0; i < number; i++) {
+            //TODO: use some probability to decide which kind to spawn instead of just spawning a money one, this also can be moved into the spawn instead of passing data
+            MaterialData data = money;
+            if (isEndWave) {
+                //TODO: Make things spawning in open areas (not falling)
+                //Be sure to use false for the gravity variable to make it not fall
+            } else
+                spawnSpecialBlock(minX + RANDOM.nextInt(difX), y, minZ + RANDOM.nextInt(difZ), data, true);
+        }
     }
 
-    private void spawnSpecialBlock(int x, int z, MaterialData data) {
-        FallingBlock b = getCurrentWorld().spawnFallingBlock(new Location(getCurrentWorld(), x + 0.5, getCurrentMap().getLavaY(), z + 0.5), data);
+    public void spawnSpecialBlock(int x, int y, int z, MaterialData data, boolean gravity) {
+        //TODO: Announce what type of block is falling
+        FallingBlock b = getCurrentWorld().spawnFallingBlock(new Location(getCurrentWorld(), x + 0.5, y, z + 0.5), data); //Should y be + 0.5 as well probably not
         b.setGlowing(true);
         b.setDropItem(true);
         if (scoreboard != null)

@@ -23,10 +23,10 @@ import java.util.List;
 
 @SuppressWarnings({"FieldCanBeLocal", "DeprecatedIsStillUsed", "unused"})
 public class LavaMap {
-    private static final int CONFIG_VERSION = 9;
+    private static final int CONFIG_VERSION = 10;
 
     private String name, worldName, filePath;
-    private int lavax, lavay, lavaz, mapHeight, percent = 25;
+    private int lavax, lavay, lavaz, mapHeight, percent = 25, minX, maxX, minZ, maxZ, specialY;
     private Vector minSafeZone, maxSafeZone, mapSpawn;
     private int configVersion = 1; //Default version
     private boolean isThundering = false;
@@ -220,6 +220,26 @@ public class LavaMap {
 
     public void setHeight(int height) {
         this.mapHeight = height;
+    }
+
+    public int getMinX() {
+        return this.minX;
+    }
+
+    public int getMaxX() {
+        return this.maxX;
+    }
+
+    public int getMinZ() {
+        return this.minZ;
+    }
+
+    public int getMaxZ() {
+        return this.maxZ;
+    }
+
+    public int getSpecialY() {
+        return this.specialY;
     }
 
     public void setSafeZoneBounds(Location temp, Location temp2) {

@@ -22,9 +22,8 @@ public class SpecialInventory {
 
     public static SpecialInventory create(FallingBlock block, InventoryTiers tier) {
         int slotSize = 9;
+        ArrayList<ItemStack> items = chooseItems(tier); //TODO change slot size if for some reason we decide to let there be more than 9 items per crate
         Inventory inventory = Bukkit.createInventory(null, slotSize, tier.getName());
-        ArrayList<ItemStack> items = chooseItems(tier);
-        //TODO: can items ever be greater than 9 and if so we should up slotSize to 18 in that case
         for (int i = 0; i < slotSize; i++) {
             if (i >= items.size())
                 break;
@@ -45,9 +44,10 @@ public class SpecialInventory {
     }
 
     private static ArrayList<ItemStack> chooseItems(InventoryTiers tier) {
+        ArrayList<ItemStack> items = new ArrayList<>();
         //TODO add items to this list based on the tier
-        //TODO: make the items have a certain probabilty of showing up for a certain tier and such
-        return new ArrayList<>();
+        //TODO: make the items have a certain probability of showing up for a certain tier and such
+        return items;
     }
 
     public static SpecialInventory from(FallingBlock b) {
@@ -75,7 +75,7 @@ public class SpecialInventory {
         }
         if (close != null) {
             INSTANCERS.remove(close);
-             close.remove();
+            close.remove();
         }
     }
 
