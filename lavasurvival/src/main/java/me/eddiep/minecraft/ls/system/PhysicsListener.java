@@ -28,7 +28,7 @@ public class PhysicsListener implements Listener {
     private static final ConcurrentHashMap<Location, ConcurrentLinkedQueue<BlockTaskInfo>> toTasks = new ConcurrentHashMap<>();
     private static final Random RANDOM = new Random();
 
-    private HashMap<BlockVector, BlockedLocation> blockedLocations = new HashMap<>();
+    private HashMap<BlockVector, Stack<BlockedLocation>> blockedLocations = new HashMap<>();
     private HashSet<SpongeInfo> sponges = new HashSet<>();
     private HashSet<BlockVector> brokenSponges = new HashSet<>();
 
@@ -316,7 +316,7 @@ public class PhysicsListener implements Listener {
     }
 
     public boolean placeSponge(Location location, BlockingType blockingType) {
-        ArrayList<BlockedLocation> locations = new ArrayList<>();
+        ArrayList<Location> locations = new ArrayList<>();
         ArrayList<Location> outerLocations = new ArrayList<>();
         int range = blockingType.equals(BlockingType.BOTH) ? 10 : 5; //TODO make this a param if we end up making a sponge with a range other than 10 that can block both
         range++;//add the outside rim
@@ -332,7 +332,7 @@ public class PhysicsListener implements Listener {
                             locations.clear();
                             return false;
                         }
-                        locations.add(blocked);
+                        locations.add(blockedLocation);
                     }
                 }
             }
@@ -347,18 +347,17 @@ public class PhysicsListener implements Listener {
     public BlockedLocation addBlockedLocation(Location location, long duration, BlockingType blockingType) {
         if (Gamemode.getCurrentMap().isLocationNearLavaSpawn(location))
             return null;
-        BlockedLocation blocked;
+        BlockedLocation blocked = new BlockedLocation(duration, blockingType);
         BlockVector bv = location.toVector().toBlockVector();
+
+        Stack<BlockedLocation> blockStack;
         if (blockedLocations.containsKey(bv)) {
-            blocked = blockedLocations.get(bv);
-            blocked.overlap(duration);
-            if (blockingType != blocked.blockingType) {
-                blocked.blockingType = BlockingType.BOTH; //If they don't match, just set to both
-            }
+            blockStack = blockedLocations.get(bv);
         } else {
-            blocked = new BlockedLocation(location, duration, blockingType);
-            blockedLocations.put(bv, blocked);
+            blockStack = new Stack<>();
+            blockedLocations.put(bv, blockStack);
         }
+        blockStack.push(blocked);
 
         Block currentBlock = location.getBlock();
         if ((blockingType == BlockingType.LAVA || blockingType == BlockingType.BOTH) && (currentBlock.getType() == Material.LAVA || currentBlock.getType() == Material.STATIONARY_LAVA)) {
@@ -398,12 +397,15 @@ public class PhysicsListener implements Listener {
 
             BlockVector bv = v.toBlockVector();
             if (blockedLocations.containsKey(bv)) {
-                BlockedLocation info = blockedLocations.get(bv);
+                Stack<BlockedLocation> blockedStack = blockedLocations.get(bv);
+
+                BlockedLocation info = blockedStack.peek();
                 BlockingType blockingType = info.getBlockingType();
+
                 if (System.currentTimeMillis() - info.getPlaceTime() >= info.getDuration()) {
-                    if (info.tryRemove()) {
+                    blockedStack.pop();
+                    if (blockedStack.isEmpty())
                         blockedLocations.remove(bv);
-                    }
                 }
                 else if ((blockingType == BlockingType.LAVA || blockingType == BlockingType.BOTH) && (type == Material.LAVA || type == Material.STATIONARY_LAVA)) {
                     event.setCancelled(true);
@@ -498,7 +500,7 @@ public class PhysicsListener implements Listener {
                     Lavasurvival.spawnParticleEffect(sponge.location.clone().add(0.5, 0.5, 0.5), 20 * 3, Color.RED);
 
                     //Remove all blocked locations
-                    sponge.blockingLocations.forEach(location -> blockedLocations.remove(location.getLocation().toVector().toBlockVector()));
+                    sponge.blockingLocations.forEach(location -> blockedLocations.remove(location.toVector().toBlockVector()));
                     //TODO: not remove the blocked locations that still have a sponge near them
                     sponge.blockingLocations.clear();
                     sponge.outerLocations.forEach(l -> ClassicPhysics.INSTANCE.getPhysicsHandler().checkLocation(l));
@@ -609,33 +611,19 @@ public class PhysicsListener implements Listener {
     }
 
     public class BlockedLocation {
-        private Location location;
         private long duration;
         private long placeTime;
-        private Stack<Long> queuedPlaceTimes = new Stack<>();
-        private Stack<Long> queuedDurations = new Stack<>();
         private BlockingType blockingType;
         private int overlapCount = 1;
 
-        private BlockedLocation(Location location, long duration, BlockingType blockingType) {
-            this.location = location;
+        private BlockedLocation(long duration, BlockingType blockingType) {
             this.duration = duration;
             this.blockingType = blockingType;
             this.placeTime = System.currentTimeMillis();
         }
 
-        public void overlap(long duration) {
-            queuedPlaceTimes.add(System.currentTimeMillis());
-            queuedDurations.add(duration);
-            overlapCount++;
-        }
-
         public BlockingType getBlockingType() {
             return blockingType;
-        }
-
-        public Location getLocation() {
-            return location;
         }
 
         public long getDuration() {
@@ -645,27 +633,18 @@ public class PhysicsListener implements Listener {
         public long getPlaceTime() {
             return placeTime;
         }
-
-        public boolean tryRemove() {
-            overlapCount--;
-            if (!queuedPlaceTimes.empty()) {
-                placeTime = queuedPlaceTimes.pop();
-                duration = queuedDurations.pop();
-            }
-            return overlapCount <= 0;
-        }
     }
 
     public class SpongeInfo {
         private Location location;
         private long placeTime;
-        private List<BlockedLocation> blockingLocations;
+        private List<Location> blockingLocations;
         private BlockingType blockingType;
         private List<Location> outerLocations;
         private long lastParticle;
         private AreaEffectCloud curParticle;
 
-        public SpongeInfo(Location location, BlockingType blockingType, List<BlockedLocation> blocked, List<Location> outerLocations) {
+        public SpongeInfo(Location location, BlockingType blockingType, List<Location> blocked, List<Location> outerLocations) {
             this.location = location;
             this.placeTime = System.currentTimeMillis();
             this.blockingLocations = blocked;
@@ -673,7 +652,7 @@ public class PhysicsListener implements Listener {
             this.outerLocations = outerLocations;
         }
 
-        public List<BlockedLocation> getBlockingLocations() {
+        public List<Location> getBlockingLocations() {
             return blockingLocations;
         }
 
