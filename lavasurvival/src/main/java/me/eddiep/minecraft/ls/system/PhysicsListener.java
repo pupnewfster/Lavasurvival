@@ -351,7 +351,7 @@ public class PhysicsListener implements Listener {
         BlockVector bv = location.toVector().toBlockVector();
         if (blockedLocations.containsKey(bv)) {
             blocked = blockedLocations.get(bv);
-            blocked.overlapCount++;
+            blocked.overlap(duration);
             if (blockingType != blocked.blockingType) {
                 blocked.blockingType = BlockingType.BOTH; //If they don't match, just set to both
             }
@@ -612,6 +612,8 @@ public class PhysicsListener implements Listener {
         private Location location;
         private long duration;
         private long placeTime;
+        private Stack<Long> queuedPlaceTimes = new Stack<>();
+        private Stack<Long> queuedDurations = new Stack<>();
         private BlockingType blockingType;
         private int overlapCount = 1;
 
@@ -620,6 +622,12 @@ public class PhysicsListener implements Listener {
             this.duration = duration;
             this.blockingType = blockingType;
             this.placeTime = System.currentTimeMillis();
+        }
+
+        public void overlap(long duration) {
+            queuedPlaceTimes.add(System.currentTimeMillis());
+            queuedDurations.add(duration);
+            overlapCount++;
         }
 
         public BlockingType getBlockingType() {
@@ -640,6 +648,10 @@ public class PhysicsListener implements Listener {
 
         public boolean tryRemove() {
             overlapCount--;
+            if (!queuedPlaceTimes.empty()) {
+                placeTime = queuedPlaceTimes.pop();
+                duration = queuedDurations.pop();
+            }
             return overlapCount <= 0;
         }
     }
