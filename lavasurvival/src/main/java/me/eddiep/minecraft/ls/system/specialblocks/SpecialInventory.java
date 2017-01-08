@@ -1,6 +1,10 @@
 package me.eddiep.minecraft.ls.system.specialblocks;
 
 import me.eddiep.minecraft.ls.game.Gamemode;
+import me.eddiep.minecraft.ls.game.items.Intrinsic;
+import me.eddiep.minecraft.ls.game.items.LavaItem;
+import me.eddiep.minecraft.ls.system.util.ArrayHelper;
+import me.eddiep.minecraft.ls.system.util.RandomHelper;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.FallingBlock;
@@ -13,6 +17,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import static me.eddiep.minecraft.ls.system.util.RandomDistribution.*;
+import static me.eddiep.minecraft.ls.system.util.RandomHelper.*;
+
 public class SpecialInventory {
     private static final HashMap<FallingBlock, SpecialInventory> INSTANCERS = new HashMap<>();
 
@@ -21,10 +28,10 @@ public class SpecialInventory {
     private SpecialInventory() {
     }
 
-    public static SpecialInventory create(FallingBlock block, InventoryTiers tier) {
+    public static SpecialInventory create(FallingBlock block, Intrinsic tier) {
         int slotSize = 9;
-        ArrayList<ItemStack> items = chooseItems(tier); //TODO change slot size if for some reason we decide to let there be more than 9 items per crate
-        Inventory inventory = Bukkit.createInventory(null, slotSize, tier.getName());
+        ArrayList<ItemStack> items = chooseItems(tier);
+        Inventory inventory = Bukkit.createInventory(null, slotSize, tier.name());
         for (int i = 0; i < slotSize; i++) {
             if (i >= items.size())
                 break;
@@ -44,10 +51,52 @@ public class SpecialInventory {
         return sInventory;
     }
 
-    private static ArrayList<ItemStack> chooseItems(InventoryTiers tier) {
+    private static ArrayList<ItemStack> chooseItems(Intrinsic tier) {
         ArrayList<ItemStack> items = new ArrayList<>();
-        //TODO add items to this list based on the tier
-        //TODO: make the items have a certain probability of showing up for a certain tier and such
+        List<ItemStack> possibleItems = LavaItem.filter(tier);
+
+        switch (tier) {
+            case COMMON: { //MAX of 9 common items
+                int itemCount = random(3, 9, POSITIVE_EXPONENTIAL);
+                for (int i = 0; i < itemCount; i++) {
+                    items.add(possibleItems.get(random(possibleItems.size())));
+                }
+
+                if (itemCount < 7 && RandomHelper.negativeExponentialRandom() > 0.5) {
+                    //Add a uncommon item
+                    ItemStack uncommonItem = ArrayHelper.random(LavaItem.filter(Intrinsic.UNCOMMON));
+                    items.add(uncommonItem);
+                }
+                break;
+            }
+            case UNCOMMON: { //MAX of 5 uncommon items and 4 common items
+                int itemCount = random(2, 5, NEGATIVE_EXPONENTIAL);
+                for (int i = 0; i < itemCount; i++) {
+                    items.add(possibleItems.get(random(possibleItems.size())));
+                }
+
+                int commonCount = random(1, 4);
+                possibleItems = LavaItem.filter(Intrinsic.COMMON);
+                for (int i = 0; i < commonCount; i++) {
+                    items.add(possibleItems.get(random(possibleItems.size())));
+                }
+                break;
+            }
+            case EPIC: { //MAX of 3 epic items and 3 uncommon items
+                int itemCount = random(1, 3, NEGATIVE_EXPONENTIAL);
+                for (int i = 0; i < itemCount; i++) {
+                    items.add(possibleItems.get(random(possibleItems.size())));
+                }
+
+                int uncommonCount = random(1, 3, NEGATIVE_EXPONENTIAL);
+                possibleItems = LavaItem.filter(Intrinsic.UNCOMMON);
+                for (int i = 0; i < uncommonCount; i++) {
+                    items.add(possibleItems.get(random(possibleItems.size())));
+                }
+                break;
+            }
+        }
+
         return items;
     }
 

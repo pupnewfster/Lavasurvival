@@ -10,6 +10,7 @@ import me.eddiep.minecraft.ls.Lavasurvival;
 import me.eddiep.minecraft.ls.game.impl.Flood;
 import me.eddiep.minecraft.ls.game.impl.Fusion;
 import me.eddiep.minecraft.ls.game.impl.Rise;
+import me.eddiep.minecraft.ls.game.items.Intrinsic;
 import me.eddiep.minecraft.ls.game.options.FloodOptions;
 import me.eddiep.minecraft.ls.game.shop.ShopFactory;
 import me.eddiep.minecraft.ls.game.status.PlayerStatusManager;
@@ -19,8 +20,8 @@ import me.eddiep.minecraft.ls.system.BukkitUtils;
 import me.eddiep.minecraft.ls.system.FileUtils;
 import me.eddiep.minecraft.ls.system.PhysicsListener;
 import me.eddiep.minecraft.ls.system.PlayerListener;
-import me.eddiep.minecraft.ls.system.specialblocks.InventoryTiers;
 import me.eddiep.minecraft.ls.system.specialblocks.SpecialInventory;
+import me.eddiep.minecraft.ls.system.util.RandomHelper;
 import net.nyvaria.googleanalytics.hit.EventHit;
 import net.nyvaria.googleanalytics.hit.SocialInteractionHit;
 import net.nyvaria.openanalytics.bukkit.client.Client;
@@ -41,6 +42,7 @@ import org.bukkit.material.MaterialData;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.scoreboard.Team;
+import org.bukkit.util.BlockVector;
 
 import java.io.File;
 import java.io.IOException;
@@ -49,6 +51,9 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.*;
+
+import static me.eddiep.minecraft.ls.system.util.RandomDistribution.*;
+import static me.eddiep.minecraft.ls.system.util.RandomHelper.*;
 
 public abstract class Gamemode {
     private static final Material[] DEFAULT_BLOCKS = new Material[]{
@@ -76,10 +81,10 @@ public abstract class Gamemode {
             VOTE_COUNT = LavaMap.getPossibleMaps().length <= 3 ? LavaMap.getPossibleMaps().length - 1 : 3;
     }
 
-    protected static final Random RANDOM = new Random();
     public static final double DAMAGE = 3;
     public static final double DAMAGE_FREQUENCY = 0.5;
     protected static boolean LAVA = true;
+    protected static Random RANDOM = new Random();
     private static boolean voting = false;
     private final LavaMap[] nextMaps = new LavaMap[VOTE_COUNT];
     protected final ArrayList<CraftBossBar> bars = new ArrayList<>();
@@ -153,7 +158,7 @@ public abstract class Gamemode {
             String[] files = LavaMap.getPossibleMaps();
             lastMap = currentMap;
             do {
-                String next = files[RANDOM.nextInt(files.length)];
+                String next = files[random(files.length)];
                 try {
                     currentMap = LavaMap.load(next);
                     break;
@@ -461,7 +466,7 @@ public abstract class Gamemode {
                 if (this.nextGame == null)
                     this.nextGame = pickRandomGame(null);
                 if (this.nextGame.map == null)
-                    this.nextGame.map = LavaMap.load(files[RANDOM.nextInt(files.length)]);
+                    this.nextGame.map = LavaMap.load(files[random(files.length)]);
                 Bukkit.getScheduler().scheduleSyncDelayedTask(Lavasurvival.INSTANCE, () -> {
                     lastMap = getCurrentMap();
                     tryNextGame();
@@ -612,7 +617,7 @@ public abstract class Gamemode {
                 String next;
                 do {
                     found = false;
-                    next = files[RANDOM.nextInt(files.length)];
+                    next = files[random(files.length)];
                     File possibleNext = new File(next);
                     if (currentMap.getFile().equals(possibleNext)) {
                         found = true;
@@ -677,7 +682,7 @@ public abstract class Gamemode {
             try {
                 if (this.nextGame == null)
                     this.nextGame = pickRandomGame(null);
-                this.nextGame.map = LavaMap.load(files[RANDOM.nextInt(files.length)]);
+                this.nextGame.map = LavaMap.load(files[random(files.length)]);
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -690,9 +695,9 @@ public abstract class Gamemode {
 
     protected void setIsLava(FloodOptions option) {
         if (option.isLavaEnabled() && option.isWaterEnabled())
-            LAVA = RANDOM.nextInt(100) < 75; //Have water/lava check be in here instead of as argument
+            LAVA = random(100) < 75; //Have water/lava check be in here instead of as argument
         else
-            LAVA = option.isLavaEnabled() || !option.isWaterEnabled() && RANDOM.nextInt(100) < 75;
+            LAVA = option.isLavaEnabled() || !option.isWaterEnabled() && random(100) < 75;
     }
 
     public void forceEnd() {
@@ -727,7 +732,7 @@ public abstract class Gamemode {
 
     private Gamemode pickRandomGame(LavaMap map) {
         if (map == null) {
-            Class<?> nextGameClass = GAMES[RANDOM.nextInt(GAMES.length)];
+            Class<?> nextGameClass = GAMES[random(GAMES.length)];
             try {
                 return (Gamemode) nextGameClass.newInstance();
             } catch (Exception e) {
@@ -735,7 +740,7 @@ public abstract class Gamemode {
             }
         } else {
             Class<? extends Gamemode>[] games = map.getEnabledGames();
-            Class<? extends Gamemode> nextGameClass = games[RANDOM.nextInt(games.length)];
+            Class<? extends Gamemode> nextGameClass = games[random(games.length)];
             try {
                 return nextGameClass.newInstance();
             } catch (InstantiationException | IllegalAccessException e) {
@@ -944,18 +949,17 @@ public abstract class Gamemode {
     private final MaterialData money = new MaterialData(Material.BOOKSHELF);
     private final MaterialData common = new MaterialData(Material.IRON_BLOCK);
     private final MaterialData uncommon = new MaterialData(Material.GOLD_BLOCK);
-    private final MaterialData rare = new MaterialData(Material.DIAMOND_BLOCK);
+    private final MaterialData epic = new MaterialData(Material.DIAMOND_BLOCK);
 
     public void interactSpecial(Player p, FallingBlock b) {
         if (b.hasGravity()) //Make it so that the block has to have landed already. This way we don't have to worry about dupes
             return;
         MaterialData data = new MaterialData(b.getMaterial(), b.getBlockData());
-        InventoryTiers tier = null;
-        //TODO: Should it announce that someone got something and what they got
+        Intrinsic tier = null;
         if (data.equals(money)) { //Give them money and calculate how much
             int baseDistribution;
             if (this instanceof Flood)
-                baseDistribution = (int) (Math.log(1 - RANDOM.nextDouble()) / -0.47) + 1;
+                baseDistribution = (int) (Math.log(1 - uniformRandom()) / -0.47) + 1;
             else {
                 int totalLayers = getCurrentMap().getHeight();
                 int layersLeft = 0;
@@ -966,7 +970,7 @@ public abstract class Gamemode {
                 if (layersLeft <= 0)
                     layersLeft = 1;
                 double inverseLayersLeft = (double) layersLeft / (double) totalLayers;
-                baseDistribution = (int) (Math.log(1 - RANDOM.nextDouble()) / -(Math.abs(inverseLayersLeft - 1) <= 0.15 ? 0.909 : inverseLayersLeft / 1.1)) + 1;
+                baseDistribution = (int) (Math.log(1 - uniformRandom()) / -(Math.abs(inverseLayersLeft - 1) <= 0.15 ? 0.909 : inverseLayersLeft / 1.1)) + 1;
             }
             int reward = baseDistribution * 100;
             if (isRewardDoubled())
@@ -974,11 +978,11 @@ public abstract class Gamemode {
             globalMessage(ChatColor.GOLD + p.getName() + ChatColor.GREEN + " found " + Necessities.getEconomy().format(reward));
             Lavasurvival.INSTANCE.depositPlayer(p, reward);
         } else if (data.equals(common)) //Give them some common items/blocks
-            tier = InventoryTiers.COMMON;
+            tier = Intrinsic.COMMON;
         else if (data.equals(uncommon)) //Give them some uncommon items/blocks
-            tier = InventoryTiers.UNCOMMON;
-        else if (data.equals(rare)) //Give them some rare items/blocks
-            tier = InventoryTiers.RARE;
+            tier = Intrinsic.UNCOMMON;
+        else if (data.equals(epic)) //Give them some epic items/blocks
+            tier = Intrinsic.EPIC;
         if (tier == null) {
             if (scoreboard != null)
                 scoreboard.getTeam("Special").removeEntry(b.getUniqueId().toString());
@@ -1013,16 +1017,51 @@ public abstract class Gamemode {
             max = alive.size();
         if (max <= 0)
             max = 1;
-        int number = RANDOM.nextInt(max - min + 1) + min, y = getCurrentMap().getSpecialY();
+        int number = random(min, max), y = getCurrentMap().getSpecialY();
         for (int i = 0; i < number; i++) {
-            //TODO: use some probability to decide which kind to spawn instead of just spawning a money one, this also can be moved into the spawn instead of passing data
-            MaterialData data = money;
+            MaterialData data;
+            double u = random(1, 100, NEGATIVE_EXPONENTIAL);
+            if (u < 50) {
+                if (randomBoolean()) {
+                    data = money;
+                } else {
+                    data = common;
+                }
+            } else if (u < 80) {
+                data = uncommon;
+            } else {
+                data = epic;
+            }
             if (isEndWave) {
-                //TODO: Make things spawning in open areas (not falling)
-                //Be sure to use false for the gravity variable to make it not fall
+                BlockVector location = findOpenSpace();
+                if (location != null) {
+                    spawnSpecialBlock(location.getBlockX(), location.getBlockY(), location.getBlockZ(), data, false);
+                }
+
             } else
-                spawnSpecialBlock(minX + RANDOM.nextInt(difX), y, minZ + RANDOM.nextInt(difZ), data, true);
+                spawnSpecialBlock(minX + random(difX), y, minZ + random(difZ), data, true);
         }
+    }
+
+    public static BlockVector findOpenSpace() {
+        return findOpenSpace(100);
+    }
+
+    public static BlockVector findOpenSpace(int limit) {
+        LavaMap cmap = getCurrentMap();
+        int minX = cmap.getMinX(), maxX = cmap.getMaxX(), minZ = cmap.getMinZ(), maxZ = cmap.getMaxZ();
+        int minY = cmap.getLavaY() - cmap.getHeight(), maxY = cmap.getLavaY();
+
+        for (int i = 0; i < limit; i++) {
+            int x = random(minX, maxX), y = random(minY, maxY), z = random(minZ, maxZ);
+            Block block = cmap.getWorld().getBlockAt(x, y, z);
+
+            if (block.getType() == Material.AIR) {
+                return block.getLocation().toVector().toBlockVector();
+            }
+        }
+
+        return null;
     }
 
     public void spawnSpecialBlock(int x, int y, int z, MaterialData data, boolean gravity) {

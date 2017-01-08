@@ -82,5 +82,16 @@ public abstract class LavaItem {
         return item != null && item.hasItemMeta() && item.getItemMeta().getDisplayName().equals(name());
     }
 
+    public static List<ItemStack> filter(Intrinsic value) {
+        ArrayList<ItemStack> toReturn = new ArrayList<>();
+        for (LavaItem item : ITEMS) {
+            if (item.intrinsic() == value) {
+                toReturn.add(item.createItem());
+            }
+        }
+
+        return toReturn;
+    }
+
     public abstract int getPrice();
 }
