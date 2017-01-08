@@ -347,8 +347,18 @@ public class PhysicsListener implements Listener {
     public BlockedLocation addBlockedLocation(Location location, long duration, BlockingType blockingType) {
         if (Gamemode.getCurrentMap().isLocationNearLavaSpawn(location))
             return null;
-        BlockedLocation blocked = new BlockedLocation(location, duration, blockingType);
-        blockedLocations.put(location.toVector().toBlockVector(), blocked);
+        BlockedLocation blocked;
+        BlockVector bv = location.toVector().toBlockVector();
+        if (blockedLocations.containsKey(bv)) {
+            blocked = blockedLocations.get(bv);
+            blocked.overlapCount++;
+            if (blockingType != blocked.blockingType) {
+                blocked.blockingType = BlockingType.BOTH; //If they don't match, just set to both
+            }
+        } else {
+            blocked = new BlockedLocation(location, duration, blockingType);
+            blockedLocations.put(bv, blocked);
+        }
 
         Block currentBlock = location.getBlock();
         if ((blockingType == BlockingType.LAVA || blockingType == BlockingType.BOTH) && (currentBlock.getType() == Material.LAVA || currentBlock.getType() == Material.STATIONARY_LAVA)) {
@@ -390,8 +400,11 @@ public class PhysicsListener implements Listener {
             if (blockedLocations.containsKey(bv)) {
                 BlockedLocation info = blockedLocations.get(bv);
                 BlockingType blockingType = info.getBlockingType();
-                if (System.currentTimeMillis() - info.getPlaceTime() >= info.getDuration())
-                    blockedLocations.remove(bv);
+                if (System.currentTimeMillis() - info.getPlaceTime() >= info.getDuration()) {
+                    if (info.tryRemove()) {
+                        blockedLocations.remove(bv);
+                    }
+                }
                 else if ((blockingType == BlockingType.LAVA || blockingType == BlockingType.BOTH) && (type == Material.LAVA || type == Material.STATIONARY_LAVA)) {
                     event.setCancelled(true);
                     return;
@@ -600,6 +613,7 @@ public class PhysicsListener implements Listener {
         private long duration;
         private long placeTime;
         private BlockingType blockingType;
+        private int overlapCount = 1;
 
         private BlockedLocation(Location location, long duration, BlockingType blockingType) {
             this.location = location;
@@ -622,6 +636,11 @@ public class PhysicsListener implements Listener {
 
         public long getPlaceTime() {
             return placeTime;
+        }
+
+        public boolean tryRemove() {
+            overlapCount--;
+            return overlapCount <= 0;
         }
     }
 
