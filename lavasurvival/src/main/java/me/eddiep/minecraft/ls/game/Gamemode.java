@@ -105,6 +105,7 @@ public abstract class Gamemode {
     private final ChatColor specialColor = ChatColor.GREEN;
     private long startTime;
     private List<Block> spongeLocations = new ArrayList<>();
+    private boolean suspended;
 
     protected static PlayerListener getPlayerListener() {
         return listener;
@@ -178,6 +179,16 @@ public abstract class Gamemode {
     }
 
     public final void start() {
+        start(false);
+    }
+
+    public final void start(boolean forceStart) {
+        if (!forceStart && Bukkit.getOnlinePlayers().size() == 0) {
+            Lavasurvival.log("No one is online...suspending start");
+            currentGame.suspended = true;
+            return;
+        }
+
         if (restart) {
             Lavasurvival.INSTANCE.updating = true;
             for (Player p : Bukkit.getOnlinePlayers()) {
@@ -223,6 +234,7 @@ public abstract class Gamemode {
         }
         this.isEnding = false;
         this.hasEnded = false;
+        this.suspended = false;
         setIsLava(currentMap.getFloodOptions());
         for (CraftBossBar bar : this.bars) {
             bar.hide();
@@ -296,6 +308,10 @@ public abstract class Gamemode {
 
     public int countAirBlocksAround(Player player, int limit) {
         return airBlocksAround(player.getLocation(), limit);
+    }
+
+    public boolean isSuspended() {
+        return suspended;
     }
 
     private int airBlocksAround(Location original, int limit) {
@@ -750,7 +766,7 @@ public abstract class Gamemode {
         return null;
     }
 
-    private void tryNextGame() {
+    public void tryNextGame() {
         if (this.nextGame != null) {
             globalMessage("Preparing next game..");
             this.nextGame.prepare();
@@ -1083,5 +1099,9 @@ public abstract class Gamemode {
     public static void restartNextGame(String serverToJoin) {
         restart = true;
         restartServer = serverToJoin;
+    }
+
+    public Gamemode getNextGame() {
+        return nextGame;
     }
 }

@@ -408,6 +408,10 @@ public class PlayerListener implements Listener {
             return;
         }
 
+        if (Gamemode.getCurrentGame().isSuspended()) {
+            Gamemode.getCurrentGame().getNextGame().start(true); //Force start the next game
+        }
+
         UserManager um = Lavasurvival.INSTANCE.getUserManager();
         um.addUser(player);
         um.forceParseUser(player);
