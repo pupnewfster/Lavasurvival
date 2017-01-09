@@ -84,12 +84,9 @@ public abstract class LavaItem {
 
     public static List<ItemStack> filter(Intrinsic value) {
         ArrayList<ItemStack> toReturn = new ArrayList<>();
-        for (LavaItem item : ITEMS) {
-            if (item.intrinsic() == value) {
+        for (LavaItem item : ITEMS)
+            if (item.intrinsic() == value)
                 toReturn.add(item.createItem());
-            }
-        }
-
         return toReturn;
     }
 

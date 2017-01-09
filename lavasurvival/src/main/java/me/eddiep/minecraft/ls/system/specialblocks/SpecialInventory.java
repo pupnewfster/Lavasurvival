@@ -17,8 +17,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import static me.eddiep.minecraft.ls.system.util.RandomDistribution.*;
-import static me.eddiep.minecraft.ls.system.util.RandomHelper.*;
+import static me.eddiep.minecraft.ls.system.util.RandomDistribution.NEGATIVE_EXPONENTIAL;
+import static me.eddiep.minecraft.ls.system.util.RandomDistribution.POSITIVE_EXPONENTIAL;
+import static me.eddiep.minecraft.ls.system.util.RandomHelper.random;
 
 public class SpecialInventory {
     private static final HashMap<FallingBlock, SpecialInventory> INSTANCERS = new HashMap<>();
@@ -35,7 +36,7 @@ public class SpecialInventory {
         for (int i = 0; i < slotSize; i++) {
             if (i >= items.size())
                 break;
-            ItemStack item = items.get(i);
+            ItemStack item = items.get(i).clone();
             if (item != null) {
                 ItemMeta meta = item.getItemMeta();
                 List<String> lore = meta.hasLore() ? meta.getLore() : new ArrayList<>();
@@ -58,9 +59,8 @@ public class SpecialInventory {
         switch (tier) {
             case COMMON: { //MAX of 9 common items
                 int itemCount = random(3, 9, POSITIVE_EXPONENTIAL);
-                for (int i = 0; i < itemCount; i++) {
+                for (int i = 0; i < itemCount; i++)
                     items.add(possibleItems.get(random(possibleItems.size())));
-                }
 
                 if (itemCount < 7 && RandomHelper.negativeExponentialRandom() > 0.5) {
                     //Add a uncommon item
@@ -71,32 +71,27 @@ public class SpecialInventory {
             }
             case UNCOMMON: { //MAX of 5 uncommon items and 4 common items
                 int itemCount = random(2, 5, NEGATIVE_EXPONENTIAL);
-                for (int i = 0; i < itemCount; i++) {
+                for (int i = 0; i < itemCount; i++)
                     items.add(possibleItems.get(random(possibleItems.size())));
-                }
 
                 int commonCount = random(1, 4);
                 possibleItems = LavaItem.filter(Intrinsic.COMMON);
-                for (int i = 0; i < commonCount; i++) {
+                for (int i = 0; i < commonCount; i++)
                     items.add(possibleItems.get(random(possibleItems.size())));
-                }
                 break;
             }
             case EPIC: { //MAX of 3 epic items and 3 uncommon items
                 int itemCount = random(1, 3, NEGATIVE_EXPONENTIAL);
-                for (int i = 0; i < itemCount; i++) {
+                for (int i = 0; i < itemCount; i++)
                     items.add(possibleItems.get(random(possibleItems.size())));
-                }
 
                 int uncommonCount = random(1, 3, NEGATIVE_EXPONENTIAL);
                 possibleItems = LavaItem.filter(Intrinsic.UNCOMMON);
-                for (int i = 0; i < uncommonCount; i++) {
+                for (int i = 0; i < uncommonCount; i++)
                     items.add(possibleItems.get(random(possibleItems.size())));
-                }
                 break;
             }
         }
-
         return items;
     }
 
