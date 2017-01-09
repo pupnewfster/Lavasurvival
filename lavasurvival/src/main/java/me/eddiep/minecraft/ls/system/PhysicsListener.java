@@ -406,8 +406,7 @@ public class PhysicsListener implements Listener {
                     blockedStack.pop();
                     if (blockedStack.isEmpty())
                         blockedLocations.remove(bv);
-                }
-                else if ((blockingType == BlockingType.LAVA || blockingType == BlockingType.BOTH) && (type == Material.LAVA || type == Material.STATIONARY_LAVA)) {
+                } else if ((blockingType == BlockingType.LAVA || blockingType == BlockingType.BOTH) && (type == Material.LAVA || type == Material.STATIONARY_LAVA)) {
                     event.setCancelled(true);
                     return;
                 } else if ((blockingType == BlockingType.WATER || blockingType == BlockingType.BOTH) && (type == Material.WATER || type == Material.STATIONARY_WATER)) {

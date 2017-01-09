@@ -21,7 +21,6 @@ import me.eddiep.minecraft.ls.system.FileUtils;
 import me.eddiep.minecraft.ls.system.PhysicsListener;
 import me.eddiep.minecraft.ls.system.PlayerListener;
 import me.eddiep.minecraft.ls.system.specialblocks.SpecialInventory;
-import me.eddiep.minecraft.ls.system.util.RandomHelper;
 import net.nyvaria.googleanalytics.hit.EventHit;
 import net.nyvaria.googleanalytics.hit.SocialInteractionHit;
 import net.nyvaria.openanalytics.bukkit.client.Client;
@@ -52,7 +51,7 @@ import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.*;
 
-import static me.eddiep.minecraft.ls.system.util.RandomDistribution.*;
+import static me.eddiep.minecraft.ls.system.util.RandomDistribution.NEGATIVE_EXPONENTIAL;
 import static me.eddiep.minecraft.ls.system.util.RandomHelper.*;
 
 public abstract class Gamemode {
@@ -1022,32 +1021,28 @@ public abstract class Gamemode {
             MaterialData data;
             double u = random(1, 100, NEGATIVE_EXPONENTIAL);
             if (u < 50) {
-                if (randomBoolean()) {
+                if (randomBoolean())
                     data = money;
-                } else {
+                else
                     data = common;
-                }
-            } else if (u < 80) {
+            } else if (u < 80)
                 data = uncommon;
-            } else {
+            else
                 data = epic;
-            }
             if (isEndWave) {
                 BlockVector location = findOpenSpace();
-                if (location != null) {
+                if (location != null)
                     spawnSpecialBlock(location.getBlockX(), location.getBlockY(), location.getBlockZ(), data, false);
-                }
-
             } else
                 spawnSpecialBlock(minX + random(difX), y, minZ + random(difZ), data, true);
         }
     }
 
-    public static BlockVector findOpenSpace() {
+    private static BlockVector findOpenSpace() {
         return findOpenSpace(100);
     }
 
-    public static BlockVector findOpenSpace(int limit) {
+    private static BlockVector findOpenSpace(int limit) {
         LavaMap cmap = getCurrentMap();
         int minX = cmap.getMinX(), maxX = cmap.getMaxX(), minZ = cmap.getMinZ(), maxZ = cmap.getMaxZ();
         int minY = cmap.getLavaY() - cmap.getHeight(), maxY = cmap.getLavaY();
@@ -1055,10 +1050,8 @@ public abstract class Gamemode {
         for (int i = 0; i < limit; i++) {
             int x = random(minX, maxX), y = random(minY, maxY), z = random(minZ, maxZ);
             Block block = cmap.getWorld().getBlockAt(x, y, z);
-
-            if (block.getType() == Material.AIR) {
+            if (block.getType() == Material.AIR)
                 return block.getLocation().toVector().toBlockVector();
-            }
         }
 
         return null;
