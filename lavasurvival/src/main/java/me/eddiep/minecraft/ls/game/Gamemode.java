@@ -34,8 +34,8 @@ import org.bukkit.craftbukkit.v1_11_R1.boss.CraftBossBar;
 import org.bukkit.craftbukkit.v1_11_R1.entity.CraftFallingBlock;
 import org.bukkit.entity.FallingBlock;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.material.MaterialData;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -815,7 +815,7 @@ public abstract class Gamemode {
         UserInfo u = um.getUser(player.getUniqueId());
         u.resetGenerosity();
         u.resetBlockChangeCount();
-        Inventory inv = player.getInventory();
+        PlayerInventory inv = player.getInventory();
         for (Material DEFAULT_BLOCK : DEFAULT_BLOCKS) {
             ItemStack toGive = new ItemStack(DEFAULT_BLOCK, 1);
             if (BukkitUtils.hasItem(player.getInventory(), toGive) || u.isInBank(new MaterialData(DEFAULT_BLOCK)))
@@ -825,6 +825,16 @@ public abstract class Gamemode {
             toGive.setItemMeta(im);
             player.getInventory().addItem(toGive);
         }
+        ItemStack[] armor = inv.getArmorContents();
+        for (int i = 0; i < armor.length; i++) {
+            ItemStack item = armor[i];
+            if (item != null && item.hasItemMeta() && item.getItemMeta().hasLore() && item.getItemMeta().getLore().get(0).equalsIgnoreCase("Special"))
+                armor[i] = null;
+        }
+        inv.setArmorContents(armor);
+        ItemStack offhand = inv.getItemInOffHand();
+        if (offhand != null && offhand.hasItemMeta() && offhand.getItemMeta().hasLore() && offhand.getItemMeta().getLore().get(0).equalsIgnoreCase("Special"))
+            inv.setItemInOffHand(null);
         for (int i = 0; i < inv.getSize(); i++) {
             ItemStack item = inv.getItem(i);
             if (item != null && item.hasItemMeta() && item.getItemMeta().hasLore() && item.getItemMeta().getLore().get(0).equalsIgnoreCase("Special"))
@@ -946,9 +956,9 @@ public abstract class Gamemode {
     }
 
     private final MaterialData money = new MaterialData(Material.BOOKSHELF);
-    private final MaterialData common = new MaterialData(Material.IRON_BLOCK);
-    private final MaterialData uncommon = new MaterialData(Material.GOLD_BLOCK);
-    private final MaterialData epic = new MaterialData(Material.DIAMOND_BLOCK);
+    private final MaterialData common = new MaterialData(Material.CAULDRON);
+    private final MaterialData uncommon = new MaterialData(Material.ENDER_PORTAL_FRAME);
+    private final MaterialData epic = new MaterialData(Material.ENCHANTMENT_TABLE);
 
     public void interactSpecial(Player p, FallingBlock b) {
         if (b.hasGravity()) //Make it so that the block has to have landed already. This way we don't have to worry about dupes
