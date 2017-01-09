@@ -34,8 +34,7 @@ public class RandomHelper {
                 u = uniformRandom();
                 break;
         }
-
-        return min + (int)(((max - min) * u));
+        return min + (int) (((max - min) * u));
     }
 
     public static double uniformRandom() {
