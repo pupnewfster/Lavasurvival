@@ -956,9 +956,9 @@ public abstract class Gamemode {
     }
 
     private final MaterialData money = new MaterialData(Material.BOOKSHELF);
-    private final MaterialData common = new MaterialData(Material.IRON_BLOCK);
-    private final MaterialData uncommon = new MaterialData(Material.GOLD_BLOCK);
-    private final MaterialData epic = new MaterialData(Material.DIAMOND_BLOCK);
+    private final MaterialData common = new MaterialData(Material.CAULDRON);
+    private final MaterialData uncommon = new MaterialData(Material.ENDER_PORTAL_FRAME);
+    private final MaterialData epic = new MaterialData(Material.ENCHANTMENT_TABLE);
 
     public void interactSpecial(Player p, FallingBlock b) {
         if (b.hasGravity()) //Make it so that the block has to have landed already. This way we don't have to worry about dupes
