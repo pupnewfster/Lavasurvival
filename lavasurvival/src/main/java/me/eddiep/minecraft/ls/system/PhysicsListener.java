@@ -327,7 +327,7 @@ public class PhysicsListener implements Listener {
                     if (Math.abs(x) == range || Math.abs(y) == range || Math.abs(z) == range)
                         outerLocations.add(blockedLocation.getBlock().getLocation()); //Make the x,y,z be ints
                     else {
-                        BlockedLocation blocked = addBlockedLocation(blockedLocation, spongeDuration, blockingType);
+                        BlockedLocation blocked = addBlockedLocation(blockedLocation, spongeDuration, blockingType, false);
                         if (blocked == null) {
                             locations.clear();
                             return false;
@@ -344,19 +344,17 @@ public class PhysicsListener implements Listener {
         return true;
     }
 
-    public BlockedLocation addBlockedLocation(Location location, long duration, BlockingType blockingType) {
+    public BlockedLocation addBlockedLocation(Location location, long duration, BlockingType blockingType, boolean autoRemove) {
         if (Gamemode.getCurrentMap().isLocationNearLavaSpawn(location))
             return null;
-        BlockedLocation blocked = new BlockedLocation(duration, blockingType);
+        BlockedLocation blocked = new BlockedLocation(duration, blockingType, autoRemove);
         BlockVector bv = location.toVector().toBlockVector();
 
         Stack<BlockedLocation> blockStack;
-        if (blockedLocations.containsKey(bv)) {
+        if (blockedLocations.containsKey(bv))
             blockStack = blockedLocations.get(bv);
-        } else {
-            blockStack = new Stack<>();
-            blockedLocations.put(bv, blockStack);
-        }
+        else
+            blockedLocations.put(bv, blockStack = new Stack<>());
         blockStack.push(blocked);
 
         Block currentBlock = location.getBlock();
@@ -402,7 +400,7 @@ public class PhysicsListener implements Listener {
                 BlockedLocation info = blockedStack.peek();
                 BlockingType blockingType = info.getBlockingType();
 
-                if (System.currentTimeMillis() - info.getPlaceTime() >= info.getDuration()) {
+                if (info.getAutoRemove() && System.currentTimeMillis() - info.getPlaceTime() >= info.getDuration()) {
                     blockedStack.pop();
                     if (blockedStack.isEmpty())
                         blockedLocations.remove(bv);
@@ -497,10 +495,16 @@ public class PhysicsListener implements Listener {
                 long time = System.currentTimeMillis();
                 if (time - sponge.placeTime >= spongeDuration || remove) {
                     Lavasurvival.spawnParticleEffect(sponge.location.clone().add(0.5, 0.5, 0.5), 20 * 3, Color.RED);
-
                     //Remove all blocked locations
-                    sponge.blockingLocations.forEach(location -> blockedLocations.remove(location.toVector().toBlockVector()));
-                    //TODO: not remove the blocked locations that still have a sponge near them
+                    for (Location location : sponge.blockingLocations) {
+                        BlockVector bbv = location.toVector().toBlockVector();
+                        if (blockedLocations.containsKey(bbv)) {
+                            Stack<BlockedLocation> blockedStack = blockedLocations.get(bbv);
+                            blockedStack.pop();
+                            if (blockedStack.isEmpty())
+                                blockedLocations.remove(bbv);
+                        }
+                    }
                     sponge.blockingLocations.clear();
                     sponge.outerLocations.forEach(l -> ClassicPhysics.INSTANCE.getPhysicsHandler().checkLocation(l));
                     sponge.outerLocations.clear();
@@ -613,12 +617,17 @@ public class PhysicsListener implements Listener {
         private long duration;
         private long placeTime;
         private BlockingType blockingType;
-        private int overlapCount = 1;
+        private boolean autoRemove;
 
-        private BlockedLocation(long duration, BlockingType blockingType) {
+        private BlockedLocation(long duration, BlockingType blockingType, boolean autoRemove) {
             this.duration = duration;
             this.blockingType = blockingType;
+            this.autoRemove = autoRemove;
             this.placeTime = System.currentTimeMillis();
+        }
+
+        private BlockedLocation(long duration, BlockingType blockingType) {
+            this(duration, blockingType, true);
         }
 
         public BlockingType getBlockingType() {
@@ -631,6 +640,10 @@ public class PhysicsListener implements Listener {
 
         public long getPlaceTime() {
             return placeTime;
+        }
+
+        public boolean getAutoRemove() {
+            return this.autoRemove;
         }
     }
 

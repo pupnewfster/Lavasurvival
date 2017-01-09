@@ -2,6 +2,7 @@ package me.eddiep.minecraft.ls.system;
 
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.material.MaterialData;
 
 public class BukkitUtils {
@@ -18,6 +19,16 @@ public class BukkitUtils {
     }
 
     public static boolean hasItem(Inventory inventory, MaterialData dat) {
+        if (inventory instanceof PlayerInventory) {
+            PlayerInventory pinv = (PlayerInventory) inventory;
+            ItemStack[] armor = pinv.getArmorContents();
+            for (ItemStack stack : armor)
+                if (stack != null && stack.getData().equals(dat))
+                    return true;
+            ItemStack offhand = pinv.getItemInOffHand();
+            if (offhand != null && offhand.getData().equals(dat))
+                return true;
+        }
         for (ItemStack stack : inventory)
             if (stack != null && stack.getData().equals(dat))
                 return true;
