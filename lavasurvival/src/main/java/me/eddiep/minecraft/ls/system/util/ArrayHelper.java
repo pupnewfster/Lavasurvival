@@ -39,6 +39,26 @@ public class ArrayHelper {
             func.run(temp);
     }
 
+    public static <T, R> List<R> transform(List<T> original, PFunction<T, R> func) {
+        List<R> list = new ArrayList<R>();
+        for (T item : original) {
+            R newItem = func.run(item);
+            list.add(newItem);
+        }
+        return list;
+    }
+
+    public static <T, R> R[] transform(T[] original, PFunction<T, R> func) {
+        R[] newArray = (R[]) Array.newInstance(original.getClass().getComponentType(), original.length);
+
+        for (int i = 0; i < original.length; i++) {
+            R newItem = func.run(original[i]);
+            newArray[i] = newItem;
+        }
+
+        return newArray;
+    }
+
     /**
      * Combine the contents of two arrays and return the result. Array B will be appended onto array A
      *

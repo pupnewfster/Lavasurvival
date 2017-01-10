@@ -3,6 +3,8 @@ package me.eddiep.minecraft.ls.system.specialblocks;
 import me.eddiep.minecraft.ls.game.Gamemode;
 import me.eddiep.minecraft.ls.game.items.Intrinsic;
 import me.eddiep.minecraft.ls.game.items.LavaItem;
+import me.eddiep.minecraft.ls.game.shop.ShopFactory;
+import me.eddiep.minecraft.ls.ranks.RankType;
 import me.eddiep.minecraft.ls.system.util.ArrayHelper;
 import me.eddiep.minecraft.ls.system.util.RandomHelper;
 import org.bukkit.Bukkit;
@@ -52,9 +54,50 @@ public class SpecialInventory {
         return sInventory;
     }
 
+    private static List<ItemStack> chooseBlocks(Intrinsic tier) {
+        List<Material> temp;
+        switch (tier) {
+            case COMMON:
+                temp = ArrayHelper.combind(
+                        ShopFactory.getBlocksFor(RankType.BASIC),
+                        ShopFactory.getBlocksFor(RankType.ADVANCED)
+                );
+
+                break;
+            case UNCOMMON:
+                temp = ArrayHelper.combind(
+                        ShopFactory.getBlocksFor(RankType.SURVIVOR),
+                        ShopFactory.getBlocksFor(RankType.TRUSTED)
+                );
+
+                break;
+            case EPIC:
+                temp = ShopFactory.getBlocksFor(RankType.ELDER);
+
+                break;
+            default:
+                temp = new ArrayList<>();
+                break;
+        }
+
+        return ArrayHelper.transform(temp, ItemStack::new);
+    }
+
     private static ArrayList<ItemStack> chooseItems(Intrinsic tier) {
         ArrayList<ItemStack> items = new ArrayList<>();
-        List<ItemStack> possibleItems = LavaItem.filter(tier);
+        List<ItemStack> possibleItems = ArrayHelper.combind(
+                LavaItem.filter(tier),
+                chooseBlocks(tier)
+        );
+        List<ItemStack> uncommon;
+        if (tier != Intrinsic.UNCOMMON) {
+            uncommon = ArrayHelper.combind(
+                    LavaItem.filter(Intrinsic.UNCOMMON),
+                    chooseBlocks(Intrinsic.UNCOMMON)
+            );
+        } else {
+            uncommon = possibleItems;
+        }
 
         switch (tier) {
             case COMMON: { //MAX of 9 common items
@@ -64,7 +107,7 @@ public class SpecialInventory {
 
                 if (itemCount < 7 && RandomHelper.negativeExponentialRandom() > 0.5) {
                     //Add a uncommon item
-                    ItemStack uncommonItem = ArrayHelper.random(LavaItem.filter(Intrinsic.UNCOMMON));
+                    ItemStack uncommonItem = ArrayHelper.random(uncommon);
                     items.add(uncommonItem);
                 }
                 break;
@@ -86,9 +129,8 @@ public class SpecialInventory {
                     items.add(possibleItems.get(random(possibleItems.size())));
 
                 int uncommonCount = random(1, 3, NEGATIVE_EXPONENTIAL);
-                possibleItems = LavaItem.filter(Intrinsic.UNCOMMON);
                 for (int i = 0; i < uncommonCount; i++)
-                    items.add(possibleItems.get(random(possibleItems.size())));
+                    items.add(uncommon.get(random(uncommon.size())));
                 break;
             }
         }

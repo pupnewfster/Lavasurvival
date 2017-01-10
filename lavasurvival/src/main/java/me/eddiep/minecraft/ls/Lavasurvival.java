@@ -180,7 +180,7 @@ public class Lavasurvival extends JavaPlugin {
                 ElderBlockShop.class, DonatorBlockShop.class));
 
         ShopFactory.createShop(this, "Block Shop", new MenuShopManager(BlockShopCategory.class), Material.EMERALD, Collections.singletonList(ChatColor.GOLD + "" + ChatColor.ITALIC + "Buy more blocks!"), true);
-        ShopFactory.createShop(this, "Rank Shop", new MenuShopManager(RankShop.class), Material.EXP_BOTTLE, Collections.singletonList(ChatColor.GREEN + "" + ChatColor.ITALIC + "Level up!"), false);
+        ShopFactory.createShop(this, "RankType Shop", new MenuShopManager(RankShop.class), Material.EXP_BOTTLE, Collections.singletonList(ChatColor.GREEN + "" + ChatColor.ITALIC + "Level up!"), false);
         ShopFactory.createShop(this, "Item Shop", new MenuShopManager(ItemShop.class), Material.CLAY_BALL, Collections.singletonList(ChatColor.RED + "" + ChatColor.ITALIC + "Buy powerups!"), true);
         ShopFactory.createShop(this, "Bank", new BankShopManager(), Material.CHEST, Collections.singletonList(ChatColor.AQUA + "" + ChatColor.ITALIC + "Store unused blocks!"), false);
     }

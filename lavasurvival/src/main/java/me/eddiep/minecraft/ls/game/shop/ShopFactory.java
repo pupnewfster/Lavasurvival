@@ -1,6 +1,10 @@
 package me.eddiep.minecraft.ls.game.shop;
 
+import me.eddiep.minecraft.ls.game.shop.impl.*;
+import me.eddiep.minecraft.ls.ranks.RankType;
 import net.minecraft.server.v1_11_R1.NBTTagCompound;
+import net.njay.Menu;
+import net.njay.annotation.MenuItem;
 import org.bukkit.Material;
 import org.bukkit.craftbukkit.v1_11_R1.inventory.CraftItemStack;
 import org.bukkit.enchantments.Enchantment;
@@ -8,8 +12,10 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
 
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 
 @SuppressWarnings("unused")
@@ -45,6 +51,47 @@ public class ShopFactory {
         if (shop != null)
             shop.unregister();
         return shop;
+    }
+
+    private static HashMap<RankType, List<Material>> cachedBlocks = new HashMap<>();
+    public static List<Material> getBlocksFor(RankType rank) {
+        if (cachedBlocks.containsKey(rank))
+            return cachedBlocks.get(rank);
+
+        Class<? extends Menu> _class;
+        switch (rank) {
+            case BASIC:
+                _class = BasicBlockShop.class;
+                break;
+            case ADVANCED:
+                _class = AdvancedBlockShop.class;
+                break;
+            case SURVIVOR:
+                _class = SurvivorBlockShop.class;
+                break;
+            case TRUSTED:
+                _class = TrustedBlockShop.class;
+                break;
+            case ELDER:
+                _class = ElderBlockShop.class;
+                break;
+            default:
+                return new ArrayList<>();
+        }
+
+        List<Material> list = new ArrayList<>();
+        Method[] methods = _class.getDeclaredMethods();
+        for (Method m : methods) {
+            MenuItem item = m.getAnnotation(MenuItem.class);
+
+            if (item != null) {
+                Material material = item.item().material();
+                list.add(material);
+            }
+        }
+
+        cachedBlocks.put(rank, list);
+        return list;
     }
 
     @SuppressWarnings("UnusedReturnValue")
