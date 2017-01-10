@@ -124,7 +124,9 @@ public class Rise extends Gamemode {
         try {
             this.objective.setDisplayName(display);
         } catch (IllegalStateException e) {
-            e.printStackTrace();
+            this.objective.unregister();
+            this.objective = getScoreboard().registerNewObjective("game", "dummy");
+            this.objective.setDisplayName(display);
         }
     }
 

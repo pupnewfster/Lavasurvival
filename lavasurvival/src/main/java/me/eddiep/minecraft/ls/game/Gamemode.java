@@ -860,8 +860,10 @@ public abstract class Gamemode {
             player.getInventory().addItem(Lavasurvival.INSTANCE.getRules());
         ShopFactory.validateInventory(inv);
         u.giveBoughtBlocks();
-        if (!getCurrentMap().getCreator().equals(""))
-            player.sendTitle(ChatColor.GOLD + "Map created by " + getCurrentMap().getCreator(), "", 0, 60, 0);
+        if (getCurrentMap().getCreator().equals(""))
+            player.sendTitle(ChatColor.GOLD + getCurrentMap().getName(), "", 0, 60, 0);
+        else
+            player.sendTitle(ChatColor.GOLD + getCurrentMap().getName(), ChatColor.GOLD + "Map by: " + getCurrentMap().getCreator(), 0, 60, 0);
     }
 
     public void addBars(Player p) {
