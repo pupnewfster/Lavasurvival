@@ -184,7 +184,8 @@ public abstract class Gamemode {
     public final void start(boolean forceStart) {
         if (!forceStart && Bukkit.getOnlinePlayers().size() == 0) {
             Lavasurvival.log("No one is online...suspending start");
-            currentGame.suspended = true;
+            suspended = true;
+            currentGame = this;
             return;
         }
 
