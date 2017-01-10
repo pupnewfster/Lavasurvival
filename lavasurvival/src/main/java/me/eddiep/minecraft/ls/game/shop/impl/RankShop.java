@@ -23,7 +23,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 import java.util.Arrays;
 
 @SuppressWarnings("unused")
-@MenuInventory(slots = 9, name = "RankType Shop")
+@MenuInventory(slots = 9, name = "Rank Shop")
 public class RankShop extends Menu {
     public RankShop(MenuManager manager, Inventory inv) {
         super(manager, inv);
