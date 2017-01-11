@@ -142,7 +142,9 @@ public abstract class Gamemode {
     public final void prepare() {
         if (scoreboard == null) {
             scoreboard = Bukkit.getScoreboardManager().getMainScoreboard();
-            Team t = scoreboard.registerNewTeam("Special");
+            Team t = scoreboard.getTeam("Special");
+            if (t == null)
+                t = scoreboard.registerNewTeam("Special");
             t.setPrefix(specialColor + "");
         }
         if (listener == null) {
