@@ -142,7 +142,7 @@ public abstract class Gamemode {
         if (currentMap == null && currentGame == null) {
             String[] files = LavaMap.getPossibleMaps();
             LavaMap map;
-            while(true) {
+            while (true) {
                 String next = files[random(files.length)];
                 try {
                     map = LavaMap.load(next);
