@@ -127,11 +127,26 @@ public class PlayerListener implements Listener {
         if (is == null || is.getType().equals(Material.AIR))
             return;
         IChatBaseComponent infoJSON;
-        if (is.hasItemMeta() && is.getItemMeta().hasLore() && !is.getItemMeta().getLore().get(0).contains("MeltTime")) {
-            String lore = "";
-            for (String l : is.getItemMeta().getLore())
-                lore += l + " ";
-            infoJSON = IChatBaseComponent.ChatSerializer.a("{\"text\": \"" + lore.trim() + "\"}");
+        if (is.hasItemMeta() && is.getItemMeta().hasLore()) {
+            List<String> loreList = is.getItemMeta().getLore();
+            int start = 0;
+            String firstLore = loreList.get(start);
+            if (firstLore.equals("Special")) {
+                if (loreList.size() == 1)
+                    return;//error
+                start = 1;
+                firstLore = loreList.get(start);
+            }
+            if (!firstLore.contains("MeltTime")) {
+                String lore = "";
+                for (int i = start; i < loreList.size(); i++)
+                    lore += loreList.get(i) + " ";
+                infoJSON = IChatBaseComponent.ChatSerializer.a("{\"text\": \"" + lore.trim() + "\"}");
+            } else {
+                String lavaTime = ChatColor.GOLD + "Lava MeltTime" + ChatColor.RESET + ": " + PhysicsListener.getLavaMeltRangeTimeAsString(is.getData()),
+                        waterTime = ChatColor.BLUE + "Water MeltTime" + ChatColor.RESET + ": " + PhysicsListener.getWaterMeltRangeTimeAsString(is.getData());
+                infoJSON = IChatBaseComponent.ChatSerializer.a("{\"text\": \"" + lavaTime + "    " + waterTime + "\"}");
+            }
         } else {
             String lavaTime = ChatColor.GOLD + "Lava MeltTime" + ChatColor.RESET + ": " + PhysicsListener.getLavaMeltRangeTimeAsString(is.getData()),
                     waterTime = ChatColor.BLUE + "Water MeltTime" + ChatColor.RESET + ": " + PhysicsListener.getWaterMeltRangeTimeAsString(is.getData());
