@@ -188,6 +188,14 @@ public abstract class Gamemode {
             Lavasurvival.log("No one is online...suspending start");
             suspended = true;
             currentGame = this;
+            if (lastMap != null) {
+                Lavasurvival.log("Unloading " + lastMap.getWorld().getName() + "..");
+                boolean success = Bukkit.unloadWorld(lastMap.getWorld(), false);
+                if (!success)
+                    Lavasurvival.log("Failed to unload last map! A manual unload may be required..");
+                else
+                    new Thread(() -> restoreBackup(lastMap.getWorld())).start();
+            }
             return;
         }
 
@@ -236,6 +244,7 @@ public abstract class Gamemode {
         }
         this.isEnding = false;
         this.hasEnded = false;
+        boolean wasSuspended = this.suspended;
         this.suspended = false;
         setIsLava(currentMap.getFloodOptions());
         for (CraftBossBar bar : this.bars) {
@@ -251,7 +260,7 @@ public abstract class Gamemode {
         Bukkit.getOnlinePlayers().forEach(this::playerJoin);
         currentGame = this;
         Bukkit.getOnlinePlayers().forEach(this::addBars);
-        if (lastMap != null) {
+        if (!wasSuspended && lastMap != null) {
             Lavasurvival.log("Unloading " + lastMap.getWorld().getName() + "..");
             boolean success = Bukkit.unloadWorld(lastMap.getWorld(), false);
             if (!success)
