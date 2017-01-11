@@ -721,6 +721,8 @@ public abstract class Gamemode {
     }
 
     private void end() {
+        if (isSuspended())
+            return; //Is suspended no need to try to end again
         PlayerStatusManager.cleanup();
         this.tickTask.cancel();
         if (scoreboard != null) {
