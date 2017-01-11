@@ -79,10 +79,7 @@ public class SpecialInventory {
                 temp = new ArrayList<>();
                 break;
         }
-        ArrayList<ItemStack> items = new ArrayList<>();
-        temp.forEach(m -> items.add(addMeltTime(m.toItemStack(1))));
-        //return ArrayHelper.transform(temp, ItemStack::new);
-        return items;
+        return ArrayHelper.transform(temp, m -> addMeltTime(m.toItemStack(1)));
     }
 
     private static ItemStack addMeltTime(ItemStack is) { //TODO maybe move this into some utils class
