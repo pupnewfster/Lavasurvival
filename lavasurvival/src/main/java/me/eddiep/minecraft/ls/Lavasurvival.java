@@ -5,7 +5,6 @@ import com.google.gson.Gson;
 import me.eddiep.minecraft.ls.commands.*;
 import me.eddiep.minecraft.ls.game.Gamemode;
 import me.eddiep.minecraft.ls.game.LavaMap;
-import me.eddiep.minecraft.ls.game.impl.Rise;
 import me.eddiep.minecraft.ls.game.shop.ShopFactory;
 import me.eddiep.minecraft.ls.game.shop.impl.*;
 import me.eddiep.minecraft.ls.ranks.UserManager;
@@ -125,17 +124,13 @@ public class Lavasurvival extends JavaPlugin {
             getServer().getPluginManager().disablePlugin(this);
             return;
         }
-
-        //Setup the shops after connecting to vault
         setupShops();
         setRules();
-        if (LavaMap.getPossibleMaps().length > 0) {//Should we make it random here which gamemode we start with and make it obey the allowed maps for that gamemode
-            Rise rise = new Rise();
-            rise.prepare();
-            rise.start();
+        if (LavaMap.getPossibleMaps().length > 0 && Gamemode.runFirstGamemode())
             this.running = true;
-        } else //Only schedule a listener if no maps. If maps then it already is initialized through Gamemode.prepare()
+        else //Only schedule a listener if no maps. If maps then it already is initialized through Gamemode.prepare()
             getServer().getPluginManager().registerEvents(new PlayerListener(), this);
+        //Why do we bother scheduling one if no maps
     }
 
     @Override
