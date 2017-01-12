@@ -1,10 +1,12 @@
 package me.eddiep.minecraft.ls.system.specialblocks;
 
+import me.eddiep.minecraft.ls.Lavasurvival;
 import me.eddiep.minecraft.ls.game.Gamemode;
 import me.eddiep.minecraft.ls.game.items.Intrinsic;
 import me.eddiep.minecraft.ls.game.items.LavaItem;
 import me.eddiep.minecraft.ls.game.shop.ShopFactory;
 import me.eddiep.minecraft.ls.ranks.RankType;
+import me.eddiep.minecraft.ls.ranks.UserInfo;
 import me.eddiep.minecraft.ls.system.util.ArrayHelper;
 import me.eddiep.minecraft.ls.system.util.RandomHelper;
 import org.bukkit.Bukkit;
@@ -14,6 +16,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.material.MaterialData;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -40,11 +43,13 @@ public class SpecialInventory {
                 break;
             ItemStack item = items.get(i).clone();
             if (item != null) {
-                ItemMeta meta = item.getItemMeta();
-                List<String> lore = meta.hasLore() ? meta.getLore() : new ArrayList<>();
-                lore.add(0, "Special");
-                meta.setLore(lore);
-                item.setItemMeta(meta);
+                if (tier != Intrinsic.EPIC) {
+                    ItemMeta meta = item.getItemMeta();
+                    List<String> lore = meta.hasLore() ? meta.getLore() : new ArrayList<>();
+                    lore.add(0, "Special");
+                    meta.setLore(lore);
+                    item.setItemMeta(meta);
+                }
                 inventory.setItem(i, item);
             }
         }
@@ -58,10 +63,7 @@ public class SpecialInventory {
         List<Material> temp;
         switch (tier) {
             case COMMON:
-                temp = ArrayHelper.combind(
-                        ShopFactory.getBlocksFor(RankType.BASIC),
-                        ShopFactory.getBlocksFor(RankType.ADVANCED)
-                );
+                temp = new ArrayList<>();
 
                 break;
             case UNCOMMON:
@@ -72,7 +74,10 @@ public class SpecialInventory {
 
                 break;
             case EPIC:
-                temp = ShopFactory.getBlocksFor(RankType.ELDER);
+                temp = ArrayHelper.combind(
+                        ShopFactory.getBlocksFor(RankType.SURVIVOR),
+                        ShopFactory.getBlocksFor(RankType.TRUSTED)
+                );
 
                 break;
             default:
@@ -80,7 +85,7 @@ public class SpecialInventory {
                 break;
         }
 
-        return ArrayHelper.transform(temp, ItemStack::new);
+        return ArrayHelper.transform(temp, m -> new ItemStack(m));
     }
 
     private static ArrayList<ItemStack> chooseItems(Intrinsic tier) {
@@ -166,6 +171,16 @@ public class SpecialInventory {
                 Gamemode.getScoreboard().getTeam("Special").removeEntry(close.getUniqueId().toString());
             close.remove();
         }
+
+        /*UserInfo user = Lavasurvival.INSTANCE.getUserManager().getUser(p.getUniqueId());
+        if (user != null) {
+            for (ItemStack item : p.getInventory()) {
+                MaterialData data = item.getData();
+                if (!user.getOwnedBlocks().contains(data)) {
+                    user.addBlock(data);
+                }
+            }
+        }*/
     }
 
     private boolean isEmpty() {

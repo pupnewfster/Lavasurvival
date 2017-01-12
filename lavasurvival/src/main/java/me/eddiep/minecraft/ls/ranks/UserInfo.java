@@ -256,7 +256,7 @@ public class UserInfo {
     }
 
     @SuppressWarnings("deprecation")
-    private void addBlock(MaterialData dat) {
+    public void addBlock(MaterialData dat) {
         if (!this.ownedBlocks.contains(dat)) {
             this.ownedBlocks.add(dat);
             final String datInfo = dat.getItemType().toString() + ":" + dat.getData();
@@ -340,5 +340,9 @@ public class UserInfo {
 
     public boolean wasGenerous() {
         return this.generosity;
+    }
+
+    public ArrayList<MaterialData> getOwnedBlocks() {
+        return ownedBlocks;
     }
 }
