@@ -14,7 +14,7 @@ public class ChunkEdit {
     }
 
     @SuppressWarnings("deprecation")
-    private void setBlock(int x, int y, int z, Material type, byte data) {
+    public void setBlock(int x, int y, int z, Material type, byte data) {
         int chunkY = y >> 4;
         if (chunkY < 0 || chunkY > 15) //TODO is this still needed
             return;//It is a bad location

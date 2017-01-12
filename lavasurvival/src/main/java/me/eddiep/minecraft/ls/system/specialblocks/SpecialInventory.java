@@ -6,7 +6,7 @@ import me.eddiep.minecraft.ls.game.items.Intrinsic;
 import me.eddiep.minecraft.ls.game.items.LavaItem;
 import me.eddiep.minecraft.ls.game.shop.ShopFactory;
 import me.eddiep.minecraft.ls.ranks.RankType;
-import me.eddiep.minecraft.ls.ranks.UserInfo;
+import me.eddiep.minecraft.ls.system.PhysicsListener;
 import me.eddiep.minecraft.ls.system.util.ArrayHelper;
 import me.eddiep.minecraft.ls.system.util.RandomHelper;
 import org.bukkit.Bukkit;
@@ -19,6 +19,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.material.MaterialData;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
@@ -60,32 +61,40 @@ public class SpecialInventory {
     }
 
     private static List<ItemStack> chooseBlocks(Intrinsic tier) {
-        List<Material> temp;
+        List<MaterialData> temp;
         switch (tier) {
             case COMMON:
                 temp = new ArrayList<>();
-
                 break;
             case UNCOMMON:
                 temp = ArrayHelper.combind(
                         ShopFactory.getBlocksFor(RankType.SURVIVOR),
                         ShopFactory.getBlocksFor(RankType.TRUSTED)
                 );
-
                 break;
             case EPIC:
                 temp = ArrayHelper.combind(
                         ShopFactory.getBlocksFor(RankType.SURVIVOR),
                         ShopFactory.getBlocksFor(RankType.TRUSTED)
                 );
-
                 break;
             default:
                 temp = new ArrayList<>();
                 break;
         }
+        return ArrayHelper.transform(temp, m -> addMeltTime(m.toItemStack(1)));
+    }
 
-        return ArrayHelper.transform(temp, m -> new ItemStack(m));
+    private static ItemStack addMeltTime(ItemStack is) { //TODO maybe move this into some utils class
+        if (is != null) {
+            MaterialData dat = is.getData();
+            if (!dat.getItemType().equals(Material.AIR)) {
+                ItemMeta im = is.getItemMeta();
+                im.setLore(Arrays.asList("Lava MeltTime: " + PhysicsListener.getLavaMeltTimeAsString(dat), "Water MeltTime: " + PhysicsListener.getWaterMeltTimeAsString(dat)));
+                is.setItemMeta(im);
+            }
+        }
+        return is;
     }
 
     private static ArrayList<ItemStack> chooseItems(Intrinsic tier) {
@@ -95,14 +104,13 @@ public class SpecialInventory {
                 chooseBlocks(tier)
         );
         List<ItemStack> uncommon;
-        if (tier != Intrinsic.UNCOMMON) {
+        if (tier != Intrinsic.UNCOMMON)
             uncommon = ArrayHelper.combind(
                     LavaItem.filter(Intrinsic.UNCOMMON),
                     chooseBlocks(Intrinsic.UNCOMMON)
             );
-        } else {
+        else
             uncommon = possibleItems;
-        }
 
         switch (tier) {
             case COMMON: { //MAX of 9 common items

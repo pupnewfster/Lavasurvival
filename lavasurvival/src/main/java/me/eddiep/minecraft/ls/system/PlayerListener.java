@@ -1,6 +1,7 @@
 package me.eddiep.minecraft.ls.system;
 
 import com.crossge.necessities.Necessities;
+import me.eddiep.ChunkEdit;
 import me.eddiep.ClassicPhysics;
 import me.eddiep.handles.ClassicBlockPlaceEvent;
 import me.eddiep.handles.ClassicPhysicsHandler;
@@ -13,12 +14,12 @@ import me.eddiep.minecraft.ls.ranks.UserInfo;
 import me.eddiep.minecraft.ls.ranks.UserManager;
 import me.eddiep.minecraft.ls.system.bank.BankInventory;
 import me.eddiep.minecraft.ls.system.specialblocks.SpecialInventory;
-import net.minecraft.server.v1_11_R1.IChatBaseComponent;
-import net.minecraft.server.v1_11_R1.PacketPlayInClientCommand;
-import net.minecraft.server.v1_11_R1.PacketPlayOutTitle;
+import net.minecraft.server.v1_11_R1.*;
 import org.bukkit.*;
+import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
+import org.bukkit.craftbukkit.v1_11_R1.CraftWorld;
 import org.bukkit.craftbukkit.v1_11_R1.entity.CraftPlayer;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
@@ -57,6 +58,15 @@ public class PlayerListener implements Listener {
             Material.WOOD_PLATE,
             Material.BEDROCK,
             Material.BARRIER
+    }));
+    private final ArrayList<Material> clickOnBlocks = new ArrayList<>(Arrays.asList(new Material[]{//TODO: add other things that torches cannot be placed on but should be able to
+            Material.GLASS,
+            Material.STAINED_GLASS,
+            Material.TNT,
+            Material.GLOWSTONE,
+            Material.LEAVES,
+            Material.LEAVES_2,
+            Material.ICE
     }));
     private final Random rand = new Random();
     public boolean survival = false;
@@ -99,12 +109,6 @@ public class PlayerListener implements Listener {
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
-    public void blockBreak(BlockBreakEvent event) {
-        if (Gamemode.getCurrentGame() != null) //Cancel it mainly is only called so that classic physics knows to update around it
-            event.setCancelled(true);
-    }
-
-    @EventHandler(priority = EventPriority.HIGHEST)
     public void onPlayerDamage(EntityDamageEvent event) {
         if ((event.getEntity() instanceof Player && PlayerStatusManager.isInvincible((Player) event.getEntity())) || (Gamemode.getCurrentGame() != null && Gamemode.getCurrentGame().hasEnded())) {
             event.setCancelled(true);
@@ -127,11 +131,26 @@ public class PlayerListener implements Listener {
         if (is == null || is.getType().equals(Material.AIR))
             return;
         IChatBaseComponent infoJSON;
-        if (is.hasItemMeta() && is.getItemMeta().hasLore() && !is.getItemMeta().getLore().get(0).contains("MeltTime")) {
-            String lore = "";
-            for (String l : is.getItemMeta().getLore())
-                lore += l + " ";
-            infoJSON = IChatBaseComponent.ChatSerializer.a("{\"text\": \"" + lore.trim() + "\"}");
+        if (is.hasItemMeta() && is.getItemMeta().hasLore()) {
+            List<String> loreList = is.getItemMeta().getLore();
+            int start = 0;
+            String firstLore = loreList.get(start);
+            if (firstLore.equals("Special")) {
+                if (loreList.size() == 1)
+                    return;//error
+                start = 1;
+                firstLore = loreList.get(start);
+            }
+            if (!firstLore.contains("MeltTime")) {
+                String lore = "";
+                for (int i = start; i < loreList.size(); i++)
+                    lore += loreList.get(i) + " ";
+                infoJSON = IChatBaseComponent.ChatSerializer.a("{\"text\": \"" + lore.trim() + "\"}");
+            } else {
+                String lavaTime = ChatColor.GOLD + "Lava MeltTime" + ChatColor.RESET + ": " + PhysicsListener.getLavaMeltRangeTimeAsString(is.getData()),
+                        waterTime = ChatColor.BLUE + "Water MeltTime" + ChatColor.RESET + ": " + PhysicsListener.getWaterMeltRangeTimeAsString(is.getData());
+                infoJSON = IChatBaseComponent.ChatSerializer.a("{\"text\": \"" + lavaTime + "    " + waterTime + "\"}");
+            }
         } else {
             String lavaTime = ChatColor.GOLD + "Lava MeltTime" + ChatColor.RESET + ": " + PhysicsListener.getLavaMeltRangeTimeAsString(is.getData()),
                     waterTime = ChatColor.BLUE + "Water MeltTime" + ChatColor.RESET + ": " + PhysicsListener.getWaterMeltRangeTimeAsString(is.getData());
@@ -225,28 +244,73 @@ public class PlayerListener implements Listener {
                     type.equals(Material.CHEST) || type.equals(Material.TRAPPED_CHEST) || type.equals(Material.FURNACE) || type.equals(Material.BEACON) || type.equals(Material.BREWING_STAND) ||
                     type.equals(Material.DISPENSER) || type.equals(Material.DROPPER) || type.equals(Material.HOPPER))
                 event.setCancelled(true);//Disable opening block's with inventories
-            /*else if (event.getClickedBlock().getType().equals(Material.GLASS)) { //TODO check colored glass
-                //TODO make sure not in spawn
-                if (event.getItem() != null && event.getItem().getType().equals(Material.TORCH)) {
-                    BlockFace face = event.getBlockFace();
-                    Block relative = event.getClickedBlock().getRelative(face);
-                    relative.setType(Material.TORCH);
-                    if (face.equals(BlockFace.NORTH))
-                        relative.setData((byte) 4);
-                    else if (face.equals(BlockFace.EAST))
-                        relative.setData((byte) 1);
-                    else if (face.equals(BlockFace.SOUTH))
-                        relative.setData((byte) 3);
-                    else if (face.equals(BlockFace.WEST))
-                        relative.setData((byte) 2);
-                    if (!this.survival) {
+            else if (!event.getBlockFace().equals(BlockFace.DOWN) && clickOnBlocks.contains(type)) { //Do not place blocks below because they may not have something to hang onto
+                ItemStack item;
+                if (event.getItem() != null)
+                    item = event.getItem();
+                else {
+                    if (event.getHand().equals(EquipmentSlot.OFF_HAND))
+                        item = event.getPlayer().getInventory().getItemInOffHand();
+                    else
+                        item = event.getPlayer().getInventory().getItemInMainHand();
+                    if (item != null && item.getType().equals(Material.AIR)) {//It is something that cannot normally be placed on it so the other hand got registered
                         if (event.getHand().equals(EquipmentSlot.OFF_HAND))
-                            event.getPlayer().getInventory().setItemInOffHand(event.getPlayer().getInventory().getItemInOffHand().clone());
+                            item = event.getPlayer().getInventory().getItemInMainHand();
                         else
-                            event.getPlayer().getInventory().setItemInMainHand(event.getPlayer().getInventory().getItemInMainHand().clone());
-                    }
+                            item = event.getPlayer().getInventory().getItemInOffHand();
+                    } else
+                        return;
                 }
-            }*/
+                if (item == null || item.getType().equals(Material.AIR))
+                    return;
+                BlockFace face = event.getBlockFace();
+                Block relative = event.getClickedBlock().getRelative(face);
+                if (relative.getLocation().getBlockY() >= Gamemode.getCurrentMap().getLavaY()) {
+                    p.sendMessage(ChatColor.RED + "" + ChatColor.BOLD + "You are building too high!");
+                    return;
+                }
+                if (Gamemode.getCurrentMap().isInSafeZone(relative.getLocation())) {
+                    event.getPlayer().sendMessage(ChatColor.RED + "" + ChatColor.BOLD + "You are not allowed to build in spawn!");
+                    return;
+                }
+                boolean sendUpdate = false;
+                byte data = 0;
+                Material iType = item.getType();
+                //TODO: If we add new blocks that can be placed like redstone torches add them here
+                if (iType.equals(Material.TORCH)) {
+                    if (face.equals(BlockFace.NORTH))
+                        data = 4;
+                    else if (face.equals(BlockFace.EAST))
+                        data = 1;
+                    else if (face.equals(BlockFace.SOUTH))
+                        data = 3;
+                    else if (face.equals(BlockFace.WEST))
+                        data = 2;
+                    else if (face.equals(BlockFace.UP))
+                        data = 5;
+                    sendUpdate = true;
+                } else if (iType.equals(Material.LADDER)) {
+                    if (face.equals(BlockFace.UP)) //Do not place it because it may not have something to place against on its side
+                        return;
+                    else if (face.equals(BlockFace.NORTH))
+                        data = 2;
+                    else if (face.equals(BlockFace.EAST))
+                        data = 5;
+                    else if (face.equals(BlockFace.SOUTH))
+                        data = 3;
+                    else if (face.equals(BlockFace.WEST))
+                        data = 4;
+                    sendUpdate = true;
+                }
+                if (sendUpdate) {
+                    event.setCancelled(true);
+                    new ChunkEdit(((CraftWorld) p.getWorld()).getHandle()).setBlock(relative.getX(), relative.getY(), relative.getZ(), item.getType(), data);
+                    //Send the update packet to the people
+                    Packet pack = new PacketPlayOutBlockChange(((CraftWorld) p.getWorld()).getHandle(), new BlockPosition(relative.getX(), relative.getY(), relative.getZ()));
+                    Bukkit.getOnlinePlayers().forEach(player -> ((CraftPlayer) player).getHandle().playerConnection.sendPacket(pack));
+                    //TODO: if we add a survival mode make it remove the item from them
+                }
+            }
         }
     }
 

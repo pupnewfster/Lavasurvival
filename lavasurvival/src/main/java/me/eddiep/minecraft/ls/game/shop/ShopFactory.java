@@ -10,6 +10,7 @@ import org.bukkit.craftbukkit.v1_11_R1.inventory.CraftItemStack;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.material.MaterialData;
 import org.bukkit.plugin.Plugin;
 
 import java.lang.reflect.Method;
@@ -53,8 +54,9 @@ public class ShopFactory {
         return shop;
     }
 
-    private static HashMap<RankType, List<Material>> cachedBlocks = new HashMap<>();
-    public static List<Material> getBlocksFor(RankType rank) {
+    private static HashMap<RankType, List<MaterialData>> cachedBlocks = new HashMap<>();
+
+    public static List<MaterialData> getBlocksFor(RankType rank) {
         if (cachedBlocks.containsKey(rank))
             return cachedBlocks.get(rank);
 
@@ -79,14 +81,16 @@ public class ShopFactory {
                 return new ArrayList<>();
         }
 
-        List<Material> list = new ArrayList<>();
+        List<MaterialData> list = new ArrayList<>();
         Method[] methods = _class.getDeclaredMethods();
         for (Method m : methods) {
             MenuItem item = m.getAnnotation(MenuItem.class);
 
             if (item != null) {
                 Material material = item.item().material();
-                list.add(material);
+                if (material.equals(Material.EMERALD)) //Ignore the return to previous page item
+                    continue;
+                list.add(new MaterialData(material, (byte) item.item().durability())); //Get the durability to make sure type is same white and black wool
             }
         }
 

@@ -102,7 +102,7 @@ public class Flood extends Gamemode {
 
     @Override
     public void onTick() {
-        if (this.objective == null)
+        if (this.objective == null || hasEnded())
             return;
         long since = System.currentTimeMillis() - this.gameStart, dif = this.duration - since;
         int seconds = (int) ((dif) / 1000 % 60);

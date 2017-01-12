@@ -103,7 +103,6 @@ public abstract class Gamemode {
     private boolean endGame;
     private final ChatColor specialColor = ChatColor.GREEN;
     private long startTime;
-    private List<Block> spongeLocations = new ArrayList<>();
     private boolean suspended;
 
     protected static PlayerListener getPlayerListener() {
@@ -139,10 +138,42 @@ public abstract class Gamemode {
             scoreboard.getTeam("Special").unregister();
     }
 
+    public static boolean runFirstGamemode() {
+        if (currentMap == null && currentGame == null) {
+            String[] files = LavaMap.getPossibleMaps();
+            LavaMap map;
+            while (true) {
+                String next = files[random(files.length)];
+                try {
+                    map = LavaMap.load(next);
+                    break;
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+            if (map != null) {
+                Class<? extends Gamemode>[] games = map.getEnabledGames();
+                Class<? extends Gamemode> nextGameClass = games[random(games.length)];
+                try {
+                    Gamemode g = nextGameClass.newInstance();
+                    g.map = map;
+                    g.prepare();
+                    g.start();
+                    return true;
+                } catch (InstantiationException | IllegalAccessException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        return false;
+    }
+
     public final void prepare() {
         if (scoreboard == null) {
             scoreboard = Bukkit.getScoreboardManager().getMainScoreboard();
-            Team t = scoreboard.registerNewTeam("Special");
+            Team t = scoreboard.getTeam("Special");
+            if (t == null)
+                t = scoreboard.registerNewTeam("Special");
             t.setPrefix(specialColor + "");
         }
         if (listener == null) {
@@ -157,7 +188,7 @@ public abstract class Gamemode {
         if (this.map == null) {
             String[] files = LavaMap.getPossibleMaps();
             lastMap = currentMap;
-            do {
+            while (true) {
                 String next = files[random(files.length)];
                 try {
                     currentMap = LavaMap.load(next);
@@ -165,7 +196,7 @@ public abstract class Gamemode {
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
-            } while (true);
+            }
         } else
             currentMap = this.map;
 
@@ -182,13 +213,6 @@ public abstract class Gamemode {
     }
 
     public final void start(boolean forceStart) {
-        if (!forceStart && Bukkit.getOnlinePlayers().size() == 0) {
-            Lavasurvival.log("No one is online...suspending start");
-            suspended = true;
-            currentGame = this;
-            return;
-        }
-
         if (restart) {
             Lavasurvival.INSTANCE.updating = true;
             for (Player p : Bukkit.getOnlinePlayers()) {
@@ -214,6 +238,21 @@ public abstract class Gamemode {
             }, 20 * 2);
             return;
         }
+        //Don't suspend it if it is supposed to restart.. just let it restart first
+        if (!forceStart && Bukkit.getOnlinePlayers().size() == 0) {
+            Lavasurvival.log("No one is online...suspending start");
+            suspended = true;
+            currentGame = this;
+            if (lastMap != null) {
+                Lavasurvival.log("Unloading " + lastMap.getWorld().getName() + "..");
+                boolean success = Bukkit.unloadWorld(lastMap.getWorld(), false);
+                if (!success)
+                    Lavasurvival.log("Failed to unload last map! A manual unload may be required..");
+                else
+                    new Thread(() -> restoreBackup(lastMap.getWorld())).start();
+            }
+            return;
+        }
         onStart();
     }
 
@@ -234,6 +273,7 @@ public abstract class Gamemode {
         }
         this.isEnding = false;
         this.hasEnded = false;
+        boolean wasSuspended = this.suspended;
         this.suspended = false;
         setIsLava(currentMap.getFloodOptions());
         for (CraftBossBar bar : this.bars) {
@@ -249,7 +289,7 @@ public abstract class Gamemode {
         Bukkit.getOnlinePlayers().forEach(this::playerJoin);
         currentGame = this;
         Bukkit.getOnlinePlayers().forEach(this::addBars);
-        if (lastMap != null) {
+        if (!wasSuspended && lastMap != null) {
             Lavasurvival.log("Unloading " + lastMap.getWorld().getName() + "..");
             boolean success = Bukkit.unloadWorld(lastMap.getWorld(), false);
             if (!success)
@@ -287,7 +327,6 @@ public abstract class Gamemode {
     }
 
     private long timeTickCount;
-    private long lastBlockUpdate = 0;
 
     private void tick() {
         PlayerStatusManager.tick();
@@ -385,7 +424,6 @@ public abstract class Gamemode {
         endRound(false, true);
     }
 
-    @SuppressWarnings("ConstantConditions")
     public void endRound(boolean skipVote, boolean giveRewards) {
         if (this.hasEnded)
             return;
@@ -721,6 +759,8 @@ public abstract class Gamemode {
     }
 
     private void end() {
+        if (isSuspended())
+            return; //Is suspended no need to try to end again
         PlayerStatusManager.cleanup();
         this.tickTask.cancel();
         if (scoreboard != null) {
