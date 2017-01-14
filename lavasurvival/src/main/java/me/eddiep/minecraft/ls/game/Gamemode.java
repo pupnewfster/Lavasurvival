@@ -157,6 +157,7 @@ public abstract class Gamemode {
                 try {
                     Gamemode g = nextGameClass.newInstance();
                     g.map = map;
+                    g.addFallingTypes();
                     g.prepare();
                     g.start();
                     return true;
@@ -1014,10 +1015,14 @@ public abstract class Gamemode {
         return this.endGame;
     }
 
+    private void addFallingTypes() {
+        ClassicPhysics.INSTANCE.getPhysicsHandler().addFallingTypes(Arrays.asList(money, common, uncommon, epic));
+    }
+
     private final MaterialData money = new MaterialData(Material.BOOKSHELF);
     private final MaterialData common = new MaterialData(Material.CAULDRON);
     private final MaterialData uncommon = new MaterialData(Material.ENDER_PORTAL_FRAME);
-    private final MaterialData epic = new MaterialData(Material.ENCHANTMENT_TABLE);
+    public final MaterialData epic = new MaterialData(Material.ENCHANTMENT_TABLE);
 
     public void interactSpecial(Player p, FallingBlock b) {
         if (b.hasGravity()) //Make it so that the block has to have landed already. This way we don't have to worry about dupes

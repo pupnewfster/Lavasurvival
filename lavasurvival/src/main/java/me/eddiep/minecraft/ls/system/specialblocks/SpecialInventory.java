@@ -1,6 +1,5 @@
 package me.eddiep.minecraft.ls.system.specialblocks;
 
-import me.eddiep.minecraft.ls.Lavasurvival;
 import me.eddiep.minecraft.ls.game.Gamemode;
 import me.eddiep.minecraft.ls.game.items.Intrinsic;
 import me.eddiep.minecraft.ls.game.items.LavaItem;
@@ -44,13 +43,11 @@ public class SpecialInventory {
                 break;
             ItemStack item = items.get(i).clone();
             if (item != null) {
-                if (tier != Intrinsic.EPIC) {
-                    ItemMeta meta = item.getItemMeta();
-                    List<String> lore = meta.hasLore() ? meta.getLore() : new ArrayList<>();
-                    lore.add(0, "Special");
-                    meta.setLore(lore);
-                    item.setItemMeta(meta);
-                }
+                ItemMeta meta = item.getItemMeta();
+                List<String> lore = meta.hasLore() ? meta.getLore() : new ArrayList<>();
+                lore.add(0, "Special");
+                meta.setLore(lore);
+                item.setItemMeta(meta);
                 inventory.setItem(i, item);
             }
         }
@@ -179,16 +176,6 @@ public class SpecialInventory {
                 Gamemode.getScoreboard().getTeam("Special").removeEntry(close.getUniqueId().toString());
             close.remove();
         }
-
-        /*UserInfo user = Lavasurvival.INSTANCE.getUserManager().getUser(p.getUniqueId());
-        if (user != null) {
-            for (ItemStack item : p.getInventory()) {
-                MaterialData data = item.getData();
-                if (!user.getOwnedBlocks().contains(data)) {
-                    user.addBlock(data);
-                }
-            }
-        }*/
     }
 
     private boolean isEmpty() {

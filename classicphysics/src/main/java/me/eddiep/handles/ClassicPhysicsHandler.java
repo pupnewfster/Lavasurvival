@@ -341,12 +341,21 @@ public final class ClassicPhysicsHandler implements Listener {
         }
     }
 
+    private List<MaterialData> fallingTypes;
+
+    public void addFallingTypes(List<MaterialData> types) {
+        this.fallingTypes = types;
+    }
+
     @EventHandler
     public void itemSpawn(ItemSpawnEvent event) {
         if (!ClassicPhysics.TYPE.equals(PhysicsType.DEFAULT)) {
             org.bukkit.entity.Item i = event.getEntity();
-            if (i.getTicksLived() == 0) {
-                FallingBlock f = i.getWorld().spawnFallingBlock(i.getLocation(), i.getItemStack().getData());
+            MaterialData data = i.getItemStack().getData();
+            if (data.getItemType().equals(Material.CAULDRON_ITEM))
+                data = new MaterialData(Material.CAULDRON);
+            if (i.getTicksLived() == 0 && this.fallingTypes.contains(data)) {
+                FallingBlock f = i.getWorld().spawnFallingBlock(i.getLocation(), data);
                 f.setGlowing(true);
                 f.setGravity(false);
                 ((CraftFallingBlock) f).getHandle().ticksLived = -2147483648; //Bypass the spigot check of it being negative
