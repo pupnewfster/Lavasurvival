@@ -4,8 +4,10 @@ import com.crossge.necessities.Necessities;
 import com.crossge.necessities.RankManager.Rank;
 import me.eddiep.minecraft.ls.game.Gamemode;
 import org.bukkit.ChatColor;
+import org.bukkit.Material;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.material.MaterialData;
 
 import java.util.ArrayList;
 
@@ -19,6 +21,7 @@ public class CmdAirc implements Cmd {
                 sender.sendMessage(ChatColor.DARK_RED + "Error: there is no game running.");
                 return true;
             }
+            Gamemode.getCurrentGame().spawnSpecialBlock(player.getLocation().getBlockX(), Gamemode.getCurrentMap().getSpecialY(), player.getLocation().getBlockZ(), new MaterialData(Material.DROPPER, (byte) 1), true);
             int count = game.countAirBlocksAround(player, 10);
             player.sendMessage("You have " + count + " air blocks around you!");
             ArrayList<Rank> ranks = Necessities.getRM().getOrder();

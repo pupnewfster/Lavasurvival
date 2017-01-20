@@ -352,8 +352,8 @@ public final class ClassicPhysicsHandler implements Listener {
         if (!ClassicPhysics.TYPE.equals(PhysicsType.DEFAULT)) {
             org.bukkit.entity.Item i = event.getEntity();
             MaterialData data = i.getItemStack().getData();
-            if (data.getItemType().equals(Material.CAULDRON_ITEM))
-                data = new MaterialData(Material.CAULDRON);
+            if (data.getItemType().equals(Material.DROPPER))
+                data = new MaterialData(Material.DROPPER, (byte) 1);
             if (i.getTicksLived() == 0 && this.fallingTypes.contains(data)) {
                 FallingBlock f = i.getWorld().spawnFallingBlock(i.getLocation(), data);
                 f.setGlowing(true);
