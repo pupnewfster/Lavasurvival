@@ -1,5 +1,6 @@
 package me.eddiep.minecraft.ls.game.options;
 
+import me.eddiep.minecraft.ls.game.Gamemode;
 import me.eddiep.minecraft.ls.game.LavaMap;
 import org.bukkit.Location;
 import org.bukkit.util.Vector;
@@ -35,7 +36,16 @@ public class FloodOptions extends BaseOptions {
     }
 
     public long generateRandomEndTime() {
-        return (RANDOM.nextInt(maxEndTimeSeconds - minEndTimeSeconds) + minEndTimeSeconds) * 1000L;
+        int min = minEndTimeSeconds, max = maxEndTimeSeconds;
+        if (Gamemode.getCurrentGame().aliveCount() <= 10) {
+            min /= 2;
+            max /= 2;
+        } else if (Gamemode.getCurrentGame().aliveCount() <= 20) {
+            min /= 1.5;
+            max /= 1.5;
+        }
+
+        return (RANDOM.nextInt(max - min) + min) * 1000L;
     }
 
     public boolean isLavaEnabled() {

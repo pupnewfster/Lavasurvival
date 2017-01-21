@@ -1150,4 +1150,8 @@ public abstract class Gamemode {
     public Gamemode getNextGame() {
         return nextGame;
     }
+
+    public int aliveCount() {
+        return alive.size();
+    }
 }
