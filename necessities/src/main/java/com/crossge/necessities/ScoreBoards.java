@@ -22,6 +22,7 @@ public class ScoreBoards {
             if (t == null)
                 t = this.b.registerNewTeam(fromInt(rm.getOrder().size() - rm.getOrder().indexOf(r)));
             t.setPrefix(r.getColor());
+            t.setOption(Team.Option.COLLISION_RULE, Team.OptionStatus.NEVER);
         }
     }
 

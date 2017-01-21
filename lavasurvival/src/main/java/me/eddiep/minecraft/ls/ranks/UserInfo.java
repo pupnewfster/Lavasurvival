@@ -59,7 +59,6 @@ public class UserInfo {
         return this.blockChangeCount;
     }
 
-    @SuppressWarnings("unused")
     public void resetBlockChangeCount() {
         this.blockChangeCount = 0;
     }
@@ -256,7 +255,7 @@ public class UserInfo {
     }
 
     @SuppressWarnings("deprecation")
-    public void addBlock(MaterialData dat) {
+    public void addBlock(MaterialData dat, boolean bank) {
         if (!this.ownedBlocks.contains(dat)) {
             this.ownedBlocks.add(dat);
             final String datInfo = dat.getItemType().toString() + ":" + dat.getData();
@@ -284,7 +283,8 @@ public class UserInfo {
                     }
                 }
             }.runTaskAsynchronously(Lavasurvival.INSTANCE);
-            this.BANK.add(dat);
+            if (bank)
+                this.BANK.add(dat);
         }
     }
 
@@ -296,7 +296,7 @@ public class UserInfo {
         return i;
     }
 
-    private boolean ownsBlock(MaterialData dat) {
+    public boolean ownsBlock(MaterialData dat) {
         return this.ownedBlocks.contains(dat);
     }
 
@@ -319,7 +319,7 @@ public class UserInfo {
             getPlayer().sendMessage(ChatColor.RED + "You do not have enough money to buy the block type " + dat.getItemType().toString().replaceAll("_", " ").toLowerCase() +
                     (hasData ? " with data value " + dat.getData() : "") + "..");
         else {
-            addBlock(dat);
+            addBlock(dat, true);
             Lavasurvival.INSTANCE.withdrawAndUpdate(getPlayer(), price);
             getPlayer().sendMessage(ChatColor.GREEN + "You bought the block type " + dat.getItemType().toString().replaceAll("_", " ").toLowerCase() + (hasData ? " with data value " + dat.getData() : "") +
                     "! It was added to your bank.");
@@ -340,9 +340,5 @@ public class UserInfo {
 
     public boolean wasGenerous() {
         return this.generosity;
-    }
-
-    public ArrayList<MaterialData> getOwnedBlocks() {
-        return ownedBlocks;
     }
 }

@@ -36,7 +36,7 @@ public abstract class LavaItem {
     public static final LavaItem EPIC_HEAL = ITEMS[8];
     public static final LavaItem EPIC_INVINCIBILITY = ITEMS[9];
     public static final LavaItem EPIC_SPONGE = ITEMS[10];
-    public static final String EPIC_TEXT = "" + ChatColor.BOLD + ChatColor.GREEN + "EPIC" + ChatColor.RESET;
+    public static final String EPIC_TEXT = ChatColor.BOLD + "" + ChatColor.GREEN + "EPIC" + ChatColor.RESET;
 
     public abstract boolean consume(Player owner);
 
@@ -79,7 +79,7 @@ public abstract class LavaItem {
     }
 
     public boolean isItem(ItemStack item) {
-        return item != null && item.hasItemMeta() && item.getItemMeta().getDisplayName().equals(name());
+        return item != null && item.hasItemMeta() && item.getItemMeta().hasDisplayName() && item.getItemMeta().getDisplayName().equals(name());
     }
 
     public static List<ItemStack> filter(Intrinsic value) {
@@ -88,6 +88,13 @@ public abstract class LavaItem {
             if (item.intrinsic() == value)
                 toReturn.add(item.createItem());
         return toReturn;
+    }
+
+    public static boolean isLavaItem(ItemStack item) {
+        for (LavaItem i : ITEMS)
+            if (i.isItem(item))
+                return true;
+        return false;
     }
 
     public abstract int getPrice();

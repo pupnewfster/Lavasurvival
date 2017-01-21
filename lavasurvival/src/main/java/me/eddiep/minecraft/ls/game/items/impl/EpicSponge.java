@@ -26,7 +26,7 @@ public class EpicSponge extends LavaItem {
 
     @Override
     protected String description() {
-        return "Absorb water AND lava in a 10 block radius for 25 seconds";
+        return "Absorb water AND lava in a\n10 block radius for 25 seconds";
     }
 
 

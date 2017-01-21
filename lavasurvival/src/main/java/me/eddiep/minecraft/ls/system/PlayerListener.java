@@ -44,6 +44,7 @@ import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.util.BlockIterator;
 
 import java.util.*;
@@ -396,6 +397,27 @@ public class PlayerListener implements Listener {
                 Material type = currentItem.getType();
                 if (type != null && !type.equals(Material.AIR) && (!currentItem.hasItemMeta() || !currentItem.getItemMeta().hasLore() || !currentItem.getItemMeta().getLore().get(0).equals("Special")))
                     e.setCancelled(true);
+                else if (b.getMaterial().equals(Gamemode.getCurrentGame().epic.getItemType()) && b.getBlockData() == Gamemode.getCurrentGame().epic.getData()) {
+                    if (type != null && currentItem.hasItemMeta() && currentItem.getItemMeta().hasLore() && currentItem.getItemMeta().getLore().get(0).equals("Special")) {
+                        if (!LavaItem.isLavaItem(currentItem)) {
+                            UserInfo u = Lavasurvival.INSTANCE.getUserManager().getUser(p.getUniqueId());
+                            if (u.ownsBlock(currentItem.getData())) {
+                                e.setCancelled(true);
+                                return;
+                            }
+                            u.addBlock(currentItem.getData(), false);
+                        }
+                        ItemMeta meta = currentItem.getItemMeta();
+                        List<String> lore = meta.getLore();
+                        lore.remove(0);
+                        meta.setLore(lore);
+                        currentItem.setItemMeta(meta);
+                    }
+                } else if (!LavaItem.isLavaItem(currentItem)) {
+                    UserInfo u = Lavasurvival.INSTANCE.getUserManager().getUser(p.getUniqueId());
+                    if (BukkitUtils.hasItem(p.getInventory(), currentItem.getData()) || u.isInBank(currentItem.getData()))
+                        e.setCancelled(true);
+                }
             }
         }
     }

@@ -25,7 +25,7 @@ public class WaterSponge extends LavaItem {
 
     @Override
     protected String description() {
-        return "Absorb water in a 5 block radius for 15 seconds";
+        return "Absorb water in a 5 block radius\nfor 15 seconds";
     }
 
     @Override
