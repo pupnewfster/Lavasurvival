@@ -29,7 +29,8 @@ public class Announcer {
         this.announcerTask = new BukkitRunnable() {
             @Override
             public void run() {
-                Bukkit.broadcastMessage(messages.get(r.nextInt(messages.size())));
+                if (!Bukkit.getOnlinePlayers().isEmpty()) //Do not send announcements if no one is online to see them (aka do not spam the console)
+                    Bukkit.broadcastMessage(messages.get(r.nextInt(messages.size())));
             }
         };
         YamlConfiguration config = Necessities.getInstance().getConfig();
