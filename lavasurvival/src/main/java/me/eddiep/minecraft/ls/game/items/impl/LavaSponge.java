@@ -31,12 +31,12 @@ public class LavaSponge extends LavaItem {
 
     @Override
     public int getPrice() {
-        return 600;
+        return 1000;
     }
 
 
     @Override
     public Intrinsic intrinsic() {
-        return Intrinsic.UNCOMMON;
+    return Intrinsic.COMMON;
     }
 }

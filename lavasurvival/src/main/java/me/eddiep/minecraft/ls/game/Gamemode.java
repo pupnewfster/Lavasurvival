@@ -101,7 +101,7 @@ public abstract class Gamemode {
     private Gamemode nextGame;
     private LavaMap map;
     private boolean endGame;
-    private final ChatColor specialColor = ChatColor.GREEN;
+    private final ChatColor specialColor = ChatColor.YELLOW;
     private long startTime;
     private boolean suspended;
 

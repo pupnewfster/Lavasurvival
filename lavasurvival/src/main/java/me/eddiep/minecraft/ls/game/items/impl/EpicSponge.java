@@ -37,6 +37,6 @@ public class EpicSponge extends LavaItem {
 
     @Override
     public int getPrice() {
-        return 1600;
+        return 2500;
     }
 }

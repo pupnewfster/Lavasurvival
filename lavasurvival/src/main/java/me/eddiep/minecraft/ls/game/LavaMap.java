@@ -143,6 +143,7 @@ public class LavaMap {
         this.world.setGameRuleValue("randomTickSpeed", "0");
         this.world.setGameRuleValue("mobGriefing", "false");
         this.world.setGameRuleValue("spectatorsGenerateChunks", "false");
+        this.world.setGameRuleValue("doWeatherCycle", "false");
         this.world.setSpawnFlags(false, false);//Do not let mobs or animals spawn
         this.world.setSpawnLocation(this.mapSpawn.getBlockX(), this.mapSpawn.getBlockY(), this.mapSpawn.getBlockZ());
         this.world.setTime(this.time.getStartTimeTick());
