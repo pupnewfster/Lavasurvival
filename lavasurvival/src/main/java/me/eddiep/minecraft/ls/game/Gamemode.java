@@ -900,6 +900,8 @@ public abstract class Gamemode {
         }
         if (!player.getInventory().contains(Material.WRITTEN_BOOK))
             player.getInventory().addItem(Lavasurvival.INSTANCE.getRules());
+        if (!player.getInventory().contains(Material.WRITTEN_BOOK, 2))
+            player.getInventory().addItem(Lavasurvival.INSTANCE.getTutorial());
         ShopFactory.validateInventory(inv);
         u.giveBoughtBlocks();
         if (getCurrentMap().getCreator().equals(""))

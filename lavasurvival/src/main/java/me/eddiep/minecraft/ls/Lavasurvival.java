@@ -51,7 +51,7 @@ public class Lavasurvival extends JavaPlugin {
     private final HashMap<UUID, SetupMap> setups = new HashMap<>();
     private UserManager userManager;
     private boolean running = false;
-    private ItemStack rules;
+    private ItemStack rules, tutorial;
     private String dbURL;
     private Properties properties;
     @SuppressWarnings("CanBeFinal")
@@ -126,6 +126,7 @@ public class Lavasurvival extends JavaPlugin {
         }
         setupShops();
         setRules();
+        setTutorial();
         if (LavaMap.getPossibleMaps().length > 0 && Gamemode.runFirstGamemode())
             this.running = true;
         else //Only schedule a listener if no maps. If maps then it already is initialized through Gamemode.prepare()
@@ -152,6 +153,21 @@ public class Lavasurvival extends JavaPlugin {
         }
         GGBAR.removeAll();
         this.running = false;
+    }
+
+    private void setTutorial() {
+        tutorial = new ItemStack(Material.WRITTEN_BOOK);
+        BookMeta meta = (BookMeta) tutorial.getItemMeta();
+        meta.setTitle("Tutorial");
+        meta.setAuthor(ChatColor.GREEN + "GalaxyGaming");
+        meta.addPage("The round begins with the preparation phase; during this time, build your shelter as large as you can, with thick enough walls to withstand the lava. " +
+                "Be wise with your block selection; each block type has different melt times when faced with either water or lava. Mouse over or");
+        meta.addPage("select blocks on your hotbar to view melt times against each type of liquid. \n" +
+                "Once the preparation timer runs to zero, the lava begins rising to flood the map. You may continue to build after the lava has poured, however leaving your shelter becomes a far greater");
+        meta.addPage("challenge. Once it comes in contact with your shelter, your blocks will slowly degrade before lava comes rushing through. \n" +
+                "The round ends a few minutes after the lava has finished flooding the map. The larger the interior of your shelter is at this time, the more cash you");
+        meta.addPage("earn. (Also called GGs).");
+        this.tutorial.setItemMeta(meta);
     }
 
     private void setRules() {
@@ -223,6 +239,10 @@ public class Lavasurvival extends JavaPlugin {
 
     public ItemStack getRules() {
         return this.rules;
+    }
+
+    public ItemStack getTutorial() {
+        return this.tutorial;
     }
 
     public UserManager getUserManager() {
