@@ -12,7 +12,6 @@ public class MenuPlayerManager {
 
     /**
      * Gets the MenuPlayer by player name
-     *
      * @param p The players name
      * @return The MenuPlayer
      */
@@ -22,7 +21,6 @@ public class MenuPlayerManager {
 
     /**
      * Gets the Menu from player
-     *
      * @param p The player
      * @return The MenuPlayer from Player
      */
@@ -36,7 +34,6 @@ public class MenuPlayerManager {
 
     /**
      * Removes the player from the list from player
-     *
      * @param p The player
      */
     public void removePlayer(Player p) {

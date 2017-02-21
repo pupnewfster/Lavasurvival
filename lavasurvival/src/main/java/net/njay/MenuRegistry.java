@@ -23,7 +23,6 @@ public class MenuRegistry {
 
     /**
      * Initializes the framework
-     *
      * @param plugin the plugin to initialize framework for
      * @param menus  array of menus to register
      */
@@ -39,7 +38,6 @@ public class MenuRegistry {
 
     /**
      * Gets the Bukkit Plugin
-     *
      * @return the Plugin
      */
     public Plugin getPlugin() {
@@ -48,7 +46,6 @@ public class MenuRegistry {
 
     /**
      * Adds the Menu to the loaded list of Menus
-     *
      * @param clazz a class which extends Menu
      */
     @SuppressWarnings("unchecked")
@@ -74,7 +71,6 @@ public class MenuRegistry {
 
     /**
      * Gets the loaded Menus
-     *
      * @return a Map of Menus and their callback methods
      */
     public Map<Class<? extends Menu>, List<Method>> getLoadedMenus() {

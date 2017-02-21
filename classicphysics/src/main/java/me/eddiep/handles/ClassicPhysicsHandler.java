@@ -36,6 +36,7 @@ import org.bukkit.util.Vector;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
@@ -46,9 +47,9 @@ public final class ClassicPhysicsHandler implements Listener {
     private final HashSet<BlockVector> classicBlocks = new HashSet<>(), playerPlaced = new HashSet<>();
     private final ArrayList<Player> lplacers = new ArrayList<>();
     private final ArrayList<Player> wplacers = new ArrayList<>();
-    private boolean hasPlayers = false, sendingPackets = false;
-    private World current = null;
-    private ChunkEdit e = null;
+    private boolean hasPlayers, sendingPackets;
+    private World current;
+    private ChunkEdit e;
     private final Plugin owner;
 
     private class WorldCount {
@@ -78,11 +79,8 @@ public final class ClassicPhysicsHandler implements Listener {
             List<Short> changes = this.changes;
             this.changes = new ArrayList<>();
             int size = changes.size();
-            if (size == 1)
-                return new PacketPlayOutBlockChange(((CraftWorld) current).getHandle(), new BlockPosition((changes.get(0) >> 12 & 15) + (int) (this.l >> 32) * 16, changes.get(0) & 255,
-                        (changes.get(0) >> 8 & 15) + (int) this.l * 16));
-            else
-                return new PacketPlayOutMultiBlockChange(size, getChanged(changes), ((CraftWorld) current).getHandle().getChunkAt((int) (this.l >> 32), (int) this.l));
+            return size == 1 ? new PacketPlayOutBlockChange(((CraftWorld) current).getHandle(), new BlockPosition((changes.get(0) >> 12 & 15) + (int) (this.l >> 32) * 16, changes.get(0) & 255,
+                    (changes.get(0) >> 8 & 15) + (int) this.l * 16)) : new PacketPlayOutMultiBlockChange(size, getChanged(changes), ((CraftWorld) current).getHandle().getChunkAt((int) (this.l >> 32), (int) this.l));
         }
     }
 
@@ -110,13 +108,13 @@ public final class ClassicPhysicsHandler implements Listener {
             ConcurrentHashMap<BlockVector, ConcurrentLinkedQueue<Location>> locations = newLocations;
             newLocations = new ConcurrentHashMap<>();
             hasPlayers = !Bukkit.getOnlinePlayers().isEmpty();
-            for (BlockVector lv : locations.keySet()) {
+            for (Map.Entry<BlockVector, ConcurrentLinkedQueue<Location>> blockVectorEntry : locations.entrySet()) {
                 if (current == null)
                     break;
-                if (classicBlocks.contains(lv)) //Don't use isClassicBlock here because it is already a block vector
+                if (classicBlocks.contains(blockVectorEntry.getKey())) //Don't use isClassicBlock here because it is already a block vector
                     continue;
                 Material type = null;
-                ConcurrentLinkedQueue<Location> queue = locations.get(lv);
+                ConcurrentLinkedQueue<Location> queue = blockVectorEntry.getValue();
                 if (queue != null) {
                     boolean fromClassic = false;
                     while (!queue.isEmpty()) {
@@ -135,14 +133,14 @@ public final class ClassicPhysicsHandler implements Listener {
                         continue;
                 } else
                     continue;
-                classicBlocks.add(lv); //Don't use addClassicBlock here because it is already a block vector
-                e.setBlock(lv.getBlockX(), lv.getBlockY(), lv.getBlockZ(), type);
-                Location l = lv.toLocation(current);
+                classicBlocks.add(blockVectorEntry.getKey()); //Don't use addClassicBlock here because it is already a block vector
+                e.setBlock(blockVectorEntry.getKey().getBlockX(), blockVectorEntry.getKey().getBlockY(), blockVectorEntry.getKey().getBlockZ(), type);
+                Location l = blockVectorEntry.getKey().toLocation(current);
                 if (hasPlayers) {
-                    long xz = (long) (lv.getBlockX() >> 4) << 32 | lv.getBlockZ() >> 4 & 0xFFFFFFFFL;
+                    long xz = (long) (blockVectorEntry.getKey().getBlockX() >> 4) << 32 | blockVectorEntry.getKey().getBlockZ() >> 4 & 0xFFFFFFFFL;
                     if (!chunks.containsKey(xz))
                         chunks.put(xz, new WorldCount(xz));
-                    chunks.get(xz).addChange(lv.getBlockX(), lv.getBlockY(), lv.getBlockZ());
+                    chunks.get(xz).addChange(blockVectorEntry.getKey().getBlockX(), blockVectorEntry.getKey().getBlockY(), blockVectorEntry.getKey().getBlockZ());
                     Bukkit.getPluginManager().callEvent(new ClassicBlockPlaceEvent(l));
                 }
                 if (current != null) //Is this extra check necessary
@@ -157,10 +155,10 @@ public final class ClassicPhysicsHandler implements Listener {
             sendingPackets = true;
             ArrayList<Packet> packets = new ArrayList<>();
             if (!Bukkit.getOnlinePlayers().isEmpty()) //Should this check this or use the estimate of hasPlayers
-                for (long l : chunks.keySet()) {
+                for (Map.Entry<Long, WorldCount> entry : chunks.entrySet()) {
                     if (!sendingPackets)
                         break;
-                    Packet packet = chunks.get(l).getPacket();
+                    Packet packet = entry.getValue().getPacket();
                     if (packet != null)
                         packets.add(packet);
                 }
@@ -319,6 +317,7 @@ public final class ClassicPhysicsHandler implements Listener {
             event.setCancelled(true);
     }
 
+    @SuppressWarnings("deprecation")
     @EventHandler
     public void blockFall(EntityChangeBlockEvent event) {
         if (!ClassicPhysics.TYPE.equals(PhysicsType.DEFAULT) && event.getEntity() instanceof FallingBlock) {
@@ -347,6 +346,7 @@ public final class ClassicPhysicsHandler implements Listener {
         this.fallingTypes = types;
     }
 
+    @SuppressWarnings("deprecation")
     @EventHandler
     public void itemSpawn(ItemSpawnEvent event) {
         if (!ClassicPhysics.TYPE.equals(PhysicsType.DEFAULT)) {
@@ -403,11 +403,7 @@ public final class ClassicPhysicsHandler implements Listener {
 
     public void checkLocation(Location l) {
         if (isClassicBlock(l.toVector()))
-            for (LogicContainerHolder holder : logicContainers)
-                if (holder.container.doesHandle(l.getBlock().getType())) {
-                    holder.container.queueBlock(l);
-                    break;
-                }
+            logicContainers.stream().filter(holder -> holder.container.doesHandle(l.getBlock().getType())).findFirst().ifPresent(holder -> holder.container.queueBlock(l));
     }
 
     public void forcePlaceClassicBlockAt(Location location, Material type) {//Force place block
@@ -451,9 +447,7 @@ public final class ClassicPhysicsHandler implements Listener {
             return;
         }
         BlockVector bv = location.toVector().toBlockVector();//make the x,y,z all ints
-        ConcurrentLinkedQueue<Location> temp = newLocations.get(bv);
-        if (temp == null)
-            newLocations.put(bv, temp = new ConcurrentLinkedQueue<>());
+        ConcurrentLinkedQueue<Location> temp = newLocations.computeIfAbsent(bv, k -> new ConcurrentLinkedQueue<>());
         temp.offer(from.getBlock().getLocation());
     }
 

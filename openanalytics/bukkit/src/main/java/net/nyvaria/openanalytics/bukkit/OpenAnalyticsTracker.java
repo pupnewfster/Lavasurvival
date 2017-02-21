@@ -30,14 +30,14 @@ import java.util.logging.Level;
  */
 public class OpenAnalyticsTracker {
     private static OpenAnalyticsTracker instance;
-    private static MeasurementProtocolClient mpClient = null;
-    private static BukkitTask scheduled_task = null;
+    private static MeasurementProtocolClient mpClient;
+    private static BukkitTask scheduled_task;
 
     private final OpenAnalytics plugin;
 
     private String tracking_id;
     private String host_name;
-    private boolean is_tracking = false;
+    private boolean is_tracking;
 
     public OpenAnalyticsTracker(OpenAnalytics plugin) {
         this.plugin = plugin;

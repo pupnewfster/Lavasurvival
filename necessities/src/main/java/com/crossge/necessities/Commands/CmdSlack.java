@@ -15,10 +15,12 @@ import java.util.UUID;
 public class CmdSlack implements Cmd {
     public boolean commandUse(CommandSender sender, String[] args) {
         String message = "";
-        if (args.length > 0)
+        if (args.length > 0) {
+            StringBuilder messageBuilder = new StringBuilder();
             for (String arg : args)
-                message += arg + " ";
-        message = message.trim();
+                messageBuilder.append(arg).append(" ");
+            message = messageBuilder.toString().trim();
+        }
         Variables var = Necessities.getVar();
         if (sender instanceof Player) {
             Player p = (Player) sender;

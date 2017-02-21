@@ -14,9 +14,10 @@ public class CmdRanks implements RankCmd {
         if (rm.getOrder().isEmpty())
             sender.sendMessage(var.getEr() + "Error: " + var.getErMsg() + "No ranks are set.");
         else {
-            String ranks = var.getMessages() + "Available ranks are: " + ChatColor.WHITE;
+            StringBuilder ranksBuilder = new StringBuilder(var.getMessages() + "Available ranks are: " + ChatColor.WHITE);
             for (Rank r : rm.getOrder())
-                ranks += r.getName() + var.getMessages() + ", " + ChatColor.WHITE;
+                ranksBuilder.append(r.getName()).append(var.getMessages()).append(", ").append(ChatColor.WHITE);
+            String ranks = ranksBuilder.toString();
             ranks = ranks.substring(0, ranks.length() - 2).trim();
             sender.sendMessage(ranks);
         }

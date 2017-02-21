@@ -37,6 +37,6 @@ public class LavaSponge extends LavaItem {
 
     @Override
     public Intrinsic intrinsic() {
-    return Intrinsic.COMMON;
+        return Intrinsic.COMMON;
     }
 }

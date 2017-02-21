@@ -33,10 +33,10 @@ public class CmdReply implements Cmd {
                 return true;
             }
             if (self.getLastC().equals("Console")) {
-                String message = "";
+                StringBuilder messageBuilder = new StringBuilder();
                 for (String arg : args)
-                    message += arg + " ";
-                message = ChatColor.WHITE + message.trim();
+                    messageBuilder.append(arg).append(" ");
+                String message = ChatColor.WHITE + messageBuilder.toString().trim();
                 if (p.hasPermission("Necessities.colorchat"))
                     message = ChatColor.translateAlternateColorCodes('&', (p.hasPermission("Necessities.magicchat") ? message : message.replaceAll("&k", "")));
                 self.setLastC("Console");
@@ -59,10 +59,10 @@ public class CmdReply implements Cmd {
                 sender.sendMessage(var.getEr() + "Error: " + var.getErMsg() + "You are ignoring that user, so cannot message them.");
                 return true;
             }
-            String message = "";
+            StringBuilder messageBuilder = new StringBuilder();
             for (String arg : args)
-                message += arg + " ";
-            message = ChatColor.WHITE + message.trim();
+                messageBuilder.append(arg).append(" ");
+            String message = ChatColor.WHITE + messageBuilder.toString().trim();
             if (p.hasPermission("Necessities.colorchat"))
                 message = ChatColor.translateAlternateColorCodes('&', (p.hasPermission("Necessities.magicchat") ? message : message.replaceAll("&k", "")));
             u.setLastC(self.getUUID().toString());
@@ -76,10 +76,10 @@ public class CmdReply implements Cmd {
             }
             User u = um.getUser(console.getLastContact());
             Player t = Bukkit.getPlayer(u.getUUID());
-            String message = "";
+            StringBuilder messageBuilder = new StringBuilder();
             for (String arg : args)
-                message += arg + " ";
-            message = ChatColor.WHITE + message.trim();
+                messageBuilder.append(arg).append(" ");
+            String message = ChatColor.WHITE + messageBuilder.toString().trim();
             message = ChatColor.translateAlternateColorCodes('&', message);
             u.setLastC("Console");
             console.setLastContact(u.getUUID());

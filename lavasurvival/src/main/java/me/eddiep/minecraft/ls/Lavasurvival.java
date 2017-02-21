@@ -50,7 +50,7 @@ public class Lavasurvival extends JavaPlugin {
     private Cmd[] commands;
     private final HashMap<UUID, SetupMap> setups = new HashMap<>();
     private UserManager userManager;
-    private boolean running = false;
+    private boolean running;
     private ItemStack rules, tutorial;
     private String dbURL;
     private Properties properties;
@@ -282,10 +282,7 @@ public class Lavasurvival extends JavaPlugin {
     }
 
     private Cmd getCmd(String name) {
-        for (Cmd possible : this.commands)
-            if (possible.getName().equalsIgnoreCase(name))
-                return possible;
-        return null;
+        return Arrays.stream(this.commands).filter(possible -> possible.getName().equalsIgnoreCase(name)).findFirst().orElse(null);
     }
 
     public static void warn(String s) {

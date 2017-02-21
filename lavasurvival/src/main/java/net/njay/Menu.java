@@ -24,7 +24,6 @@ public class Menu {
 
     /**
      * Gets this Menu's Bukkit Inventory
-     *
      * @return Bukkit Inventory
      */
     public Inventory getInventory() {
@@ -33,7 +32,6 @@ public class Menu {
 
     /**
      * Sets this Menu's Bukkit Inventory
-     *
      * @param inv Bukkit Inventory
      */
     public void setInventory(Inventory inv) {

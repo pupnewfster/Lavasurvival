@@ -10,14 +10,12 @@ import java.lang.annotation.RetentionPolicy;
 public @interface MenuItem {
     /**
      * The slot number (in the Bukkit Inventory)
-     *
      * @return the slot number in the Bukkit Inventory
      */
     int slot();
 
     /**
      * The slots ItemStack details
-     *
      * @return the slots ItemStack details
      */
     ItemStackAnnotation item();

@@ -7,7 +7,7 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import java.io.File;
 
 public class Warp {
-    private Location loc = null;
+    private Location loc;
     private String name = "";
 
     Warp(String name) {

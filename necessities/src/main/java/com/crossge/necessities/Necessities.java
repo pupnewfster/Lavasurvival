@@ -62,7 +62,6 @@ public class Necessities extends JavaPlugin {
     private Teleports tps;
     private JanetLog log;
     private CmdHide hide;
-    private GetUUID get;
     private Janet bot;
     private JanetNet net;
     private JanetAI ai;
@@ -121,10 +120,7 @@ public class Necessities extends JavaPlugin {
     }
 
     public boolean isDev(UUID uuid) {
-        for (DevInfo i : this.devs)
-            if (uuid.equals(i.getMCUUID()))
-                return true;
-        return false;
+        return this.devs.stream().anyMatch(i -> uuid.equals(i.getMCUUID()));
     }
 
     public List<DevInfo> getDevs() {
@@ -144,13 +140,8 @@ public class Necessities extends JavaPlugin {
             JsonObject ls = (JsonObject) json.get("Lavasurvival");
             JsonArray lsDevs = (JsonArray) ls.get("devs");
             for (int i = 0; i < lsDevs.size(); i++) {
-                JsonObject dev = null;
                 int devID = lsDevs.getInteger(i);
-                for (Object a : ar)
-                    if (devID == ((JsonObject) a).getInteger("devID")) {
-                        dev = (JsonObject) a;
-                        break;
-                    }
+                JsonObject dev = (JsonObject) ar.stream().filter(a -> devID == ((JsonObject) a).getInteger("devID")).findFirst().orElse(null);
                 if (dev != null)
                     this.devs.add(new DevInfo(dev));
             }
@@ -518,10 +509,6 @@ public class Necessities extends JavaPlugin {
 
     static Janet getBot() {
         return INSTANCE.bot == null ? INSTANCE.bot = new Janet() : INSTANCE.bot;
-    }
-
-    public static GetUUID getUUID() {
-        return INSTANCE.get == null ? INSTANCE.get = new GetUUID() : INSTANCE.get;
     }
 
     public static WarpManager getWarps() {

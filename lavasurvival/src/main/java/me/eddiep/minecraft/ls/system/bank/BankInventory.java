@@ -19,7 +19,7 @@ public class BankInventory {
     private static final HashMap<Player, BankInventory> INSTANCERS = new HashMap<>();
 
     private Inventory inventory;
-    private int offset = 0;
+    private int offset;
     private List<MaterialData> items;
 
     private BankInventory() {
@@ -138,31 +138,11 @@ public class BankInventory {
     }
 
     public boolean isNextPageButton(ItemStack stack) {
-        if (stack == null)
-            return false;
-        if (stack.getItemMeta() == null)
-            return false;
-        if (stack.getItemMeta().getLore() != null) {
-            for (String lore : stack.getItemMeta().getLore()) {
-                if (lore.equals(ChatColor.GREEN + "Next Page ->"))
-                    return true;
-            }
-        }
-        return false;
+        return stack != null && stack.getItemMeta() != null && stack.getItemMeta().getLore() != null && stack.getItemMeta().getLore().stream().anyMatch(lore -> lore.equals(ChatColor.GREEN + "Next Page ->"));
     }
 
     public boolean isPreviousPageButton(ItemStack stack) {
-        if (stack == null)
-            return false;
-        if (stack.getItemMeta() == null)
-            return false;
-        if (stack.getItemMeta().getLore() != null) {
-            for (String lore : stack.getItemMeta().getLore()) {
-                if (lore.equals(ChatColor.GREEN + "<- Previous Page"))
-                    return true;
-            }
-        }
-        return false;
+        return stack != null && stack.getItemMeta() != null && stack.getItemMeta().getLore() != null && stack.getItemMeta().getLore().stream().anyMatch(lore -> lore.equals(ChatColor.GREEN + "<- Previous Page"));
     }
 
     public void end(Player p) {

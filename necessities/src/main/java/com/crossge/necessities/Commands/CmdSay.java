@@ -14,9 +14,10 @@ public class CmdSay implements Cmd {
             sender.sendMessage(var.getEr() + "Error: " + var.getErMsg() + "Must enter a message to send.");
             return true;
         }
-        String message = "";
+        StringBuilder messageBuilder = new StringBuilder();
         for (String arg : args)
-            message += arg + " ";
+            messageBuilder.append(arg).append(" ");
+        String message = messageBuilder.toString();
         if (ChatColor.stripColor(ChatColor.translateAlternateColorCodes('&', message.trim())).equals("")) {
             sender.sendMessage(var.getEr() + "Error: " + var.getErMsg() + "Must enter a message to send.");
             return true;

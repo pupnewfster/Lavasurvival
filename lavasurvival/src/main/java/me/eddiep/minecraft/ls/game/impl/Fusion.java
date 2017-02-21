@@ -20,22 +20,19 @@ import java.util.List;
 public class Fusion extends Gamemode {
     public static final String TYPE = "Fusion";
 
-    private int lastMinute, bonus, lavaY, highestCurrentY = 0, layerCount, specialLayers, specialGap, specialDelay;
+    private int lastMinute, bonus, lavaY, highestCurrentY, layerCount, specialLayers, specialGap, specialDelay;
     private long lastEvent, duration, timeOut;
     private Score bonusScore;
     public Score layersLeft;
     private boolean doubleReward;
-    private Objective objective = null;
+    private Objective objective;
     private BukkitRunnable upTask;
     private List<Location> locations;
 
     @Override
     public void onStart() {
         this.doubleReward = Math.random() < 0.25;
-        if (getScoreboard().getObjective("game") == null)
-            this.objective = getScoreboard().registerNewObjective("game", "dummy");
-        else
-            this.objective = getScoreboard().getObjective("game");
+        this.objective = getScoreboard().getObjective("game") == null ? getScoreboard().registerNewObjective("game", "dummy") : getScoreboard().getObjective("game");
         this.objective.setDisplaySlot(DisplaySlot.SIDEBAR);
         this.objective.setDisplayName("Prepare Time");
         this.bonusScore = objective.getScore(ChatColor.GOLD + "" + ChatColor.BOLD + "Reward Bonus");
@@ -103,12 +100,8 @@ public class Fusion extends Gamemode {
     private void setObjectiveDisplay(String display) {
         if (display == null)
             return;
-        if (this.objective == null) {
-            if (getScoreboard().getObjective("game") == null)
-                this.objective = getScoreboard().registerNewObjective("game", "dummy");
-            else
-                this.objective = getScoreboard().getObjective("game");
-        }
+        if (this.objective == null)
+            this.objective = getScoreboard().getObjective("game") == null ? getScoreboard().registerNewObjective("game", "dummy") : getScoreboard().getObjective("game");
         try {
             this.objective.setDisplayName(display);
         } catch (IllegalStateException e) {

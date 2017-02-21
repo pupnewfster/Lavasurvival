@@ -9,10 +9,11 @@ import org.bukkit.inventory.meta.ItemMeta;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public abstract class LavaItem {
     @SuppressWarnings("StaticInitializerReferencesSubClass")
-    public static final LavaItem[] ITEMS = new LavaItem[]{
+    public static final LavaItem[] ITEMS = {
             new Generosity(),
             new MinorHeal(),
             new MajorHeal(),
@@ -83,18 +84,12 @@ public abstract class LavaItem {
     }
 
     public static List<ItemStack> filter(Intrinsic value) {
-        ArrayList<ItemStack> toReturn = new ArrayList<>();
-        for (LavaItem item : ITEMS)
-            if (item.intrinsic() == value)
-                toReturn.add(item.createItem());
-        return toReturn;
+        return Arrays.stream(ITEMS).filter(item -> item.intrinsic() == value).map(LavaItem::createItem).collect(Collectors.toCollection(ArrayList::new));
     }
 
+    @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     public static boolean isLavaItem(ItemStack item) {
-        for (LavaItem i : ITEMS)
-            if (i.isItem(item))
-                return true;
-        return false;
+        return Arrays.stream(ITEMS).anyMatch(i -> i.isItem(item));
     }
 
     public abstract int getPrice();

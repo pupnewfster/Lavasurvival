@@ -24,7 +24,7 @@ public class CmdCommandSpy implements Cmd {
             else
                 temp.add(uuid);
         });
-        temp.forEach(this.spying::remove);
+        this.spying.removeAll(temp);
     }
 
     public boolean commandUse(CommandSender sender, String[] args) {

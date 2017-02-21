@@ -32,12 +32,12 @@ public class OpenAnalytics extends JavaPlugin {
     public static final String PERM_ROOT = "openanalytics";
 
     //Gotta stay with an instance variable until spigot updates to 1.7.4
-    private static OpenAnalytics instance = null;
+    private static OpenAnalytics instance;
 
     //Tracker and Listeners and a List (oh my)
-    private OpenAnalyticsTracker tracker = null;
-    private OpenAnalyticsListener listener = null;
-    private ClientList clientList = null;
+    private OpenAnalyticsTracker tracker;
+    private OpenAnalyticsListener listener;
+    private ClientList clientList;
 
     /**
      * Override the onEnable & onDisable methods
@@ -94,7 +94,6 @@ public class OpenAnalytics extends JavaPlugin {
 
     /**
      * Get the instance of the OpenAnalytics plugin from Bukkit.
-     *
      * @return OpenAnalytics
      */
     public static OpenAnalytics getInstance() {

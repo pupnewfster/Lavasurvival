@@ -30,8 +30,8 @@ import java.util.List;
  * @author Paul Thompson
  */
 public class NyvariaPlayer {
-    private Player player = null;
-    private OfflinePlayer offlinePlayer = null;
+    private Player player;
+    private OfflinePlayer offlinePlayer;
 
     public NyvariaPlayer(Player player) {
         this.player = player;

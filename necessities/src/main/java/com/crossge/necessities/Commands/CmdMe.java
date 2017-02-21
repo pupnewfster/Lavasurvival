@@ -10,10 +10,10 @@ import org.bukkit.entity.Player;
 
 public class CmdMe implements Cmd {
     public boolean commandUse(CommandSender sender, String[] args) {
-        String msg = "";
+        StringBuilder msgBuilder = new StringBuilder();
         for (String s : args)
-            msg += s + " ";
-        msg = msg.trim();
+            msgBuilder.append(s).append(" ");
+        String msg = msgBuilder.toString().trim();
         Variables var = Necessities.getVar();
         if (sender instanceof Player) {
             User self = Necessities.getUM().getUser(((Player) sender).getUniqueId());

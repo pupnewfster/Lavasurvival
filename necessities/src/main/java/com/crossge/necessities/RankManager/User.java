@@ -24,15 +24,15 @@ public class User {
     private final File configFileUsers = new File("plugins/Necessities/RankManager", "users.yml");
     private final ArrayList<String> permissions = new ArrayList<>();
     private final ArrayList<String> subranks = new ArrayList<>();
-    private String appended = "", nick = null, lastContact, status = "dead";
-    private boolean opChat = false, muted = false, slackChat = false;
+    private String appended = "", nick, lastContact, status = "dead";
+    private boolean opChat, muted, slackChat;
     private final ArrayList<UUID> ignored = new ArrayList<>();
-    private long login = 0, lastRequest = 0;
+    private long login, lastRequest;
     private PermissionAttachment attachment;
     private Location right, left;
     private Player bukkitPlayer;
-    private int pastTotal = 0;
-    private Hat hat = null;
+    private int pastTotal;
+    private Hat hat;
     private final UUID userUUID;
     private Rank rank;
 
@@ -326,20 +326,24 @@ public class User {
     }
 
     public String getSubranks() {
-        String sublist = "";
+        String sublist;
         if (this.subranks.isEmpty())
             return null;
+        StringBuilder sublistBuilder = new StringBuilder();
         for (String sub : this.subranks)
-            sublist += sub + ", ";
+            sublistBuilder.append(sub).append(", ");
+        sublist = sublistBuilder.toString();
         return sublist.trim().substring(0, sublist.length() - 2);
     }
 
     public String getPermissions() {
-        String permlist = "";
+        String permlist;
         if (this.permissions.isEmpty())
             return null;
+        StringBuilder permlistBuilder = new StringBuilder();
         for (String perm : this.permissions)
-            permlist += perm + ", ";
+            permlistBuilder.append(perm).append(", ");
+        permlist = permlistBuilder.toString();
         return permlist.trim().substring(0, permlist.length() - 2);
     }
 

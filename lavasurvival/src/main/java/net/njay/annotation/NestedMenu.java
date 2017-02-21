@@ -12,7 +12,6 @@ import java.lang.annotation.RetentionPolicy;
 public @interface NestedMenu {
     /**
      * Array of classes to register as nested
-     *
      * @return array of classes
      */
     Class[] value();

@@ -70,7 +70,7 @@ public class PlayerListener implements Listener {
             Material.ICE
     }));
     private final Random rand = new Random();
-    public boolean survival = false;
+    public boolean survival;
 
     @EventHandler(priority = EventPriority.LOWEST)
     public void onChat(AsyncPlayerChatEvent event) {
@@ -143,10 +143,10 @@ public class PlayerListener implements Listener {
                 firstLore = loreList.get(start);
             }
             if (!firstLore.contains("MeltTime")) {
-                String lore = "";
+                StringBuilder lore = new StringBuilder();
                 for (int i = start; i < loreList.size(); i++)
-                    lore += loreList.get(i) + " ";
-                infoJSON = IChatBaseComponent.ChatSerializer.a("{\"text\": \"" + lore.trim() + "\"}");
+                    lore.append(loreList.get(i)).append(" ");
+                infoJSON = IChatBaseComponent.ChatSerializer.a("{\"text\": \"" + lore.toString().trim() + "\"}");
             } else {
                 String lavaTime = ChatColor.GOLD + "Lava MeltTime" + ChatColor.RESET + ": " + PhysicsListener.getLavaMeltRangeTimeAsString(is.getData()),
                         waterTime = ChatColor.BLUE + "Water MeltTime" + ChatColor.RESET + ": " + PhysicsListener.getWaterMeltRangeTimeAsString(is.getData());
@@ -220,15 +220,9 @@ public class PlayerListener implements Listener {
                     visible.add(itr.next().getLocation());
                 for (Entity e : entities) {
                     if (e.getType().equals(EntityType.FALLING_BLOCK)) {
-                        boolean wasGood = false;
                         int x = e.getLocation().getBlockX(), y = e.getLocation().getBlockY(), z = e.getLocation().getBlockZ();//should it have a slightly larger check for y if it is not at .0
                         int upY = e.getLocation().getY() >= y + 0.5 && e.getLocation().getY() < y + 0.6 ? y + 1 : y;
-                        for (Location cur : visible)
-                            if (x == cur.getBlockX() && (y == cur.getBlockY() || upY == cur.getBlockY()) && z == cur.getBlockZ()) {
-                                wasGood = true;
-                                break;
-                            }
-                        if (wasGood) {
+                        if (visible.stream().anyMatch(cur -> x == cur.getBlockX() && (y == cur.getBlockY() || upY == cur.getBlockY()) && z == cur.getBlockZ())) {
                             Gamemode.getCurrentGame().interactSpecial(event.getPlayer(), (FallingBlock) e);
                             break;
                         }
@@ -250,16 +244,10 @@ public class PlayerListener implements Listener {
                 if (event.getItem() != null)
                     item = event.getItem();
                 else {
-                    if (event.getHand().equals(EquipmentSlot.OFF_HAND))
-                        item = event.getPlayer().getInventory().getItemInOffHand();
+                    item = event.getHand().equals(EquipmentSlot.OFF_HAND) ? event.getPlayer().getInventory().getItemInOffHand() : event.getPlayer().getInventory().getItemInMainHand();
+                    if (item != null && item.getType().equals(Material.AIR))//It is something that cannot normally be placed on it so the other hand got registered
+                        item = event.getHand().equals(EquipmentSlot.OFF_HAND) ? event.getPlayer().getInventory().getItemInMainHand() : event.getPlayer().getInventory().getItemInOffHand();
                     else
-                        item = event.getPlayer().getInventory().getItemInMainHand();
-                    if (item != null && item.getType().equals(Material.AIR)) {//It is something that cannot normally be placed on it so the other hand got registered
-                        if (event.getHand().equals(EquipmentSlot.OFF_HAND))
-                            item = event.getPlayer().getInventory().getItemInMainHand();
-                        else
-                            item = event.getPlayer().getInventory().getItemInOffHand();
-                    } else
                         return;
                 }
                 if (item == null || item.getType().equals(Material.AIR))
@@ -351,14 +339,13 @@ public class PlayerListener implements Listener {
     @EventHandler(priority = EventPriority.MONITOR)
     public void itemConsumed(PlayerItemConsumeEvent event) {
         ItemStack itemStack = event.getItem();
-        for (LavaItem item : LavaItem.ITEMS) {
+        for (LavaItem item : LavaItem.ITEMS)
             if (item.isItem(itemStack)) {
                 event.setCancelled(true);
                 if (item.consume(event.getPlayer()))
                     event.getPlayer().getInventory().clear(event.getPlayer().getInventory().first(itemStack));
                 break;
             }
-        }
     }
 
     @EventHandler(priority = EventPriority.LOW)
@@ -371,6 +358,7 @@ public class PlayerListener implements Listener {
             SpecialInventory.tryClose(p);
     }
 
+    @SuppressWarnings("deprecation")
     @EventHandler(priority = EventPriority.LOW)
     public void inventoryClicked(InventoryClickEvent e) {
         Player p = (Player) e.getWhoClicked();
@@ -575,7 +563,7 @@ public class PlayerListener implements Listener {
         });
     }
 
-    private static final String[] deathMessages = new String[]{ChatColor.RED + "" + ChatColor.BOLD + "Wasted!", ChatColor.GREEN + "" + ChatColor.BOLD + "Better luck next time!",
+    private static final String[] deathMessages = {ChatColor.RED + "" + ChatColor.BOLD + "Wasted!", ChatColor.GREEN + "" + ChatColor.BOLD + "Better luck next time!",
             ChatColor.RED + "" + ChatColor.BOLD + "You died!", ChatColor.RED + "" + ChatColor.BOLD + "rip."};
 
     @EventHandler(priority = EventPriority.HIGHEST)

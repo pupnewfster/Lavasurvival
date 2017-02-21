@@ -37,9 +37,10 @@ public class WarpManager {
         ArrayList<String> ws = new ArrayList<>();
         ws.addAll(this.warps.keySet());
         Collections.sort(ws);
-        String warps = "";
+        StringBuilder warpsBuilder = new StringBuilder();
         for (String w : ws)
-            warps += w + ", ";
+            warpsBuilder.append(w).append(", ");
+        String warps = warpsBuilder.toString();
         return warps.equals("") ? "" : warps.trim().substring(0, warps.length() - 2);
     }
 

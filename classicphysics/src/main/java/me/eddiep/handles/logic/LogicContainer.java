@@ -7,7 +7,6 @@ import org.bukkit.Material;
 public interface LogicContainer {
     /**
      * Request a block to be queued for the next logic check
-     *
      * @param location The location of the block to queue
      */
     void queueBlock(Location location);
@@ -19,7 +18,6 @@ public interface LogicContainer {
 
     /**
      * How often a tick should occur, in minecraft ticks.
-     *
      * @return How often the {@link LogicContainer#tick()} method should be called, in minecraft ticks
      */
     @SuppressWarnings("SameReturnValue")
@@ -27,7 +25,6 @@ public interface LogicContainer {
 
     /**
      * Check if a {@link Material} of a given type can be queued in this {@link LogicContainer}
-     *
      * @param material The {@link Material} to check
      * @return True if this {@link Material} can be queued, otherwise false
      */
@@ -35,7 +32,6 @@ public interface LogicContainer {
 
     /**
      * Returns what this LogicContainer does physics for
-     *
      * @return The Material this LogicContainer does physics for
      */
     Material logicFor();

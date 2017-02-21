@@ -1,6 +1,7 @@
 package com.crossge.necessities.Commands;
 
 import com.crossge.necessities.Necessities;
+import com.crossge.necessities.Utils;
 import com.crossge.necessities.Variables;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -16,7 +17,7 @@ public class CmdKick implements Cmd {
             sender.sendMessage(var.getEr() + "Error: " + var.getErMsg() + "You must enter a player to kick and a reason.");
             return true;
         }
-        UUID uuid = Necessities.getUUID().getID(args[0]);
+        UUID uuid = Utils.getID(args[0]);
         if (uuid == null) {
             sender.sendMessage(var.getEr() + "Error: " + var.getErMsg() + "Invalid player.");
             return true;
@@ -31,10 +32,10 @@ public class CmdKick implements Cmd {
             }
             name = p.getName();
         }
-        String reason = "";
+        StringBuilder reasonBuilder = new StringBuilder();
         for (int i = 1; i < args.length; i++)
-            reason += args[i] + " ";
-        reason = ChatColor.translateAlternateColorCodes('&', reason.trim());
+            reasonBuilder.append(args[i]).append(" ");
+        String reason = ChatColor.translateAlternateColorCodes('&', reasonBuilder.toString().trim());
         Bukkit.broadcastMessage(var.getMessages() + name + " kicked " + var.getObj() + target.getName() + (reason.equals("") ? "" : var.getMessages() + " for " + var.getObj() + reason));
         target.kickPlayer(reason);
         return true;

@@ -13,9 +13,10 @@ public class CmdSubranks implements RankCmd {
         if (rm.getSubranks().isEmpty())
             sender.sendMessage(var.getEr() + "Error: " + var.getErMsg() + "No subranks are set.");
         else {
-            String subranks = var.getMessages() + "Available subranks are: " + ChatColor.WHITE;
+            StringBuilder subranksBuilder = new StringBuilder(var.getMessages() + "Available subranks are: " + ChatColor.WHITE);
             for (String subrank : rm.getSubranks())
-                subranks += subrank + var.getMessages() + ", " + ChatColor.WHITE;
+                subranksBuilder.append(subrank).append(var.getMessages()).append(", ").append(ChatColor.WHITE);
+            String subranks = subranksBuilder.toString();
             subranks = subranks.substring(0, subranks.length() - 2).trim();
             sender.sendMessage(subranks);
         }

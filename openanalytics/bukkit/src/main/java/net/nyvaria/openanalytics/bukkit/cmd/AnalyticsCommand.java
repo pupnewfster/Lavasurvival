@@ -20,7 +20,6 @@ package net.nyvaria.openanalytics.bukkit.cmd;
 import net.nyvaria.openanalytics.bukkit.cmd.analytics.AdminSubCommand;
 import net.nyvaria.openanalytics.bukkit.cmd.analytics.OptOutSubCommand;
 import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
 
@@ -30,7 +29,7 @@ import java.util.List;
 /**
  * @author Paul Thompson
  */
-public class AnalyticsCommand extends NyvariaCommand implements CommandExecutor, TabCompleter {
+public class AnalyticsCommand extends NyvariaCommand implements TabCompleter {
     public static final String CMD = "analytics";
     private final List<NyvariaSubCommand> subcmds;
     private final int nextArgIndex = 0;

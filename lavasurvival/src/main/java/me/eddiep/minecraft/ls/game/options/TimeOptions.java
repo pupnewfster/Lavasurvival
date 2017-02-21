@@ -3,7 +3,7 @@ package me.eddiep.minecraft.ls.game.options;
 @SuppressWarnings("CanBeFinal")
 public class TimeOptions extends BaseOptions {
     @SuppressWarnings("FieldCanBeLocal")
-    private long startTimeTick = 0, dayLength = 24000;
+    private long startTimeTick, dayLength = 24000;
 
     public static TimeOptions defaults() {
         return new TimeOptions();

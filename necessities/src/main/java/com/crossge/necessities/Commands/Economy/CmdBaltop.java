@@ -7,6 +7,8 @@ import com.crossge.necessities.Variables;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 
+import java.util.List;
+
 public class CmdBaltop implements EconomyCmd {
     public boolean commandUse(CommandSender sender, String[] args) {
         Variables var = Necessities.getVar();
@@ -28,15 +30,11 @@ public class CmdBaltop implements EconomyCmd {
             return true;
         }
         sender.sendMessage(ChatColor.GOLD + "Balance Top Page [" + Integer.toString(page) + "/" + Integer.toString(totalPages) + "]");
-        page = page - 1;
-        String bal = eco.balTop(page, time);
-        while (bal != null) {
-            bal = ChatColor.GOLD + Integer.toString((page * 10) + time + 1) + ". " + var.getCatalog() + Necessities.getUUID().nameFromString(bal.split(" ")[0]) + " has: " + var.getMoney() +
-                    eco.format(Double.parseDouble(bal.split(" ")[1]));
-            sender.sendMessage(bal);
-            time++;
-            bal = eco.balTop(page, time);
-        }
+        List<String> balTop = eco.getBalTop(page);
+        page -= 1;
+        for (String bal : balTop)
+            sender.sendMessage(ChatColor.GOLD + Integer.toString((page * 10) + time++ + 1) + ". " + var.getCatalog() + Utils.nameFromString(bal.split(" ")[0]) + " has: " + var.getMoney() +
+                    eco.format(Double.parseDouble(bal.split(" ")[1])));
         return true;
     }
 }

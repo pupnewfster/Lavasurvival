@@ -3,6 +3,7 @@ package com.crossge.necessities.Commands;
 import com.crossge.necessities.Necessities;
 import com.crossge.necessities.RankManager.User;
 import com.crossge.necessities.RankManager.UserManager;
+import com.crossge.necessities.Utils;
 import com.crossge.necessities.Variables;
 import me.eddiep.ClassicPhysics;
 import me.eddiep.handles.ClassicPhysicsHandler;
@@ -20,7 +21,7 @@ public class CmdTpa implements Cmd {
                 sender.sendMessage(var.getEr() + "Error: " + var.getErMsg() + "Format requires you enter a player to send a teleport request to.");
                 return true;
             }
-            UUID uuid = Necessities.getUUID().getID(args[0]);
+            UUID uuid = Utils.getID(args[0]);
             if (uuid == null) {
                 sender.sendMessage(var.getEr() + "Error: " + var.getErMsg() + "Invalid player.");
                 return true;

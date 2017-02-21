@@ -1,6 +1,5 @@
 package com.crossge.necessities.Commands.RankManager;
 
-import com.crossge.necessities.GetUUID;
 import com.crossge.necessities.Necessities;
 import com.crossge.necessities.Utils;
 import com.crossge.necessities.Variables;
@@ -16,10 +15,9 @@ public class CmdDelPermissionUser implements RankCmd {
             sender.sendMessage(var.getEr() + "Error: " + var.getErMsg() + "Format requires a user and a permission node to remove from that user.");
             return true;
         }
-        GetUUID get = Necessities.getUUID();
-        UUID uuid = get.getID(args[0]);
+        UUID uuid = Utils.getID(args[0]);
         if (uuid == null) {
-            uuid = get.getOfflineID(args[0]);
+            uuid = Utils.getOfflineID(args[0]);
             if (uuid == null || !Bukkit.getOfflinePlayer(uuid).hasPlayedBefore()) {
                 sender.sendMessage(var.getEr() + "Error: " + var.getErMsg() + "That player does not exist or has not joined the server. If the player is offline, please use the full and most recent name.");
                 return true;
@@ -27,7 +25,7 @@ public class CmdDelPermissionUser implements RankCmd {
         }
         String node = args[1];
         Necessities.getUM().updateUserPerms(uuid, node, true);
-        sender.sendMessage(var.getMessages() + "Removed " + var.getObj() + node + var.getMessages() + " from " + var.getObj() + Utils.ownerShip(get.nameFromString(uuid.toString())) + var.getMessages() + " permissions.");
+        sender.sendMessage(var.getMessages() + "Removed " + var.getObj() + node + var.getMessages() + " from " + var.getObj() + Utils.ownerShip(Utils.nameFromString(uuid.toString())) + var.getMessages() + " permissions.");
         return true;
     }
 }

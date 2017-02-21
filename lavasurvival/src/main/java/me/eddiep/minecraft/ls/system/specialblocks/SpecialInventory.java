@@ -96,18 +96,9 @@ public class SpecialInventory {
 
     private static ArrayList<ItemStack> chooseItems(Intrinsic tier) {
         ArrayList<ItemStack> items = new ArrayList<>();
-        List<ItemStack> possibleItems = ArrayHelper.combind(
-                LavaItem.filter(tier),
-                chooseBlocks(tier)
-        );
+        List<ItemStack> possibleItems = ArrayHelper.combind(LavaItem.filter(tier), chooseBlocks(tier));
         List<ItemStack> uncommon;
-        if (tier != Intrinsic.UNCOMMON)
-            uncommon = ArrayHelper.combind(
-                    LavaItem.filter(Intrinsic.UNCOMMON),
-                    chooseBlocks(Intrinsic.UNCOMMON)
-            );
-        else
-            uncommon = possibleItems;
+        uncommon = tier != Intrinsic.UNCOMMON ? ArrayHelper.combind(LavaItem.filter(Intrinsic.UNCOMMON), chooseBlocks(Intrinsic.UNCOMMON)) : possibleItems;
 
         switch (tier) {
             case COMMON: { //MAX of 9 common items
@@ -154,10 +145,7 @@ public class SpecialInventory {
     }
 
     public static FallingBlock from(Player p) {
-        for (FallingBlock b : INSTANCERS.keySet())
-            if (INSTANCERS.get(b).inventory.getViewers().contains(p))
-                return b;
-        return null;
+        return INSTANCERS.keySet().stream().filter(b -> INSTANCERS.get(b).inventory.getViewers().contains(p)).findFirst().orElse(null);
     }
 
     public static void tryClose(Player p) {
@@ -179,12 +167,7 @@ public class SpecialInventory {
     }
 
     private boolean isEmpty() {
-        if (this.inventory == null)
-            return true;
-        for (ItemStack i : this.inventory.getContents())
-            if (i != null && !i.getType().equals(Material.AIR))
-                return false;
-        return true;
+        return this.inventory == null || Arrays.stream(this.inventory.getContents()).noneMatch(i -> i != null && !i.getType().equals(Material.AIR));
     }
 
     public Inventory openFor(Player p) {

@@ -10,7 +10,6 @@ import java.util.Collection;
  * <p>
  * This class is intended for use as a key to a map.
  * </p>
- *
  * @param <E> The type of elements in the array.
  * @author Glen Husman
  * @see Arrays
@@ -21,7 +20,6 @@ final class ArrayWrapper<E> {
 
     /**
      * Creates an array wrapper with some elements.
-     *
      * @param elements The elements of the array.
      */
     @SafeVarargs
@@ -32,7 +30,6 @@ final class ArrayWrapper<E> {
     /**
      * Converts an iterable element collection to an array of elements.
      * The iteration order of the specified object will be used as the array element order.
-     *
      * @param list The iterable of objects which will be converted to an array.
      * @param c    The type of the elements of the array.
      * @return An array of elements in the specified iterable.
@@ -62,7 +59,6 @@ final class ArrayWrapper<E> {
 
     /**
      * Retrieves a reference to the wrapped array instance.
-     *
      * @return The array wrapped by this instance.
      */
     public E[] getArray() {
@@ -71,7 +67,6 @@ final class ArrayWrapper<E> {
 
     /**
      * Set this wrapper to wrap a new array instance.
-     *
      * @param array The new wrapped array.
      */
     private void setArray(E[] array) {
@@ -81,7 +76,6 @@ final class ArrayWrapper<E> {
 
     /**
      * Determines if this object has a value equivalent to another object.
-     *
      * @see Arrays#equals(Object[], Object[])
      */
     @SuppressWarnings("rawtypes")
@@ -92,7 +86,6 @@ final class ArrayWrapper<E> {
 
     /**
      * Gets the hash code represented by this objects value.
-     *
      * @return This object's hash code.
      * @see Arrays#hashCode(Object[])
      */

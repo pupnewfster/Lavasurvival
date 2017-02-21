@@ -7,6 +7,7 @@ import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.File;
 import java.util.HashMap;
+import java.util.Map;
 
 public class PortalManager {//TODO: add a method to update the things when a world is unloaded or loaded
     private final HashMap<String, Portal> portals = new HashMap<>();
@@ -24,11 +25,11 @@ public class PortalManager {//TODO: add a method to update the things when a wor
     }
 
     public Location portalDestination(Location l) {
-        for (String key : this.portals.keySet())
-            if (this.portals.get(key).isPortal(l)) {
-                if (this.portals.get(key).isWarp())
-                    return this.portals.get(key).getWarp().getDestination();
-                return this.portals.get(key).getWorldTo().getSpawnLocation();
+        for (Map.Entry<String, Portal> entry : this.portals.entrySet())
+            if (this.portals.get(entry.getKey()).isPortal(l)) {
+                if (this.portals.get(entry.getKey()).isWarp())
+                    return this.portals.get(entry.getKey()).getWarp().getDestination();
+                return this.portals.get(entry.getKey()).getWorldTo().getSpawnLocation();
             }
         return null;
     }

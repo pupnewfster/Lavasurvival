@@ -9,8 +9,8 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import java.io.File;
 
 class Portal {
-    private double x1 = 0, y1 = 0, z1 = 0, x2 = 0, y2 = 0, z2 = 0;
-    private boolean validPortal = false;
+    private double x1, y1, z1, x2, y2, z2;
+    private boolean validPortal;
     private Warp destination;
     private World from, to;
     private final String name;

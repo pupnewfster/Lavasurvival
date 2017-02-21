@@ -12,10 +12,12 @@ import org.bukkit.entity.Player;
 public class CmdRequestMod implements Cmd {
     public boolean commandUse(CommandSender sender, String[] args) {
         String reason = "";
-        if (args.length > 0)
+        if (args.length > 0) {
+            StringBuilder reasonBuilder = new StringBuilder();
             for (String arg : args)
-                reason += arg + " ";
-        reason = reason.trim();
+                reasonBuilder.append(arg).append(" ");
+            reason = reasonBuilder.toString().trim();
+        }
         Variables var = Necessities.getVar();
         if (sender instanceof Player) {
             Player p = (Player) sender;

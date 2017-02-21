@@ -18,17 +18,14 @@ public class Flood extends Gamemode {
     private long gameStart, duration;
     private int lastMinute, bonus;
     private boolean doubleReward;
-    private Objective objective = null;
+    private Objective objective;
     private Score bonusScore;
     private List<Location> lavaPoints;
 
     @Override
     public void onStart() {
         this.doubleReward = Math.random() < 0.25;
-        if (getScoreboard().getObjective("game") == null)
-            this.objective = getScoreboard().registerNewObjective("game", "dummy");
-        else
-            this.objective = getScoreboard().getObjective("game");
+        this.objective = getScoreboard().getObjective("game") == null ? getScoreboard().registerNewObjective("game", "dummy") : getScoreboard().getObjective("game");
         this.objective.setDisplaySlot(DisplaySlot.SIDEBAR);
         this.objective.setDisplayName((LAVA ? "Lava" : "Water") + "Pour");
         this.bonusScore = this.objective.getScore(ChatColor.GOLD + "" + ChatColor.BOLD + "Reward Bonus");
@@ -85,12 +82,8 @@ public class Flood extends Gamemode {
     private void setObjectiveDisplay(String display) {
         if (display == null)
             return;
-        if (this.objective == null) {
-            if (getScoreboard().getObjective("game") == null)
-                this.objective = getScoreboard().registerNewObjective("game", "dummy");
-            else
-                this.objective = getScoreboard().getObjective("game");
-        }
+        if (this.objective == null)
+            this.objective = getScoreboard().getObjective("game") == null ? getScoreboard().registerNewObjective("game", "dummy") : getScoreboard().getObjective("game");
         try {
             this.objective.setDisplayName(display);
         } catch (IllegalStateException e) {

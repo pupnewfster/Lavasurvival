@@ -64,13 +64,8 @@ public class StringUtils {
             format = "'today'";
         else if ((submitted.get(Calendar.YEAR) == yesterday.get(Calendar.YEAR)) && (submitted.get(Calendar.DAY_OF_YEAR) == yesterday.get(Calendar.DAY_OF_YEAR)))
             format = "'yesterday'";
-        else {
-            format = (boringPrefix != null ? "'" + boringPrefix + "' " : "");
-            if (submitted.get(Calendar.YEAR) == today.get(Calendar.YEAR))
-                format += StringUtils.yearlessDateFormat;
-            else
-                format += StringUtils.dateFormat;
-        }
+        else
+            format = (boringPrefix != null ? "'" + boringPrefix + "' " : "") + (submitted.get(Calendar.YEAR) == today.get(Calendar.YEAR) ? StringUtils.yearlessDateFormat : StringUtils.dateFormat);
 
         //Tack on the time
         format += " 'at' " + StringUtils.timeFormat;

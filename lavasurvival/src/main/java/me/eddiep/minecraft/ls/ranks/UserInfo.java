@@ -32,13 +32,14 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 public class UserInfo {
     private final ArrayList<MaterialData> ownedBlocks = new ArrayList<>();
     private long lastBreak = System.currentTimeMillis(), blockChangeCount;
-    private boolean inWater = false;
+    private boolean inWater;
     private Player bukkitPlayer;
-    private int taskID = 0;
+    private int taskID;
     private final UUID userUUID;
     private List<MaterialData> BANK = new ArrayList<>();
     private boolean generosity;
@@ -147,19 +148,15 @@ public class UserInfo {
 
     @SuppressWarnings("deprecation")
     public void saveBank() {
-        ArrayList<MaterialData> cBank = new ArrayList<>();
-        for (MaterialData e : this.BANK)
-            if (!e.getItemType().equals(Material.AIR))
-                cBank.add(e);
-        this.BANK = cBank;
-        String banked = "";
+        this.BANK = this.BANK.stream().filter(e1 -> !e1.getItemType().equals(Material.AIR)).collect(Collectors.toCollection(ArrayList::new));
+        StringBuilder banked = new StringBuilder();
         boolean empty = true;
         for (MaterialData e : this.BANK)
             if (!e.getItemType().equals(Material.AIR)) {
-                banked += (empty ? "" : "|") + e.getItemType() + ":" + e.getData();
+                banked.append(empty ? "" : "|").append(e.getItemType()).append(":").append(e.getData());
                 empty = false;
             }
-        String finalBanked = banked;
+        String finalBanked = banked.toString();
         try {
             new BukkitRunnable() {
                 @Override
@@ -237,11 +234,7 @@ public class UserInfo {
     }
 
     public boolean isInBank(MaterialData data) {
-        for (MaterialData dat : this.BANK) {
-            if (dat != null && data.equals(dat))
-                return true;
-        }
-        return false;
+        return this.BANK.stream().anyMatch(dat -> dat != null && data.equals(dat));
     }
 
     public void giveBoughtBlocks() {

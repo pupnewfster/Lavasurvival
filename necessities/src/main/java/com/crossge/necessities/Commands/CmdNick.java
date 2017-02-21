@@ -3,6 +3,7 @@ package com.crossge.necessities.Commands;
 import com.crossge.necessities.Necessities;
 import com.crossge.necessities.RankManager.User;
 import com.crossge.necessities.RankManager.UserManager;
+import com.crossge.necessities.Utils;
 import com.crossge.necessities.Variables;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -24,7 +25,7 @@ public class CmdNick implements Cmd {
                 p.sendMessage(var.getMessages() + "Nickname removed.");
                 return true;
             } else if (args.length == 1) {
-                UUID uuid = Necessities.getUUID().getID(args[0]);
+                UUID uuid = Utils.getID(args[0]);
                 if (ChatColor.stripColor(ChatColor.translateAlternateColorCodes('&', args[0] + "&r")).trim().length() > 16 ||
                         ChatColor.stripColor(ChatColor.translateAlternateColorCodes('&', args[0] + "&r")).trim().length() < 1) {
                     p.sendMessage(var.getEr() + "Error: " + var.getErMsg() + "Nicks have a maximum of 16 characters.");
@@ -53,7 +54,7 @@ public class CmdNick implements Cmd {
             sender.sendMessage(var.getEr() + "Error: " + var.getErMsg() + "The console cannot have a nickname.");
             return true;
         }
-        UUID uuid = Necessities.getUUID().getID(args[0]);
+        UUID uuid = Utils.getID(args[0]);
         if (uuid == null) {
             sender.sendMessage(var.getEr() + "Error: " + var.getErMsg() + "Invalid player.");
             return true;

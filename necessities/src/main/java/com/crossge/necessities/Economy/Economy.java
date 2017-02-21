@@ -11,16 +11,11 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.Statement;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Properties;
-import java.util.UUID;
+import java.util.*;
 
 public class Economy { //TODO config option for format money as well as refresh baltop after every so many updates happen so that it can be async and then quicker
     private final HashMap<UUID, Double> loadedBals = new HashMap<>();
-    private ArrayList<String> balTop = new ArrayList<>();
     private Properties properties;
-    private boolean regenBalTop = true;
     private String dbURL;
 
     public void init() {
@@ -85,7 +80,6 @@ public class Economy { //TODO config option for format money as well as refresh 
                     stmt.execute("UPDATE users SET balance = balance - " + amount + " WHERE uuid = '" + uuid + "'");
                     stmt.close();
                     conn.close();
-                    regenBalTop = true;
                 } catch (Exception ignored) {
                 }
             }
@@ -104,7 +98,6 @@ public class Economy { //TODO config option for format money as well as refresh 
                     stmt.execute("UPDATE users SET balance = balance + " + amount + " WHERE uuid = '" + uuid + "'");
                     stmt.close();
                     conn.close();
-                    regenBalTop = true;
                 } catch (Exception ignored) {
                 }
             }
@@ -123,42 +116,45 @@ public class Economy { //TODO config option for format money as well as refresh 
                     stmt.execute("UPDATE users SET balance = " + amount + " WHERE uuid = '" + uuid + "'");
                     stmt.close();
                     conn.close();
-                    regenBalTop = true;
                 } catch (Exception ignored) {
                 }
             }
         }.runTaskAsynchronously(Necessities.getInstance());
     }
 
-    private void updateBalTop() { //Should this just be cached and only update the cache if things change
-        if (!this.regenBalTop)
-            return;
-        this.regenBalTop = false;
-        this.balTop = new ArrayList<>();
+    public List<String> getBalTop(int page) {
+        List<String> balTop = new ArrayList<>();
         try {
             Connection conn = DriverManager.getConnection(this.dbURL, this.properties);
             Statement stmt = conn.createStatement();
-            ResultSet rs = stmt.executeQuery("SELECT uuid,balance FROM users ORDER BY balance DESC");
+            ResultSet rs = stmt.executeQuery("SELECT uuid,balance FROM users ORDER BY balance DESC LIMIT " + (page - 1) * 10 + ",10");
             while (rs.next())
-                this.balTop.add(rs.getString("uuid") + " " + rs.getDouble("balance"));
+                balTop.add(rs.getString("uuid") + " " + rs.getDouble("balance"));
             rs.close();
             stmt.close();
             conn.close();
         } catch (Exception ignored) {
         }
-    }
-
-    public String balTop(int page, int time) {
-        page *= 10;
-        return (this.balTop.size() < time + page + 1 || time == 10) ? null : this.balTop.get(page + time);
-    }
-
-    public int baltopPages() {
-        updateBalTop(); //make sure the bal top is up to date
-        return this.balTop.size() % 10 != 0 ? (this.balTop.size() / 10) + 1 : (this.balTop.size() / 10);
+        return balTop;
     }
 
     public String format(double balance) {
         return Utils.formatMoney(balance) + " GGs";
+    }
+
+    public int baltopPages() {
+        int size = 0;
+        try {
+            Connection conn = DriverManager.getConnection(this.dbURL, this.properties);
+            Statement stmt = conn.createStatement();
+            ResultSet rs = stmt.executeQuery("SELECT COUNT(*) FROM users");
+            if (rs.next())
+                size = rs.getInt(1);
+            rs.close();
+            stmt.close();
+            conn.close();
+        } catch (Exception ignored) {
+        }
+        return size % 10 != 0 ? size / 10 + 1 : size / 10;
     }
 }

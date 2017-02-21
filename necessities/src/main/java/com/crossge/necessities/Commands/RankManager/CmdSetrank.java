@@ -1,6 +1,5 @@
 package com.crossge.necessities.Commands.RankManager;
 
-import com.crossge.necessities.GetUUID;
 import com.crossge.necessities.Necessities;
 import com.crossge.necessities.RankManager.Rank;
 import com.crossge.necessities.RankManager.RankManager;
@@ -21,10 +20,9 @@ public class CmdSetrank implements RankCmd {
             sender.sendMessage(var.getEr() + "Error: " + var.getErMsg() + "Format requires you enter a user and a rank to set the user's rank to.");
             return true;
         }
-        GetUUID get = Necessities.getUUID();
-        UUID uuid = get.getID(args[0]);
+        UUID uuid = Utils.getID(args[0]);
         if (uuid == null) {
-            uuid = get.getOfflineID(args[0]);
+            uuid = Utils.getOfflineID(args[0]);
             if (uuid == null || !Bukkit.getOfflinePlayer(uuid).hasPlayedBefore()) {
                 sender.sendMessage(var.getEr() + "Error: " + var.getErMsg() + "That player does not exist or has not joined the server. If the player is offline, please use the full and most recent name.");
                 return true;
@@ -49,7 +47,7 @@ public class CmdSetrank implements RankCmd {
             name = player.getName();
         }
         um.updateUserRank(u, uuid, r);
-        Bukkit.broadcastMessage(var.getMessages() + name + " set " + Utils.ownerShip(get.nameFromString(uuid.toString())) + " rank to " + u.getRank().getName() + ".");
+        Bukkit.broadcastMessage(var.getMessages() + name + " set " + Utils.ownerShip(Utils.nameFromString(uuid.toString())) + " rank to " + u.getRank().getName() + ".");
         return true;
     }
 }

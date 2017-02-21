@@ -5,13 +5,13 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.material.MaterialData;
 
+import java.util.Arrays;
+import java.util.Objects;
+
 public class BukkitUtils {
     @SuppressWarnings("unused")
     public static boolean isInventoryEmpty(Inventory inv) {
-        for (ItemStack item : inv.getContents())
-            if (item != null)
-                return false;
-        return true;
+        return Arrays.stream(inv.getContents()).noneMatch(Objects::nonNull);
     }
 
     public static boolean isInventoryFull(Inventory inv) {//Does this check armor slots if so it might need to change a little
@@ -20,12 +20,12 @@ public class BukkitUtils {
 
     public static boolean hasItem(Inventory inventory, MaterialData dat) {
         if (inventory instanceof PlayerInventory) {
-            PlayerInventory pinv = (PlayerInventory) inventory;
-            ItemStack[] armor = pinv.getArmorContents();
+            PlayerInventory pInv = (PlayerInventory) inventory;
+            ItemStack[] armor = pInv.getArmorContents();
             for (ItemStack stack : armor)
                 if (stack != null && stack.getData().equals(dat))
                     return true;
-            ItemStack offhand = pinv.getItemInOffHand();
+            ItemStack offhand = pInv.getItemInOffHand();
             if (offhand != null && offhand.getData().equals(dat))
                 return true;
         }

@@ -414,12 +414,7 @@ public class PhysicsListener implements Listener {
             }
             if (blockChecking.getType().equals(Material.AIR) || handler.isClassicBlock(v) || blockChecking.isLiquid())
                 return;
-            HashMap<MaterialData, Integer> ticksToMelt;
-            if (type == Material.LAVA || type == Material.STATIONARY_LAVA)
-                ticksToMelt = lavaTicksToMelt;
-            else
-                ticksToMelt = waterTicksToMelt;
-
+            HashMap<MaterialData, Integer> ticksToMelt = type == Material.LAVA || type == Material.STATIONARY_LAVA ? lavaTicksToMelt : waterTicksToMelt;
             MaterialData dat = new MaterialData(blockChecking.getType(), blockChecking.getData());
             if (!ticksToMelt.containsKey(dat))
                 dat = new MaterialData(blockChecking.getType());
@@ -460,8 +455,8 @@ public class PhysicsListener implements Listener {
         @Override
         public void run() {
             tickCount++;
-            for (Location loc : toTasks.keySet()) {
-                ConcurrentLinkedQueue<BlockTaskInfo> queue = toTasks.get(loc);
+            for (Map.Entry<Location, ConcurrentLinkedQueue<BlockTaskInfo>> locationEntry : toTasks.entrySet()) {
+                ConcurrentLinkedQueue<BlockTaskInfo> queue = locationEntry.getValue();
                 if (queue != null)
                     for (BlockTaskInfo b : queue)
                         if (b != null && tickCount - b.getStartTick() >= b.getTicksToMelt()) {
@@ -470,8 +465,8 @@ public class PhysicsListener implements Listener {
                                 if (blockChecking.getType().equals(Material.AIR))
                                     return;
                                 ClassicPhysics.INSTANCE.getPhysicsHandler().removePlayerPlaced(blockChecking.getLocation().toVector());
-                                ClassicPhysics.INSTANCE.getPhysicsHandler().placeClassicBlockAt(loc, b.getLogicFor(), b.getFrom());
-                                cancelLocation(loc);
+                                ClassicPhysics.INSTANCE.getPhysicsHandler().placeClassicBlockAt(locationEntry.getKey(), b.getLogicFor(), b.getFrom());
+                                cancelLocation(locationEntry.getKey());
                             }
                             break;
                         }
@@ -524,11 +519,11 @@ public class PhysicsListener implements Listener {
     }
 
     public static String getLavaMeltTimeAsString(MaterialData data) {
-        return getMeltTimeAsString(lavaTicksToMelt.containsKey(data) ? lavaTicksToMelt.get(data) : 0);
+        return getMeltTimeAsString(lavaTicksToMelt.getOrDefault(data, 0));
     }
 
     public static String getWaterMeltTimeAsString(MaterialData data) {
-        return getMeltTimeAsString(waterTicksToMelt.containsKey(data) ? waterTicksToMelt.get(data) : 0);
+        return getMeltTimeAsString(waterTicksToMelt.getOrDefault(data, 0));
     }
 
     private static String getMeltTimeAsString(int seconds) {
@@ -541,7 +536,7 @@ public class PhysicsListener implements Listener {
     }
 
     public static String getLavaMeltRangeTimeAsString(MaterialData data) {
-        return getMeltRangeAsString(lavaTicksToMelt.containsKey(data) ? lavaTicksToMelt.get(data) : 0);
+        return getMeltRangeAsString(lavaTicksToMelt.getOrDefault(data, 0));
     }
 
     private static String getMeltRangeAsString(int seconds) {
@@ -557,7 +552,7 @@ public class PhysicsListener implements Listener {
     }
 
     public static String getWaterMeltRangeTimeAsString(MaterialData data) {
-        return getMeltRangeAsString(waterTicksToMelt.containsKey(data) ? waterTicksToMelt.get(data) : 0);
+        return getMeltRangeAsString(waterTicksToMelt.getOrDefault(data, 0));
     }
 
     private static void cancelAllTasks() {

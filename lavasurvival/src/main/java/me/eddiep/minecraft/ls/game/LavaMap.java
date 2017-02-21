@@ -19,7 +19,9 @@ import org.bukkit.util.Vector;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @SuppressWarnings({"FieldCanBeLocal", "DeprecatedIsStillUsed", "unused"})
 public class LavaMap {
@@ -63,9 +65,7 @@ public class LavaMap {
         ArrayList<String> maps = new ArrayList<>();
         File[] files = configDir.listFiles();
         if (files != null)
-            for (File f : files)
-                if (f.getAbsolutePath().endsWith(".map"))
-                    maps.add(f.getAbsolutePath());
+            maps = Arrays.stream(files).filter(f -> f.getAbsolutePath().endsWith(".map")).map(File::getAbsolutePath).collect(Collectors.toCollection(ArrayList::new));
         return maps.toArray(new String[maps.size()]);
     }
 
@@ -87,11 +87,7 @@ public class LavaMap {
     }
 
     public boolean isLocationNearLavaSpawn(Location location, double limit) {
-        FloodOptions options = getCurrentGamemodeOptions();
-        for (Location spawnPoint : options.getSpawnLocations())
-            if (spawnPoint.distanceSquared(location) <= limit)
-                return true;
-        return false;
+        return getCurrentGamemodeOptions().getSpawnLocations().stream().anyMatch(spawnPoint -> spawnPoint.distanceSquared(location) <= limit);
     }
 
     private void restoreBackup() {

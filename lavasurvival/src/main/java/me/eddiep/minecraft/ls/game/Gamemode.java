@@ -50,12 +50,13 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static me.eddiep.minecraft.ls.system.util.RandomDistribution.NEGATIVE_EXPONENTIAL;
 import static me.eddiep.minecraft.ls.system.util.RandomHelper.*;
 
 public abstract class Gamemode {
-    private static final Material[] DEFAULT_BLOCKS = new Material[]{
+    private static final Material[] DEFAULT_BLOCKS = {
             Material.TORCH,
             Material.COBBLESTONE,
             Material.DIRT,
@@ -63,7 +64,7 @@ public abstract class Gamemode {
             Material.WOOD,
             Material.SAND
     };
-    private static final Class[] GAMES = new Class[]{
+    private static final Class[] GAMES = {
             Rise.class,
             Flood.class,
             Fusion.class
@@ -84,7 +85,7 @@ public abstract class Gamemode {
     public static final double DAMAGE_FREQUENCY = 0.5;
     protected static boolean LAVA = true;
     protected static Random RANDOM = new Random();
-    private static boolean voting = false;
+    private static boolean voting;
     private final LavaMap[] nextMaps = new LavaMap[VOTE_COUNT];
     protected final ArrayList<CraftBossBar> bars = new ArrayList<>();
     private final int[] votes = new int[VOTE_COUNT];
@@ -94,7 +95,7 @@ public abstract class Gamemode {
     private static Scoreboard scoreboard;
     private static PlayerListener listener;
     private static PhysicsListener physicsListener;
-    private static Gamemode currentGame = null;
+    private static Gamemode currentGame;
     protected String type = "Rise";
     protected boolean poured;
     private BukkitRunnable tickTask;
@@ -216,13 +217,12 @@ public abstract class Gamemode {
     public final void start(boolean forceStart) {
         if (restart) {
             Lavasurvival.INSTANCE.updating = true;
-            for (Player p : Bukkit.getOnlinePlayers()) {
+            for (Player p : Bukkit.getOnlinePlayers())
                 try {
                     Lavasurvival.INSTANCE.changeServer(p, restartServer);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
-            }
             Bukkit.getScheduler().scheduleSyncDelayedTask(Lavasurvival.INSTANCE, () -> {
                 //Unloading world
                 if (lastMap != null) {
@@ -262,15 +262,9 @@ public abstract class Gamemode {
     protected void onStart() {
         Lavasurvival.log("New game on " + getCurrentWorld().getName());
         if (Necessities.isTracking()) {
-            EventHit hit;
-            if (isRewardDoubled())
-                hit = new EventHit(null, "GameReward", "DoubleRound");
-            else
-                hit = new EventHit(null, "GameReward", "NormalRound");
-            EventHit roundStart = new EventHit(null, "GameInfo", "RoundStart");
             startTime = System.currentTimeMillis();
-            Necessities.trackAction(hit);
-            Necessities.trackAction(roundStart);
+            Necessities.trackAction(isRewardDoubled() ? new EventHit(null, "GameReward", "DoubleRound") : new EventHit(null, "GameReward", "NormalRound"));
+            Necessities.trackAction(new EventHit(null, "GameInfo", "RoundStart"));
         }
         this.isEnding = false;
         this.hasEnded = false;
@@ -431,27 +425,24 @@ public abstract class Gamemode {
         end();
         if (giveRewards) {
             CmdHide hide = Necessities.getHide();
-            int amount = 0;
-            for (UUID id : alive)
-                if (id != null && Bukkit.getPlayer(id) != null && !hide.isHidden(Bukkit.getPlayer(id)) && !isInSpawn(Bukkit.getPlayer(id)))
-                    amount++;
-            if (amount == 0) {
+            int amount = (int) alive.stream().filter(id -> id != null && Bukkit.getPlayer(id) != null && !hide.isHidden(Bukkit.getPlayer(id)) && !isInSpawn(Bukkit.getPlayer(id))).count();
+            if (amount == 0)
                 globalMessage("No one survived..");
-            } else if (amount <= 45) {
+            else if (amount <= 45) {
                 globalMessage("Congratulations to the survivors!");
-                String survivors = "";
+                StringBuilder survivors = new StringBuilder();
                 for (UUID id : alive) {
                     if (id == null)
                         continue;
                     Player p = Bukkit.getPlayer(id);
                     if (p == null || hide.isHidden(p) || isInSpawn(p) || p.getGameMode().equals(GameMode.CREATIVE) || p.getGameMode().equals(GameMode.SPECTATOR))
                         continue;
-                    if (survivors.equals(""))
-                        survivors += Bukkit.getPlayer(id).getName();
+                    if (survivors.toString().equals(""))
+                        survivors.append(Bukkit.getPlayer(id).getName());
                     else
-                        survivors += ", " + Bukkit.getPlayer(id).getName();
+                        survivors.append(", ").append(Bukkit.getPlayer(id).getName());
                 }
-                globalMessage(survivors);
+                globalMessage(survivors.toString());
             } else
                 globalMessage("Congratulations to all " + amount + " survivors!");
             final HashMap<UUID, Integer> winners = new HashMap<>();
@@ -466,11 +457,7 @@ public abstract class Gamemode {
                 if (p == null || hide.isHidden(p) || isInSpawn(Bukkit.getPlayer(id)) || p.getGameMode().equals(GameMode.CREATIVE) || p.getGameMode().equals(GameMode.SPECTATOR))
                     continue;
                 Rank rank = Necessities.getUM().getUser(p.getUniqueId()).getRank();
-                Double[] array;
-                if (!avgs.containsKey(rank))
-                    array = new Double[]{0.0, 0.0, 0.0};
-                else
-                    array = avgs.get(rank);
+                Double[] array = !avgs.containsKey(rank) ? new Double[]{0.0, 0.0, 0.0} : avgs.get(rank);
                 int blockCount = countAirBlocksAround(p, 10);
                 //avgAir += blockCount;
                 array[0] += blockCount;
@@ -486,15 +473,15 @@ public abstract class Gamemode {
             }
 
             if (Necessities.isTracking()) {
-                for (Rank rank : avgs.keySet()) {
-                    Double[] array = avgs.get(rank);
+                for (Map.Entry<Rank, Double[]> rankEntry : avgs.entrySet()) {
+                    Double[] array = rankEntry.getValue();
                     array[0] = array[0] / array[2];
                     array[1] = array[1] / array[2];
 
-                    EventHit rewardAvg = new EventHit(null, "GameInfo", "AverageReward-" + rank.getName());
+                    EventHit rewardAvg = new EventHit(null, "GameInfo", "AverageReward-" + rankEntry.getKey().getName());
                     rewardAvg.event_value = (int) array[1].doubleValue();
 
-                    EventHit airAvg = new EventHit(null, "GameInfo", "AverageAir-" + rank.getName());
+                    EventHit airAvg = new EventHit(null, "GameInfo", "AverageAir-" + rankEntry.getKey().getName());
                     airAvg.event_value = (int) array[0].doubleValue();
 
                     Necessities.trackAction(rewardAvg);
@@ -559,14 +546,21 @@ public abstract class Gamemode {
         String mode = this.getType();
         String winnerList = "{";
         String scoreList = "{";
-        String loserList = "{";
-        if (winners != null)
-            for (UUID uuid : winners.keySet()) {
-                winnerList += uuid + ",";
-                scoreList += winners.get(uuid) + ",";
+        String loserList;
+        if (winners != null) {
+            StringBuilder winnerListBuilder = new StringBuilder("{");
+            StringBuilder scoreListBuilder = new StringBuilder("{");
+            for (Map.Entry<UUID, Integer> entry : winners.entrySet()) {
+                winnerListBuilder.append(entry.getKey()).append(",");
+                scoreListBuilder.append(entry.getValue()).append(",");
             }
+            scoreList = scoreListBuilder.toString();
+            winnerList = winnerListBuilder.toString();
+        }
+        StringBuilder loserListBuilder = new StringBuilder("{");
         for (UUID uuid : losers)
-            loserList += uuid + ",";
+            loserListBuilder.append(uuid).append(",");
+        loserList = loserListBuilder.toString();
         winnerList = winnerList.substring(0, winnerList.length() - 1) + "}";
         scoreList = scoreList.substring(0, scoreList.length() - 1) + "}";
         loserList = loserList.substring(0, loserList.length() - 1) + "}";
@@ -581,11 +575,11 @@ public abstract class Gamemode {
             Statement stmt = conn.createStatement();
             stmt.execute("INSERT INTO matches (gamemode, winners, scores, losers) VALUES ('" + mode + "', '" + winnerList + "', '" + scoreList + "', '" + loserList + "')");
             if (winners != null)
-                for (UUID uuid : winners.keySet()) {//Rating calculated off of avg blocks around, NOT reward since this is based on rank too
-                    stmt.execute("UPDATE users SET matches = CONCAT('," + winners.get(uuid) + "', matches) WHERE uuid = '" + uuid + "'");
-                    ResultSet rs = stmt.executeQuery("SELECT matches FROM users WHERE uuid = '" + uuid + "'");
+                for (Map.Entry<UUID, Integer> entry : winners.entrySet()) {//Rating calculated off of avg blocks around, NOT reward since this is based on rank too
+                    stmt.execute("UPDATE users SET matches = CONCAT('," + entry.getValue() + "', matches) WHERE uuid = '" + entry.getKey() + "'");
+                    ResultSet rs = stmt.executeQuery("SELECT matches FROM users WHERE uuid = '" + entry.getKey() + "'");
                     if (rs.next())
-                        stmt.execute("UPDATE users SET rating = '" + this.getRating(parseMatches(rs.getString("matches"))) + "' WHERE uuid = '" + uuid + "'");
+                        stmt.execute("UPDATE users SET rating = '" + this.getRating(parseMatches(rs.getString("matches"))) + "' WHERE uuid = '" + entry.getKey() + "'");
                     rs.close();
                 }
             for (UUID uuid : losers) {
@@ -604,25 +598,19 @@ public abstract class Gamemode {
 
     private ArrayList<Integer> parseMatches(String matchesString) {
         String[] ms = matchesString.split(",");
-        ArrayList<Integer> matches = new ArrayList<>();
-        for (String match : ms)
-            if (!match.equals("") && Utils.legalInt(match))
-                matches.add(Integer.parseInt(match));
-        return matches;
+        return Arrays.stream(ms).filter(match -> !match.equals("") && Utils.legalInt(match)).map(Integer::parseInt).collect(Collectors.toCollection(ArrayList::new));
     }
 
     private double getRating(ArrayList<Integer> matches) { //Max blocks around is 7999
         if (matches.isEmpty())
             return 1000;
-        double sum = 0.0;
-        for (int i : matches)
-            sum += i;
-        double average = sum / matches.size();
+        double sum = matches.stream().mapToInt(i -> i).asDoubleStream().sum();
+        /*double average = sum / matches.size();
         double total = 0.0;
         for (int i : matches)
             total += Math.pow(i - average, 2);
-        double std = Math.sqrt(total / matches.size());
-        return average;
+        double std = Math.sqrt(total / matches.size());*/
+        return sum / matches.size();
     }
 
     public List<LavaMap> getMapsInVote() {
@@ -665,7 +653,7 @@ public abstract class Gamemode {
             return;
         String[] files = LavaMap.getPossibleMaps();
         if (files.length > 1) {
-            String extra = "";
+            StringBuilder extraBuilder = new StringBuilder();
             for (int i = 0; i < this.nextMaps.length; i++) {
                 this.votes[i] = 0; //reset votes
                 boolean found;
@@ -678,22 +666,19 @@ public abstract class Gamemode {
                         found = true;
                         continue;
                     }
-                    for (LavaMap nextMap : this.nextMaps)
-                        if (nextMap != null && nextMap.getFile().equals(possibleNext)) {
-                            found = true;
-                            break;
-                        }
+                    if (Arrays.stream(this.nextMaps).anyMatch(nextMap -> nextMap != null && nextMap.getFile().equals(possibleNext)))
+                        found = true;
                 } while (found);
                 try {
                     this.nextMaps[i] = LavaMap.load(next);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
-                if (!extra.equals(""))
-                    extra += ",{\"text\":\" \"},";
-                extra += "{\"text\":\"" + (i + 1) + ". " + this.nextMaps[i].getName() + "\",\"underlined\":true,\"clickEvent\":{\"action\":\"run_command\",\"value\":\"/lvote " + (i + 1) +
-                        "\"},\"hoverEvent\":{\"action\":\"show_text\",\"value\":\"Vote for " + this.nextMaps[i].getName() + "\"}}";
+                if (!extraBuilder.toString().equals(""))
+                    extraBuilder.append(",{\"text\":\" \"},");
+                extraBuilder.append("{\"text\":\"").append(i + 1).append(". ").append(this.nextMaps[i].getName()).append("\",\"underlined\":true,\"clickEvent\":{\"action\":\"run_command\",\"value\":\"/lvote ").append(i + 1).append("\"},\"hoverEvent\":{\"action\":\"show_text\",\"value\":\"Vote for ").append(this.nextMaps[i].getName()).append("\"}}");
             }
+            String extra = extraBuilder.toString();
             this.voted.clear();
             globalMessage(ChatColor.GREEN + "It's time to vote for the next map!");
             voting = true;
@@ -749,10 +734,7 @@ public abstract class Gamemode {
     }
 
     protected void setIsLava(FloodOptions option) {
-        if (option.isLavaEnabled() && option.isWaterEnabled())
-            LAVA = random(100) < 75; //Have water/lava check be in here instead of as argument
-        else
-            LAVA = option.isLavaEnabled() || !option.isWaterEnabled() && random(100) < 75;
+        LAVA = option.isLavaEnabled() && option.isWaterEnabled() ? random(100) < 75 : option.isLavaEnabled() || !option.isWaterEnabled() && random(100) < 75;
     }
 
     public void forceEnd() {
@@ -1003,14 +985,7 @@ public abstract class Gamemode {
 
     public boolean allDead() {
         CmdHide hide = Necessities.getHide();
-        boolean allDead = Bukkit.getOnlinePlayers().size() != 0;
-        for (Player p : Bukkit.getOnlinePlayers()) {
-            if (isAlive(p) && !hide.isHidden(p)) {
-                allDead = false;
-                break;
-            }
-        }
-        return allDead;
+        return Bukkit.getOnlinePlayers().stream().noneMatch(p -> isAlive(p) && !hide.isHidden(p)) && Bukkit.getOnlinePlayers().size() != 0;
     }
 
     public boolean isEndGame() {
@@ -1022,10 +997,12 @@ public abstract class Gamemode {
     }
 
     private final MaterialData money = new MaterialData(Material.BOOKSHELF);
+    @SuppressWarnings("deprecation")
     private final MaterialData common = new MaterialData(Material.DROPPER, (byte) 1);
     private final MaterialData uncommon = new MaterialData(Material.ENCHANTMENT_TABLE);
     public final MaterialData epic = new MaterialData(Material.ENDER_PORTAL_FRAME);
 
+    @SuppressWarnings("deprecation")
     public void interactSpecial(Player p, FallingBlock b) {
         if (b.hasGravity()) //Make it so that the block has to have landed already. This way we don't have to worry about dupes
             return;
@@ -1082,12 +1059,7 @@ public abstract class Gamemode {
         com.crossge.necessities.RankManager.UserManager um = Necessities.getUM();
         RankManager rm = Necessities.getRM();
         int survivor = rm.getOrder().indexOf(rm.getRank("Survivor"));
-        int min = alive.size() == 0 ? 1 : 0, max = alive.size() / 3;
-        for (UUID uuid : alive)
-            if (rm.getOrder().indexOf(um.getUser(uuid).getRank()) < survivor) {
-                min = 1;
-                break;
-            }
+        int min = alive.stream().anyMatch(uuid -> rm.getOrder().indexOf(um.getUser(uuid).getRank()) < survivor) ? 1 : alive.size() == 0 ? 1 : 0, max = alive.size() / 3;
         if (max < min)
             max = alive.size();
         if (max <= 0)
@@ -1096,12 +1068,9 @@ public abstract class Gamemode {
         for (int i = 0; i < number; i++) {
             MaterialData data;
             double u = random(1, 100, NEGATIVE_EXPONENTIAL);
-            if (u < 50) {
-                if (randomBoolean())
-                    data = money;
-                else
-                    data = common;
-            } else if (u < 80)
+            if (u < 50)
+                data = randomBoolean() ? money : common;
+            else if (u < 80)
                 data = uncommon;
             else
                 data = epic;
@@ -1118,6 +1087,7 @@ public abstract class Gamemode {
         return findOpenSpace(100);
     }
 
+    @SuppressWarnings("deprecation")
     private static BlockVector findOpenSpace(int limit) {
         LavaMap cmap = getCurrentMap();
         int minX = cmap.getMinX(), maxX = cmap.getMaxX(), minZ = cmap.getMinZ(), maxZ = cmap.getMaxZ();

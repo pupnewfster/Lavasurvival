@@ -108,11 +108,7 @@ public class OptOutSubCommand extends NyvariaSubCommand {
             List<OfflinePlayer> matches = NyvariaPlayer.matchOfflinePlayer(partialPlayerName, sender);
             if (matches.size() == 1) {
                 OfflinePlayer match = matches.get(0);
-                Client client;
-                if (match.isOnline())
-                    client = OpenAnalytics.getInstance().getClientList().get(match);
-                else
-                    client = new Client(match);
+                Client client = match.isOnline() ? OpenAnalytics.getInstance().getClientList().get(match) : new Client(match);
                 sender.sendMessage(ChatColor.YELLOW + String.format("Setting %1$s to %2$s of analytics", client.getIPAddress() + ChatColor.YELLOW, cmdName));
                 client.setOptOut(optout);
             }

@@ -1,7 +1,7 @@
 package com.crossge.necessities.Commands;
 
-import com.crossge.necessities.GetUUID;
 import com.crossge.necessities.Necessities;
+import com.crossge.necessities.Utils;
 import com.crossge.necessities.Variables;
 import org.bukkit.BanList;
 import org.bukkit.Bukkit;
@@ -21,9 +21,8 @@ public class CmdBanIP implements Cmd {
             sender.sendMessage(var.getEr() + "Error: " + var.getErMsg() + "You must enter an player to ban.");
             return true;
         }
-        GetUUID get = Necessities.getUUID();
         String name = Necessities.getConsole().getName().replaceAll(":", "");
-        UUID uuid = get.getID(args[0]);
+        UUID uuid = Utils.getID(args[0]);
         if (uuid != null) {
             Player target = Bukkit.getPlayer(uuid);
             if (sender instanceof Player) {
@@ -36,9 +35,10 @@ public class CmdBanIP implements Cmd {
             }
             String reason = "";
             if (args.length > 1) {
+                StringBuilder reasonBuilder = new StringBuilder();
                 for (int i = 1; i < args.length; i++)
-                    reason += args[i] + " ";
-                reason = ChatColor.translateAlternateColorCodes('&', reason.trim());
+                    reasonBuilder.append(args[i]).append(" ");
+                reason = ChatColor.translateAlternateColorCodes('&', reasonBuilder.toString().trim());
             }
             BanList bans = Bukkit.getBanList(BanList.Type.IP);
             String theirName = target.getName();
@@ -62,9 +62,10 @@ public class CmdBanIP implements Cmd {
             name = sender.getName();
         String reason = "";
         if (args.length > 1) {
+            StringBuilder reasonBuilder = new StringBuilder();
             for (int i = 1; i < args.length; i++)
-                reason += args[i] + " ";
-            reason = ChatColor.translateAlternateColorCodes('&', reason.trim());
+                reasonBuilder.append(args[i]).append(" ");
+            reason = ChatColor.translateAlternateColorCodes('&', reasonBuilder.toString().trim());
         }
         BanList bans = Bukkit.getBanList(BanList.Type.IP);
         String theirIP = args[0];

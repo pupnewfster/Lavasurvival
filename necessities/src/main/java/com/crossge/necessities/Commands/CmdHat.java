@@ -48,9 +48,10 @@ public class CmdHat implements Cmd {
     }
 
     private String validTypes() {
-        String types = "Valid hat types: ";
+        StringBuilder typesBuilder = new StringBuilder("Valid hat types: ");
         for (String h : HatType.getTypes())
-            types += h.toLowerCase() + ", ";
+            typesBuilder.append(h.toLowerCase()).append(", ");
+        String types = typesBuilder.toString();
         return types.substring(0, types.length() - 2) + ".";
     }
 }

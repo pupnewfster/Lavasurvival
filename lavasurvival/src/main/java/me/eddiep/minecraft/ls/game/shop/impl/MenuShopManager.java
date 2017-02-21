@@ -30,13 +30,7 @@ public class MenuShopManager implements ShopManager {
     public void shopClicked(Player owner, Shop shop) {
         MenuPlayer player = MenuFramework.getPlayerManager().getPlayer(owner);
         try {
-            Menu menuObj;
-            if (menu.getParameterTypes().length == 3)
-                menuObj = menu.newInstance(player.getMenuManager(), null, owner);
-            else
-                menuObj = menu.newInstance(player.getMenuManager(), null);
-
-            player.setActiveMenuAndReplace(menuObj);
+            player.setActiveMenuAndReplace(menu.getParameterTypes().length == 3 ? menu.newInstance(player.getMenuManager(), null, owner) : menu.newInstance(player.getMenuManager(), null));
         } catch (Exception e) {
             e.printStackTrace();
         }

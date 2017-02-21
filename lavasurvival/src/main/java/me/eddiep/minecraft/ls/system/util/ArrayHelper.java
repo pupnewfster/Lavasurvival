@@ -2,7 +2,9 @@ package me.eddiep.minecraft.ls.system.util;
 
 import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * A utility class for doing basic things with arrays
@@ -11,7 +13,6 @@ public class ArrayHelper {
     /**
      * Checks to see if a condition is true for every element in an array. If any item in the array does not meet
      * the condition, then an {@link IllegalStateException} will be thrown
-     *
      * @param collection    The collection to check
      * @param func          The condition
      * @param failedMessage What the exception should say when it's false
@@ -29,7 +30,6 @@ public class ArrayHelper {
 
     /**
      * Execute a function for each item in this array
-     *
      * @param collection The array to iterate over
      * @param func       The function to execute
      * @param <T>        The type of this array
@@ -40,14 +40,10 @@ public class ArrayHelper {
     }
 
     public static <T, R> List<R> transform(List<T> original, PFunction<T, R> func) {
-        List<R> list = new ArrayList<R>();
-        for (T item : original) {
-            R newItem = func.run(item);
-            list.add(newItem);
-        }
-        return list;
+        return original.stream().map(func::run).collect(Collectors.toList());
     }
 
+    @SuppressWarnings("unchecked")
     public static <T, R> R[] transform(T[] original, PFunction<T, R> func) {
         R[] newArray = (R[]) Array.newInstance(original.getClass().getComponentType(), original.length);
 
@@ -61,7 +57,6 @@ public class ArrayHelper {
 
     /**
      * Combine the contents of two arrays and return the result. Array B will be appended onto array A
-     *
      * @param a   The first array
      * @param b   The second array
      * @param <T> The types of these arrays
@@ -86,17 +81,13 @@ public class ArrayHelper {
     /**
      * Checks to see if this array contains an object. This method uses the {@link Object#equals(Object)} function and the
      * {@link Object#hashCode()} function to compare
-     *
      * @param a   The array to check
      * @param obj The object that should be inside the array
      * @param <T> The type of this array
      * @return True if the item is inside the array, false otherwise
      */
     public static <T> boolean contains(T[] a, T obj) {
-        for (T item : a)
-            if (item.equals(obj) || item.hashCode() == obj.hashCode())
-                return true;
-        return false;
+        return Arrays.stream(a).anyMatch(item -> item.equals(obj) || item.hashCode() == obj.hashCode());
     }
 
     public static <T> String toString(ArrayList<T> arrayList) {

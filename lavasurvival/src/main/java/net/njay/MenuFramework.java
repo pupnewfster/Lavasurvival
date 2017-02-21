@@ -8,7 +8,6 @@ public class MenuFramework {
 
     /**
      * Enable the Menu Framework with a default player manager using MenuPlayer
-     *
      * @param registry Registry to initialize MenuFramework
      */
     public static void enable(MenuRegistry registry) {
@@ -18,7 +17,6 @@ public class MenuFramework {
 
     /**
      * Enable the Menu Framework with a custom player manager using a extension of MenuPlayer
-     *
      * @param registry      Registry to initialize MenuFramework
      * @param playerManager Custom Player Manager
      */

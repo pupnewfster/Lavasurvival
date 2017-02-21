@@ -44,7 +44,7 @@
         <dependency>
             <groupId>info.debatty</groupId>
             <artifactId>java-string-similarity</artifactId>
-            <version>0.18</version>
+            <version>RELEASE</version>
         </dependency>
         <dependency>
             <groupId>net.nyvaria</groupId>

@@ -1,7 +1,7 @@
 package com.crossge.necessities.Commands;
 
-import com.crossge.necessities.GetUUID;
 import com.crossge.necessities.Necessities;
+import com.crossge.necessities.Utils;
 import com.crossge.necessities.Variables;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
@@ -16,8 +16,7 @@ public class CmdTp implements Cmd {
             sender.sendMessage(var.getEr() + "Error: " + var.getErMsg() + "Format requires you enter a player to teleport to.");
             return true;
         }
-        GetUUID get = Necessities.getUUID();
-        UUID uuid = get.getID(args[0]);
+        UUID uuid = Utils.getID(args[0]);
         if (uuid == null) {
             sender.sendMessage(var.getEr() + "Error: " + var.getErMsg() + "Invalid player.");
             return true;
@@ -37,7 +36,7 @@ public class CmdTp implements Cmd {
             sender.sendMessage(var.getEr() + "Error: " + var.getErMsg() + "Format requires you enter a player to teleport, and a player to teleport them to.");
             return true;
         }
-        UUID uuidTo = get.getID(args[1]);
+        UUID uuidTo = Utils.getID(args[1]);
         if (uuidTo == null) {
             sender.sendMessage(var.getEr() + "Error: " + var.getErMsg() + "Invalid player.");
             return true;

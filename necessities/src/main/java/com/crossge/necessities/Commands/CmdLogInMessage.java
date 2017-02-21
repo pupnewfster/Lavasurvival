@@ -17,9 +17,10 @@ public class CmdLogInMessage implements Cmd {
             Player p = (Player) sender;
             String loginMessage = "{RANK} {NAME}&r joined the game.";
             if (args.length != 0) {
-                loginMessage = "";
+                StringBuilder loginMessageBuilder = new StringBuilder();
                 for (String arg : args)
-                    loginMessage = loginMessage + arg + " ";
+                    loginMessageBuilder.append(arg).append(" ");
+                loginMessage = loginMessageBuilder.toString();
                 if (!loginMessage.contains("{NAME}"))
                     loginMessage = "{RANK} {NAME}&r " + loginMessage;
                 loginMessage = loginMessage.trim();

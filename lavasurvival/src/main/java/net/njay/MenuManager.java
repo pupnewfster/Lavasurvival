@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class MenuManager {
-    private Menu currentMenu = null, previousMenu = null;
+    private Menu currentMenu, previousMenu;
     private final List<Menu> menus;
 
     public MenuManager() {
@@ -13,7 +13,6 @@ public class MenuManager {
 
     /**
      * Sets a menu instance as the current menu, if the menu has not been loaded before, it is sent to the MenuRegistry to be generated
-     *
      * @param menu Menu instance that you which to set as the current menu
      */
     public void setActiveMenu(Menu menu) {
@@ -29,7 +28,6 @@ public class MenuManager {
 
     /**
      * Sets a menu instance as the current menu and removes any other saved instances
-     *
      * @param menu Menu instance that you which to set as the current menu
      */
     public void setActiveMenuAndReplace(Menu menu) {
@@ -46,7 +44,6 @@ public class MenuManager {
      * Set the instance of a previously opened menu as the current active menu
      * <p/>
      * </p>(You must be sure that the menu has previously been opened or else the method does not perform anything)
-     *
      * @param clazz Class of the menu that you which to set as the active menus
      */
     public void setPreviouslyOpenedActiveMenu(Class clazz) {
@@ -54,22 +51,15 @@ public class MenuManager {
     }
 
     private Menu getMenu(Class clazz) {
-        for (Menu m : menus)
-            if (m.getClass().equals(clazz))
-                return m;
-        return null;
+        return menus.stream().filter(m -> m.getClass().equals(clazz)).findFirst().orElse(null);
     }
 
     private boolean hasMenu(Class clazz) {
-        for (Menu m : menus)
-            if (clazz.equals(m.getClass()))
-                return true;
-        return false;
+        return menus.stream().anyMatch(m -> clazz.equals(m.getClass()));
     }
 
     /**
      * Gets the currently opened menu
-     *
      * @return Menu instance
      */
     public Menu getCurrentMenu() {
@@ -78,7 +68,6 @@ public class MenuManager {
 
     /**
      * Gets the previously opened menu
-     *
      * @return Previous menu
      */
     @SuppressWarnings("unused")

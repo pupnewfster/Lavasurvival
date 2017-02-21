@@ -17,9 +17,10 @@ public class CmdLogOutMessage implements Cmd {
             Player p = (Player) sender;
             String logoutMessage = "{RANK} {NAME}&r Disconnected.";
             if (args.length != 0) {
-                logoutMessage = "";
+                StringBuilder logoutMessageBuilder = new StringBuilder();
                 for (String arg : args)
-                    logoutMessage = logoutMessage + arg + " ";
+                    logoutMessageBuilder.append(arg).append(" ");
+                logoutMessage = logoutMessageBuilder.toString();
                 if (!logoutMessage.contains("{NAME}"))
                     logoutMessage = "{RANK} {NAME}&r " + logoutMessage;
                 logoutMessage = logoutMessage.trim();

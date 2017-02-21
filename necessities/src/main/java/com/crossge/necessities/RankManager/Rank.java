@@ -90,13 +90,14 @@ public class Rank {
     public String getCommands() {
         YamlConfiguration configRanks = YamlConfiguration.loadConfiguration(this.configFileRanks);
         YamlConfiguration configSubranks = YamlConfiguration.loadConfiguration(this.configFileSubranks);
-        String commands = "";
+        StringBuilder commandsBuilder = new StringBuilder();
         for (String subrank : configRanks.getStringList(getName() + ".subranks"))
             if (!subrank.equals("") && configSubranks.contains(subrank))
                 for (String node : configSubranks.getStringList(subrank))
-                    commands += cmdName(node) + ", ";
+                    commandsBuilder.append(cmdName(node)).append(", ");
         for (String node : configRanks.getStringList(getName() + ".permissions"))
-            commands += cmdName(node) + ", ";
+            commandsBuilder.append(cmdName(node)).append(", ");
+        String commands = commandsBuilder.toString();
         return commands.equals("") ? "" : commands.trim().substring(0, commands.length() - 2);
     }
 

@@ -20,7 +20,6 @@ public class MenuPlayer {
 
     /**
      * Default constructor for MenuPlayer
-     *
      * @param bukkit the Bukkit Player
      */
     public MenuPlayer(Player bukkit) {
@@ -30,7 +29,6 @@ public class MenuPlayer {
 
     /**
      * Gets the Bukkit player
-     *
      * @return the Bukkit player
      */
     public Player getBukkit() {
@@ -39,7 +37,6 @@ public class MenuPlayer {
 
     /**
      * Gets the menu manager instance associated with the player
-     *
      * @return the MenuManager instance
      */
     public MenuManager getMenuManager() {
@@ -48,7 +45,6 @@ public class MenuPlayer {
 
     /**
      * Show a menu to this player
-     *
      * @param menu Menu you wish to show
      */
     public void setActiveMenu(Menu menu) {
@@ -58,7 +54,6 @@ public class MenuPlayer {
 
     /**
      * Sets a menu instance as the current menu and removes any other instances
-     *
      * @param menu Menu instance that you which to set as the current menu
      */
     public void setActiveMenuAndReplace(Menu menu) {
@@ -75,7 +70,6 @@ public class MenuPlayer {
 
     /**
      * Get the player's current Menu
-     *
      * @return the menu currently opened by the player
      */
     public Menu getActiveMenu() {
@@ -84,7 +78,6 @@ public class MenuPlayer {
 
     /**
      * Sets the active menu for this player
-     *
      * @param clazz class of the Menu
      */
     public void setActiveMenu(Class<? extends Menu> clazz) {

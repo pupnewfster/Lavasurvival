@@ -16,7 +16,6 @@ import java.util.*;
 public class ItemUtils {
     /**
      * Gets an ItemStack with type type, durability durability amount amount, name name, and lore lore
-     *
      * @param type   type of Material
      * @param amount amount of the Material
      * @param name   display name of the ItemStack
@@ -35,7 +34,6 @@ public class ItemUtils {
 
     /**
      * Gets an ItemStack with type type, amount amount, name name, and lore lore
-     *
      * @param type   type of Material
      * @param amount amount of the Material
      * @param name   display name of the ItemStack
@@ -53,7 +51,6 @@ public class ItemUtils {
 
     /**
      * Sets the name and lore of an ItemStack
-     *
      * @param item ItemStack to modify
      * @param name new name of the ItemStack
      * @param lore new lore of the ItemStack
@@ -69,7 +66,6 @@ public class ItemUtils {
 
     /**
      * Gets an ItemStack with type type, amount amount, and name name
-     *
      * @param type   type of Material
      * @param amount amount of the Material
      * @param name   display name of the ItemStack
@@ -81,7 +77,6 @@ public class ItemUtils {
 
     /**
      * Sets the name of an ItemStack
-     *
      * @param item ItemStack to modify
      * @param name new name of the ItemStack
      * @return ItemStack set name
@@ -92,7 +87,6 @@ public class ItemUtils {
 
     /**
      * Parse an enchantment from a string.
-     *
      * @param parse The string to parse the enchantment from.
      * @return A map of one enchantment and it's corresponding level.
      */
@@ -117,7 +111,6 @@ public class ItemUtils {
 
     /**
      * Creates an {@link org.bukkit.inventory.ItemStack} with data from an {@link ItemStackAnnotation}
-     *
      * @param annotation Annotation to be converted.
      * @return A formatted {@link org.bukkit.inventory.ItemStack} with data from the {@link ItemStackAnnotation}
      */

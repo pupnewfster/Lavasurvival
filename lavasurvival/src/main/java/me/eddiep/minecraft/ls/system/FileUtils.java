@@ -9,7 +9,6 @@ import java.util.List;
 public class FileUtils {
     /**
      * Creates the directory/file if it doesn't exist.
-     *
      * @param path     - The directory to create.
      * @param fileName - The file to create.
      * @param contents - The contents inside the file.
@@ -32,7 +31,6 @@ public class FileUtils {
     /**
      * Create all child directories contained in <b>filepath</b> if they
      * do not exist
-     *
      * @param filepath The full filepath to create child directories for
      */
     @SuppressWarnings("ResultOfMethodCallIgnored")
@@ -48,7 +46,6 @@ public class FileUtils {
 
     /**
      * Creates a file if it does not exists.
-     *
      * @param path     - The directory of the file
      * @param fileName - The name of the file
      * @throws IOException - If there's a problem writing the file
@@ -59,7 +56,6 @@ public class FileUtils {
 
     /**
      * Creates a file if it does not exists.
-     *
      * @param fileName - The name of the file
      * @throws IOException - If there's a problem writing the file
      */
@@ -72,7 +68,6 @@ public class FileUtils {
 
     /**
      * Delete the file/directory if exist.
-     *
      * @param filePath - The path of the file/directory to delete.
      */
     @SuppressWarnings("ResultOfMethodCallIgnored")
@@ -89,7 +84,6 @@ public class FileUtils {
 
     /**
      * Writes the specified line to the specified file, creating the file if doesn't exist
-     *
      * @param filePath - The path of the file to write to
      * @param text     - The text to write to the specified file
      * @throws IOException If there's an error while writing to the file
@@ -109,7 +103,6 @@ public class FileUtils {
 
     /**
      * Writes the specified string array to the specified file, creating the file if it doesn't exist
-     *
      * @param filePath - The path of the file to write to
      * @param lines    - The string array to write to the specified file
      * @throws IOException If there's an error while writing to the file
@@ -124,7 +117,6 @@ public class FileUtils {
 
     /**
      * Reads the contents of the specified file
-     *
      * @param filePath - The path of the file to read from
      * @return A string array with the contents of the read file
      * @throws IOException If there's an error while reading from the file
@@ -136,7 +128,6 @@ public class FileUtils {
 
     /**
      * Reads the contents of the specified file
-     *
      * @param filePath - The path of the file to read from
      * @return A string list with the contents of the read file
      * @throws IOException If there's an error while reading from the file
@@ -153,7 +144,6 @@ public class FileUtils {
 
     /**
      * Copy an existing file to a new location.
-     *
      * @param sourcePath The original file to be copied
      * @param newPath    The new location for the copy to go
      * @return Returns true if the copy was successful, returns false if an error occurred.
@@ -217,7 +207,6 @@ public class FileUtils {
 
     /**
      * Gets the total number of lines the specified file has
-     *
      * @param filePath - The path of the file to check for
      * @return An integer representing the number of lines the file has
      * @throws IOException If there's an error while reading from the file
@@ -228,7 +217,6 @@ public class FileUtils {
 
     /**
      * Checks whether the specified file exists
-     *
      * @param filePath - the file path to check
      */
     public static boolean exists(String filePath) {

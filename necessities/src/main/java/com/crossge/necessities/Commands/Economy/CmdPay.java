@@ -1,7 +1,6 @@
 package com.crossge.necessities.Commands.Economy;
 
 import com.crossge.necessities.Economy.Economy;
-import com.crossge.necessities.GetUUID;
 import com.crossge.necessities.Necessities;
 import com.crossge.necessities.Utils;
 import com.crossge.necessities.Variables;
@@ -21,11 +20,10 @@ public class CmdPay implements EconomyCmd {
                 return true;
             }
             String targetsName = "";
-            GetUUID get = Necessities.getUUID();
-            UUID uuid = get.getID(args[0]);
+            UUID uuid = Utils.getID(args[0]);
             Player target = null;
             if (uuid == null) {
-                uuid = get.getOfflineID(args[0]);
+                uuid = Utils.getOfflineID(args[0]);
                 if (uuid == null || !Bukkit.getOfflinePlayer(uuid).hasPlayedBefore()) {
                     player.sendMessage(var.getEr() + "Error: " + var.getErMsg() + "That player does not exist or has not joined the server. If the player is offline, please use the full and most recent name.");
                     return true;

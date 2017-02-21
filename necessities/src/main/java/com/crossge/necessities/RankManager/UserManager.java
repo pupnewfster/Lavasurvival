@@ -7,10 +7,7 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 
 import java.io.File;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 public class UserManager {
     private final File configFileUsers = new File("plugins/Necessities/RankManager", "users.yml");
@@ -42,8 +39,8 @@ public class UserManager {
     }
 
     public void unload() {
-        for (UUID uuid : this.players.keySet()) {
-            User u = this.players.get(uuid);
+        for (Map.Entry<UUID, User> entry : this.players.entrySet()) {
+            User u = this.players.get(entry.getKey());
             Hat h = u.getHat();
             if (h != null)
                 h.despawn();

@@ -37,10 +37,7 @@ public class ShopFactory {
     }
 
     private static Shop findShop(String shopName) {
-        for (Shop shop : shops)
-            if (shop.getShopName().equals(shopName))
-                return shop;
-        return null;
+        return shops.stream().filter(shop -> shop.getShopName().equals(shopName)).findFirst().orElse(null);
     }
 
     public static boolean doesShopExist(String shopName) {
@@ -56,6 +53,7 @@ public class ShopFactory {
 
     private static HashMap<RankType, List<MaterialData>> cachedBlocks = new HashMap<>();
 
+    @SuppressWarnings("deprecation")
     public static List<MaterialData> getBlocksFor(RankType rank) {
         if (cachedBlocks.containsKey(rank))
             return cachedBlocks.get(rank);
