@@ -235,6 +235,8 @@ public class Lavasurvival extends JavaPlugin {
         this.properties.setProperty("password", config.getString("Lavasurvival.DBPassword"));
         this.properties.setProperty("useSSL", "false");
         this.properties.setProperty("autoReconnect", "true");
+        this.properties.setProperty("useLegacyDatetimeCode", "false");
+        this.properties.setProperty("serverTimezone", "EST");
     }
 
     public ItemStack getRules() {

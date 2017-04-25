@@ -27,6 +27,8 @@ public class Economy { //TODO config option for format money as well as refresh 
         this.properties.setProperty("password", config.getString("Lavasurvival.DBPassword"));
         this.properties.setProperty("useSSL", "false");
         this.properties.setProperty("autoReconnect", "true");
+        this.properties.setProperty("useLegacyDatetimeCode", "false");
+        this.properties.setProperty("serverTimezone", "EST");
         Bukkit.getOnlinePlayers().forEach(p -> loadAccount(p.getUniqueId()));
         Bukkit.getConsoleSender().sendMessage(ChatColor.AQUA + "Economy loaded.");
     }
