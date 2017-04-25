@@ -576,17 +576,17 @@ public abstract class Gamemode {
             stmt.execute("INSERT INTO matches (gamemode, winners, scores, losers) VALUES ('" + mode + "', '" + winnerList + "', '" + scoreList + "', '" + loserList + "')");
             if (winners != null)
                 for (Map.Entry<UUID, Integer> entry : winners.entrySet()) {//Rating calculated off of avg blocks around, NOT reward since this is based on rank too
-                    stmt.execute("UPDATE users SET matches = CONCAT('," + entry.getValue() + "', matches) WHERE uuid = '" + entry.getKey() + "'");
+                    stmt.executeUpdate("UPDATE users SET matches = CONCAT('," + entry.getValue() + "', matches) WHERE uuid = '" + entry.getKey() + "'");
                     ResultSet rs = stmt.executeQuery("SELECT matches FROM users WHERE uuid = '" + entry.getKey() + "'");
                     if (rs.next())
-                        stmt.execute("UPDATE users SET rating = '" + this.getRating(parseMatches(rs.getString("matches"))) + "' WHERE uuid = '" + entry.getKey() + "'");
+                        stmt.executeUpdate("UPDATE users SET rating = '" + this.getRating(parseMatches(rs.getString("matches"))) + "' WHERE uuid = '" + entry.getKey() + "'");
                     rs.close();
                 }
             for (UUID uuid : losers) {
-                stmt.execute("UPDATE users SET matches = CONCAT(',0', matches) WHERE uuid= '" + uuid + "'");
+                stmt.executeUpdate("UPDATE users SET matches = CONCAT(',0', matches) WHERE uuid= '" + uuid + "'");
                 ResultSet rs = stmt.executeQuery("SELECT matches FROM users WHERE uuid = '" + uuid + "'");
                 if (rs.next())
-                    stmt.execute("UPDATE users SET rating = '" + this.getRating(parseMatches(rs.getString("matches"))) + "' WHERE uuid = '" + uuid + "'");
+                    stmt.executeUpdate("UPDATE users SET rating = '" + this.getRating(parseMatches(rs.getString("matches"))) + "' WHERE uuid = '" + uuid + "'");
                 rs.close();
             }
             stmt.close();

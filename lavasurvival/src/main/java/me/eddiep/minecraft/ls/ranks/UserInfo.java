@@ -85,7 +85,7 @@ public class UserInfo {
                                     curBank = toAdd;
                                 else
                                     curBank += "|" + toAdd;
-                                stmt.execute("UPDATE users SET addToBank = '', bank = '" + curBank + "' WHERE uuid = '" + UserInfo.this.userUUID + "'");
+                                stmt.executeUpdate("UPDATE users SET addToBank = '', bank = '" + curBank + "' WHERE uuid = '" + UserInfo.this.userUUID + "'");
                             }
                         }
                         rs.close();
@@ -129,7 +129,7 @@ public class UserInfo {
                                 current = toAdd;
                             else
                                 current += "|" + toAdd;
-                            stmt.execute("UPDATE users SET addToBank = '', bank = '" + current + "' WHERE uuid = '" + UserInfo.this.userUUID + "'");
+                            stmt.executeUpdate("UPDATE users SET addToBank = '', bank = '" + current + "' WHERE uuid = '" + UserInfo.this.userUUID + "'");
                         }
                     }
                     rs.close();
@@ -173,7 +173,7 @@ public class UserInfo {
         try {
             Connection conn = DriverManager.getConnection(Lavasurvival.INSTANCE.getDBURL(), Lavasurvival.INSTANCE.getDBProperties());
             Statement stmt = conn.createStatement();
-            stmt.execute("UPDATE users SET bank = '" + banked + "' WHERE uuid = '" + this.userUUID + "'");
+            stmt.executeUpdate("UPDATE users SET bank = '" + banked + "' WHERE uuid = '" + this.userUUID + "'");
             stmt.close();
             conn.close();
         } catch (Exception ignored) {
@@ -269,7 +269,7 @@ public class UserInfo {
                                 curBank += "|";
                         }
                         rs.close();
-                        stmt.execute("UPDATE users SET ownedBlocks = '" + curOwned + datInfo + "', bank = '" + curBank + datInfo + "' WHERE uuid = '" + UserInfo.this.userUUID + "'");
+                        stmt.executeUpdate("UPDATE users SET ownedBlocks = '" + curOwned + datInfo + "', bank = '" + curBank + datInfo + "' WHERE uuid = '" + UserInfo.this.userUUID + "'");
                         stmt.close();
                         conn.close();
                     } catch (Exception ignored) {

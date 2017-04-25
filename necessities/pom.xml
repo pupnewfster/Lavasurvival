@@ -61,7 +61,7 @@
         <dependency>
             <groupId>com.neovisionaries</groupId>
             <artifactId>nv-websocket-client</artifactId>
-            <version>1.31</version>
+            <version>2.2</version>
         </dependency>
         <dependency>
             <groupId>com.github.cliftonlabs</groupId>
@@ -71,7 +71,7 @@
         <dependency>
             <groupId>mysql</groupId>
             <artifactId>mysql-connector-java</artifactId>
-            <version>6.0.5</version>
+            <version>6.0.6</version>
         </dependency>
         <dependency>
             <groupId>me.eddiep.minecraft</groupId>

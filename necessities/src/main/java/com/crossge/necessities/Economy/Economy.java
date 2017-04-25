@@ -77,7 +77,7 @@ public class Economy { //TODO config option for format money as well as refresh 
                 try {
                     Connection conn = DriverManager.getConnection(dbURL, properties);
                     Statement stmt = conn.createStatement();
-                    stmt.execute("UPDATE users SET balance = balance - " + amount + " WHERE uuid = '" + uuid + "'");
+                    stmt.executeUpdate("UPDATE users SET balance = balance - " + amount + " WHERE uuid = '" + uuid + "'");
                     stmt.close();
                     conn.close();
                 } catch (Exception ignored) {
@@ -95,7 +95,7 @@ public class Economy { //TODO config option for format money as well as refresh 
                 try {
                     Connection conn = DriverManager.getConnection(dbURL, properties);
                     Statement stmt = conn.createStatement();
-                    stmt.execute("UPDATE users SET balance = balance + " + amount + " WHERE uuid = '" + uuid + "'");
+                    stmt.executeUpdate("UPDATE users SET balance = balance + " + amount + " WHERE uuid = '" + uuid + "'");
                     stmt.close();
                     conn.close();
                 } catch (Exception ignored) {
@@ -113,7 +113,7 @@ public class Economy { //TODO config option for format money as well as refresh 
                 try {
                     Connection conn = DriverManager.getConnection(dbURL, properties);
                     Statement stmt = conn.createStatement();
-                    stmt.execute("UPDATE users SET balance = " + amount + " WHERE uuid = '" + uuid + "'");
+                    stmt.executeUpdate("UPDATE users SET balance = " + amount + " WHERE uuid = '" + uuid + "'");
                     stmt.close();
                     conn.close();
                 } catch (Exception ignored) {
