@@ -14,13 +14,13 @@ import me.eddiep.minecraft.ls.ranks.UserInfo;
 import me.eddiep.minecraft.ls.ranks.UserManager;
 import me.eddiep.minecraft.ls.system.bank.BankInventory;
 import me.eddiep.minecraft.ls.system.specialblocks.SpecialInventory;
-import net.minecraft.server.v1_11_R1.*;
+import net.minecraft.server.v1_12_R1.*;
 import org.bukkit.*;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
-import org.bukkit.craftbukkit.v1_11_R1.CraftWorld;
-import org.bukkit.craftbukkit.v1_11_R1.entity.CraftPlayer;
+import org.bukkit.craftbukkit.v1_12_R1.CraftWorld;
+import org.bukkit.craftbukkit.v1_12_R1.entity.CraftPlayer;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.FallingBlock;
@@ -51,24 +51,21 @@ import java.util.*;
 
 @SuppressWarnings("unused")
 public class PlayerListener implements Listener {
-    private final ArrayList<Material> invalidBlocks = new ArrayList<>(Arrays.asList(new Material[]{
-            Material.OBSIDIAN,
+    private final ArrayList<Material> invalidBlocks = new ArrayList<>(Arrays.asList(Material.OBSIDIAN,
             Material.STONE_PLATE,
             Material.GOLD_PLATE,
             Material.IRON_PLATE,
             Material.WOOD_PLATE,
             Material.BEDROCK,
-            Material.BARRIER
-    }));
-    private final ArrayList<Material> clickOnBlocks = new ArrayList<>(Arrays.asList(new Material[]{//TODO: add other things that torches cannot be placed on but should be able to
+            Material.BARRIER));
+    private final ArrayList<Material> clickOnBlocks = new ArrayList<>(Arrays.asList(//TODO: add other things that torches cannot be placed on but should be able to
             Material.GLASS,
             Material.STAINED_GLASS,
             Material.TNT,
             Material.GLOWSTONE,
             Material.LEAVES,
             Material.LEAVES_2,
-            Material.ICE
-    }));
+            Material.ICE));
     private final Random rand = new Random();
     public boolean survival;
 

@@ -2,11 +2,11 @@ package me.eddiep.minecraft.ls.game.shop;
 
 import me.eddiep.minecraft.ls.game.shop.impl.*;
 import me.eddiep.minecraft.ls.ranks.RankType;
-import net.minecraft.server.v1_11_R1.NBTTagCompound;
+import net.minecraft.server.v1_12_R1.NBTTagCompound;
 import net.njay.Menu;
 import net.njay.annotation.MenuItem;
 import org.bukkit.Material;
-import org.bukkit.craftbukkit.v1_11_R1.inventory.CraftItemStack;
+import org.bukkit.craftbukkit.v1_12_R1.inventory.CraftItemStack;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
@@ -110,7 +110,7 @@ public class ShopFactory {
     @SuppressWarnings("ConstantConditions")
     public static ItemStack addGlow(ItemStack item) {
         item.addUnsafeEnchantment(Enchantment.DURABILITY, 1);
-        net.minecraft.server.v1_11_R1.ItemStack nmsStack = CraftItemStack.asNMSCopy(item);
+        net.minecraft.server.v1_12_R1.ItemStack nmsStack = CraftItemStack.asNMSCopy(item);
         NBTTagCompound tag = null;
         if (!nmsStack.hasTag()) {
             tag = new NBTTagCompound();

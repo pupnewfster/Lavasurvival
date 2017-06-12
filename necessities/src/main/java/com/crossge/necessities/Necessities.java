@@ -17,7 +17,7 @@ import com.crossge.necessities.WorldManager.WarpManager;
 import com.crossge.necessities.WorldManager.WorldManager;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
-import net.minecraft.server.v1_11_R1.*;
+import net.minecraft.server.v1_12_R1.*;
 import net.nyvaria.googleanalytics.hit.Hit;
 import net.nyvaria.openanalytics.bukkit.OpenAnalytics;
 import net.nyvaria.openanalytics.bukkit.OpenAnalyticsTracker;
@@ -26,8 +26,8 @@ import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.craftbukkit.v1_11_R1.CraftServer;
-import org.bukkit.craftbukkit.v1_11_R1.entity.CraftPlayer;
+import org.bukkit.craftbukkit.v1_12_R1.CraftServer;
+import org.bukkit.craftbukkit.v1_12_R1.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.json.simple.JsonArray;
@@ -211,11 +211,14 @@ public class Necessities extends JavaPlugin {
     }
 
     void addHeader(Player p) {
-        PacketPlayOutPlayerListHeaderFooter packet = new PacketPlayOutPlayerListHeaderFooter(formatMessage(ChatColor.AQUA + "Galaxy Gaming"));
+        PacketPlayOutPlayerListHeaderFooter packet = new PacketPlayOutPlayerListHeaderFooter();
         try {
-            Field field = packet.getClass().getDeclaredField("b");
+            Field field = packet.getClass().getDeclaredField("a");
             field.setAccessible(true);
-            field.set(packet, formatMessage(ChatColor.GREEN + "http://galaxygaming.gg"));
+            field.set(packet, formatMessage(ChatColor.AQUA + "Galaxy Gaming"));
+            Field field2 = packet.getClass().getDeclaredField("b");
+            field2.setAccessible(true);
+            field2.set(packet, formatMessage(ChatColor.GREEN + "http://galaxygaming.gg"));
         } catch (Exception e) {
             e.printStackTrace();
         }

@@ -6,15 +6,15 @@ import me.eddiep.PhysicsType;
 import me.eddiep.handles.logic.LavaLogic;
 import me.eddiep.handles.logic.LogicContainer;
 import me.eddiep.handles.logic.WaterLogic;
-import net.minecraft.server.v1_11_R1.*;
+import net.minecraft.server.v1_12_R1.*;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.BlockFace;
-import org.bukkit.craftbukkit.v1_11_R1.CraftWorld;
-import org.bukkit.craftbukkit.v1_11_R1.entity.CraftFallingBlock;
-import org.bukkit.craftbukkit.v1_11_R1.entity.CraftPlayer;
+import org.bukkit.craftbukkit.v1_12_R1.CraftWorld;
+import org.bukkit.craftbukkit.v1_12_R1.entity.CraftFallingBlock;
+import org.bukkit.craftbukkit.v1_12_R1.entity.CraftPlayer;
 import org.bukkit.entity.FallingBlock;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -96,6 +96,11 @@ public final class ClassicPhysicsHandler implements Listener {
         }
     };
 
+    //TODO: use a vector that goes slightly past bounds to calculate what should happen. Update it from block place/break events instead of checking when it is time against world
+    //Should speed things up significantly especially if we can use the fastblockchanger for light updates so that water flood could work again
+    //TODO: Figure out later how to handle melting, or can it use same method as now
+    //Also should it be a list/map of vectors, or a 3d vector
+    //TODO store all three dimensions in a long just don't support full integer and use a special casting method to be able to add for checking next directions instead of having to figure out the different directions
     private final BukkitRunnable BLOCK_UPDATE_TICK = new BukkitRunnable() {
         @Override
         public void run() {

@@ -1,6 +1,6 @@
 package me.eddiep;
 
-import net.minecraft.server.v1_11_R1.*;
+import net.minecraft.server.v1_12_R1.*;
 import org.bukkit.Material;
 
 public class ChunkEdit {
