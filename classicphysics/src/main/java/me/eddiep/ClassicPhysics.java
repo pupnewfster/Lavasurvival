@@ -9,6 +9,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import java.io.File;
 import java.util.List;
 
 @SuppressWarnings("unused")
@@ -22,6 +23,9 @@ public class ClassicPhysics extends JavaPlugin {
     public void onEnable() {
         INSTANCE = this;
         handler = new ClassicPhysicsHandler(this);
+        File d = getDataFolder();
+        if (!d.exists())
+            d.mkdir();
 
         List<World> worlds = getServer().getWorlds();
         for (World world : worlds) {

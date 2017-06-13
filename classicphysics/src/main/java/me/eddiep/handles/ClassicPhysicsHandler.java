@@ -11,6 +11,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
+import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.craftbukkit.v1_12_R1.CraftWorld;
 import org.bukkit.craftbukkit.v1_12_R1.entity.CraftFallingBlock;
@@ -47,6 +48,7 @@ public final class ClassicPhysicsHandler implements Listener {
     private final HashSet<BlockVector> classicBlocks = new HashSet<>(), playerPlaced = new HashSet<>();
     private final ArrayList<Player> lplacers = new ArrayList<>();
     private final ArrayList<Player> wplacers = new ArrayList<>();
+    private PhysicsEngine pe;
     private boolean hasPlayers, sendingPackets;
     private World current;
     private ChunkEdit e;
@@ -189,10 +191,12 @@ public final class ClassicPhysicsHandler implements Listener {
         this.owner = plugin;
         addLogicContainer(new LavaLogic());
         addLogicContainer(new WaterLogic());
+        pe = new PhysicsEngine();
     }
 
     public boolean isClassicBlock(Vector v) {
-        return classicBlocks.contains(v.toBlockVector());
+        return pe.isClassicBlock(v.getBlockX(), v.getBlockY(), v.getBlockZ());
+        //return classicBlocks.contains(v.toBlockVector());
     }
 
     public void addClassicBlock(Vector v) { //Make sure that isClassicBlock is called before adding it through here
@@ -245,15 +249,18 @@ public final class ClassicPhysicsHandler implements Listener {
     public void setPhysicsWorld(World w) {
         this.current = w;
         if (w == null) {
-            sendingPackets = false;
+            /*sendingPackets = false;
             this.newLocations.clear();
             this.chunks.clear();
             classicBlocks.clear();
             playerPlaced.clear();
             logicContainers.forEach(holder -> holder.container.unload());
-            e = null;
+            e = null;*/
+            pe.end();
         } else
-            e = new ChunkEdit(((CraftWorld) w).getHandle());
+            pe.start(w.getName());
+        //e = new ChunkEdit(((CraftWorld) w).getHandle());
+
     }
 
     @EventHandler(priority = EventPriority.MONITOR)
@@ -273,17 +280,22 @@ public final class ClassicPhysicsHandler implements Listener {
             forcePlaceClassicBlockAt(event.getBlockPlaced().getLocation(), Material.STATIONARY_WATER);
             event.setCancelled(true);
         } else {
-            Vector v = event.getBlock().getLocation().toVector();
+            /*Vector v = event.getBlock().getLocation().toVector();
             removeClassicBlock(v);
             newLocations.remove(v.toBlockVector());
-            requestUpdateAround(event.getBlock().getLocation());
+            requestUpdateAround(event.getBlock().getLocation());*/
+            Block b = event.getBlock();
+            pe.addMeltTimer(b.getX(), b.getY(), b.getZ(), new MaterialData(b.getType(), b.getData()));
         }
     }
 
     @EventHandler(priority = EventPriority.MONITOR)
     public void onBlockBreak(BlockBreakEvent event) {
-        if (!ClassicPhysics.TYPE.equals(PhysicsType.DEFAULT))
-            requestUpdateAround(event.getBlock().getLocation());
+        if (!ClassicPhysics.TYPE.equals(PhysicsType.DEFAULT)) {
+            Block b = event.getBlock();
+            pe.addMeltTimer(b.getX(), b.getY(), b.getZ(), new MaterialData(Material.AIR));
+            //requestUpdateAround(event.getBlock().getLocation());
+        }
     }
 
     @EventHandler
@@ -412,7 +424,8 @@ public final class ClassicPhysicsHandler implements Listener {
     }
 
     public void forcePlaceClassicBlockAt(Location location, Material type) {//Force place block
-        if (current == null || location == null || !location.getWorld().equals(current))
+        pe.placeAt(location.getBlockX(), location.getBlockY(), location.getBlockZ());
+        /*if (current == null || location == null || !location.getWorld().equals(current))
             return;
         try {
             if (!location.getChunk().isLoaded())//Chunk isn't loaded
@@ -436,7 +449,7 @@ public final class ClassicPhysicsHandler implements Listener {
                 PacketPlayOutBlockChange packet = new PacketPlayOutBlockChange(((CraftWorld) location.getWorld()).getHandle(), new BlockPosition(location.getBlockX(), location.getBlockY(), location.getBlockZ()));
                 Bukkit.getOnlinePlayers().forEach(p -> ((CraftPlayer) p).getHandle().playerConnection.sendPacket(packet));
                 break;
-            }
+            }*/
     }
 
     public void placeClassicBlockAt(Location location, Material type, Location from) {
@@ -477,15 +490,16 @@ public final class ClassicPhysicsHandler implements Listener {
     }
 
     public void enable() {
-        PHYSICS_TICK.runTaskTimerAsynchronously(owner, 0, 1);
-        BLOCK_UPDATE_TICK.runTaskTimer(owner, 0, logicContainers.get(0).container.updateRate());
+        //PHYSICS_TICK.runTaskTimerAsynchronously(owner, 0, 1);
+        //BLOCK_UPDATE_TICK.runTaskTimer(owner, 0, logicContainers.get(0).container.updateRate());
         owner.getServer().getPluginManager().registerEvents(this, owner);
     }
 
     public void disable() {
         BlockPhysicsEvent.getHandlerList().unregister(this);
-        PHYSICS_TICK.cancel();
-        BLOCK_UPDATE_TICK.cancel();
+        pe.end();
+        //PHYSICS_TICK.cancel();
+        //BLOCK_UPDATE_TICK.cancel();
     }
 
     public void setPhysicSpeed(World world, long speed) {

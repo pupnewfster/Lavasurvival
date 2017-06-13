@@ -394,6 +394,8 @@ public class Necessities extends JavaPlugin {
             com = new CmdRankCmds();
         else if (isEqual(name, "reloadpermissions"))
             com = new CmdReloadPermissions();
+        else if (isEqual(name, "calculatecpmap"))
+            com = new CmdCalculateCPMap();
             //Economy
         else if (isEqual(name, "bal"))
             com = new CmdBalance();
