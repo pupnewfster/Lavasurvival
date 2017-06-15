@@ -3,7 +3,10 @@ package me.eddiep.handles;
 import com.boydti.fawe.FaweAPI;
 import com.boydti.fawe.object.FaweQueue;
 import me.eddiep.ClassicPhysics;
-import org.bukkit.*;
+import org.bukkit.Bukkit;
+import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.material.MaterialData;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -307,7 +310,7 @@ public class PhysicsEngine {
      * -1 is unmeltable, and -2 is a block of "active" liquid
      */
     private HashMap<Long, Long> meltMap = new HashMap<>();//yxz, melt time of material of block,
-    private ArrayList<Long> activeBlocks = new ArrayList<>();//TODO set of currently active blocks (The edge liquid) Should this stay an array list?
+    private ArrayList<Long> activeBlocks = new ArrayList<>();//TODO Should this stay an array list?
 
     private void loadMeltMap(String worldName) {
         File fileMeltMap = new File("plugins/ClassicPhysics", worldName + ".txt");
@@ -320,6 +323,17 @@ public class PhysicsEngine {
 
     public static boolean calculateMeltMap(Location left, Location right) {
         //TODO Don't store things with melt timer of -1 or spawn to save space and load time because out of bounds stuff doesn't have physics anyways...
+        //TODO add the random range based on the map so that it is always the same? to speed it up and things
+        /*
+        double percent = Gamemode.getCurrentMap().getMeltRange() / 100.0;
+        int range = (int) (meltTicks * percent + 0.5); //Round normally
+        long bonus = RANDOM.nextInt(range + 1);
+
+        if (RANDOM.nextBoolean())
+            meltTicks += bonus;
+        else
+            meltTicks -= bonus;
+         */
         //TODO check that they are in the same world?
         World w = left.getWorld();
         String worldName = w.getName();
@@ -378,9 +392,11 @@ public class PhysicsEngine {
     }
 
     void addMeltTimer(int x, int y, int z, MaterialData type) {
+        //TODO remove from active if it is not air. Shouldn't it just remove from active all together?
         long l = convert(x, y, z);
+        //toTasks.remove(l);//TODO is this line correct?
         meltMap.put(l, getMeltTime(type));
-        long temp = 1 + X;
+        long temp = l + X;
         if (isClassicBlock(temp))
             activeBlocks.add(temp);
         temp = l - X;
@@ -421,12 +437,6 @@ public class PhysicsEngine {
         return (int) (l & 0x3FFFFFF) - SHIFT;
     }
 
-    public static void main(String[] args) {
-        int x = 255, y = 9, z = 832;
-        PhysicsEngine pe = new PhysicsEngine();
-        pe.printNorm(pe.convert(x, y, z));
-    }
-
     private void printNorm(long l) {
         System.out.println(getX(l) + " " + getY(l) + " " + getZ(l));
     }
@@ -445,10 +455,13 @@ public class PhysicsEngine {
             return;
         meltMap = new HashMap<>();
         activeBlocks = new ArrayList<>();
+        meltTimers = new HashMap<>();
         loadMeltMap(worldName);//TODO make loading async
         queue = FaweAPI.createQueue(worldName, true);
+        tickCount = 0;
         Bukkit.broadcastMessage(worldName + " loaded.");
-        ticker.runTaskTimerAsynchronously(ClassicPhysics.INSTANCE, 0, 10);
+        ticker.runTaskTimerAsynchronously(ClassicPhysics.INSTANCE, 0, 1);
+        //meltTicker.runTaskTimerAsynchronously(ClassicPhysics.INSTANCE, 0, 1);
     }
 
     public void end() {
@@ -456,15 +469,32 @@ public class PhysicsEngine {
             return;
         //TODO end queue somehow? clear? or just flush or both
         running = false;
+        ticker.cancel();
+        //meltTicker.cancel();
+        //toTasks.clear();
     }
 
     private FaweQueue queue;
 
     private void tick() {
+        tickCount++;
+        //TODO should melt checker be inside the running loop if so how to easily get the ones that have already been done
+
+        if (!meltTimers.isEmpty()) {
+            ArrayList<MeltLocationInfo> melts = meltTimers.get(tickCount);
+            if (melts != null)
+                for (MeltLocationInfo melt : melts)
+                    if (isClassicBlock(melt.from) && meltMap.get(melt.loc) == melt.ticksToMelt)
+                        placeAt(melt.loc);
+            meltTimers.remove(tickCount);
+        }
+
         if (running) {
-            Bukkit.broadcast(ChatColor.GOLD + "To Ops - " + ChatColor.WHITE + "Skipping current Physics Tick", "Necessities.opBroadcast");
+            //Bukkit.broadcast(ChatColor.GOLD + "To Ops - " + ChatColor.WHITE + "Skipping current Physics Tick", "Necessities.opBroadcast");
             return;
         }
+        //TODO make lava not flow as fast about 1/10th the current speed because of running the tick every tick instead of every 10
+        //TODO what is best way to slow lava down? add melt time to air?
         running = true;
         List<Long> lastActive = activeBlocks;
         activeBlocks = new ArrayList<>();
@@ -475,7 +505,7 @@ public class PhysicsEngine {
             attemptFlow(l, l - Z);
             attemptFlow(l, l - Y);
         }
-        queue.flush();
+        queue.flush();//TODO should this be a small number inside instead of default 10000
         running = false;
     }
 
@@ -483,25 +513,50 @@ public class PhysicsEngine {
         Long time = meltMap.get(to);
         if (time == null || time < 0) //Not in map probably should just stop it or Ummeltable
             return;
-        else if (time == 0) { //Instant melt
+        else if (time == 0) //Instant melt
             placeAt(to);
-        } else { //Start melt timer For now should probably use the old method
-            startMelt(from, to);
-        }
+        else //Start melt timer For now should probably use the old method
+            startMelt(from, to, time);
     }
 
     void placeAt(int x, int y, int z) {
         placeAt(convert(x, y, z));
     }
 
-    private void startMelt(long from, long to) {
-        //TODO
-    }
-
-    private void placeAt(long to) {
+    private void placeAt(long to) {//TODO call ClassicBlockPlaceEvent
         meltMap.put(to, -2L);
         activeBlocks.add(to);
         queue.setBlock(getX(to), getY(to), getZ(to), 11);//LAVA
+    }
+
+    private HashMap<Long, ArrayList<MeltLocationInfo>> meltTimers;//Should value be queue
+
+    private void startMelt(long from, long to, long time) {
+        //TODO map of endMelt->location
+        //Would work a lot better because it can just retrieve the ones that should finish melting
+        //Maybe endMelt-> info so location the from location (to check that it is still active)
+        //TODO how would it cancel if block was broken and changed types or just replaced
+        //TODO it would not update if its source got done but melted before the time finished on the to
+        //TODO if it stores the melt time it was supposed to be then can compare that
+        //TODO should it use higher melt time if bloc was replaced or start from where it is
+
+        long end = tickCount + time;
+        ArrayList<MeltLocationInfo> melts = meltTimers.computeIfAbsent(end, k -> new ArrayList<>());
+        melts.add(new MeltLocationInfo(to, from, time));
+    }
+
+    private long tickCount;
+
+    private class MeltLocationInfo {
+        private final long ticksToMelt;
+        private final long loc;
+        private final long from;
+
+        MeltLocationInfo(long loc, long from, long ticksToMelt) {
+            this.loc = loc;
+            this.from = from;
+            this.ticksToMelt = ticksToMelt;
+        }
     }
 
     //TODO do we want bedrock to just be a block instead of its own thing so we only keep track of where blocks are and let melter say bedrock cannot melt

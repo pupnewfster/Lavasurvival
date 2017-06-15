@@ -31,7 +31,7 @@ public class LavaMap {
     private int lavax, lavay, lavaz, mapHeight, percent = 25, minX, maxX, minZ, maxZ, specialY;
     private Vector minSafeZone, maxSafeZone, mapSpawn;
     private int configVersion = 1; //Default version
-    private boolean isThundering;
+    private boolean isThundering = false;
     private String creator = "";
     private double meltMultiplier = 0.5;
     private RiseOptions riseOptions = RiseOptions.defaults(this);

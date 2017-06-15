@@ -1,8 +1,6 @@
 package me.eddiep.minecraft.ls.system;
 
 import me.eddiep.ClassicPhysics;
-import me.eddiep.handles.ClassicPhysicsEvent;
-import me.eddiep.handles.ClassicPhysicsHandler;
 import me.eddiep.minecraft.ls.Lavasurvival;
 import me.eddiep.minecraft.ls.game.Gamemode;
 import org.bukkit.Color;
@@ -10,13 +8,9 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.entity.AreaEffectCloud;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.material.MaterialData;
-import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.BlockVector;
-import org.bukkit.util.Vector;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -378,7 +372,7 @@ public class PhysicsListener implements Listener {
         sponges.clear();
     }
 
-    @SuppressWarnings({"deprecation", "unused"})
+    /*@SuppressWarnings({"deprecation", "unused"})
     @EventHandler(priority = EventPriority.MONITOR)
     public void onClassicPhysics(ClassicPhysicsEvent event) {
         synchronized (toTasks) {
@@ -448,10 +442,10 @@ public class PhysicsListener implements Listener {
                 temp.offer(new BlockTaskInfo(event.getLogicContainer().logicFor(), event.getFrom(), blockChecking, meltTicks));
             }
         }
-    }
+    }*/
 
     private long tickCount;
-    private final BukkitRunnable PHYSICS_TICK = new BukkitRunnable() {
+    /*private final BukkitRunnable PHYSICS_TICK = new BukkitRunnable() {
         @Override
         public void run() {
             tickCount++;
@@ -472,10 +466,10 @@ public class PhysicsListener implements Listener {
                         }
             }
         }
-    };
+    };*/
 
     private final long spongeDuration = 15 * 1000;
-    private final BukkitRunnable SYNC_PHYSICS_TICK = new BukkitRunnable() {
+    /*private final BukkitRunnable SYNC_PHYSICS_TICK = new BukkitRunnable() {
         @Override
         public void run() {
             Iterator<SpongeInfo> spongeInfoIterator = sponges.iterator();
@@ -512,7 +506,7 @@ public class PhysicsListener implements Listener {
                     sponge.spawnParticles(Color.LIME);
             }
         }
-    };
+    };*/
 
     static void cancelLocation(Location loc) {
         toTasks.remove(loc);
@@ -566,9 +560,9 @@ public class PhysicsListener implements Listener {
     }
 
     public void prepare() {
-        tickCount = 0;
-        PHYSICS_TICK.runTaskTimerAsynchronously(Lavasurvival.INSTANCE, 0, 1);
-        SYNC_PHYSICS_TICK.runTaskTimer(Lavasurvival.INSTANCE, 0, 1);
+        //tickCount = 0;
+        //PHYSICS_TICK.runTaskTimerAsynchronously(Lavasurvival.INSTANCE, 0, 1);
+        //SYNC_PHYSICS_TICK.runTaskTimer(Lavasurvival.INSTANCE, 0, 1);
     }
 
 

@@ -6,11 +6,6 @@ authors: [hypereddie, pupnewfster]
 website: eddiep.me
 depend: [FastAsyncWorldEdit]
 commands:
-  setphysics:
-    description: Change the physics settings of this world
-    usage: /<command> <speed/level> <value> [world]
-    permission: classicphysics.settings
-    permission-message: You don't have <permission>
   pcl:
     description: Place only classic lava blocks
     usage: /<command>
