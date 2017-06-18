@@ -18,6 +18,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.util.HashMap;
+import java.util.Random;
 
 public class CmdCalculateCPMap implements Cmd {
     @Override
@@ -40,17 +41,6 @@ public class CmdCalculateCPMap implements Cmd {
     }
 
     private boolean calculateMeltMap(Location left, Location right) {
-        //TODO add the random range based on the map so that it is always the same? to speed it up and things
-        /*
-        double percent = Gamemode.getCurrentMap().getMeltRange() / 100.0;
-        int range = (int) (meltTicks * percent + 0.5); //Round normally
-        long bonus = RANDOM.nextInt(range + 1);
-
-        if (RANDOM.nextBoolean())
-            meltTicks += bonus;
-        else
-            meltTicks -= bonus;
-         */
         World w = left.getWorld();
         String worldName = w.getName();
         int x1 = left.getBlockX(), x2 = right.getBlockX(), y1 = left.getBlockY(), y2 = right.getBlockY(), z1 = left.getBlockZ(), z2 = right.getBlockZ();
@@ -74,6 +64,9 @@ public class CmdCalculateCPMap implements Cmd {
         if (ly < y2)
             y2 = ly;
         HashMap<Long, Short> meltMap = new HashMap<>();
+        double mult = Gamemode.getCurrentMap().getMeltMultiplier();
+        double percent = Gamemode.getCurrentMap().getMeltRange() / 100.0;
+        Random r = new Random();
         for (int y = y1; y <= y2; y++) {
             for (int x = x1; x <= x2; x++) {
                 for (int z = z1; z <= z2; z++) {
@@ -86,8 +79,18 @@ public class CmdCalculateCPMap implements Cmd {
                     short melt = PhysicsEngine.getMeltTime(new MaterialData(b.getType(), b.getData()));
                     if (melt == 0)
                         continue;
+
+                    short bonus = (short) r.nextInt((short) (melt * percent + 0.5) + 1);
+                    if (r.nextBoolean())
+                        melt += bonus;
+                    else
+                        melt -= bonus;
+
+                    if (melt == 0)//If it somehow ended up as 0 just don't add it
+                        continue;
+
                     if (melt > 1)
-                        melt /= 2;
+                        melt *= mult;
                     meltMap.put(PhysicsEngine.convert(x, y, z), melt);
                 }
             }

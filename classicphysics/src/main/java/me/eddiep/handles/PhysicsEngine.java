@@ -17,6 +17,7 @@ import java.io.ObjectInputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Random;
 
 public class PhysicsEngine {
     private final static int SHIFT = 30000000;//30 million
@@ -323,7 +324,6 @@ public class PhysicsEngine {
         seconds = seconds / 20;
         if (seconds == 0)
             return "Immediately";
-        double percent = 0;//Gamemode.getCurrentMap().getMeltRange() / 100.0;//TODO reimplement range not just in this string but in the melting
         int range = (int) (seconds * percent);
         int min = seconds - range, max = seconds + range;
         return (min == max ? max : min + " to " + max) + " Second" + (max == 1 ? "" : "s");
@@ -374,10 +374,18 @@ public class PhysicsEngine {
         return lo != null && lo == -2;
     }
 
+    private static final Random RANDOM = new Random();
+
     void addMeltTimer(int x, int y, int z, MaterialData type) {
         //TODO remove from active if it is not air. Shouldn't it just remove from active all together?
         long l = convert(x, y, z);
         short time = getMeltTime(type);
+        long bonus = RANDOM.nextInt((short) (time * percent + 0.5) + 1);
+        if (RANDOM.nextBoolean())
+            time += bonus;
+        else
+            time -= bonus;
+
         if (time == 0)
             meltMap.remove(l);
         else
@@ -427,19 +435,25 @@ public class PhysicsEngine {
         System.out.println(getX(l) + " " + getY(l) + " " + getZ(l));
     }
 
-    private boolean running;
+    private boolean running, stopped;
 
-    private final BukkitRunnable ticker = new BukkitRunnable() {
+    private BukkitRunnable ticker = new BukkitRunnable() {
         @Override
         public void run() {
+            if (stopped)
+                return;
             tick();
             spongeTick();
         }
     };
 
+    private static double percent;
+
+    public void setRangePercent(double rangePercent) {
+        percent = rangePercent;
+    }
+
     void start(String worldName) {
-        if (running)
-            return;
         meltMap = new HashMap<>();
         activeBlocks = new ArrayList<>();
         meltTimers = new HashMap<>();
@@ -450,18 +464,18 @@ public class PhysicsEngine {
         w = Bukkit.getWorld(worldName);
         queue = FaweAPI.createQueue(worldName, true);
         tickCount = 0;
-        Bukkit.broadcastMessage(worldName + " loaded.");
-        ticker.runTaskTimerAsynchronously(ClassicPhysics.INSTANCE, 0, 1);
+        Bukkit.broadcastMessage("[DEBUG]: " + worldName + " loaded.");//TODO remove debug message
+        if (stopped)
+            stopped = false;
+        else
+            ticker.runTaskTimerAsynchronously(ClassicPhysics.INSTANCE, 0, 1);
     }
 
     private World w;
 
     public void end() {
-        if (!running)
-            return;
         //TODO end queue somehow? clear? or just flush or both
-        running = false;
-        ticker.cancel();
+        stopped = true;
     }
 
     private FaweQueue queue;
@@ -474,17 +488,15 @@ public class PhysicsEngine {
             if (melts != null)
                 for (MeltLocationInfo melt : melts)
                     if (isClassicBlock(melt.from)) {
-                        int m = meltMap.get(melt.loc);
-                        if (m == melt.ticksToMelt && m >= 0) //Don't try placing if it already is there
+                        Short m = meltMap.get(melt.loc);
+                        if (m == null || (m == melt.ticksToMelt && m >= 0)) //Don't try placing if it already is there
                             placeAt(melt.loc);
                     }
             meltTimers.remove(tickCount);
         }
 
-        if (running) {
-            //Bukkit.broadcast(ChatColor.GOLD + "To Ops - " + ChatColor.WHITE + "Skipping current Physics Tick", "Necessities.opBroadcast");
+        if (running)
             return;
-        }
         //TODO make lava not flow as fast about 1/10th the current speed because of running the tick every tick instead of every 10
         //TODO what is best way to slow lava down? add melt time to air?
         running = true;

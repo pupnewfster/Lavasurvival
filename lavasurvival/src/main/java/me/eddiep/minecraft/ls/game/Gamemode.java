@@ -282,6 +282,7 @@ public abstract class Gamemode {
         }
         Bukkit.getScheduler().scheduleSyncDelayedTask(Lavasurvival.INSTANCE, () -> {
             ClassicPhysics.INSTANCE.getPhysicsHandler().setPhysicsWorld(getCurrentWorld());
+            ClassicPhysics.INSTANCE.getPhysicsEngine().setRangePercent(getCurrentMap().getMeltRange() / 100.0);
             spawnSpecialBlocks(false);
         }, 20); //Delay it slightly to ensure things are set
         Lavasurvival.INSTANCE.MONEY_VIEWER.run();

@@ -14,7 +14,6 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.*;
 import org.bukkit.event.entity.EntityChangeBlockEvent;
 import org.bukkit.event.entity.ItemSpawnEvent;
-import org.bukkit.event.world.WorldUnloadEvent;
 import org.bukkit.material.MaterialData;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.scoreboard.Team;
@@ -23,7 +22,6 @@ import java.util.List;
 
 public final class ClassicPhysicsHandler implements Listener {
     private PhysicsEngine pe;
-    private World current;
     private final Plugin owner;
 
     public ClassicPhysicsHandler(Plugin plugin) {
@@ -40,17 +38,10 @@ public final class ClassicPhysicsHandler implements Listener {
     }
 
     public void setPhysicsWorld(World w) {
-        this.current = w;
         if (w == null)
             pe.end();
         else
             pe.start(w.getName());
-    }
-
-    @EventHandler(priority = EventPriority.MONITOR)
-    public void onWorldUnload(WorldUnloadEvent event) {
-        if (!event.isCancelled() && event.getWorld().equals(this.current))
-            setPhysicsWorld(null);
     }
 
     @EventHandler(priority = EventPriority.MONITOR)
