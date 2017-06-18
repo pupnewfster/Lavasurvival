@@ -1,7 +1,7 @@
 package me.eddiep.minecraft.ls.game.shop.impl;
 
+import me.eddiep.handles.PhysicsEngine;
 import me.eddiep.minecraft.ls.game.shop.ShopFactory;
-import me.eddiep.minecraft.ls.system.PhysicsListener;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.inventory.Inventory;
@@ -29,7 +29,7 @@ interface BlockShop {
                 continue;
             try {
                 ItemMeta m = is.getItemMeta();
-                m.setLore(Arrays.asList(price(is.getType()) + " ggs", "Lava MeltTime: " + PhysicsListener.getLavaMeltTimeAsString(is.getData()), "Water MeltTime: " + PhysicsListener.getWaterMeltTimeAsString(is.getData())));
+                m.setLore(Arrays.asList(price(is.getType()) + " ggs", "Lava MeltTime: " + PhysicsEngine.getLavaMeltTimeAsString(is.getData()), "Water MeltTime: " + PhysicsEngine.getWaterMeltTimeAsString(is.getData())));
                 is.setItemMeta(m);
                 inv.setItem(i, is);
             } catch (Exception ignored) {

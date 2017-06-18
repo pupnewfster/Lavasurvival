@@ -79,6 +79,12 @@ public class Flood extends Gamemode {
         super.endRound();
     }
 
+    @Override
+    public boolean isLocationNearLavaSpawn(Location location, int distance) {
+        int x = location.getBlockX(), y = location.getBlockY(), z = location.getBlockZ();
+        return this.lavaPoints.stream().anyMatch(l -> Math.abs(l.getBlockX() - x) < distance && Math.abs(l.getBlockY() - y) < distance && Math.abs(l.getBlockZ() - z) < distance);
+    }
+
     private void setObjectiveDisplay(String display) {
         if (display == null)
             return;

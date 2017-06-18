@@ -82,14 +82,6 @@ public class LavaMap {
         }
     }
 
-    public boolean isLocationNearLavaSpawn(Location location) {
-        return isLocationNearLavaSpawn(location, 30);
-    }
-
-    public boolean isLocationNearLavaSpawn(Location location, double limit) {
-        return getCurrentGamemodeOptions().getSpawnLocations().stream().anyMatch(spawnPoint -> spawnPoint.distanceSquared(location) <= limit);
-    }
-
     private void restoreBackup() {
         File directoy = new File(this.worldName);
         File backup = new File(Lavasurvival.INSTANCE.getDataFolder(), this.worldName);

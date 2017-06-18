@@ -6,6 +6,7 @@ import com.crossge.necessities.RankManager.Rank;
 import com.crossge.necessities.RankManager.RankManager;
 import com.crossge.necessities.Utils;
 import me.eddiep.ClassicPhysics;
+import me.eddiep.handles.PhysicsEngine;
 import me.eddiep.minecraft.ls.Lavasurvival;
 import me.eddiep.minecraft.ls.game.impl.Flood;
 import me.eddiep.minecraft.ls.game.impl.Fusion;
@@ -18,7 +19,6 @@ import me.eddiep.minecraft.ls.ranks.UserInfo;
 import me.eddiep.minecraft.ls.ranks.UserManager;
 import me.eddiep.minecraft.ls.system.BukkitUtils;
 import me.eddiep.minecraft.ls.system.FileUtils;
-import me.eddiep.minecraft.ls.system.PhysicsListener;
 import me.eddiep.minecraft.ls.system.PlayerListener;
 import me.eddiep.minecraft.ls.system.specialblocks.SpecialInventory;
 import net.nyvaria.googleanalytics.hit.EventHit;
@@ -94,7 +94,6 @@ public abstract class Gamemode {
     private static ArrayList<UUID> alive, dead;
     private static Scoreboard scoreboard;
     private static PlayerListener listener;
-    private static PhysicsListener physicsListener;
     private static Gamemode currentGame;
     protected String type = "Rise";
     protected boolean poured;
@@ -126,15 +125,9 @@ public abstract class Gamemode {
         return scoreboard;
     }
 
-    public static PhysicsListener getPhysicsListener() {
-        return physicsListener;
-    }
-
     public static void cleanup() {
         if (listener != null)
             listener.cleanup();
-        if (physicsListener != null)
-            physicsListener.cleanup();
         if (scoreboard != null)
             scoreboard.getTeam("Special").unregister();
     }
@@ -181,11 +174,6 @@ public abstract class Gamemode {
         if (listener == null) {
             listener = new PlayerListener();
             Lavasurvival.INSTANCE.getServer().getPluginManager().registerEvents(listener, Lavasurvival.INSTANCE);
-        }
-        if (physicsListener == null) {
-            physicsListener = new PhysicsListener();
-            Lavasurvival.INSTANCE.getServer().getPluginManager().registerEvents(physicsListener, Lavasurvival.INSTANCE);
-            physicsListener.prepare();
         }
         if (this.map == null) {
             String[] files = LavaMap.getPossibleMaps();
@@ -613,6 +601,8 @@ public abstract class Gamemode {
         return sum / matches.size();
     }
 
+    public abstract boolean isLocationNearLavaSpawn(Location location, int distance);
+
     public List<LavaMap> getMapsInVote() {
         return Collections.unmodifiableList(Arrays.asList(this.nextMaps));
     }
@@ -756,7 +746,6 @@ public abstract class Gamemode {
         ClassicPhysics.INSTANCE.getPhysicsHandler().setPhysicsWorld(null);
         this.isEnding = false;
         this.hasEnded = true;
-        getPhysicsListener().clearBlockedLocations();
         long duration = System.currentTimeMillis() - startTime;
 
         duration /= 1000;
@@ -861,7 +850,7 @@ public abstract class Gamemode {
             if (BukkitUtils.hasItem(player.getInventory(), toGive) || u.isInBank(new MaterialData(DEFAULT_BLOCK)))
                 continue;
             ItemMeta im = toGive.getItemMeta();
-            im.setLore(Arrays.asList("Lava MeltTime: " + PhysicsListener.getLavaMeltTimeAsString(toGive.getData()), "Water MeltTime: " + PhysicsListener.getWaterMeltTimeAsString(toGive.getData())));
+            im.setLore(Arrays.asList("Lava MeltTime: " + PhysicsEngine.getLavaMeltTimeAsString(toGive.getData()), "Water MeltTime: " + PhysicsEngine.getWaterMeltTimeAsString(toGive.getData())));
             toGive.setItemMeta(im);
             player.getInventory().addItem(toGive);
         }

@@ -1,10 +1,11 @@
 package me.eddiep.minecraft.ls.system;
 
 import com.crossge.necessities.Necessities;
+import me.eddiep.BlockingType;
 import me.eddiep.ChunkEdit;
 import me.eddiep.ClassicPhysics;
 import me.eddiep.handles.ClassicBlockPlaceEvent;
-import me.eddiep.handles.ClassicPhysicsHandler;
+import me.eddiep.handles.PhysicsEngine;
 import me.eddiep.minecraft.ls.Lavasurvival;
 import me.eddiep.minecraft.ls.game.Gamemode;
 import me.eddiep.minecraft.ls.game.LavaMap;
@@ -145,13 +146,13 @@ public class PlayerListener implements Listener {
                     lore.append(loreList.get(i)).append(" ");
                 infoJSON = IChatBaseComponent.ChatSerializer.a("{\"text\": \"" + lore.toString().trim() + "\"}");
             } else {
-                String lavaTime = ChatColor.GOLD + "Lava MeltTime" + ChatColor.RESET + ": " + PhysicsListener.getLavaMeltRangeTimeAsString(is.getData()),
-                        waterTime = ChatColor.BLUE + "Water MeltTime" + ChatColor.RESET + ": " + PhysicsListener.getWaterMeltRangeTimeAsString(is.getData());
+                String lavaTime = ChatColor.GOLD + "Lava MeltTime" + ChatColor.RESET + ": " + PhysicsEngine.getLavaMeltRangeTimeAsString(is.getData()),
+                        waterTime = ChatColor.BLUE + "Water MeltTime" + ChatColor.RESET + ": " + PhysicsEngine.getWaterMeltRangeTimeAsString(is.getData());
                 infoJSON = IChatBaseComponent.ChatSerializer.a("{\"text\": \"" + lavaTime + "    " + waterTime + "\"}");
             }
         } else {
-            String lavaTime = ChatColor.GOLD + "Lava MeltTime" + ChatColor.RESET + ": " + PhysicsListener.getLavaMeltRangeTimeAsString(is.getData()),
-                    waterTime = ChatColor.BLUE + "Water MeltTime" + ChatColor.RESET + ": " + PhysicsListener.getWaterMeltRangeTimeAsString(is.getData());
+            String lavaTime = ChatColor.GOLD + "Lava MeltTime" + ChatColor.RESET + ": " + PhysicsEngine.getLavaMeltRangeTimeAsString(is.getData()),
+                    waterTime = ChatColor.BLUE + "Water MeltTime" + ChatColor.RESET + ": " + PhysicsEngine.getWaterMeltRangeTimeAsString(is.getData());
             infoJSON = IChatBaseComponent.ChatSerializer.a("{\"text\": \"" + lavaTime + "    " + waterTime + "\"}");
         }
         PacketPlayOutTitle meltPacket = new PacketPlayOutTitle(PacketPlayOutTitle.EnumTitleAction.ACTIONBAR, infoJSON, 0, 60, 0);
@@ -203,11 +204,11 @@ public class PlayerListener implements Listener {
                         stack.setAmount(stack.getAmount() + 1);
                     }
                 }
-                if (block.getType().equals(Material.SPONGE))
-                    Gamemode.getPhysicsListener().addBrokeSponge(block.getLocation());
+                if (block.getType().equals(Material.SPONGE)) {
+                    Location l = block.getLocation();
+                    ClassicPhysics.INSTANCE.getPhysicsEngine().removeSponge(l.getBlockX(), l.getBlockY(), l.getBlockZ());
+                }
                 block.setType(Material.AIR);
-                ClassicPhysics.INSTANCE.getPhysicsHandler().removePlayerPlaced(block.getLocation().toVector());
-                PhysicsListener.cancelLocation(block.getLocation());
                 Bukkit.getPluginManager().callEvent(new BlockBreakEvent(block, p));
             } else if (event.getAction().equals(Action.LEFT_CLICK_AIR)) {
                 List<Entity> entities = p.getNearbyEntities(5, 5, 5);
@@ -433,24 +434,17 @@ public class PlayerListener implements Listener {
                 BlockingType blockingType = itemPlacing.getDurability() == 1 ? BlockingType.LAVA : BlockingType.WATER;
                 if (itemPlacing.getItemMeta().getLore().contains(LavaItem.EPIC_TEXT))
                     blockingType = BlockingType.BOTH;
-                boolean success = Gamemode.getPhysicsListener().placeSponge(event.getBlock().getLocation(), blockingType);
-
-                if (!success) {
+                if (Gamemode.getCurrentGame().isLocationNearLavaSpawn(event.getBlock().getLocation(), 15)) {
                     event.setCancelled(true);
                     event.setBuild(false);
                     event.getPlayer().sendMessage(ChatColor.RED + "" + ChatColor.BOLD + "You can't place a sponge so close to a lava/water spawn!");
                     return;
-                }
-
-                ClassicPhysics.INSTANCE.getPhysicsHandler().addPlayerPlaced(event.getBlock().getLocation().toVector());
+                } else
+                    ClassicPhysics.INSTANCE.getPhysicsEngine().placeSponge(event.getBlock().getX(), event.getBlock().getY(), event.getBlock().getZ(), blockingType);
                 Lavasurvival.INSTANCE.getUserManager().getUser(event.getPlayer().getUniqueId()).incrementBlockCount();
                 return;
             }
 
-            Block b = event.getBlock();
-            ClassicPhysics.INSTANCE.getPhysicsHandler().addPlayerPlaced(b.getLocation().toVector()); //UUID would go here if was hash map
-            if (b.getType().toString().contains("DOOR") && b.getRelative(BlockFace.UP).getType().equals(b.getType()))
-                ClassicPhysics.INSTANCE.getPhysicsHandler().addPlayerPlaced(b.getRelative(BlockFace.UP).getLocation().toVector());
             if (!this.survival) {
                 if (event.getHand().equals(EquipmentSlot.OFF_HAND))
                     event.getPlayer().getInventory().setItemInOffHand(event.getPlayer().getInventory().getItemInOffHand().clone());
@@ -498,8 +492,8 @@ public class PlayerListener implements Listener {
             }
             if (Gamemode.getCurrentGame().isAlive(player)) {
                 Necessities.getUM().getUser(player.getUniqueId()).setStatus("alive");
-                ClassicPhysicsHandler handler = ClassicPhysics.INSTANCE.getPhysicsHandler();
-                if (!handler.isClassicBlock(player.getLocation().toVector()) && !handler.isClassicBlock(player.getEyeLocation().toVector()))
+                PhysicsEngine pe = ClassicPhysics.INSTANCE.getPhysicsEngine();
+                if (!pe.isClassicBlock(player.getLocation()) && !pe.isClassicBlock(player.getEyeLocation()))
                     player.teleport(Gamemode.getCurrentWorld().getSpawnLocation().clone());
             }
             event.getPlayer().setScoreboard(Gamemode.getScoreboard());
@@ -529,8 +523,8 @@ public class PlayerListener implements Listener {
                 return;
             UserInfo u = Lavasurvival.INSTANCE.getUserManager().getUser(event.getPlayer().getUniqueId());
             Block b = to.getBlock(), above = b.getRelative(BlockFace.UP);
-            if (((b.getType().equals(Material.WATER) || b.getType().equals(Material.STATIONARY_WATER)) && ClassicPhysics.INSTANCE.getPhysicsHandler().isClassicBlock(b.getLocation().toVector())) ||
-                    ((above.getType().equals(Material.WATER) || above.getType().equals(Material.STATIONARY_WATER)) && ClassicPhysics.INSTANCE.getPhysicsHandler().isClassicBlock(above.getLocation().toVector()))) {
+            if (((b.getType().equals(Material.WATER) || b.getType().equals(Material.STATIONARY_WATER)) && ClassicPhysics.INSTANCE.getPhysicsEngine().isClassicBlock(b.getLocation())) ||
+                    ((above.getType().equals(Material.WATER) || above.getType().equals(Material.STATIONARY_WATER)) && ClassicPhysics.INSTANCE.getPhysicsEngine().isClassicBlock(above.getLocation()))) {
                 if (!u.isInWater()) {
                     if (!PlayerStatusManager.isInvincible(event.getPlayer()) && !event.getPlayer().getGameMode().equals(GameMode.CREATIVE) && !event.getPlayer().getGameMode().equals(GameMode.SPECTATOR))
                         u.damagePlayer();

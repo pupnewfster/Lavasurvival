@@ -2,29 +2,31 @@ package me.eddiep.handles;
 
 import com.boydti.fawe.FaweAPI;
 import com.boydti.fawe.object.FaweQueue;
+import me.eddiep.BlockingType;
 import me.eddiep.ClassicPhysics;
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.World;
-import org.bukkit.block.Block;
+import org.bukkit.*;
+import org.bukkit.entity.AreaEffectCloud;
+import org.bukkit.entity.EntityType;
 import org.bukkit.material.MaterialData;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
 public class PhysicsEngine {
-    private final int SHIFT = 30000000;//30 million
+    private final static int SHIFT = 30000000;//30 million
     //Values that shift the specific direction
     private final long X = 67108864;
     private final long Y = 4503599627370496L;
     private final long Z = 1;
 
-    private static final HashMap<MaterialData, Integer> lavaTicksToMelt = new HashMap<>();
-    private static final HashMap<MaterialData, Integer> waterTicksToMelt = new HashMap<>();
+    private static final HashMap<MaterialData, Short> lavaTicksToMelt = new HashMap<>();
+    private static final HashMap<MaterialData, Short> waterTicksToMelt = new HashMap<>();
 
     @SuppressWarnings("deprecation")
     public PhysicsEngine() {
@@ -294,92 +296,73 @@ public class PhysicsEngine {
                 addMeltTime(new MaterialData(m), 30 * 20);//Checks in itself if either already contain it
     }
 
+    public static String getLavaMeltTimeAsString(MaterialData data) {
+        return getMeltTimeAsString(lavaTicksToMelt.getOrDefault(data, (short) 0));
+    }
+
+    public static String getWaterMeltTimeAsString(MaterialData data) {
+        return getMeltTimeAsString(waterTicksToMelt.getOrDefault(data, (short) 0));
+    }
+
+    private static String getMeltTimeAsString(int seconds) {
+        if (seconds < 0)
+            return "Never";
+        seconds = seconds / 20;
+        if (seconds == 0)
+            return "Immediately";
+        return seconds + " Second" + (seconds == 1 ? "" : "s");
+    }
+
+    public static String getLavaMeltRangeTimeAsString(MaterialData data) {
+        return getMeltRangeAsString(lavaTicksToMelt.getOrDefault(data, (short) 0));
+    }
+
+    private static String getMeltRangeAsString(int seconds) {
+        if (seconds < 0)
+            return "Never";
+        seconds = seconds / 20;
+        if (seconds == 0)
+            return "Immediately";
+        double percent = 0;//Gamemode.getCurrentMap().getMeltRange() / 100.0;//TODO reimplement range not just in this string but in the melting
+        int range = (int) (seconds * percent);
+        int min = seconds - range, max = seconds + range;
+        return (min == max ? max : min + " to " + max) + " Second" + (max == 1 ? "" : "s");
+    }
+
+    public static String getWaterMeltRangeTimeAsString(MaterialData data) {
+        return getMeltRangeAsString(waterTicksToMelt.getOrDefault(data, (short) 0));
+    }
+
     private static void addMeltTime(MaterialData data, int time) {
         addMeltTime(data, time, time);
     }
 
     private static void addMeltTime(MaterialData data, int lava, int water) {
         if (!lavaTicksToMelt.containsKey(data))
-            lavaTicksToMelt.put(data, lava);
+            lavaTicksToMelt.put(data, (short) lava);
         if (!waterTicksToMelt.containsKey(data))
-            waterTicksToMelt.put(data, water);
+            waterTicksToMelt.put(data, (short) water);
     }
 
     /**
      * key is YXZ, Value is the melt time of the material of the block.
      * -1 is unmeltable, and -2 is a block of "active" liquid
      */
-    private HashMap<Long, Long> meltMap = new HashMap<>();//yxz, melt time of material of block,
+    private HashMap<Long, Short> meltMap = new HashMap<>();//yxz, melt time of material of block,
     private ArrayList<Long> activeBlocks = new ArrayList<>();//TODO Should this stay an array list?
+    private HashMap<Long, Short> blockedMap = new HashMap<>();//yxz, number blocked
 
     private void loadMeltMap(String worldName) {
         File fileMeltMap = new File("plugins/ClassicPhysics", worldName + ".txt");
         if (fileMeltMap.exists())
             try (ObjectInputStream is = new ObjectInputStream(new FileInputStream(fileMeltMap))) {
-                meltMap = (HashMap<Long, Long>) is.readObject();
+                meltMap = (HashMap<Long, Short>) is.readObject();
             } catch (IOException | ClassNotFoundException ignored) {
             }
     }
 
-    public static boolean calculateMeltMap(Location left, Location right) {
-        //TODO Don't store things with melt timer of -1 or spawn to save space and load time because out of bounds stuff doesn't have physics anyways...
-        //TODO add the random range based on the map so that it is always the same? to speed it up and things
-        /*
-        double percent = Gamemode.getCurrentMap().getMeltRange() / 100.0;
-        int range = (int) (meltTicks * percent + 0.5); //Round normally
-        long bonus = RANDOM.nextInt(range + 1);
-
-        if (RANDOM.nextBoolean())
-            meltTicks += bonus;
-        else
-            meltTicks -= bonus;
-         */
-        //TODO check that they are in the same world?
-        World w = left.getWorld();
-        String worldName = w.getName();
-        int x1 = left.getBlockX(), x2 = right.getBlockX(), y1 = left.getBlockY(), y2 = right.getBlockY(), z1 = left.getBlockZ(), z2 = right.getBlockZ();
-        if (x2 < x1) {
-            int temp = x1;
-            x1 = x2;
-            x2 = temp;
-        }
-        if (y2 < y1) {
-            int temp = y1;
-            y1 = y2;
-            y2 = temp;
-        }
-        if (z2 < z1) {
-            int temp = z1;
-            z1 = z2;
-            z2 = temp;
-        }
-        HashMap<Long, Long> meltMap = new HashMap<>();
-        PhysicsEngine pe = new PhysicsEngine();
-        for (int y = y1; y <= y2; y++) {
-            for (int x = x1; x <= x2; x++) {
-                for (int z = z1; z <= z2; z++) {
-                    Block b = new Location(w, x, y, z).getBlock();
-                    long melt = pe.getMeltTime(new MaterialData(b.getType(), b.getData()));
-                    if (melt > 1)
-                        melt /= 2;
-                    meltMap.put(pe.convert(x, y, z), melt);
-                }
-            }
-        }
-        File fileMeltMap = new File("plugins/ClassicPhysics", worldName + ".txt");
-        if (fileMeltMap.exists()) //Clear it
-            fileMeltMap.delete();
-        try {
-            fileMeltMap.createNewFile();
-        } catch (IOException ignored) {
-            return false;
-        }
-        try (ObjectOutputStream os = new ObjectOutputStream(new FileOutputStream(fileMeltMap))) {
-            os.writeObject(meltMap);
-        } catch (IOException ignored) {
-            return false;
-        }
-        return true;
+    public boolean isClassicBlock(Location location) {
+        return isClassicBlock(location.getBlockX(), location.getBlockY(), location.getBlockZ());
     }
 
     public boolean isClassicBlock(int x, int y, int z) {
@@ -387,15 +370,18 @@ public class PhysicsEngine {
     }
 
     private boolean isClassicBlock(long l) {
-        Long lo = meltMap.get(l);
+        Short lo = meltMap.get(l);
         return lo != null && lo == -2;
     }
 
     void addMeltTimer(int x, int y, int z, MaterialData type) {
         //TODO remove from active if it is not air. Shouldn't it just remove from active all together?
         long l = convert(x, y, z);
-        //toTasks.remove(l);//TODO is this line correct?
-        meltMap.put(l, getMeltTime(type));
+        short time = getMeltTime(type);
+        if (time == 0)
+            meltMap.remove(l);
+        else
+            meltMap.put(l, time);
         long temp = l + X;
         if (isClassicBlock(temp))
             activeBlocks.add(temp);
@@ -413,14 +399,14 @@ public class PhysicsEngine {
             activeBlocks.add(temp);
     }
 
-    private long getMeltTime(MaterialData type) {
+    public static short getMeltTime(MaterialData type) {
         //Can use Air or null to remove it
         if (!lavaTicksToMelt.containsKey(type))
             type = new MaterialData(type.getItemType());
-        return lavaTicksToMelt.getOrDefault(type, 0);
+        return lavaTicksToMelt.getOrDefault(type, (short) 0);
     }
 
-    private long convert(int x, int y, int z) {
+    public static long convert(int x, int y, int z) {
         //TODO check if x, or z is greater than 30 million and if y > 256
         return (long) y << 52 | (long) (x + SHIFT) << 26 | (z + SHIFT);
     }
@@ -447,6 +433,7 @@ public class PhysicsEngine {
         @Override
         public void run() {
             tick();
+            spongeTick();
         }
     };
 
@@ -456,13 +443,18 @@ public class PhysicsEngine {
         meltMap = new HashMap<>();
         activeBlocks = new ArrayList<>();
         meltTimers = new HashMap<>();
-        loadMeltMap(worldName);//TODO make loading async
+        blockedMap = new HashMap<>();
+        spongeTimers = new HashMap<>();
+        sponges = new HashMap<>();
+        loadMeltMap(worldName);
+        w = Bukkit.getWorld(worldName);
         queue = FaweAPI.createQueue(worldName, true);
         tickCount = 0;
         Bukkit.broadcastMessage(worldName + " loaded.");
         ticker.runTaskTimerAsynchronously(ClassicPhysics.INSTANCE, 0, 1);
-        //meltTicker.runTaskTimerAsynchronously(ClassicPhysics.INSTANCE, 0, 1);
     }
+
+    private World w;
 
     public void end() {
         if (!running)
@@ -470,22 +462,22 @@ public class PhysicsEngine {
         //TODO end queue somehow? clear? or just flush or both
         running = false;
         ticker.cancel();
-        //meltTicker.cancel();
-        //toTasks.clear();
     }
 
     private FaweQueue queue;
 
-    private void tick() {
+    private void tick() {//TODO maybe have water be -3 etc to determine what kind of classic block something is
         tickCount++;
-        //TODO should melt checker be inside the running loop if so how to easily get the ones that have already been done
 
         if (!meltTimers.isEmpty()) {
             ArrayList<MeltLocationInfo> melts = meltTimers.get(tickCount);
             if (melts != null)
                 for (MeltLocationInfo melt : melts)
-                    if (isClassicBlock(melt.from) && meltMap.get(melt.loc) == melt.ticksToMelt)
-                        placeAt(melt.loc);
+                    if (isClassicBlock(melt.from)) {
+                        int m = meltMap.get(melt.loc);
+                        if (m == melt.ticksToMelt && m >= 0) //Don't try placing if it already is there
+                            placeAt(melt.loc);
+                    }
             meltTimers.remove(tickCount);
         }
 
@@ -510,12 +502,12 @@ public class PhysicsEngine {
     }
 
     private void attemptFlow(long from, long to) {
-        Long time = meltMap.get(to);
-        if (time == null || time < 0) //Not in map probably should just stop it or Ummeltable
-            return;
-        else if (time == 0) //Instant melt
+        Short time = meltMap.get(to);
+        if (time == null || time == 0) //Instant melt
             placeAt(to);
-        else //Start melt timer For now should probably use the old method
+        else if (time < 0) //Not in map probably should just stop it or Ummeltable
+            return;
+        else if (!blockedMap.containsKey(to))//if not blocked start melting
             startMelt(from, to, time);
     }
 
@@ -523,57 +515,160 @@ public class PhysicsEngine {
         placeAt(convert(x, y, z));
     }
 
-    private void placeAt(long to) {//TODO call ClassicBlockPlaceEvent
-        meltMap.put(to, -2L);
+    private void placeAt(long to) {//TODO call ClassicBlockPlaceEvent or better yet come up with some better way to do it for when water becomes active (not needed yet)
+        if (blockedMap.containsKey(to))
+            return;//Cancel if it is blocked (could happen from a melt or order issue)
+        meltMap.put(to, (short) -2);
         activeBlocks.add(to);
         queue.setBlock(getX(to), getY(to), getZ(to), 11);//LAVA
     }
 
     private HashMap<Long, ArrayList<MeltLocationInfo>> meltTimers;//Should value be queue
 
-    private void startMelt(long from, long to, long time) {
-        //TODO map of endMelt->location
-        //Would work a lot better because it can just retrieve the ones that should finish melting
-        //Maybe endMelt-> info so location the from location (to check that it is still active)
-        //TODO how would it cancel if block was broken and changed types or just replaced
-        //TODO it would not update if its source got done but melted before the time finished on the to
-        //TODO if it stores the melt time it was supposed to be then can compare that
-        //TODO should it use higher melt time if bloc was replaced or start from where it is
-
-        long end = tickCount + time;
-        ArrayList<MeltLocationInfo> melts = meltTimers.computeIfAbsent(end, k -> new ArrayList<>());
+    private void startMelt(long from, long to, int time) {
+        ArrayList<MeltLocationInfo> melts = meltTimers.computeIfAbsent(tickCount + time, k -> new ArrayList<>());
         melts.add(new MeltLocationInfo(to, from, time));
     }
 
     private long tickCount;
 
     private class MeltLocationInfo {
-        private final long ticksToMelt;
+        private final int ticksToMelt;
         private final long loc;
         private final long from;
 
-        MeltLocationInfo(long loc, long from, long ticksToMelt) {
+        MeltLocationInfo(long loc, long from, int ticksToMelt) {
             this.loc = loc;
             this.from = from;
             this.ticksToMelt = ticksToMelt;
         }
     }
 
-    //TODO do we want bedrock to just be a block instead of its own thing so we only keep track of where blocks are and let melter say bedrock cannot melt
-    //How will be the best way of saying there is already a classic physics block there?
-    //Map of location -> cp block / normal block and leave it out if it is air?
-    //Should it have all non cp blocks instead so that it checks if it is valid to attempt to move and let the melt engine check then the timer
-    //Or should the melt engine move into classic physics so that we do not need to store blocks that have no melt time
-    //Keep a list/set/vector of the current cp blocks?
-    //Does melt engine actually need to be integrated so new physics works instead of passing on information
-    //Aka do we get performance increases by keeping track of the blocks and then what melt time they will have
-    //Map of location -> melt time of block at location? cp block no melt time? TODO probably is best idea
-    //This would cut out a lot of logic by not caring about the actual world until it has to set a new cp block
-    //Setting a new cp block, the updates would then just see the way it came from is unmeltable instead of having to check and store "metadata"
-    //Store cp blocks as -2 instead of -1? That way you can determine if a block should add its physics checks back when something occurs nearby
-    //Can have a list of new cp blocks and just add them to the world all at once instead of getting the same section multiple times
-    //Will need to do something about per map melt times... TODO as well as reimplement the sponges because this will break them
-    //Per map melt time could potentially be set in some info about the virtual map it will keep track of with the melt times of the blocks
-    //For sponges maybe store it as a different negative number? How would this interfere with melt time of blocks inside
-    //
+    private HashMap<Long, ArrayList<Long>> spongeTimers = new HashMap<>();
+    private HashMap<Long, SpongeInfo> sponges = new HashMap<>();
+
+    private final int spongeDuration = 300;//15 seconds
+
+    public boolean placeSponge(int xLoc, int yLoc, int zLoc, BlockingType blockingType) {
+        //TODO Care about blockingType: maybe use some of the extra bits at beginning of location?
+        ArrayList<Long> locations = new ArrayList<>(), outerLocations = new ArrayList<>();
+        int range = blockingType.equals(BlockingType.BOTH) ? 10 : 5; //TODO make this a param if we end up making a sponge with a range other than 10 that can block both
+        range++;//add the outside rim
+        long loc = convert(xLoc, yLoc, zLoc);
+        for (int x = -range; x <= range; x++) {
+            for (int y = -range; y <= range; y++) {
+                for (int z = -range; z <= range; z++) {
+                    long blockedLocation = loc + x * X + y * Y + z * Z;
+                    if (Math.abs(x) == range || Math.abs(y) == range || Math.abs(z) == range)
+                        outerLocations.add(blockedLocation); //Make the x,y,z be ints
+                    else {
+                        addBlockedLocation(blockedLocation, blockingType, loc != blockedLocation);
+                        locations.add(blockedLocation);
+                    }
+                }
+            }
+        }
+        ArrayList<Long> spngs = spongeTimers.computeIfAbsent(tickCount + spongeDuration, k -> new ArrayList<>());
+        spngs.add(loc);
+        SpongeInfo info;
+        sponges.put(loc, info = new SpongeInfo(blockingType, locations, outerLocations));
+        info.curParticle = spawnParticleEffect(loc, spongeDuration, Color.LIME);
+        return true;
+    }
+
+    private void addBlockedLocation(long loc, BlockingType blockingType, boolean clearIfClassic) {
+        blockedMap.merge(loc, (short) 1, (a, b) -> (short) (a + b));
+        if (clearIfClassic && isClassicBlock(loc)) {
+            setAirNoPhysics(loc);
+            //TODO remove from active blocks?
+        }
+    }
+
+    private void setAirNoPhysics(long l) {
+        queue.setBlock(getX(l), getY(l), getZ(l), 0);//AIR
+        meltMap.remove(l);
+    }
+
+    public void removeSponge(int x, int y, int z) {
+        removeSponge(convert(x, y, z), false);
+    }
+
+    private void removeSponge(long loc, boolean expired) {
+        SpongeInfo sponge = sponges.get(loc);
+        if (sponge == null)
+            return;
+        sponges.remove(loc);
+        sponge.curParticle.remove();//If broken early remove the particle
+        //Remove all blocked locations
+        for (long location : sponge.blockingLocations) {
+            Short count = blockedMap.get(location);
+            if (count == null)
+                continue;
+            if (count == 1)
+                blockedMap.remove(location);
+            else
+                blockedMap.put(location, (short) (count - 1));
+        }
+        sponge.blockingLocations.clear();
+        sponge.outerLocations.stream().filter(this::isClassicBlock).forEach(l -> activeBlocks.add(l));
+        if (expired) //If it was removed it doesn't need to be set as air again
+            setAirNoPhysics(loc);
+    }
+
+    private final Color warn = Color.fromRGB(244, 66, 244);
+
+    private void spongeTick() {
+        if (!spongeTimers.isEmpty()) {
+            ArrayList<Long> expiring = spongeTimers.get(tickCount);
+            if (expiring != null)
+                for (Long sponge : expiring)
+                    removeSponge(sponge, true);
+            spongeTimers.remove(tickCount);
+            ArrayList<Long> warning = spongeTimers.get(tickCount + 150);
+            if (warning != null)
+                for (Long loc : warning) {
+                    SpongeInfo sponge = sponges.get(loc);
+                    if (sponge == null)
+                        continue;
+                    sponge.curParticle.setColor(warn);
+                }
+            ArrayList<Long> lastWarning = spongeTimers.get(tickCount + 50);
+            if (lastWarning != null)
+                for (Long loc : lastWarning) {
+                    SpongeInfo sponge = sponges.get(loc);
+                    if (sponge == null)
+                        continue;
+                    sponge.curParticle.setColor(Color.RED);
+                }
+        }
+    }
+
+    public class SpongeInfo {
+        private List<Long> blockingLocations;
+        private BlockingType blockingType;
+        private List<Long> outerLocations;
+        private AreaEffectCloud curParticle;
+
+        SpongeInfo(BlockingType blockingType, List<Long> blocked, List<Long> outerLocations) {
+            this.blockingLocations = blocked;
+            this.blockingType = blockingType;
+            this.outerLocations = outerLocations;
+        }
+    }
+
+    private Location fromLong(long l) {
+        return w == null ? null : new Location(w, getX(l), getY(l), getZ(l));
+    }
+
+    private AreaEffectCloud spawnParticleEffect(long loc, int ticks, Color color) {
+        Location location = fromLong(loc);
+        if (location == null)
+            return null;
+        location.add(0.5, 0.5, 0.5);
+        AreaEffectCloud e = (AreaEffectCloud) w.spawnEntity(location, EntityType.AREA_EFFECT_CLOUD);
+        e.setColor(color);
+        e.setRadius((float) 0.75);
+        e.setDuration(ticks);
+        return e;
+    }
 }

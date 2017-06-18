@@ -41,6 +41,7 @@ public class Fusion extends Gamemode {
         super.onStart();
         this.duration = getCurrentMap().getFusionOptions().generateRandomPrepareTime();
         this.timeOut = getCurrentMap().getFusionOptions().generateRandomFusionTime();
+        this.locations = getCurrentMap().getFusionOptions().getSpawnLocation(0, 1 - getCurrentMap().getHeight(), 0);
         globalMessage("The current gamemode is " + ChatColor.RED + ChatColor.BOLD + "FUSION");
         globalMessage("The water and lava will rise every " + ChatColor.DARK_RED + TimeUtils.toFriendlyTime(this.timeOut));
         globalMessage("You have " + ChatColor.DARK_RED + TimeUtils.toFriendlyTime(this.duration) + ChatColor.RESET + " to prepare!");
@@ -140,7 +141,6 @@ public class Fusion extends Gamemode {
                 int nextMinute = (int) since / 60000;
                 if (nextMinute != this.lastMinute) {
                     this.lastMinute = nextMinute;
-                    this.locations = getCurrentMap().getFusionOptions().getSpawnLocation(0, 1 - getCurrentMap().getHeight(), 0);
                     getCurrentWorld().strikeLightningEffect(this.locations.get(RANDOM.nextInt(this.locations.size()))); //Changed to just effect not to kill unknowing player nearby
                     for (Location loc : this.locations)
                         if (loc.getBlockY() > this.highestCurrentY)
@@ -203,6 +203,12 @@ public class Fusion extends Gamemode {
         if (this.doubleReward)
             multiplier = 2.0;
         return (super.getDefaultReward(player, blockCount) + this.bonus) * multiplier;
+    }
+
+    @Override
+    public boolean isLocationNearLavaSpawn(Location location, int distance) {
+        int x = location.getBlockX(), y = location.getBlockY(), z = location.getBlockZ();
+        return this.locations.stream().anyMatch(l -> Math.abs(l.getBlockX() - x) < distance && Math.abs(l.getBlockY() - y) < distance && Math.abs(l.getBlockZ() - z) < distance);
     }
 
     private boolean isRoundEnding() {

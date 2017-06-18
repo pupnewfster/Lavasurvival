@@ -1,4 +1,4 @@
-package me.eddiep.minecraft.ls.system;
+package me.eddiep;
 
 public enum BlockingType {
     LAVA,

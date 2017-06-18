@@ -18,7 +18,9 @@ import net.njay.MenuFramework;
 import net.njay.MenuRegistry;
 import net.nyvaria.googleanalytics.hit.EventHit;
 import net.nyvaria.openanalytics.bukkit.client.Client;
-import org.bukkit.*;
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.Material;
 import org.bukkit.boss.BarColor;
 import org.bukkit.boss.BarStyle;
 import org.bukkit.boss.BossBar;
@@ -26,8 +28,6 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.craftbukkit.v1_12_R1.boss.CraftBossBar;
-import org.bukkit.entity.AreaEffectCloud;
-import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
@@ -96,14 +96,6 @@ public class Lavasurvival extends JavaPlugin {
             Gamemode.getCurrentGame().globalMessage(message);
         else //Sends to everyone if no game to send to
             Bukkit.broadcastMessage(message);
-    }
-
-    public static AreaEffectCloud spawnParticleEffect(Location location, int ticks, Color color) {
-        AreaEffectCloud e = (AreaEffectCloud) Gamemode.getCurrentWorld().spawnEntity(location, EntityType.AREA_EFFECT_CLOUD);
-        e.setColor(color);
-        e.setRadius((float) 0.75);
-        e.setDuration(ticks);
-        return e;
     }
 
     @Override
@@ -204,7 +196,8 @@ public class Lavasurvival extends JavaPlugin {
                 new CmdRules(),
                 new CmdSetupMap(),
                 new CmdSpawn(),
-                new CmdAirc()
+                new CmdAirc(),
+                new CmdCalculateCPMap()
         };
 
         getServer().getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");

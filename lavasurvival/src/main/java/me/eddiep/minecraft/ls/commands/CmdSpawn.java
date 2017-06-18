@@ -1,7 +1,7 @@
 package me.eddiep.minecraft.ls.commands;
 
 import me.eddiep.ClassicPhysics;
-import me.eddiep.handles.ClassicPhysicsHandler;
+import me.eddiep.handles.PhysicsEngine;
 import me.eddiep.minecraft.ls.game.Gamemode;
 import me.eddiep.minecraft.ls.game.LavaMap;
 import org.bukkit.ChatColor;
@@ -18,8 +18,8 @@ public class CmdSpawn implements Cmd {
                 sender.sendMessage(ChatColor.DARK_RED + "Error: there is no game running.");
                 return true;
             }
-            ClassicPhysicsHandler handler = ClassicPhysics.INSTANCE.getPhysicsHandler();
-            if (Gamemode.getCurrentGame().isAlive(player) && (handler.isClassicBlock(player.getLocation().toVector()) || handler.isClassicBlock(player.getEyeLocation().toVector()))) {
+            PhysicsEngine pe = ClassicPhysics.INSTANCE.getPhysicsEngine();
+            if (Gamemode.getCurrentGame().isAlive(player) && (pe.isClassicBlock(player.getLocation()) || pe.isClassicBlock(player.getEyeLocation()))) {
                 sender.sendMessage(ChatColor.DARK_RED + "Error: you are in the lava.");
                 return true;
             }

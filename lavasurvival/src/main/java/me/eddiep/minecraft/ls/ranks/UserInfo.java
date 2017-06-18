@@ -2,12 +2,12 @@ package me.eddiep.minecraft.ls.ranks;
 
 import com.crossge.necessities.Necessities;
 import me.eddiep.ClassicPhysics;
+import me.eddiep.handles.PhysicsEngine;
 import me.eddiep.minecraft.ls.Lavasurvival;
 import me.eddiep.minecraft.ls.game.Gamemode;
 import me.eddiep.minecraft.ls.game.items.LavaItem;
 import me.eddiep.minecraft.ls.game.status.PlayerStatusManager;
 import me.eddiep.minecraft.ls.system.BukkitUtils;
-import me.eddiep.minecraft.ls.system.PhysicsListener;
 import me.eddiep.minecraft.ls.system.bank.BankInventory;
 import net.minecraft.server.v1_12_R1.DamageSource;
 import org.bukkit.Bukkit;
@@ -208,8 +208,8 @@ public class UserInfo {
                         damagePlayer();
                     Block b = getPlayer().getLocation().getBlock(), above = b.getRelative(BlockFace.UP);
                     setInWater(((b.getType().equals(Material.WATER) || b.getType().equals(Material.STATIONARY_WATER)) &&
-                            ClassicPhysics.INSTANCE.getPhysicsHandler().isClassicBlock(b.getLocation().toVector())) || ((above.getType().equals(Material.WATER) ||
-                            above.getType().equals(Material.STATIONARY_WATER)) && ClassicPhysics.INSTANCE.getPhysicsHandler().isClassicBlock(above.getLocation().toVector())));
+                            ClassicPhysics.INSTANCE.getPhysicsEngine().isClassicBlock(b.getLocation())) || ((above.getType().equals(Material.WATER) ||
+                            above.getType().equals(Material.STATIONARY_WATER)) && ClassicPhysics.INSTANCE.getPhysicsEngine().isClassicBlock(above.getLocation())));
                 }
             }, (int) (20 * Gamemode.DAMAGE_FREQUENCY));
     }
@@ -284,7 +284,7 @@ public class UserInfo {
     private ItemStack getItem(MaterialData dat) {
         ItemStack i = dat.toItemStack(1);
         ItemMeta im = i.getItemMeta();
-        im.setLore(Arrays.asList("Lava MeltTime: " + PhysicsListener.getLavaMeltTimeAsString(dat), "Water MeltTime: " + PhysicsListener.getWaterMeltTimeAsString(dat)));
+        im.setLore(Arrays.asList("Lava MeltTime: " + PhysicsEngine.getLavaMeltTimeAsString(dat), "Water MeltTime: " + PhysicsEngine.getWaterMeltTimeAsString(dat)));
         i.setItemMeta(im);
         return i;
     }

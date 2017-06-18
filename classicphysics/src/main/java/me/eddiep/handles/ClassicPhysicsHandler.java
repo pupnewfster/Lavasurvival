@@ -18,14 +18,10 @@ import org.bukkit.event.world.WorldUnloadEvent;
 import org.bukkit.material.MaterialData;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.scoreboard.Team;
-import org.bukkit.util.BlockVector;
-import org.bukkit.util.Vector;
 
-import java.util.HashSet;
 import java.util.List;
 
 public final class ClassicPhysicsHandler implements Listener {
-    private final HashSet<BlockVector> playerPlaced = new HashSet<>();
     private PhysicsEngine pe;
     private World current;
     private final Plugin owner;
@@ -35,25 +31,8 @@ public final class ClassicPhysicsHandler implements Listener {
         pe = new PhysicsEngine();
     }
 
-    public boolean isClassicBlock(Vector v) {
-        return pe.isClassicBlock(v.getBlockX(), v.getBlockY(), v.getBlockZ());
-    }
-
-    public void removeClassicBlock(Vector v) {
-        //classicBlocks.remove(v.toBlockVector());//TODO fix
-    }
-
-    //Player placed is stored in classic physics now instead of ls so that we can clear it at the correct time
-    public boolean isPlayerPlaced(Vector v) { //If we want to know who placed the block it will need to go to a hash map instead
-        return playerPlaced.contains(v.toBlockVector());
-    }
-
-    public void addPlayerPlaced(Vector v) { //Make sure that isPlayerPlaced is called before adding it through here
-        playerPlaced.add(v.toBlockVector().clone());
-    }
-
-    public void removePlayerPlaced(Vector v) {
-        playerPlaced.remove(v.toBlockVector());
+    public PhysicsEngine getPhysicsEngine() {
+        return pe;
     }
 
     public Plugin getOwner() {
@@ -78,6 +57,8 @@ public final class ClassicPhysicsHandler implements Listener {
     public void onBlockPlace(BlockPlaceEvent event) {
         Block b = event.getBlock();
         pe.addMeltTimer(b.getX(), b.getY(), b.getZ(), new MaterialData(b.getType(), b.getData()));
+        if (b.getType().toString().contains("DOOR") && b.getRelative(BlockFace.UP).getType().equals(b.getType()))
+            pe.addMeltTimer(b.getX(), b.getY() + 1, b.getZ(), new MaterialData(b.getType(), b.getData()));
     }
 
     @EventHandler(priority = EventPriority.MONITOR)

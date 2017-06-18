@@ -7,7 +7,7 @@ import com.crossge.necessities.Teleports;
 import com.crossge.necessities.Utils;
 import com.crossge.necessities.Variables;
 import me.eddiep.ClassicPhysics;
-import me.eddiep.handles.ClassicPhysicsHandler;
+import me.eddiep.handles.PhysicsEngine;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -37,9 +37,8 @@ public class CmdTpaccept implements Cmd {
             }
             Player target = sender.getServer().getPlayer(uuid);
             if (Bukkit.getPluginManager().isPluginEnabled("ClassicPhysics")) {
-                ClassicPhysicsHandler handler = ClassicPhysics.INSTANCE.getPhysicsHandler();
-                if (handler.isClassicBlock(p.getLocation().toVector()) || handler.isClassicBlock(p.getEyeLocation().toVector()) ||
-                        handler.isClassicBlock(target.getLocation().toVector()) || handler.isClassicBlock(target.getEyeLocation().toVector())) {
+                PhysicsEngine pe = ClassicPhysics.INSTANCE.getPhysicsEngine();
+                if (pe.isClassicBlock(p.getLocation()) || pe.isClassicBlock(p.getEyeLocation()) || pe.isClassicBlock(target.getLocation()) || pe.isClassicBlock(target.getEyeLocation())) {
                     sender.sendMessage(var.getEr() + "Error: " + var.getErMsg() + "You or the target are in the lava.");
                     return true;
                 }

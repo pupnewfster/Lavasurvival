@@ -1,6 +1,7 @@
 package me.eddiep;
 
 import me.eddiep.handles.ClassicPhysicsHandler;
+import me.eddiep.handles.PhysicsEngine;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.command.Command;
@@ -56,6 +57,10 @@ public class ClassicPhysics extends JavaPlugin {
             return true;
         }
         return false;
+    }
+
+    public PhysicsEngine getPhysicsEngine() {
+        return handler.getPhysicsEngine();
     }
 
     public ClassicPhysicsHandler getPhysicsHandler() {

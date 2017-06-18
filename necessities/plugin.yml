@@ -6,11 +6,6 @@ authors: [pupnewfster]
 softdepend: [OpenAnalytics, ClassicPhysics]
 
 commands:
-   calculatecpmap:
-      description: Calculate the melt times of the blocks for Classic Physics.
-      usage: /<command>
-      permission: Necessities.calculateCPMap
-      aliases: [ncalculatecpmap, ccpmap, nccpmap, ccpm, nccpm]
    reloadannouncer:
       description: Reloads the announcer.
       usage: /<command>
@@ -451,7 +446,6 @@ permissions:
         description: The Mainframe of Necessities' command structure
         children:
             Necessities.reloadAnnouncer: true
-            Necessities.calculateCPMap: true
             Necessities.logoutmessage: true
             Necessities.loginmessage: true
             Necessities.bracketOthers: true
@@ -879,7 +873,4 @@ permissions:
         default: op
     Necessities.reloadAnnouncer:
         description: Allows you to reload the announcer.
-        default: op
-    Necessities.calculateCPMap:
-        description: Allows you to calculate a map for classic physics.
         default: op

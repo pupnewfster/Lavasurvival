@@ -1,6 +1,6 @@
 package me.eddiep.minecraft.ls.system.bank;
 
-import me.eddiep.minecraft.ls.system.PhysicsListener;
+import me.eddiep.handles.PhysicsEngine;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -61,7 +61,7 @@ public class BankInventory {
             MaterialData dat = is.getData();
             if (!dat.getItemType().equals(Material.AIR)) {
                 ItemMeta im = is.getItemMeta();
-                im.setLore(Arrays.asList("Lava MeltTime: " + PhysicsListener.getLavaMeltTimeAsString(dat), "Water MeltTime: " + PhysicsListener.getWaterMeltTimeAsString(dat)));
+                im.setLore(Arrays.asList("Lava MeltTime: " + PhysicsEngine.getLavaMeltTimeAsString(dat), "Water MeltTime: " + PhysicsEngine.getWaterMeltTimeAsString(dat)));
                 is.setItemMeta(im);
             }
         }

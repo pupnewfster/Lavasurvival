@@ -10,40 +10,40 @@ commands:
     description: Setup and add a new lavasurvival map!
     usage: /<command>
     permission: lavasurvival.setup
-    permission-message: You don't have <permission>
     aliases: [setup]
   lvote:
     description: Vote for a map!
     usage: /<command> <number>
     permission: lavasurvival.lvote
-    permission-message: You don't have <permission>
     aliases: [vote, v]
   endgame:
     description: Ends the current game, and sets it to <map> with the specified <gamemode>.
     usage: /<command> <map> <gamemode>
     permission: lavasurvival.endGame
-    permission-message: You don't have <permission>
     aliases: [end]
   rules:
     description: Gives you a copy of the rules.
     usage: /<command>
     permission: lavasurvival.rules
-    permission-message: You don't have <permission>
   airc:
     description: Check number of air blocks around you (20 radius)
     usage: /<command>
     permission: lavasurvival.airc
-    permission-message: You don't have <permission>
   spawn:
     description: Go back to map spawn
     usage: /<command>
     permission: lavasurvival.spawn
-    permission-message: You don't have <permission>
     aliases: [setup]
+  calculatecpmap:
+    description: Calculate the melt times of the blocks for Classic Physics.
+    usage: /<command>
+    permission: lavasurvival.calculateCPMap
+    aliases: [ccpmap, ccpm]
 permissions:
     lavasurvival.*:
         description: Lavasurvival's permission nodes
         children:
+            lavasurvival.calculateCPMap: true
             lavasurvival.setup: true
             lavasurvival.lvote: true
             lavasurvival.voteSpeak: true
@@ -75,4 +75,7 @@ permissions:
         default: op
     lavasurvival.seemmr:
         description: Allows you to see your mmr
+        default: op
+    lavasurvival.calculateCPMap:
+        description: Allows you to calculate a map for classic physics.
         default: op

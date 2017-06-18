@@ -39,6 +39,7 @@ public class Rise extends Gamemode {
         super.onStart();
         this.duration = getCurrentMap().getRiseOptions().generateRandomPrepareTime();
         this.timeOut = getCurrentMap().getRiseOptions().generateRandomRiseTime();
+        this.locations = getCurrentMap().getRiseOptions().getSpawnLocation(0, 1 - getCurrentMap().getHeight(), 0);
         globalMessage("The current gamemode is " + ChatColor.RED + ChatColor.BOLD + "RISE");
         globalMessage("The " + (LAVA ? "lava" : "water") + " will rise every " + ChatColor.DARK_RED + TimeUtils.toFriendlyTime(timeOut));
         globalMessage("You have " + ChatColor.DARK_RED + TimeUtils.toFriendlyTime(this.duration) + ChatColor.RESET + " to prepare!");
@@ -140,7 +141,6 @@ public class Rise extends Gamemode {
                 int nextMinute = (int) since / 60000;
                 if (nextMinute != this.lastMinute) {
                     this.lastMinute = nextMinute;
-                    this.locations = getCurrentMap().getRiseOptions().getSpawnLocation(0, 1 - getCurrentMap().getHeight(), 0);
                     getCurrentWorld().strikeLightningEffect(this.locations.get(RANDOM.nextInt(this.locations.size()))); //Changed to just effect not to kill unknowing player nearby
                     for (Location loc : this.locations)
                         if (loc.getBlockY() > this.highestCurrentY)
@@ -186,6 +186,12 @@ public class Rise extends Gamemode {
             this.layersLeft.setScore(this.lavaY - this.highestCurrentY);
         this.highestCurrentY += this.layerCount;
         this.lastEvent = System.currentTimeMillis(); //Set the last event to now
+    }
+
+    @Override
+    public boolean isLocationNearLavaSpawn(Location location, int distance) {
+        int x = location.getBlockX(), y = location.getBlockY(), z = location.getBlockZ();
+        return this.locations.stream().anyMatch(l -> Math.abs(l.getBlockX() - x) < distance && Math.abs(l.getBlockY() - y) < distance && Math.abs(l.getBlockZ() - z) < distance);
     }
 
     @Override

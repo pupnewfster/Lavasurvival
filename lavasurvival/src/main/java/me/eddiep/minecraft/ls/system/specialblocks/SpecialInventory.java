@@ -1,11 +1,11 @@
 package me.eddiep.minecraft.ls.system.specialblocks;
 
+import me.eddiep.handles.PhysicsEngine;
 import me.eddiep.minecraft.ls.game.Gamemode;
 import me.eddiep.minecraft.ls.game.items.Intrinsic;
 import me.eddiep.minecraft.ls.game.items.LavaItem;
 import me.eddiep.minecraft.ls.game.shop.ShopFactory;
 import me.eddiep.minecraft.ls.ranks.RankType;
-import me.eddiep.minecraft.ls.system.PhysicsListener;
 import me.eddiep.minecraft.ls.system.util.ArrayHelper;
 import me.eddiep.minecraft.ls.system.util.RandomHelper;
 import org.bukkit.Bukkit;
@@ -87,7 +87,7 @@ public class SpecialInventory {
             MaterialData dat = is.getData();
             if (!dat.getItemType().equals(Material.AIR)) {
                 ItemMeta im = is.getItemMeta();
-                im.setLore(Arrays.asList("Lava MeltTime: " + PhysicsListener.getLavaMeltTimeAsString(dat), "Water MeltTime: " + PhysicsListener.getWaterMeltTimeAsString(dat)));
+                im.setLore(Arrays.asList("Lava MeltTime: " + PhysicsEngine.getLavaMeltTimeAsString(dat), "Water MeltTime: " + PhysicsEngine.getWaterMeltTimeAsString(dat)));
                 is.setItemMeta(im);
             }
         }
