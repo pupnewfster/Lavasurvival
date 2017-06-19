@@ -1,11 +1,10 @@
-package me.eddiep.handles;
+package me.eddiep;
 
 import org.bukkit.Location;
-import org.bukkit.event.Cancellable;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 
-public class ClassicBlockPlaceEvent extends Event implements Cancellable {
+public class ClassicBlockPlaceEvent extends Event {
     private static final HandlerList handlers = new HandlerList();
     private boolean cancel;
     private final Location location;
@@ -25,15 +24,5 @@ public class ClassicBlockPlaceEvent extends Event implements Cancellable {
 
     public HandlerList getHandlers() {
         return handlers;
-    }
-
-    @Override
-    public boolean isCancelled() {
-        return this.cancel;
-    }
-
-    @Override
-    public void setCancelled(boolean b) {
-        this.cancel = b;
     }
 }

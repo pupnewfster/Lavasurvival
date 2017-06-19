@@ -173,7 +173,7 @@ public class Rise extends Gamemode {
         }
         getCurrentWorld().strikeLightningEffect(this.locations.get(RANDOM.nextInt(this.locations.size()))); //Actions are better than words :3
         this.locations.forEach(l -> {
-            ClassicPhysics.INSTANCE.getPhysicsHandler().forcePlaceClassicBlockAt(l, getMat());
+            ClassicPhysics.getPhysicsEngine().placeClassicBlock(l, getMat());
             l.add(0, this.layerCount, 0);
         });
         if (this.specialLayers > 0 && (this.highestCurrentY - this.specialDelay) % this.specialGap == 0) {

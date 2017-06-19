@@ -2,7 +2,7 @@ package me.eddiep.minecraft.ls.commands;
 
 import com.crossge.necessities.Necessities;
 import com.crossge.necessities.RankManager.User;
-import me.eddiep.handles.PhysicsEngine;
+import me.eddiep.PhysicsEngine;
 import me.eddiep.minecraft.ls.game.Gamemode;
 import me.eddiep.minecraft.ls.game.LavaMap;
 import org.bukkit.ChatColor;

@@ -2,10 +2,9 @@ package me.eddiep.minecraft.ls.system;
 
 import com.crossge.necessities.Necessities;
 import me.eddiep.BlockingType;
-import me.eddiep.ChunkEdit;
+import me.eddiep.ClassicBlockPlaceEvent;
 import me.eddiep.ClassicPhysics;
-import me.eddiep.handles.ClassicBlockPlaceEvent;
-import me.eddiep.handles.PhysicsEngine;
+import me.eddiep.PhysicsEngine;
 import me.eddiep.minecraft.ls.Lavasurvival;
 import me.eddiep.minecraft.ls.game.Gamemode;
 import me.eddiep.minecraft.ls.game.LavaMap;
@@ -15,12 +14,12 @@ import me.eddiep.minecraft.ls.ranks.UserInfo;
 import me.eddiep.minecraft.ls.ranks.UserManager;
 import me.eddiep.minecraft.ls.system.bank.BankInventory;
 import me.eddiep.minecraft.ls.system.specialblocks.SpecialInventory;
-import net.minecraft.server.v1_12_R1.*;
+import net.minecraft.server.v1_12_R1.IChatBaseComponent;
+import net.minecraft.server.v1_12_R1.PacketPlayInClientCommand;
+import net.minecraft.server.v1_12_R1.PacketPlayOutTitle;
 import org.bukkit.*;
-import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
-import org.bukkit.craftbukkit.v1_12_R1.CraftWorld;
 import org.bukkit.craftbukkit.v1_12_R1.entity.CraftPlayer;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
@@ -206,7 +205,7 @@ public class PlayerListener implements Listener {
                 }
                 if (block.getType().equals(Material.SPONGE)) {
                     Location l = block.getLocation();
-                    ClassicPhysics.INSTANCE.getPhysicsEngine().removeSponge(l.getBlockX(), l.getBlockY(), l.getBlockZ());
+                    ClassicPhysics.getPhysicsEngine().removeSponge(l.getBlockX(), l.getBlockY(), l.getBlockZ());
                 }
                 block.setType(Material.AIR);
                 Bukkit.getPluginManager().callEvent(new BlockBreakEvent(block, p));
@@ -291,10 +290,7 @@ public class PlayerListener implements Listener {
                 }
                 if (sendUpdate) {
                     event.setCancelled(true);
-                    new ChunkEdit(((CraftWorld) p.getWorld()).getHandle()).setBlock(relative.getX(), relative.getY(), relative.getZ(), item.getType(), data);
-                    //Send the update packet to the people
-                    Packet pack = new PacketPlayOutBlockChange(((CraftWorld) p.getWorld()).getHandle(), new BlockPosition(relative.getX(), relative.getY(), relative.getZ()));
-                    Bukkit.getOnlinePlayers().forEach(player -> ((CraftPlayer) player).getHandle().playerConnection.sendPacket(pack));
+                    ClassicPhysics.getPhysicsEngine().placeBlock(relative.getX(), relative.getY(), relative.getZ(), item.getType(), data);
                     //TODO: if we add a survival mode make it remove the item from them
                 }
             }
@@ -440,7 +436,7 @@ public class PlayerListener implements Listener {
                     event.getPlayer().sendMessage(ChatColor.RED + "" + ChatColor.BOLD + "You can't place a sponge so close to a lava/water spawn!");
                     return;
                 } else
-                    ClassicPhysics.INSTANCE.getPhysicsEngine().placeSponge(event.getBlock().getX(), event.getBlock().getY(), event.getBlock().getZ(), blockingType);
+                    ClassicPhysics.getPhysicsEngine().placeSponge(event.getBlock().getX(), event.getBlock().getY(), event.getBlock().getZ(), blockingType);
                 Lavasurvival.INSTANCE.getUserManager().getUser(event.getPlayer().getUniqueId()).incrementBlockCount();
                 return;
             }
@@ -492,7 +488,7 @@ public class PlayerListener implements Listener {
             }
             if (Gamemode.getCurrentGame().isAlive(player)) {
                 Necessities.getUM().getUser(player.getUniqueId()).setStatus("alive");
-                PhysicsEngine pe = ClassicPhysics.INSTANCE.getPhysicsEngine();
+                PhysicsEngine pe = ClassicPhysics.getPhysicsEngine();
                 if (!pe.isClassicBlock(player.getLocation()) && !pe.isClassicBlock(player.getEyeLocation()))
                     player.teleport(Gamemode.getCurrentWorld().getSpawnLocation().clone());
             }
@@ -523,8 +519,8 @@ public class PlayerListener implements Listener {
                 return;
             UserInfo u = Lavasurvival.INSTANCE.getUserManager().getUser(event.getPlayer().getUniqueId());
             Block b = to.getBlock(), above = b.getRelative(BlockFace.UP);
-            if (((b.getType().equals(Material.WATER) || b.getType().equals(Material.STATIONARY_WATER)) && ClassicPhysics.INSTANCE.getPhysicsEngine().isClassicBlock(b.getLocation())) ||
-                    ((above.getType().equals(Material.WATER) || above.getType().equals(Material.STATIONARY_WATER)) && ClassicPhysics.INSTANCE.getPhysicsEngine().isClassicBlock(above.getLocation()))) {
+            if (((b.getType().equals(Material.WATER) || b.getType().equals(Material.STATIONARY_WATER)) && ClassicPhysics.getPhysicsEngine().isClassicBlock(b.getLocation())) ||
+                    ((above.getType().equals(Material.WATER) || above.getType().equals(Material.STATIONARY_WATER)) && ClassicPhysics.getPhysicsEngine().isClassicBlock(above.getLocation()))) {
                 if (!u.isInWater()) {
                     if (!PlayerStatusManager.isInvincible(event.getPlayer()) && !event.getPlayer().getGameMode().equals(GameMode.CREATIVE) && !event.getPlayer().getGameMode().equals(GameMode.SPECTATOR))
                         u.damagePlayer();

@@ -6,7 +6,7 @@ import com.crossge.necessities.RankManager.Rank;
 import com.crossge.necessities.RankManager.RankManager;
 import com.crossge.necessities.Utils;
 import me.eddiep.ClassicPhysics;
-import me.eddiep.handles.PhysicsEngine;
+import me.eddiep.PhysicsEngine;
 import me.eddiep.minecraft.ls.Lavasurvival;
 import me.eddiep.minecraft.ls.game.impl.Flood;
 import me.eddiep.minecraft.ls.game.impl.Fusion;
@@ -281,7 +281,7 @@ public abstract class Gamemode {
                 new Thread(() -> restoreBackup(lastMap.getWorld())).start();
         }
         Bukkit.getScheduler().scheduleSyncDelayedTask(Lavasurvival.INSTANCE, () -> {
-            PhysicsEngine pe = ClassicPhysics.INSTANCE.getPhysicsEngine();
+            PhysicsEngine pe = ClassicPhysics.getPhysicsEngine();
             pe.setRangePercent(getCurrentMap().getMeltRange() / 100.0);
             pe.setMeltMultiplier(getCurrentMap().getMeltMultiplier());
             pe.start(getCurrentWorld().getName());
@@ -746,7 +746,7 @@ public abstract class Gamemode {
         }
         //Bukkit.getScheduler().cancelTasks(Lavasurvival.INSTANCE);
         globalMessage(ChatColor.GREEN + "The round has ended!");
-        ClassicPhysics.INSTANCE.getPhysicsEngine().end();
+        ClassicPhysics.getPhysicsEngine().end();
         this.isEnding = false;
         this.hasEnded = true;
         long duration = System.currentTimeMillis() - startTime;
@@ -985,7 +985,7 @@ public abstract class Gamemode {
     }
 
     private void addFallingTypes() {
-        ClassicPhysics.INSTANCE.getPhysicsHandler().addFallingTypes(Arrays.asList(money, common, uncommon, epic));
+        ClassicPhysics.getPhysicsEngine().addFallingTypes(Arrays.asList(money, common, uncommon, epic));
     }
 
     private final MaterialData money = new MaterialData(Material.BOOKSHELF);

@@ -1,14 +1,23 @@
-package me.eddiep.handles;
+package me.eddiep;
 
 import com.boydti.fawe.FaweAPI;
 import com.boydti.fawe.object.FaweQueue;
-import me.eddiep.BlockingType;
-import me.eddiep.ClassicPhysics;
 import org.bukkit.*;
+import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
+import org.bukkit.craftbukkit.v1_12_R1.entity.CraftFallingBlock;
 import org.bukkit.entity.AreaEffectCloud;
 import org.bukkit.entity.EntityType;
+import org.bukkit.entity.FallingBlock;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
+import org.bukkit.event.Listener;
+import org.bukkit.event.block.*;
+import org.bukkit.event.entity.EntityChangeBlockEvent;
+import org.bukkit.event.entity.ItemSpawnEvent;
 import org.bukkit.material.MaterialData;
 import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.scoreboard.Team;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -16,7 +25,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.util.*;
 
-public class PhysicsEngine {
+public class PhysicsEngine implements Listener {
     private final static int SHIFT = 30000000;//30 million
     private static final HashMap<MaterialData, Short> lavaTicksToMelt = new HashMap<>();
     private static final HashMap<MaterialData, Short> waterTicksToMelt = new HashMap<>();
@@ -417,7 +426,7 @@ public class PhysicsEngine {
 
     private boolean isClassicBlock(long l) {
         Short lo = meltMap.get(l);
-        return lo != null && lo == -2;
+        return lo != null && lo < -1;//All numbers less than -1 are classic blocks of some sort
     }
 
     void addMeltTimer(int x, int y, int z, MaterialData type) {
@@ -543,7 +552,7 @@ public class PhysicsEngine {
             startMelt(from, to, time);
     }
 
-    void placeAt(int x, int y, int z) {
+    private void placeAt(int x, int y, int z) {
         placeAt(convert(x, y, z));
     }
 
@@ -552,7 +561,7 @@ public class PhysicsEngine {
             return;//Cancel if it is blocked (could happen from a melt or order issue)
         meltMap.put(to, (short) -2);
         activeBlocks.add(to);
-        queue.setBlock(getX(to), getY(to), getZ(to), 11);//LAVA
+        queue.setBlock(getX(to), getY(to), getZ(to), 11);//11 is LAVA, 9 is WATER
     }
 
     private void startMelt(long from, long to, int time) {
@@ -691,5 +700,124 @@ public class PhysicsEngine {
             this.blockingType = blockingType;
             this.outerLocations = outerLocations;
         }
+    }
+
+    public void placeClassicBlock(Location location, Material material) {//TODO make the material do things
+        placeAt(location.getBlockX(), location.getBlockY(), location.getBlockZ());
+    }
+
+    public void placeBlock(int x, int y, int z, Material type, byte data) {
+        FaweQueue q = FaweAPI.createQueue(world, true);
+        q.setBlock(x, y, z, type.getId(), data);
+        q.flush();
+        addMeltTimer(x, y, z, new MaterialData(type, data));
+    }
+
+    private List<MaterialData> fallingTypes;
+
+    public void addFallingTypes(List<MaterialData> types) {
+        this.fallingTypes = types;
+    }
+
+    @EventHandler(priority = EventPriority.MONITOR)
+    public void onBlockPlace(BlockPlaceEvent event) {
+        Block b = event.getBlock();
+        addMeltTimer(b.getX(), b.getY(), b.getZ(), new MaterialData(b.getType(), b.getData()));
+        if (b.getType().toString().contains("DOOR") && b.getRelative(BlockFace.UP).getType().equals(b.getType()))
+            addMeltTimer(b.getX(), b.getY() + 1, b.getZ(), new MaterialData(b.getType(), b.getData()));
+    }
+
+    @EventHandler(priority = EventPriority.MONITOR)
+    public void onBlockBreak(BlockBreakEvent event) {
+        Block b = event.getBlock();
+        addMeltTimer(b.getX(), b.getY(), b.getZ(), new MaterialData(Material.AIR));
+    }
+
+    @SuppressWarnings("deprecation")
+    @EventHandler
+    public void blockFall(EntityChangeBlockEvent event) {
+        if (event.getEntity() instanceof FallingBlock) {
+            FallingBlock f = (FallingBlock) event.getEntity();
+            event.setCancelled(true);
+            if (!f.isGlowing())
+                event.getBlock().getState().update(true, false);
+            else {
+                String uid = f.getUniqueId().toString();
+                f = f.getWorld().spawnFallingBlock(f.getLocation(), new MaterialData(f.getMaterial(), f.getBlockData()));
+                f.setGlowing(true);
+                f.setGravity(false);
+                ((CraftFallingBlock) f).getHandle().ticksLived = -2147483648; //Bypass the spigot check of it being negative
+                Team t = Bukkit.getScoreboardManager().getMainScoreboard().getTeam("Special");
+                if (t != null) {
+                    t.removeEntry(uid);
+                    t.addEntry(f.getUniqueId().toString());
+                }
+            }
+        }
+    }
+
+    @SuppressWarnings("deprecation")
+    @EventHandler
+    public void itemSpawn(ItemSpawnEvent event) {
+        org.bukkit.entity.Item i = event.getEntity();
+        MaterialData data = i.getItemStack().getData();
+        if (data.getItemType().equals(Material.DROPPER))
+            data = new MaterialData(Material.DROPPER, (byte) 1);
+        if (i.getTicksLived() == 0 && this.fallingTypes.contains(data)) {
+            FallingBlock f = i.getWorld().spawnFallingBlock(i.getLocation(), data);
+            f.setGlowing(true);
+            f.setGravity(false);
+            ((CraftFallingBlock) f).getHandle().ticksLived = -2147483648; //Bypass the spigot check of it being negative
+            Team t = Bukkit.getScoreboardManager().getMainScoreboard().getTeam("Special");
+            if (t != null)
+                t.addEntry(f.getUniqueId().toString());
+        }
+    }
+
+    @EventHandler(priority = EventPriority.MONITOR)
+    public void onPhysicsUpdate(BlockPhysicsEvent event) {
+        if (!event.getBlock().getType().toString().contains("DOOR") || !event.getChangedType().toString().contains("PLATE") || (event.getBlock().getType().toString().contains("DOOR") &&
+                event.getChangedType().toString().contains("PLATE") && !event.getBlock().getType().equals(event.getBlock().getRelative(BlockFace.UP).getType())))
+            event.setCancelled(true);
+    }
+
+    @EventHandler
+    public void onLeafDecay(LeavesDecayEvent event) {
+        event.setCancelled(true);
+    }
+
+    @EventHandler
+    public void onLiquidFlow(BlockFromToEvent event) {
+        event.setCancelled(true);
+    }
+
+    @EventHandler
+    public void onIceMelt(BlockFadeEvent event) {
+        event.setCancelled(true);
+    }
+
+    @EventHandler
+    public void onCactusGrow(BlockGrowEvent event) {
+        event.setCancelled(true);
+    }
+
+    @EventHandler
+    public void onBlockForm(BlockFormEvent event) {
+        event.setCancelled(true);
+    }
+
+    @EventHandler
+    public void onBlockSpread(BlockSpreadEvent event) {
+        event.setCancelled(true);
+    }
+
+    @EventHandler
+    public void onBlockBurn(BlockBurnEvent event) {
+        event.setCancelled(true);
+    }
+
+    @EventHandler
+    public void fireSpread(BlockIgniteEvent event) {
+        event.setCancelled(true);
     }
 }

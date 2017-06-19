@@ -1,6 +1,6 @@
 package me.eddiep.minecraft.ls.game.shop.impl;
 
-import me.eddiep.handles.PhysicsEngine;
+import me.eddiep.PhysicsEngine;
 import me.eddiep.minecraft.ls.game.shop.ShopFactory;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;

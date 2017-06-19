@@ -1,6 +1,6 @@
 package me.eddiep.minecraft.ls.system.specialblocks;
 
-import me.eddiep.handles.PhysicsEngine;
+import me.eddiep.PhysicsEngine;
 import me.eddiep.minecraft.ls.game.Gamemode;
 import me.eddiep.minecraft.ls.game.items.Intrinsic;
 import me.eddiep.minecraft.ls.game.items.LavaItem;

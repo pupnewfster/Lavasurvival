@@ -1,7 +1,5 @@
 package me.eddiep;
 
-import me.eddiep.handles.ClassicPhysicsHandler;
-import me.eddiep.handles.PhysicsEngine;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.command.Command;
@@ -13,24 +11,21 @@ import java.io.File;
 
 @SuppressWarnings("unused")
 public class ClassicPhysics extends JavaPlugin {
-    public static final Object Sync = new Object();
     public static ClassicPhysics INSTANCE;
-    private ClassicPhysicsHandler handler;
+    private PhysicsEngine pe;
 
     @Override
     public void onEnable() {
         INSTANCE = this;
-        handler = new ClassicPhysicsHandler(this);
+        this.getServer().getPluginManager().registerEvents(pe = new PhysicsEngine(), this);
         File d = getDataFolder();
         if (!d.exists())
             d.mkdir();
-
-        handler.enable();
     }
 
     @Override
     public void onDisable() {
-        handler.disable();
+        pe.end();
     }
 
     @Override
@@ -41,7 +36,7 @@ public class ClassicPhysics extends JavaPlugin {
                 return true;
             }
             if (sender instanceof Player)
-                handler.forcePlaceClassicBlockAt(((Player) sender).getLocation(), Material.LAVA);
+                pe.placeClassicBlock(((Player) sender).getLocation(), Material.STATIONARY_LAVA);
             else
                 sender.sendMessage("This command can only be used in-game!");
             return true;
@@ -51,7 +46,8 @@ public class ClassicPhysics extends JavaPlugin {
                 return true;
             }
             if (sender instanceof Player)
-                handler.forcePlaceClassicBlockAt(((Player) sender).getLocation(), Material.WATER);
+                sender.sendMessage("This command currently does not work, because physics does not work for water, yet.");
+                //pe.placeClassicBlock(((Player) sender).getLocation(), Material.STATIONARY_WATER);
             else
                 sender.sendMessage("This command can only be used in-game!");
             return true;
@@ -59,12 +55,8 @@ public class ClassicPhysics extends JavaPlugin {
         return false;
     }
 
-    public PhysicsEngine getPhysicsEngine() {
-        return handler.getPhysicsEngine();
-    }
-
-    public ClassicPhysicsHandler getPhysicsHandler() {
-        return handler;
+    public static PhysicsEngine getPhysicsEngine() {
+        return INSTANCE.pe;
     }
 
     public void log(String message) {

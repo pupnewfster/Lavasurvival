@@ -1,6 +1,6 @@
 package me.eddiep.minecraft.ls.system.bank;
 
-import me.eddiep.handles.PhysicsEngine;
+import me.eddiep.PhysicsEngine;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;

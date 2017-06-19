@@ -2,7 +2,7 @@ package me.eddiep.minecraft.ls.ranks;
 
 import com.crossge.necessities.Necessities;
 import me.eddiep.ClassicPhysics;
-import me.eddiep.handles.PhysicsEngine;
+import me.eddiep.PhysicsEngine;
 import me.eddiep.minecraft.ls.Lavasurvival;
 import me.eddiep.minecraft.ls.game.Gamemode;
 import me.eddiep.minecraft.ls.game.items.LavaItem;
@@ -208,8 +208,8 @@ public class UserInfo {
                         damagePlayer();
                     Block b = getPlayer().getLocation().getBlock(), above = b.getRelative(BlockFace.UP);
                     setInWater(((b.getType().equals(Material.WATER) || b.getType().equals(Material.STATIONARY_WATER)) &&
-                            ClassicPhysics.INSTANCE.getPhysicsEngine().isClassicBlock(b.getLocation())) || ((above.getType().equals(Material.WATER) ||
-                            above.getType().equals(Material.STATIONARY_WATER)) && ClassicPhysics.INSTANCE.getPhysicsEngine().isClassicBlock(above.getLocation())));
+                            ClassicPhysics.getPhysicsEngine().isClassicBlock(b.getLocation())) || ((above.getType().equals(Material.WATER) ||
+                            above.getType().equals(Material.STATIONARY_WATER)) && ClassicPhysics.getPhysicsEngine().isClassicBlock(above.getLocation())));
                 }
             }, (int) (20 * Gamemode.DAMAGE_FREQUENCY));
     }

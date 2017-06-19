@@ -131,7 +131,7 @@ public class Flood extends Gamemode {
             super.poured = true;
             globalMessage(ChatColor.DARK_RED + "Here comes the " + (LAVA ? "lava" : "water") + "!");
             this.gameStart = System.currentTimeMillis();
-            this.lavaPoints.forEach(l -> ClassicPhysics.INSTANCE.getPhysicsHandler().forcePlaceClassicBlockAt(l, getMat()));
+            this.lavaPoints.forEach(l -> ClassicPhysics.getPhysicsEngine().placeClassicBlock(l, getMat()));
             this.duration = getCurrentMap().getFloodOptions().generateRandomEndTime();
             this.objective.setDisplayName("Round Ends In: " + ChatColor.BOLD + time);
         }
