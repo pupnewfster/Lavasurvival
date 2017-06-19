@@ -281,8 +281,10 @@ public abstract class Gamemode {
                 new Thread(() -> restoreBackup(lastMap.getWorld())).start();
         }
         Bukkit.getScheduler().scheduleSyncDelayedTask(Lavasurvival.INSTANCE, () -> {
-            ClassicPhysics.INSTANCE.getPhysicsHandler().setPhysicsWorld(getCurrentWorld());
-            ClassicPhysics.INSTANCE.getPhysicsEngine().setRangePercent(getCurrentMap().getMeltRange() / 100.0);
+            PhysicsEngine pe = ClassicPhysics.INSTANCE.getPhysicsEngine();
+            pe.setRangePercent(getCurrentMap().getMeltRange() / 100.0);
+            pe.setMeltMultiplier(getCurrentMap().getMeltMultiplier());
+            pe.start(getCurrentWorld().getName());
             spawnSpecialBlocks(false);
         }, 20); //Delay it slightly to ensure things are set
         Lavasurvival.INSTANCE.MONEY_VIEWER.run();
@@ -744,7 +746,7 @@ public abstract class Gamemode {
         }
         //Bukkit.getScheduler().cancelTasks(Lavasurvival.INSTANCE);
         globalMessage(ChatColor.GREEN + "The round has ended!");
-        ClassicPhysics.INSTANCE.getPhysicsHandler().setPhysicsWorld(null);
+        ClassicPhysics.INSTANCE.getPhysicsEngine().end();
         this.isEnding = false;
         this.hasEnded = true;
         long duration = System.currentTimeMillis() - startTime;

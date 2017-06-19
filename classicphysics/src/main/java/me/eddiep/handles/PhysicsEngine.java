@@ -14,10 +14,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 
 public class PhysicsEngine {
     private final static int SHIFT = 30000000;//30 million
@@ -352,20 +349,38 @@ public class PhysicsEngine {
     private ArrayList<Long> activeBlocks = new ArrayList<>();//TODO Should this stay an array list?
     private HashMap<Long, Short> blockedMap = new HashMap<>();//yxz, number blocked
 
+    @SuppressWarnings("unchecked")
     private void loadMeltMap(String worldName) {
         File fileMeltMap = new File("plugins/ClassicPhysics", worldName + ".txt");
-        if (fileMeltMap.exists())
+        if (fileMeltMap.exists()) {
+            HashMap<Short, ArrayList<Long>> compressedMeltMap = new HashMap<>();
             try (ObjectInputStream is = new ObjectInputStream(new FileInputStream(fileMeltMap))) {
-                meltMap = (HashMap<Long, Short>) is.readObject();
+                compressedMeltMap = (HashMap<Short, ArrayList<Long>>) is.readObject();
             } catch (IOException | ClassNotFoundException ignored) {
             }
+            for (Map.Entry<Short, ArrayList<Long>> cMelt : compressedMeltMap.entrySet()) {
+                short s = cMelt.getKey();
+                for (Long l : cMelt.getValue()) {
+                    short bonus = (short) RANDOM.nextInt((short) (s * percent + 0.5) + 1);
+                    if (RANDOM.nextBoolean())
+                        s += bonus;
+                    else
+                        s -= bonus;
+                    if (s == 0)//If it somehow ended up as 0 just don't add it
+                        continue;
+                    if (s > 1)
+                        s *= multiplier;
+                    meltMap.put(l, s);
+                }
+            }
+        }
     }
 
     public boolean isClassicBlock(Location location) {
         return isClassicBlock(location.getBlockX(), location.getBlockY(), location.getBlockZ());
     }
 
-    public boolean isClassicBlock(int x, int y, int z) {
+    private boolean isClassicBlock(int x, int y, int z) {
         return isClassicBlock(convert(x, y, z));
     }
 
@@ -448,12 +463,17 @@ public class PhysicsEngine {
     };
 
     private static double percent;
+    private static double multiplier;
 
     public void setRangePercent(double rangePercent) {
         percent = rangePercent;
     }
 
-    void start(String worldName) {
+    public void setMeltMultiplier(double meltMultiplier) {
+        multiplier = meltMultiplier;
+    }
+
+    public void start(String worldName) {
         meltMap = new HashMap<>();
         activeBlocks = new ArrayList<>();
         meltTimers = new HashMap<>();
@@ -476,11 +496,12 @@ public class PhysicsEngine {
     public void end() {
         //TODO end queue somehow? clear? or just flush or both
         stopped = true;
+        running = false;
     }
 
     private FaweQueue queue;
 
-    private void tick() {//TODO maybe have water be -3 etc to determine what kind of classic block something is
+    private void tick() {//TODO maybe have water be -3 etc to determine what kind of classic block something is. How to handle different melt times?
         tickCount++;
 
         if (!meltTimers.isEmpty()) {
@@ -495,10 +516,8 @@ public class PhysicsEngine {
             meltTimers.remove(tickCount);
         }
 
-        if (running)
-            return;
-        //TODO make lava not flow as fast about 1/10th the current speed because of running the tick every tick instead of every 10
-        //TODO what is best way to slow lava down? add melt time to air?
+        if (running || tickCount % 10 != 0)
+            return; //TODO if not running do we want to get a head start incase we were behind?
         running = true;
         List<Long> lastActive = activeBlocks;
         activeBlocks = new ArrayList<>();
@@ -514,6 +533,8 @@ public class PhysicsEngine {
     }
 
     private void attemptFlow(long from, long to) {
+        if (getY(to) < 0)//Disable physics below world
+            return;
         Short time = meltMap.get(to);
         if (time == null || time == 0) //Instant melt
             placeAt(to);
@@ -559,9 +580,7 @@ public class PhysicsEngine {
     private HashMap<Long, ArrayList<Long>> spongeTimers = new HashMap<>();
     private HashMap<Long, SpongeInfo> sponges = new HashMap<>();
 
-    private final int spongeDuration = 300;//15 seconds
-
-    public boolean placeSponge(int xLoc, int yLoc, int zLoc, BlockingType blockingType) {
+    public void placeSponge(int xLoc, int yLoc, int zLoc, BlockingType blockingType) {
         //TODO Care about blockingType: maybe use some of the extra bits at beginning of location?
         ArrayList<Long> locations = new ArrayList<>(), outerLocations = new ArrayList<>();
         int range = blockingType.equals(BlockingType.BOTH) ? 10 : 5; //TODO make this a param if we end up making a sponge with a range other than 10 that can block both
@@ -580,12 +599,12 @@ public class PhysicsEngine {
                 }
             }
         }
+        int spongeDuration = 300;
         ArrayList<Long> spngs = spongeTimers.computeIfAbsent(tickCount + spongeDuration, k -> new ArrayList<>());
         spngs.add(loc);
         SpongeInfo info;
         sponges.put(loc, info = new SpongeInfo(blockingType, locations, outerLocations));
-        info.curParticle = spawnParticleEffect(loc, spongeDuration, Color.LIME);
-        return true;
+        info.curParticle = spawnParticleEffect(loc, spongeDuration);
     }
 
     private void addBlockedLocation(long loc, BlockingType blockingType, boolean clearIfClassic) {
@@ -672,13 +691,13 @@ public class PhysicsEngine {
         return w == null ? null : new Location(w, getX(l), getY(l), getZ(l));
     }
 
-    private AreaEffectCloud spawnParticleEffect(long loc, int ticks, Color color) {
+    private AreaEffectCloud spawnParticleEffect(long loc, int ticks) {
         Location location = fromLong(loc);
         if (location == null)
             return null;
         location.add(0.5, 0.5, 0.5);
         AreaEffectCloud e = (AreaEffectCloud) w.spawnEntity(location, EntityType.AREA_EFFECT_CLOUD);
-        e.setColor(color);
+        e.setColor(Color.LIME);
         e.setRadius((float) 0.75);
         e.setDuration(ticks);
         return e;

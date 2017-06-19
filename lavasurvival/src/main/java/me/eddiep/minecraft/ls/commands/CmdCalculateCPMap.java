@@ -17,8 +17,8 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
+import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Random;
 
 public class CmdCalculateCPMap implements Cmd {
     @Override
@@ -60,38 +60,23 @@ public class CmdCalculateCPMap implements Cmd {
             z2 = temp;
         }
         LavaMap map = Gamemode.getCurrentMap();
-        int ly = map.getLavaY() + 1;
-        if (ly < y2)
-            y2 = ly;
-        HashMap<Long, Short> meltMap = new HashMap<>();
-        double mult = Gamemode.getCurrentMap().getMeltMultiplier();
-        double percent = Gamemode.getCurrentMap().getMeltRange() / 100.0;
-        Random r = new Random();
+        y2 = map.getLavaY() + 1;
+        HashMap<Short, ArrayList<Long>> meltMap = new HashMap<>();
         for (int y = y1; y <= y2; y++) {
             for (int x = x1; x <= x2; x++) {
                 for (int z = z1; z <= z2; z++) {
                     Location loc = new Location(w, x, y, z);
                     if (map.isInSafeZone(loc)) {
-                        meltMap.put(PhysicsEngine.convert(x, y, z), (short) -1);
+                        ArrayList<Long> locations = meltMap.computeIfAbsent((short) -1, k -> new ArrayList<>());
+                        locations.add(PhysicsEngine.convert(x, y, z));
                         continue;
                     }
                     Block b = loc.getBlock();
                     short melt = PhysicsEngine.getMeltTime(new MaterialData(b.getType(), b.getData()));
                     if (melt == 0)
                         continue;
-
-                    short bonus = (short) r.nextInt((short) (melt * percent + 0.5) + 1);
-                    if (r.nextBoolean())
-                        melt += bonus;
-                    else
-                        melt -= bonus;
-
-                    if (melt == 0)//If it somehow ended up as 0 just don't add it
-                        continue;
-
-                    if (melt > 1)
-                        melt *= mult;
-                    meltMap.put(PhysicsEngine.convert(x, y, z), melt);
+                    ArrayList<Long> locations = meltMap.computeIfAbsent(melt, k -> new ArrayList<>());
+                    locations.add(PhysicsEngine.convert(x, y, z));
                 }
             }
         }

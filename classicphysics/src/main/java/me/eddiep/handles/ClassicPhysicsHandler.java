@@ -3,7 +3,6 @@ package me.eddiep.handles;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.craftbukkit.v1_12_R1.entity.CraftFallingBlock;
@@ -35,13 +34,6 @@ public final class ClassicPhysicsHandler implements Listener {
 
     public Plugin getOwner() {
         return owner;
-    }
-
-    public void setPhysicsWorld(World w) {
-        if (w == null)
-            pe.end();
-        else
-            pe.start(w.getName());
     }
 
     @EventHandler(priority = EventPriority.MONITOR)
@@ -162,7 +154,7 @@ public final class ClassicPhysicsHandler implements Listener {
     }
 
     public void disable() {
-        BlockPhysicsEvent.getHandlerList().unregister(this);
+        BlockPhysicsEvent.getHandlerList().unregister(this);//TODO why is this here
         pe.end();
     }
 }
