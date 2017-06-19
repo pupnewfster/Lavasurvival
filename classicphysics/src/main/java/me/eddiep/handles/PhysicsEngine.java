@@ -18,13 +18,40 @@ import java.util.*;
 
 public class PhysicsEngine {
     private final static int SHIFT = 30000000;//30 million
+    private static final HashMap<MaterialData, Short> lavaTicksToMelt = new HashMap<>();
+    private static final HashMap<MaterialData, Short> waterTicksToMelt = new HashMap<>();
+    private static final Random RANDOM = new Random();
+    private static double percent;
+    private static double multiplier;
     //Values that shift the specific direction
     private final long X = 67108864;
     private final long Y = 4503599627370496L;
     private final long Z = 1;
-
-    private static final HashMap<MaterialData, Short> lavaTicksToMelt = new HashMap<>();
-    private static final HashMap<MaterialData, Short> waterTicksToMelt = new HashMap<>();
+    private final Color warn = Color.fromRGB(244, 66, 244);
+    /**
+     * key is YXZ, Value is the melt time of the material of the block.
+     * -1 is unmeltable, and -2 is a block of "active" liquid
+     */
+    private HashMap<Long, Short> meltMap = new HashMap<>();//yxz, melt time of material of block,
+    private ArrayList<Long> activeBlocks = new ArrayList<>();//TODO Should this stay an array list?
+    private HashMap<Long, Short> blockedMap = new HashMap<>();//yxz, number blocked
+    private boolean running, stopped;
+    private World w;
+    private FaweQueue queue;
+    private HashMap<Long, ArrayList<MeltLocationInfo>> meltTimers;//Should value be queue
+    private long tickCount;
+    private HashMap<Long, ArrayList<Long>> spongeTimers = new HashMap<>();
+    private HashMap<Long, SpongeInfo> sponges = new HashMap<>();
+    private BukkitRunnable ticker = new BukkitRunnable() {
+        @Override
+        public void run() {
+            if (stopped)
+                return;
+            tick();
+            spongeTick();
+        }
+    };
+    private String world;
 
     @SuppressWarnings("deprecation")
     public PhysicsEngine() {
@@ -341,13 +368,17 @@ public class PhysicsEngine {
             waterTicksToMelt.put(data, (short) water);
     }
 
-    /**
-     * key is YXZ, Value is the melt time of the material of the block.
-     * -1 is unmeltable, and -2 is a block of "active" liquid
-     */
-    private HashMap<Long, Short> meltMap = new HashMap<>();//yxz, melt time of material of block,
-    private ArrayList<Long> activeBlocks = new ArrayList<>();//TODO Should this stay an array list?
-    private HashMap<Long, Short> blockedMap = new HashMap<>();//yxz, number blocked
+    public static short getMeltTime(MaterialData type) {
+        //Can use Air or null to remove it
+        if (!lavaTicksToMelt.containsKey(type))
+            type = new MaterialData(type.getItemType());
+        return lavaTicksToMelt.getOrDefault(type, (short) 0);
+    }
+
+    public static long convert(int x, int y, int z) {
+        //TODO check if x, or z is greater than 30 million and if y > 256
+        return (long) y << 52 | (long) (x + SHIFT) << 26 | (z + SHIFT);
+    }
 
     @SuppressWarnings("unchecked")
     private void loadMeltMap(String worldName) {
@@ -389,8 +420,6 @@ public class PhysicsEngine {
         return lo != null && lo == -2;
     }
 
-    private static final Random RANDOM = new Random();
-
     void addMeltTimer(int x, int y, int z, MaterialData type) {
         //TODO remove from active if it is not air. Shouldn't it just remove from active all together?
         long l = convert(x, y, z);
@@ -422,18 +451,6 @@ public class PhysicsEngine {
             activeBlocks.add(temp);
     }
 
-    public static short getMeltTime(MaterialData type) {
-        //Can use Air or null to remove it
-        if (!lavaTicksToMelt.containsKey(type))
-            type = new MaterialData(type.getItemType());
-        return lavaTicksToMelt.getOrDefault(type, (short) 0);
-    }
-
-    public static long convert(int x, int y, int z) {
-        //TODO check if x, or z is greater than 30 million and if y > 256
-        return (long) y << 52 | (long) (x + SHIFT) << 26 | (z + SHIFT);
-    }
-
     private int getX(long l) {
         return (int) ((l >> 26) & 0x3FFFFFF) - SHIFT;
     }
@@ -450,21 +467,6 @@ public class PhysicsEngine {
         System.out.println(getX(l) + " " + getY(l) + " " + getZ(l));
     }
 
-    private boolean running, stopped;
-
-    private BukkitRunnable ticker = new BukkitRunnable() {
-        @Override
-        public void run() {
-            if (stopped)
-                return;
-            tick();
-            spongeTick();
-        }
-    };
-
-    private static double percent;
-    private static double multiplier;
-
     public void setRangePercent(double rangePercent) {
         percent = rangePercent;
     }
@@ -480,10 +482,10 @@ public class PhysicsEngine {
         blockedMap = new HashMap<>();
         spongeTimers = new HashMap<>();
         sponges = new HashMap<>();
-        loadMeltMap(worldName);
         w = Bukkit.getWorld(worldName);
-        queue = FaweAPI.createQueue(worldName, true);
         tickCount = 0;
+        loadMeltMap(world = worldName);
+        queue = FaweAPI.createQueue(worldName, true);
         Bukkit.broadcastMessage("[DEBUG]: " + worldName + " loaded.");//TODO remove debug message
         if (stopped)
             stopped = false;
@@ -491,15 +493,11 @@ public class PhysicsEngine {
             ticker.runTaskTimerAsynchronously(ClassicPhysics.INSTANCE, 0, 1);
     }
 
-    private World w;
-
     public void end() {
-        //TODO end queue somehow? clear? or just flush or both
         stopped = true;
         running = false;
+        queue.clear();
     }
-
-    private FaweQueue queue;
 
     private void tick() {//TODO maybe have water be -3 etc to determine what kind of classic block something is. How to handle different melt times?
         tickCount++;
@@ -517,7 +515,7 @@ public class PhysicsEngine {
         }
 
         if (running || tickCount % 10 != 0)
-            return; //TODO if not running do we want to get a head start incase we were behind?
+            return; //TODO if not running do we want to get a head start in case we were behind?
         running = true;
         List<Long> lastActive = activeBlocks;
         activeBlocks = new ArrayList<>();
@@ -529,6 +527,7 @@ public class PhysicsEngine {
             attemptFlow(l, l - Y);
         }
         queue.flush();//TODO should this be a small number inside instead of default 10000
+        queue.clear();//Clears the queue which makes it less laggy in the future
         running = false;
     }
 
@@ -556,29 +555,10 @@ public class PhysicsEngine {
         queue.setBlock(getX(to), getY(to), getZ(to), 11);//LAVA
     }
 
-    private HashMap<Long, ArrayList<MeltLocationInfo>> meltTimers;//Should value be queue
-
     private void startMelt(long from, long to, int time) {
         ArrayList<MeltLocationInfo> melts = meltTimers.computeIfAbsent(tickCount + time, k -> new ArrayList<>());
         melts.add(new MeltLocationInfo(to, from, time));
     }
-
-    private long tickCount;
-
-    private class MeltLocationInfo {
-        private final int ticksToMelt;
-        private final long loc;
-        private final long from;
-
-        MeltLocationInfo(long loc, long from, int ticksToMelt) {
-            this.loc = loc;
-            this.from = from;
-            this.ticksToMelt = ticksToMelt;
-        }
-    }
-
-    private HashMap<Long, ArrayList<Long>> spongeTimers = new HashMap<>();
-    private HashMap<Long, SpongeInfo> sponges = new HashMap<>();
 
     public void placeSponge(int xLoc, int yLoc, int zLoc, BlockingType blockingType) {
         //TODO Care about blockingType: maybe use some of the extra bits at beginning of location?
@@ -646,8 +626,6 @@ public class PhysicsEngine {
             setAirNoPhysics(loc);
     }
 
-    private final Color warn = Color.fromRGB(244, 66, 244);
-
     private void spongeTick() {
         if (!spongeTimers.isEmpty()) {
             ArrayList<Long> expiring = spongeTimers.get(tickCount);
@@ -674,19 +652,6 @@ public class PhysicsEngine {
         }
     }
 
-    public class SpongeInfo {
-        private List<Long> blockingLocations;
-        private BlockingType blockingType;
-        private List<Long> outerLocations;
-        private AreaEffectCloud curParticle;
-
-        SpongeInfo(BlockingType blockingType, List<Long> blocked, List<Long> outerLocations) {
-            this.blockingLocations = blocked;
-            this.blockingType = blockingType;
-            this.outerLocations = outerLocations;
-        }
-    }
-
     private Location fromLong(long l) {
         return w == null ? null : new Location(w, getX(l), getY(l), getZ(l));
     }
@@ -701,5 +666,30 @@ public class PhysicsEngine {
         e.setRadius((float) 0.75);
         e.setDuration(ticks);
         return e;
+    }
+
+    private class MeltLocationInfo {
+        private final int ticksToMelt;
+        private final long loc;
+        private final long from;
+
+        MeltLocationInfo(long loc, long from, int ticksToMelt) {
+            this.loc = loc;
+            this.from = from;
+            this.ticksToMelt = ticksToMelt;
+        }
+    }
+
+    public class SpongeInfo {
+        private List<Long> blockingLocations;
+        private BlockingType blockingType;
+        private List<Long> outerLocations;
+        private AreaEffectCloud curParticle;
+
+        SpongeInfo(BlockingType blockingType, List<Long> blocked, List<Long> outerLocations) {
+            this.blockingLocations = blocked;
+            this.blockingType = blockingType;
+            this.outerLocations = outerLocations;
+        }
     }
 }
