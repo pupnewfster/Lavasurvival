@@ -505,7 +505,8 @@ public class PhysicsEngine implements Listener {
     public void end() {
         stopped = true;
         running = false;
-        queue.clear();
+        if (queue != null)
+            queue.clear();
     }
 
     private void tick() {//TODO maybe have water be -3 etc to determine what kind of classic block something is. How to handle different melt times?
