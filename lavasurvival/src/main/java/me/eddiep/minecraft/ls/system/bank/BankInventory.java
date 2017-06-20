@@ -10,7 +10,6 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.material.MaterialData;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -61,7 +60,7 @@ public class BankInventory {
             MaterialData dat = is.getData();
             if (!dat.getItemType().equals(Material.AIR)) {
                 ItemMeta im = is.getItemMeta();
-                im.setLore(Arrays.asList("Lava MeltTime: " + PhysicsEngine.getLavaMeltTimeAsString(dat), "Water MeltTime: " + PhysicsEngine.getWaterMeltTimeAsString(dat)));
+                im.setLore(Collections.singletonList("Lava MeltTime: " + PhysicsEngine.getLavaMeltTimeAsString(dat)));
                 is.setItemMeta(im);
             }
         }

@@ -9,10 +9,8 @@ import me.eddiep.ClassicPhysics;
 import me.eddiep.PhysicsEngine;
 import me.eddiep.minecraft.ls.Lavasurvival;
 import me.eddiep.minecraft.ls.game.impl.Flood;
-import me.eddiep.minecraft.ls.game.impl.Fusion;
 import me.eddiep.minecraft.ls.game.impl.Rise;
 import me.eddiep.minecraft.ls.game.items.Intrinsic;
-import me.eddiep.minecraft.ls.game.options.FloodOptions;
 import me.eddiep.minecraft.ls.game.shop.ShopFactory;
 import me.eddiep.minecraft.ls.game.status.PlayerStatusManager;
 import me.eddiep.minecraft.ls.ranks.UserInfo;
@@ -66,8 +64,7 @@ public abstract class Gamemode {
     };
     private static final Class[] GAMES = {
             Rise.class,
-            Flood.class,
-            Fusion.class
+            Flood.class
     };
 
     private static final int VOTE_COUNT;
@@ -82,8 +79,6 @@ public abstract class Gamemode {
     }
 
     public static final double DAMAGE = 3;
-    public static final double DAMAGE_FREQUENCY = 0.5;
-    protected static boolean LAVA = true;
     protected static Random RANDOM = new Random();
     private static boolean voting;
     private final LavaMap[] nextMaps = new LavaMap[VOTE_COUNT];
@@ -258,13 +253,12 @@ public abstract class Gamemode {
         this.hasEnded = false;
         boolean wasSuspended = this.suspended;
         this.suspended = false;
-        setIsLava(currentMap.getFloodOptions());
         for (CraftBossBar bar : this.bars) {
             bar.hide();
             bar.removeAll();
         }
         this.bars.clear();
-        addBar(new CraftBossBar(ChatColor.GOLD + "Gamemode: " + (LAVA ? ChatColor.RED : ChatColor.AQUA) + getType(), LAVA ? BarColor.RED : BarColor.BLUE, BarStyle.SEGMENTED_6));
+        addBar(new CraftBossBar(ChatColor.GOLD + "Gamemode: " + ChatColor.RED + getType(), BarColor.RED, BarStyle.SEGMENTED_6));
         if (isRewardDoubled())
             addBar(new CraftBossBar(ChatColor.GOLD + "Reward is double", BarColor.WHITE, BarStyle.SEGMENTED_20));
         alive = new ArrayList<>();
@@ -726,10 +720,6 @@ public abstract class Gamemode {
         }, 20);
     }
 
-    protected void setIsLava(FloodOptions option) {
-        LAVA = option.isLavaEnabled() && option.isWaterEnabled() ? random(100) < 75 : option.isLavaEnabled() || !option.isWaterEnabled() && random(100) < 75;
-    }
-
     public void forceEnd() {
         end();
     }
@@ -853,7 +843,7 @@ public abstract class Gamemode {
             if (BukkitUtils.hasItem(player.getInventory(), toGive) || u.isInBank(new MaterialData(DEFAULT_BLOCK)))
                 continue;
             ItemMeta im = toGive.getItemMeta();
-            im.setLore(Arrays.asList("Lava MeltTime: " + PhysicsEngine.getLavaMeltTimeAsString(toGive.getData()), "Water MeltTime: " + PhysicsEngine.getWaterMeltTimeAsString(toGive.getData())));
+            im.setLore(Collections.singletonList("Lava MeltTime: " + PhysicsEngine.getLavaMeltTimeAsString(toGive.getData())));
             toGive.setItemMeta(im);
             player.getInventory().addItem(toGive);
         }
@@ -967,10 +957,6 @@ public abstract class Gamemode {
         getCurrentWorld().getPlayers().forEach(p -> Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "tellraw " + p.getName() + " " + rawMessage));
     }
 
-    protected Material getMat() {
-        return LAVA ? Material.STATIONARY_LAVA : Material.STATIONARY_WATER;
-    }
-
     private boolean isInSpawn(Player player) {
         return player != null && (getCurrentMap().isInSafeZone(player.getLocation()) || getCurrentMap().isInSafeZone(player.getEyeLocation()));
     }
@@ -1009,8 +995,6 @@ public abstract class Gamemode {
                 int layersLeft = 0;
                 if (this instanceof Rise)
                     layersLeft = ((Rise) this).layersLeft.getScore();
-                else if (this instanceof Fusion)
-                    layersLeft = ((Fusion) this).layersLeft.getScore();
                 if (layersLeft <= 0)
                     layersLeft = 1;
                 double inverseLayersLeft = (double) layersLeft / (double) totalLayers;

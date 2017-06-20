@@ -20,7 +20,6 @@ public abstract class LavaItem {
             new MinorInvincibility(),
             new MajorInvincibility(),
             new SecondChance(),
-            new WaterSponge(),
             new LavaSponge(),
             new EpicHeal(),
             new EpicInvincibility(),
@@ -32,11 +31,10 @@ public abstract class LavaItem {
     public static final LavaItem MINOR_INVINCIBILITY = ITEMS[3];
     public static final LavaItem MAJOR_INVINCIBILITY = ITEMS[4];
     public static final LavaItem SECOND_CHANCE = ITEMS[5];
-    public static final LavaItem WATER_SPONGE = ITEMS[6];
-    public static final LavaItem LAVA_SPONGE = ITEMS[7];
-    public static final LavaItem EPIC_HEAL = ITEMS[8];
-    public static final LavaItem EPIC_INVINCIBILITY = ITEMS[9];
-    public static final LavaItem EPIC_SPONGE = ITEMS[10];
+    public static final LavaItem LAVA_SPONGE = ITEMS[6];
+    public static final LavaItem EPIC_HEAL = ITEMS[7];
+    public static final LavaItem EPIC_INVINCIBILITY = ITEMS[8];
+    public static final LavaItem EPIC_SPONGE = ITEMS[9];
     public static final String EPIC_TEXT = ChatColor.BOLD + "" + ChatColor.GREEN + "EPIC" + ChatColor.RESET;
 
     public abstract boolean consume(Player owner);

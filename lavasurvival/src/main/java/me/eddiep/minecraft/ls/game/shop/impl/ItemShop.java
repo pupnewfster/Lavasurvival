@@ -54,11 +54,6 @@ public class ItemShop extends Menu {
     }
 
     @MenuItem(slot = 6, item = @ItemStackAnnotation(material = Material.WOOD, name = ""))
-    public void waterSponge(MenuPlayer player) {
-        buyItem(player, LavaItem.WATER_SPONGE);
-    }
-
-    @MenuItem(slot = 7, item = @ItemStackAnnotation(material = Material.WOOD, name = ""))
     public void lavaSponge(MenuPlayer player) {
         buyItem(player, LavaItem.LAVA_SPONGE);
     }

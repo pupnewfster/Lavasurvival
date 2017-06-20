@@ -1,8 +1,6 @@
 package me.eddiep.minecraft.ls.system;
 
 import com.crossge.necessities.Necessities;
-import me.eddiep.BlockingType;
-import me.eddiep.ClassicBlockPlaceEvent;
 import me.eddiep.ClassicPhysics;
 import me.eddiep.PhysicsEngine;
 import me.eddiep.minecraft.ls.Lavasurvival;
@@ -17,7 +15,10 @@ import me.eddiep.minecraft.ls.system.specialblocks.SpecialInventory;
 import net.minecraft.server.v1_12_R1.IChatBaseComponent;
 import net.minecraft.server.v1_12_R1.PacketPlayInClientCommand;
 import net.minecraft.server.v1_12_R1.PacketPlayOutTitle;
-import org.bukkit.*;
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.craftbukkit.v1_12_R1.entity.CraftPlayer;
@@ -144,16 +145,10 @@ public class PlayerListener implements Listener {
                 for (int i = start; i < loreList.size(); i++)
                     lore.append(loreList.get(i)).append(" ");
                 infoJSON = IChatBaseComponent.ChatSerializer.a("{\"text\": \"" + lore.toString().trim() + "\"}");
-            } else {
-                String lavaTime = ChatColor.GOLD + "Lava MeltTime" + ChatColor.RESET + ": " + PhysicsEngine.getLavaMeltRangeTimeAsString(is.getData()),
-                        waterTime = ChatColor.BLUE + "Water MeltTime" + ChatColor.RESET + ": " + PhysicsEngine.getWaterMeltRangeTimeAsString(is.getData());
-                infoJSON = IChatBaseComponent.ChatSerializer.a("{\"text\": \"" + lavaTime + "    " + waterTime + "\"}");
-            }
-        } else {
-            String lavaTime = ChatColor.GOLD + "Lava MeltTime" + ChatColor.RESET + ": " + PhysicsEngine.getLavaMeltRangeTimeAsString(is.getData()),
-                    waterTime = ChatColor.BLUE + "Water MeltTime" + ChatColor.RESET + ": " + PhysicsEngine.getWaterMeltRangeTimeAsString(is.getData());
-            infoJSON = IChatBaseComponent.ChatSerializer.a("{\"text\": \"" + lavaTime + "    " + waterTime + "\"}");
-        }
+            } else
+                infoJSON = IChatBaseComponent.ChatSerializer.a("{\"text\": \"" + ChatColor.GOLD + "Lava MeltTime" + ChatColor.RESET + ": " + PhysicsEngine.getLavaMeltRangeTimeAsString(is.getData()) + "\"}");
+        } else
+            infoJSON = IChatBaseComponent.ChatSerializer.a("{\"text\": \"" + ChatColor.GOLD + "Lava MeltTime" + ChatColor.RESET + ": " + PhysicsEngine.getLavaMeltRangeTimeAsString(is.getData()) + "\"}");
         PacketPlayOutTitle meltPacket = new PacketPlayOutTitle(PacketPlayOutTitle.EnumTitleAction.ACTIONBAR, infoJSON, 0, 60, 0);
         ((CraftPlayer) event.getPlayer()).getHandle().playerConnection.sendPacket(meltPacket);
     }
@@ -426,17 +421,18 @@ public class PlayerListener implements Listener {
             event.setCancelled(false);
             ItemStack itemPlacing = event.getPlayer().getInventory().getItemInMainHand();
 
-            if (itemPlacing.getType() == Material.SPONGE) {
-                BlockingType blockingType = itemPlacing.getDurability() == 1 ? BlockingType.LAVA : BlockingType.WATER;
-                if (itemPlacing.getItemMeta().getLore().contains(LavaItem.EPIC_TEXT))
-                    blockingType = BlockingType.BOTH;
+            if (itemPlacing.getType() == Material.SPONGE && itemPlacing.getDurability() == 1) {
                 if (Gamemode.getCurrentGame().isLocationNearLavaSpawn(event.getBlock().getLocation(), 15)) {
                     event.setCancelled(true);
                     event.setBuild(false);
-                    event.getPlayer().sendMessage(ChatColor.RED + "" + ChatColor.BOLD + "You can't place a sponge so close to a lava/water spawn!");
+                    event.getPlayer().sendMessage(ChatColor.RED + "" + ChatColor.BOLD + "You can't place a sponge so close to a lava spawn!");
                     return;
-                } else
-                    ClassicPhysics.getPhysicsEngine().placeSponge(event.getBlock().getX(), event.getBlock().getY(), event.getBlock().getZ(), blockingType);
+                } else {
+                    int range = 5;
+                    if (itemPlacing.getItemMeta().getLore().contains(LavaItem.EPIC_TEXT))
+                        range = 10;
+                    ClassicPhysics.getPhysicsEngine().placeSponge(event.getBlock().getX(), event.getBlock().getY(), event.getBlock().getZ(), range);
+                }
                 Lavasurvival.INSTANCE.getUserManager().getUser(event.getPlayer().getUniqueId()).incrementBlockCount();
                 return;
             }
@@ -509,47 +505,6 @@ public class PlayerListener implements Listener {
             event.setCancelled(true);
     }
 
-    @SuppressWarnings("ConstantConditions")
-    @EventHandler(priority = EventPriority.HIGHEST)
-    public void playerMove(PlayerMoveEvent event) {
-        if (Gamemode.getCurrentGame() != null && Gamemode.DAMAGE != 0 && Gamemode.getCurrentGame().isAlive(event.getPlayer())) {
-            Location from = event.getFrom(), to = event.getTo();
-            boolean locationChanged = Math.abs(from.getX() - to.getX()) > 0.1 || Math.abs(from.getY() - to.getY()) > 0.1 || Math.abs(from.getZ() - to.getZ()) > 0.1;
-            if (!locationChanged)
-                return;
-            UserInfo u = Lavasurvival.INSTANCE.getUserManager().getUser(event.getPlayer().getUniqueId());
-            Block b = to.getBlock(), above = b.getRelative(BlockFace.UP);
-            if (((b.getType().equals(Material.WATER) || b.getType().equals(Material.STATIONARY_WATER)) && ClassicPhysics.getPhysicsEngine().isClassicBlock(b.getLocation())) ||
-                    ((above.getType().equals(Material.WATER) || above.getType().equals(Material.STATIONARY_WATER)) && ClassicPhysics.getPhysicsEngine().isClassicBlock(above.getLocation()))) {
-                if (!u.isInWater()) {
-                    if (!PlayerStatusManager.isInvincible(event.getPlayer()) && !event.getPlayer().getGameMode().equals(GameMode.CREATIVE) && !event.getPlayer().getGameMode().equals(GameMode.SPECTATOR))
-                        u.damagePlayer();
-                    u.setInWater(true);
-                }
-            } else if (u.isInWater())
-                u.setInWater(false);
-        }
-    }
-
-    @SuppressWarnings("ConstantConditions")
-    @EventHandler(priority = EventPriority.HIGHEST)
-    public void classicBlockPlace(ClassicBlockPlaceEvent event) {
-        if (Gamemode.getCurrentGame() == null || Gamemode.DAMAGE == 0)
-            return;
-        Material type = event.getLocation().getBlock().getType();
-        if (!type.equals(Material.WATER) && !type.equals(Material.STATIONARY_WATER))
-            return;
-        Location loc = event.getLocation();
-        Bukkit.getOnlinePlayers().stream().filter(p -> Gamemode.getCurrentGame().isAlive(p) && (p.getLocation().getBlock().getLocation().equals(loc) || p.getLocation().getBlock().getRelative(BlockFace.UP).getLocation().equals(loc))).forEach(p -> {
-            UserInfo u = Lavasurvival.INSTANCE.getUserManager().getUser(p.getUniqueId());
-            if (!u.isInWater()) {
-                if (!PlayerStatusManager.isInvincible(p) && !p.getGameMode().equals(GameMode.CREATIVE) && !p.getGameMode().equals(GameMode.SPECTATOR))
-                    u.damagePlayer();
-                u.setInWater(true);
-            }
-        });
-    }
-
     private static final String[] deathMessages = {ChatColor.RED + "" + ChatColor.BOLD + "Wasted!", ChatColor.GREEN + "" + ChatColor.BOLD + "Better luck next time!",
             ChatColor.RED + "" + ChatColor.BOLD + "You died!", ChatColor.RED + "" + ChatColor.BOLD + "rip."};
 
@@ -560,7 +515,6 @@ public class PlayerListener implements Listener {
             if (event.getDeathMessage().contains("fell out of the world"))
                 event.setDeathMessage(event.getDeathMessage().replace("fell out of the world", ChatColor.YELLOW + "died to the elements."));
             UserInfo u = Lavasurvival.INSTANCE.getUserManager().getUser(event.getEntity().getUniqueId());
-            u.setInWater(false);
             event.setKeepInventory(true);
             event.setDroppedExp(0);
             final Player p = event.getEntity();

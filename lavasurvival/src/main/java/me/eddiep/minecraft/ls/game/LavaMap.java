@@ -2,10 +2,8 @@ package me.eddiep.minecraft.ls.game;
 
 import me.eddiep.minecraft.ls.Lavasurvival;
 import me.eddiep.minecraft.ls.game.impl.Flood;
-import me.eddiep.minecraft.ls.game.impl.Fusion;
 import me.eddiep.minecraft.ls.game.impl.Rise;
 import me.eddiep.minecraft.ls.game.options.FloodOptions;
-import me.eddiep.minecraft.ls.game.options.FusionOptions;
 import me.eddiep.minecraft.ls.game.options.RiseOptions;
 import me.eddiep.minecraft.ls.game.options.TimeOptions;
 import me.eddiep.minecraft.ls.system.FileUtils;
@@ -25,7 +23,7 @@ import java.util.stream.Collectors;
 
 @SuppressWarnings({"FieldCanBeLocal", "DeprecatedIsStillUsed", "unused"})
 public class LavaMap {
-    private static final int CONFIG_VERSION = 10;
+    private static final int CONFIG_VERSION = 11;
 
     private String name, worldName, filePath;
     private int lavax, lavay, lavaz, mapHeight, percent = 25, minX, maxX, minZ, maxZ, specialY;
@@ -36,7 +34,6 @@ public class LavaMap {
     private double meltMultiplier = 0.5;
     private RiseOptions riseOptions = RiseOptions.defaults(this);
     private FloodOptions floodOptions = FloodOptions.defaults(this);
-    private FusionOptions fusionOptions = FusionOptions.defaults(this, riseOptions);
     private TimeOptions time = TimeOptions.defaults();
 
     private volatile World world;
@@ -51,8 +48,6 @@ public class LavaMap {
             map.riseOptions.setParent(map);
         if (!map.floodOptions.hasParent())
             map.floodOptions.setParent(map);
-        if (!map.fusionOptions.hasParent())
-            map.fusionOptions.setParent(map);
         if (map.configVersion < CONFIG_VERSION) { //Update config with new values
             map.configVersion = CONFIG_VERSION;
             map.save();
@@ -75,8 +70,6 @@ public class LavaMap {
                 return floodOptions;
             case Rise.TYPE:
                 return riseOptions;
-            case Fusion.TYPE:
-                return fusionOptions;
             default:
                 return null;
         }
@@ -253,8 +246,6 @@ public class LavaMap {
             games.add(Rise.class);
         if (this.floodOptions.isEnabled())
             games.add(Flood.class);
-        if (this.fusionOptions.isEnabled())
-            games.add(Fusion.class);
         return games.toArray(new Class[games.size()]);
     }
 
@@ -288,10 +279,6 @@ public class LavaMap {
 
     public RiseOptions getRiseOptions() {
         return this.riseOptions;
-    }
-
-    public FusionOptions getFusionOptions() {
-        return this.fusionOptions;
     }
 
     String getCreator() {

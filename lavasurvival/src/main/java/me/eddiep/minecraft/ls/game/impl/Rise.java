@@ -3,7 +3,6 @@ package me.eddiep.minecraft.ls.game.impl;
 import me.eddiep.ClassicPhysics;
 import me.eddiep.minecraft.ls.Lavasurvival;
 import me.eddiep.minecraft.ls.game.Gamemode;
-import me.eddiep.minecraft.ls.game.options.FloodOptions;
 import me.eddiep.minecraft.ls.system.TimeUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -41,7 +40,7 @@ public class Rise extends Gamemode {
         this.timeOut = getCurrentMap().getRiseOptions().generateRandomRiseTime();
         this.locations = getCurrentMap().getRiseOptions().getSpawnLocation(0, 1 - getCurrentMap().getHeight(), 0);
         globalMessage("The current gamemode is " + ChatColor.RED + ChatColor.BOLD + "RISE");
-        globalMessage("The " + (LAVA ? "lava" : "water") + " will rise every " + ChatColor.DARK_RED + TimeUtils.toFriendlyTime(timeOut));
+        globalMessage("The lava will rise every " + ChatColor.DARK_RED + TimeUtils.toFriendlyTime(timeOut));
         globalMessage("You have " + ChatColor.DARK_RED + TimeUtils.toFriendlyTime(this.duration) + ChatColor.RESET + " to prepare!");
         this.lastEvent = System.currentTimeMillis();
         this.lastMinute = 0;
@@ -73,11 +72,6 @@ public class Rise extends Gamemode {
             globalMessage("The building style will be " + ChatColor.RED + "" + ChatColor.BOLD + "SURVIVAL STYLE");
         else
             globalMessage("The building style will be " + ChatColor.RED + "" + ChatColor.BOLD + "CLASSIC STYLE");*/
-    }
-
-    @Override
-    protected void setIsLava(FloodOptions options) {
-        super.setIsLava(getCurrentMap().getRiseOptions());
     }
 
     @Override
@@ -146,11 +140,11 @@ public class Rise extends Gamemode {
                         if (loc.getBlockY() > this.highestCurrentY)
                             this.highestCurrentY = loc.getBlockY();
                     this.specialGap = this.highestCurrentY;
-                    globalMessage("The " + (LAVA ? "lava" : "water") + " will rise in " + ChatColor.DARK_RED + TimeUtils.toFriendlyTime(dif));
+                    globalMessage("The lava will rise in " + ChatColor.DARK_RED + TimeUtils.toFriendlyTime(dif));
                 }
             } else {
                 super.poured = true;
-                globalMessage(ChatColor.DARK_RED + "Here comes the " + (LAVA ? "lava" : "water") + "!");
+                globalMessage(ChatColor.DARK_RED + "Here comes the lava!");
                 this.duration = this.timeOut; //The duration will not change
                 this.objective.setDisplayName("Time Till Next Pour");
                 this.upTask.runTaskTimer(Lavasurvival.INSTANCE, 0, 20 * this.timeOut / 1000L);
@@ -173,7 +167,7 @@ public class Rise extends Gamemode {
         }
         getCurrentWorld().strikeLightningEffect(this.locations.get(RANDOM.nextInt(this.locations.size()))); //Actions are better than words :3
         this.locations.forEach(l -> {
-            ClassicPhysics.getPhysicsEngine().placeClassicBlock(l, getMat());
+            ClassicPhysics.getPhysicsEngine().placeClassicBlock(l);
             l.add(0, this.layerCount, 0);
         });
         if (this.specialLayers > 0 && (this.highestCurrentY - this.specialDelay) % this.specialGap == 0) {

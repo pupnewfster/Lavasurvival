@@ -1,6 +1,6 @@
 name: Lavasurvival
 main: me.eddiep.minecraft.ls.Lavasurvival
-version: 0.3
+version: 0.4
 load: POSTWORLD
 authors: [hypereddie, pupnewfster]
 website: eddiep.me

@@ -49,11 +49,8 @@ public class CmdCalculateCPMap implements Cmd {
             x1 = x2;
             x2 = temp;
         }
-        if (y2 < y1) {
-            int temp = y1;
+        if (y2 < y1)
             y1 = y2;
-            y2 = temp;
-        }
         if (z2 < z1) {
             int temp = z1;
             z1 = z2;

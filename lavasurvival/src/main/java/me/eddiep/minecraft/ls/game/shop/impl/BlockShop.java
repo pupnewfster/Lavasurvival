@@ -29,7 +29,7 @@ interface BlockShop {
                 continue;
             try {
                 ItemMeta m = is.getItemMeta();
-                m.setLore(Arrays.asList(price(is.getType()) + " ggs", "Lava MeltTime: " + PhysicsEngine.getLavaMeltTimeAsString(is.getData()), "Water MeltTime: " + PhysicsEngine.getWaterMeltTimeAsString(is.getData())));
+                m.setLore(Arrays.asList(price(is.getType()) + " ggs", "Lava MeltTime: " + PhysicsEngine.getLavaMeltTimeAsString(is.getData())));
                 is.setItemMeta(m);
                 inv.setItem(i, is);
             } catch (Exception ignored) {

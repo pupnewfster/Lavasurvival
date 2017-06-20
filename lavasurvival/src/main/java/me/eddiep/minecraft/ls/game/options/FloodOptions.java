@@ -20,8 +20,6 @@ public class FloodOptions extends BaseOptions {
     private int maxPrepareTimeSeconds = 480;
     private int minEndTimeSeconds = 180;
     private int maxEndTimeSeconds = 420;
-    private boolean enableLava = true;
-    private boolean enableWater = true;
 
     public static FloodOptions defaults(LavaMap lavaMap) {
         return new FloodOptions(lavaMap);
@@ -46,14 +44,6 @@ public class FloodOptions extends BaseOptions {
         }
 
         return (RANDOM.nextInt(max - min) + min) * 1000L;
-    }
-
-    public boolean isLavaEnabled() {
-        return this.enableLava;
-    }
-
-    public boolean isWaterEnabled() {
-        return this.enableWater;
     }
 
     @SuppressWarnings("deprecation")

@@ -152,8 +152,7 @@ public class Lavasurvival extends JavaPlugin {
         BookMeta meta = (BookMeta) tutorial.getItemMeta();
         meta.setTitle("Tutorial");
         meta.setAuthor(ChatColor.GREEN + "GalaxyGaming");
-        meta.addPage("The round begins with the preparation phase; during this time, build your shelter as large as you can, with thick enough walls to withstand the lava. " +
-                "Be wise with your block selection; each block type has different melt times when faced with either water or lava. Mouse over or");
+        meta.addPage("The round begins with the preparation phase; during this time, build your shelter as large as you can, with thick enough walls to withstand the lava.");
         meta.addPage("select blocks on your hotbar to view melt times against each type of liquid. \n" +
                 "Once the preparation timer runs to zero, the lava begins rising to flood the map. You may continue to build after the lava has poured, however leaving your shelter becomes a far greater");
         meta.addPage("challenge. Once it comes in contact with your shelter, your blocks will slowly degrade before lava comes rushing through. \n" +

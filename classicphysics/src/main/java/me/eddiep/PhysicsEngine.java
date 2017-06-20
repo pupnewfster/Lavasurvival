@@ -27,8 +27,7 @@ import java.util.*;
 
 public class PhysicsEngine implements Listener {
     private final static int SHIFT = 30000000;//30 million
-    private static final HashMap<MaterialData, Short> lavaTicksToMelt = new HashMap<>();
-    private static final HashMap<MaterialData, Short> waterTicksToMelt = new HashMap<>();
+    private static final HashMap<MaterialData, Short> ticksToMelt = new HashMap<>();
     private static final Random RANDOM = new Random();
     private static double percent;
     private static double multiplier;
@@ -64,50 +63,49 @@ public class PhysicsEngine implements Listener {
 
     @SuppressWarnings("deprecation")
     public PhysicsEngine() {
-        if (lavaTicksToMelt.size() > 0 && waterTicksToMelt.size() > 0)
+        if (!ticksToMelt.isEmpty())
             return;
-
         //Default blocks
         addMeltTime(new MaterialData(Material.TORCH), 20);
-        addMeltTime(new MaterialData(Material.WOOD, (byte) 0), 30 * 20, 120 * 20);//Oak plank
-        addMeltTime(new MaterialData(Material.DIRT), 90 * 20, 30 * 20);
-        addMeltTime(new MaterialData(Material.GRASS), 90 * 20, 30 * 20);
-        addMeltTime(new MaterialData(Material.SAND, (byte) 0), 90 * 20, 30 * 20);//Sand
+        addMeltTime(new MaterialData(Material.WOOD, (byte) 0), 30 * 20);//Oak plank
+        addMeltTime(new MaterialData(Material.DIRT), 90 * 20);
+        addMeltTime(new MaterialData(Material.GRASS), 90 * 20);
+        addMeltTime(new MaterialData(Material.SAND, (byte) 0), 90 * 20);//Sand
         addMeltTime(new MaterialData(Material.COBBLESTONE), 120 * 20);
 
         //Basic blocks
-        addMeltTime(new MaterialData(Material.GRAVEL), 120 * 20, 30 * 20);
+        addMeltTime(new MaterialData(Material.GRAVEL), 120 * 20);
         addMeltTime(new MaterialData(Material.STONE), 120 * 20);
-        addMeltTime(new MaterialData(Material.LOG, (byte) 0), 30 * 20, 120 * 20);//Oak log
-        addMeltTime(new MaterialData(Material.LOG, (byte) 1), 30 * 20, 120 * 20);//Spruce log
-        addMeltTime(new MaterialData(Material.LOG, (byte) 2), 30 * 20, 120 * 20);//Birch log
-        addMeltTime(new MaterialData(Material.LOG, (byte) 3), 30 * 20, 120 * 20);//Jungle log
-        addMeltTime(new MaterialData(Material.LOG_2, (byte) 0), 30 * 20, 120 * 20);//Acacia log
-        addMeltTime(new MaterialData(Material.LOG_2, (byte) 1), 30 * 20, 120 * 20);//Dark oak log
-        addMeltTime(new MaterialData(Material.SANDSTONE), 120 * 20, 90 * 20);
-        addMeltTime(new MaterialData(Material.RED_SANDSTONE), 120 * 20, 90 * 20);
-        addMeltTime(new MaterialData(Material.HARD_CLAY), 120 * 20, 90 * 20);
-        addMeltTime(new MaterialData(Material.STAINED_CLAY, (byte) 0), 120 * 20, 90 * 20);//White clay
-        addMeltTime(new MaterialData(Material.STAINED_CLAY, (byte) 1), 120 * 20, 90 * 20);//Orange clay
-        addMeltTime(new MaterialData(Material.STAINED_CLAY, (byte) 2), 120 * 20, 90 * 20);//Magenta clay
-        addMeltTime(new MaterialData(Material.STAINED_CLAY, (byte) 3), 120 * 20, 90 * 20);//Light blue clay
-        addMeltTime(new MaterialData(Material.STAINED_CLAY, (byte) 4), 120 * 20, 90 * 20);//Yellow clay
-        addMeltTime(new MaterialData(Material.STAINED_CLAY, (byte) 5), 120 * 20, 90 * 20);//Lime clay
-        addMeltTime(new MaterialData(Material.STAINED_CLAY, (byte) 6), 120 * 20, 90 * 20);//Pink clay
-        addMeltTime(new MaterialData(Material.STAINED_CLAY, (byte) 7), 120 * 20, 90 * 20);//Gray clay
-        addMeltTime(new MaterialData(Material.STAINED_CLAY, (byte) 8), 120 * 20, 90 * 20);//Light gray clay
-        addMeltTime(new MaterialData(Material.STAINED_CLAY, (byte) 9), 120 * 20, 90 * 20);//Cyan clay
-        addMeltTime(new MaterialData(Material.STAINED_CLAY, (byte) 10), 120 * 20, 90 * 20);//Purple clay
-        addMeltTime(new MaterialData(Material.STAINED_CLAY, (byte) 11), 120 * 20, 90 * 20);//Blue clay
-        addMeltTime(new MaterialData(Material.STAINED_CLAY, (byte) 12), 120 * 20, 90 * 20);//Brown clay
-        addMeltTime(new MaterialData(Material.STAINED_CLAY, (byte) 13), 120 * 20, 90 * 20);//Green clay
-        addMeltTime(new MaterialData(Material.STAINED_CLAY, (byte) 14), 120 * 20, 90 * 20);//Red clay
-        addMeltTime(new MaterialData(Material.STAINED_CLAY, (byte) 15), 120 * 20, 90 * 20);//Black clay
+        addMeltTime(new MaterialData(Material.LOG, (byte) 0), 30 * 20);//Oak log
+        addMeltTime(new MaterialData(Material.LOG, (byte) 1), 30 * 20);//Spruce log
+        addMeltTime(new MaterialData(Material.LOG, (byte) 2), 30 * 20);//Birch log
+        addMeltTime(new MaterialData(Material.LOG, (byte) 3), 30 * 20);//Jungle log
+        addMeltTime(new MaterialData(Material.LOG_2, (byte) 0), 30 * 20);//Acacia log
+        addMeltTime(new MaterialData(Material.LOG_2, (byte) 1), 30 * 20);//Dark oak log
+        addMeltTime(new MaterialData(Material.SANDSTONE), 120 * 20);
+        addMeltTime(new MaterialData(Material.RED_SANDSTONE), 120 * 20);
+        addMeltTime(new MaterialData(Material.HARD_CLAY), 120 * 20);
+        addMeltTime(new MaterialData(Material.STAINED_CLAY, (byte) 0), 120 * 20);//White clay
+        addMeltTime(new MaterialData(Material.STAINED_CLAY, (byte) 1), 120 * 20);//Orange clay
+        addMeltTime(new MaterialData(Material.STAINED_CLAY, (byte) 2), 120 * 20);//Magenta clay
+        addMeltTime(new MaterialData(Material.STAINED_CLAY, (byte) 3), 120 * 20);//Light blue clay
+        addMeltTime(new MaterialData(Material.STAINED_CLAY, (byte) 4), 120 * 20);//Yellow clay
+        addMeltTime(new MaterialData(Material.STAINED_CLAY, (byte) 5), 120 * 20);//Lime clay
+        addMeltTime(new MaterialData(Material.STAINED_CLAY, (byte) 6), 120 * 20);//Pink clay
+        addMeltTime(new MaterialData(Material.STAINED_CLAY, (byte) 7), 120 * 20);//Gray clay
+        addMeltTime(new MaterialData(Material.STAINED_CLAY, (byte) 8), 120 * 20);//Light gray clay
+        addMeltTime(new MaterialData(Material.STAINED_CLAY, (byte) 9), 120 * 20);//Cyan clay
+        addMeltTime(new MaterialData(Material.STAINED_CLAY, (byte) 10), 120 * 20);//Purple clay
+        addMeltTime(new MaterialData(Material.STAINED_CLAY, (byte) 11), 120 * 20);//Blue clay
+        addMeltTime(new MaterialData(Material.STAINED_CLAY, (byte) 12), 120 * 20);//Brown clay
+        addMeltTime(new MaterialData(Material.STAINED_CLAY, (byte) 13), 120 * 20);//Green clay
+        addMeltTime(new MaterialData(Material.STAINED_CLAY, (byte) 14), 120 * 20);//Red clay
+        addMeltTime(new MaterialData(Material.STAINED_CLAY, (byte) 15), 120 * 20);//Black clay
 
         //Advanced blocks
         addMeltTime(new MaterialData(Material.STEP, (byte) 0), 120 * 20);//Stone slab
-        addMeltTime(new MaterialData(Material.STEP, (byte) 1), 120 * 20, 90 * 20);//Sandstone slab
-        addMeltTime(new MaterialData(Material.STEP, (byte) 2), 120 * 20, 90 * 20);//Sandstone slab
+        addMeltTime(new MaterialData(Material.STEP, (byte) 1), 120 * 20);//Sandstone slab
+        addMeltTime(new MaterialData(Material.STEP, (byte) 2), 120 * 20);//Sandstone slab
         addMeltTime(new MaterialData(Material.STEP, (byte) 3), 120 * 20);//Cobble slab
         addMeltTime(new MaterialData(Material.STEP, (byte) 4), 120 * 20);//Brick slab
         addMeltTime(new MaterialData(Material.STEP, (byte) 5), 120 * 20);//Stone brick slab
@@ -131,38 +129,38 @@ public class PhysicsEngine implements Listener {
         addMeltTime(new MaterialData(Material.DOUBLE_STEP, (byte) 15), 120 * 20);//Smooth Double Quartz slab
         addMeltTime(new MaterialData(Material.DOUBLE_STONE_SLAB2, (byte) 0), 120 * 20);//Double red sandstone slab
         addMeltTime(new MaterialData(Material.DOUBLE_STONE_SLAB2, (byte) 8), 120 * 20);//Smooth double red sandstone slab
-        addMeltTime(new MaterialData(Material.WOOD_STEP, (byte) 0), 30 * 20, 120 * 20);//Oak slab
-        addMeltTime(new MaterialData(Material.WOOD_STEP, (byte) 1), 30 * 20, 120 * 20);//Spruce slab
-        addMeltTime(new MaterialData(Material.WOOD_STEP, (byte) 2), 30 * 20, 120 * 20);//Birch slab
-        addMeltTime(new MaterialData(Material.WOOD_STEP, (byte) 3), 30 * 20, 120 * 20);//Jungle slab
-        addMeltTime(new MaterialData(Material.WOOD_STEP, (byte) 4), 30 * 20, 120 * 20);//Acacia slab
-        addMeltTime(new MaterialData(Material.WOOD_STEP, (byte) 5), 30 * 20, 120 * 20);//Dark oak slab
-        addMeltTime(new MaterialData(Material.WOOD_STEP, (byte) 8), 30 * 20, 120 * 20);//Upper Oak slab
-        addMeltTime(new MaterialData(Material.WOOD_STEP, (byte) 9), 30 * 20, 120 * 20);//Upper Spruce slab
-        addMeltTime(new MaterialData(Material.WOOD_STEP, (byte) 10), 30 * 20, 120 * 20);//Upper Birch slab
-        addMeltTime(new MaterialData(Material.WOOD_STEP, (byte) 11), 30 * 20, 120 * 20);//Upper Jungle slab
-        addMeltTime(new MaterialData(Material.WOOD_STEP, (byte) 12), 30 * 20, 120 * 20);//Upper Acacia slab
-        addMeltTime(new MaterialData(Material.WOOD_STEP, (byte) 13), 30 * 20, 120 * 20);//Upper Dark oak slab
-        addMeltTime(new MaterialData(Material.WOOD_DOUBLE_STEP, (byte) 0), 30 * 20, 120 * 20);//Double Oak slab
-        addMeltTime(new MaterialData(Material.WOOD_DOUBLE_STEP, (byte) 1), 30 * 20, 120 * 20);//Double Spruce slab
-        addMeltTime(new MaterialData(Material.WOOD_DOUBLE_STEP, (byte) 2), 30 * 20, 120 * 20);//Double Birch slab
-        addMeltTime(new MaterialData(Material.WOOD_DOUBLE_STEP, (byte) 3), 30 * 20, 120 * 20);//Double Jungle slab
-        addMeltTime(new MaterialData(Material.WOOD_DOUBLE_STEP, (byte) 4), 30 * 20, 120 * 20);//Double Acacia slab
-        addMeltTime(new MaterialData(Material.WOOD_DOUBLE_STEP, (byte) 5), 30 * 20, 120 * 20);//Double Dark oak slab
-        addMeltTime(new MaterialData(Material.MOSSY_COBBLESTONE), 150 * 20, 90 * 20);
+        addMeltTime(new MaterialData(Material.WOOD_STEP, (byte) 0), 30 * 20);//Oak slab
+        addMeltTime(new MaterialData(Material.WOOD_STEP, (byte) 1), 30 * 20);//Spruce slab
+        addMeltTime(new MaterialData(Material.WOOD_STEP, (byte) 2), 30 * 20);//Birch slab
+        addMeltTime(new MaterialData(Material.WOOD_STEP, (byte) 3), 30 * 20);//Jungle slab
+        addMeltTime(new MaterialData(Material.WOOD_STEP, (byte) 4), 30 * 20);//Acacia slab
+        addMeltTime(new MaterialData(Material.WOOD_STEP, (byte) 5), 30 * 20);//Dark oak slab
+        addMeltTime(new MaterialData(Material.WOOD_STEP, (byte) 8), 30 * 20);//Upper Oak slab
+        addMeltTime(new MaterialData(Material.WOOD_STEP, (byte) 9), 30 * 20);//Upper Spruce slab
+        addMeltTime(new MaterialData(Material.WOOD_STEP, (byte) 10), 30 * 20);//Upper Birch slab
+        addMeltTime(new MaterialData(Material.WOOD_STEP, (byte) 11), 30 * 20);//Upper Jungle slab
+        addMeltTime(new MaterialData(Material.WOOD_STEP, (byte) 12), 30 * 20);//Upper Acacia slab
+        addMeltTime(new MaterialData(Material.WOOD_STEP, (byte) 13), 30 * 20);//Upper Dark oak slab
+        addMeltTime(new MaterialData(Material.WOOD_DOUBLE_STEP, (byte) 0), 30 * 20);//Double Oak slab
+        addMeltTime(new MaterialData(Material.WOOD_DOUBLE_STEP, (byte) 1), 30 * 20);//Double Spruce slab
+        addMeltTime(new MaterialData(Material.WOOD_DOUBLE_STEP, (byte) 2), 30 * 20);//Double Birch slab
+        addMeltTime(new MaterialData(Material.WOOD_DOUBLE_STEP, (byte) 3), 30 * 20);//Double Jungle slab
+        addMeltTime(new MaterialData(Material.WOOD_DOUBLE_STEP, (byte) 4), 30 * 20);//Double Acacia slab
+        addMeltTime(new MaterialData(Material.WOOD_DOUBLE_STEP, (byte) 5), 30 * 20);//Double Dark oak slab
+        addMeltTime(new MaterialData(Material.MOSSY_COBBLESTONE), 150 * 20);
         addMeltTime(new MaterialData(Material.SMOOTH_BRICK, (byte) 2), 120 * 20);//Cracked stone brick
-        addMeltTime(new MaterialData(Material.GLASS), 90 * 20, 120 * 20);
+        addMeltTime(new MaterialData(Material.GLASS), 90 * 20);
 
         //Survivor blocks
-        addMeltTime(new MaterialData(Material.PACKED_ICE), 30 * 20, 180 * 20);
+        addMeltTime(new MaterialData(Material.PACKED_ICE), 30 * 20);
         addMeltTime(new MaterialData(Material.BRICK), 180 * 20);
         addMeltTime(new MaterialData(Material.SMOOTH_BRICK, (byte) 0), 180 * 20);//Stone brick
-        addMeltTime(new MaterialData(Material.THIN_GLASS), 90 * 20, 120 * 20);
+        addMeltTime(new MaterialData(Material.THIN_GLASS), 90 * 20);
         addMeltTime(new MaterialData(Material.IRON_FENCE), 150 * 20);//Iron bars
         addMeltTime(new MaterialData(Material.IRON_BLOCK), 180 * 20);
         addMeltTime(new MaterialData(Material.LADDER), 10 * 20);
         addMeltTime(new MaterialData(Material.TRAP_DOOR), 10 * 20);
-        addMeltTime(new MaterialData(Material.ICE), 10 * 20, 120 * 20);
+        addMeltTime(new MaterialData(Material.ICE), 10 * 20);
         addMeltTime(new MaterialData(Material.QUARTZ_BLOCK, (byte) 0), 150 * 20);
         addMeltTime(new MaterialData(Material.QUARTZ_BLOCK, (byte) 1), 150 * 20);
         addMeltTime(new MaterialData(Material.QUARTZ_BLOCK, (byte) 2), 150 * 20);
@@ -185,63 +183,63 @@ public class PhysicsEngine implements Listener {
         addMeltTime(new MaterialData(Material.NETHER_WART_BLOCK), 150 * 20);
 
         //Trusted blocks
-        addMeltTime(new MaterialData(Material.WOOD_DOOR), 30 * 20, 120 * 20);
-        addMeltTime(new MaterialData(Material.WOODEN_DOOR), 30 * 20, 120 * 20);
-        addMeltTime(new MaterialData(Material.FENCE), 30 * 20, 120 * 20);
-        addMeltTime(new MaterialData(Material.WOOD_STAIRS), 30 * 20, 120 * 20);//Oak stairs
+        addMeltTime(new MaterialData(Material.WOOD_DOOR), 30 * 20);
+        addMeltTime(new MaterialData(Material.WOODEN_DOOR), 30 * 20);
+        addMeltTime(new MaterialData(Material.FENCE), 30 * 20);
+        addMeltTime(new MaterialData(Material.WOOD_STAIRS), 30 * 20);//Oak stairs
         addMeltTime(new MaterialData(Material.COBBLESTONE_STAIRS), 120 * 20);
         addMeltTime(new MaterialData(Material.BRICK_STAIRS), 180 * 20);
         addMeltTime(new MaterialData(Material.SMOOTH_STAIRS), 180 * 20);//Stone brick stairs
-        addMeltTime(new MaterialData(Material.SANDSTONE_STAIRS), 120 * 20, 90 * 20);
-        addMeltTime(new MaterialData(Material.RED_SANDSTONE_STAIRS), 120 * 20, 90 * 20);
-        addMeltTime(new MaterialData(Material.SPRUCE_WOOD_STAIRS), 30 * 20, 120 * 20);
-        addMeltTime(new MaterialData(Material.BIRCH_WOOD_STAIRS), 30 * 20, 120 * 20);
-        addMeltTime(new MaterialData(Material.JUNGLE_WOOD_STAIRS), 30 * 20, 120 * 20);
+        addMeltTime(new MaterialData(Material.SANDSTONE_STAIRS), 120 * 20);
+        addMeltTime(new MaterialData(Material.RED_SANDSTONE_STAIRS), 120 * 20);
+        addMeltTime(new MaterialData(Material.SPRUCE_WOOD_STAIRS), 30 * 20);
+        addMeltTime(new MaterialData(Material.BIRCH_WOOD_STAIRS), 30 * 20);
+        addMeltTime(new MaterialData(Material.JUNGLE_WOOD_STAIRS), 30 * 20);
         addMeltTime(new MaterialData(Material.QUARTZ_STAIRS), 150 * 20);
-        addMeltTime(new MaterialData(Material.ACACIA_STAIRS), 30 * 20, 120 * 20);
-        addMeltTime(new MaterialData(Material.DARK_OAK_STAIRS), 30 * 20, 120 * 20);
+        addMeltTime(new MaterialData(Material.ACACIA_STAIRS), 30 * 20);
+        addMeltTime(new MaterialData(Material.DARK_OAK_STAIRS), 30 * 20);
         addMeltTime(new MaterialData(Material.COBBLE_WALL, (byte) 0), 120 * 20);//Cobblestone wall
-        addMeltTime(new MaterialData(Material.COBBLE_WALL, (byte) 1), 150 * 20, 90 * 20);//Mossy cobblestone wall
-        addMeltTime(new MaterialData(Material.STAINED_GLASS, (byte) 0), 90 * 20, 120 * 20);//White glass
-        addMeltTime(new MaterialData(Material.STAINED_GLASS, (byte) 1), 90 * 20, 120 * 20);//Orange glass
-        addMeltTime(new MaterialData(Material.STAINED_GLASS, (byte) 2), 90 * 20, 120 * 20);//Magenta glass
-        addMeltTime(new MaterialData(Material.STAINED_GLASS, (byte) 3), 90 * 20, 120 * 20);//Light blue glass
-        addMeltTime(new MaterialData(Material.STAINED_GLASS, (byte) 4), 90 * 20, 120 * 20);//Yellow glass
-        addMeltTime(new MaterialData(Material.STAINED_GLASS, (byte) 5), 90 * 20, 120 * 20);//Lime glass
-        addMeltTime(new MaterialData(Material.STAINED_GLASS, (byte) 6), 90 * 20, 120 * 20);//Pink glass
-        addMeltTime(new MaterialData(Material.STAINED_GLASS, (byte) 7), 90 * 20, 120 * 20);//Gray glass
-        addMeltTime(new MaterialData(Material.STAINED_GLASS, (byte) 8), 90 * 20, 120 * 20);//Light gray glass
-        addMeltTime(new MaterialData(Material.STAINED_GLASS, (byte) 9), 90 * 20, 120 * 20);//Cyan glass
-        addMeltTime(new MaterialData(Material.STAINED_GLASS, (byte) 10), 90 * 20, 120 * 20);//Purple glass
-        addMeltTime(new MaterialData(Material.STAINED_GLASS, (byte) 11), 90 * 20, 120 * 20);//Blue glass
-        addMeltTime(new MaterialData(Material.STAINED_GLASS, (byte) 12), 90 * 20, 120 * 20);//Brown glass
-        addMeltTime(new MaterialData(Material.STAINED_GLASS, (byte) 13), 90 * 20, 120 * 20);//Green glass
-        addMeltTime(new MaterialData(Material.STAINED_GLASS, (byte) 14), 90 * 20, 120 * 20);//Red glass
-        addMeltTime(new MaterialData(Material.STAINED_GLASS, (byte) 15), 90 * 20, 120 * 20);//Black glass
-        addMeltTime(new MaterialData(Material.STAINED_GLASS_PANE, (byte) 0), 90 * 20, 120 * 20);//White glass pane
-        addMeltTime(new MaterialData(Material.STAINED_GLASS_PANE, (byte) 1), 90 * 20, 120 * 20);//Orange glass pane
-        addMeltTime(new MaterialData(Material.STAINED_GLASS_PANE, (byte) 2), 90 * 20, 120 * 20);//Magenta glass pane
-        addMeltTime(new MaterialData(Material.STAINED_GLASS_PANE, (byte) 3), 90 * 20, 120 * 20);//Light blue glass pane
-        addMeltTime(new MaterialData(Material.STAINED_GLASS_PANE, (byte) 4), 90 * 20, 120 * 20);//Yellow glass pane
-        addMeltTime(new MaterialData(Material.STAINED_GLASS_PANE, (byte) 5), 90 * 20, 120 * 20);//Lime glass pane
-        addMeltTime(new MaterialData(Material.STAINED_GLASS_PANE, (byte) 6), 90 * 20, 120 * 20);//Pink glass pane
-        addMeltTime(new MaterialData(Material.STAINED_GLASS_PANE, (byte) 7), 90 * 20, 120 * 20);//Gray glass pane
-        addMeltTime(new MaterialData(Material.STAINED_GLASS_PANE, (byte) 8), 90 * 20, 120 * 20);//Light gray glass pane
-        addMeltTime(new MaterialData(Material.STAINED_GLASS_PANE, (byte) 9), 90 * 20, 120 * 20);//Cyan glass pane
-        addMeltTime(new MaterialData(Material.STAINED_GLASS_PANE, (byte) 10), 90 * 20, 120 * 20);//Purple glass pane
-        addMeltTime(new MaterialData(Material.STAINED_GLASS_PANE, (byte) 11), 90 * 20, 120 * 20);//Blue glass pane
-        addMeltTime(new MaterialData(Material.STAINED_GLASS_PANE, (byte) 12), 90 * 20, 120 * 20);//Brown glass pane
-        addMeltTime(new MaterialData(Material.STAINED_GLASS_PANE, (byte) 13), 90 * 20, 120 * 20);//Green glass pane
-        addMeltTime(new MaterialData(Material.STAINED_GLASS_PANE, (byte) 14), 90 * 20, 120 * 20);//Red glass pane
-        addMeltTime(new MaterialData(Material.STAINED_GLASS_PANE, (byte) 15), 90 * 20, 120 * 20);//Black glass pane
-        addMeltTime(new MaterialData(Material.PRISMARINE, (byte) 0), 120 * 20, 210 * 20);//Prismarine
-        addMeltTime(new MaterialData(Material.PRISMARINE, (byte) 1), 120 * 20, 210 * 20);//Prismarine Bricks
-        addMeltTime(new MaterialData(Material.PRISMARINE, (byte) 2), 120 * 20, 210 * 20);//Dark Prismarine
+        addMeltTime(new MaterialData(Material.COBBLE_WALL, (byte) 1), 150 * 20);//Mossy cobblestone wall
+        addMeltTime(new MaterialData(Material.STAINED_GLASS, (byte) 0), 90 * 20);//White glass
+        addMeltTime(new MaterialData(Material.STAINED_GLASS, (byte) 1), 90 * 20);//Orange glass
+        addMeltTime(new MaterialData(Material.STAINED_GLASS, (byte) 2), 90 * 20);//Magenta glass
+        addMeltTime(new MaterialData(Material.STAINED_GLASS, (byte) 3), 90 * 20);//Light blue glass
+        addMeltTime(new MaterialData(Material.STAINED_GLASS, (byte) 4), 90 * 20);//Yellow glass
+        addMeltTime(new MaterialData(Material.STAINED_GLASS, (byte) 5), 90 * 20);//Lime glass
+        addMeltTime(new MaterialData(Material.STAINED_GLASS, (byte) 6), 90 * 20);//Pink glass
+        addMeltTime(new MaterialData(Material.STAINED_GLASS, (byte) 7), 90 * 20);//Gray glass
+        addMeltTime(new MaterialData(Material.STAINED_GLASS, (byte) 8), 90 * 20);//Light gray glass
+        addMeltTime(new MaterialData(Material.STAINED_GLASS, (byte) 9), 90 * 20);//Cyan glass
+        addMeltTime(new MaterialData(Material.STAINED_GLASS, (byte) 10), 90 * 20);//Purple glass
+        addMeltTime(new MaterialData(Material.STAINED_GLASS, (byte) 11), 90 * 20);//Blue glass
+        addMeltTime(new MaterialData(Material.STAINED_GLASS, (byte) 12), 90 * 20);//Brown glass
+        addMeltTime(new MaterialData(Material.STAINED_GLASS, (byte) 13), 90 * 20);//Green glass
+        addMeltTime(new MaterialData(Material.STAINED_GLASS, (byte) 14), 90 * 20);//Red glass
+        addMeltTime(new MaterialData(Material.STAINED_GLASS, (byte) 15), 90 * 20);//Black glass
+        addMeltTime(new MaterialData(Material.STAINED_GLASS_PANE, (byte) 0), 90 * 20);//White glass pane
+        addMeltTime(new MaterialData(Material.STAINED_GLASS_PANE, (byte) 1), 90 * 20);//Orange glass pane
+        addMeltTime(new MaterialData(Material.STAINED_GLASS_PANE, (byte) 2), 90 * 20);//Magenta glass pane
+        addMeltTime(new MaterialData(Material.STAINED_GLASS_PANE, (byte) 3), 90 * 20);//Light blue glass pane
+        addMeltTime(new MaterialData(Material.STAINED_GLASS_PANE, (byte) 4), 90 * 20);//Yellow glass pane
+        addMeltTime(new MaterialData(Material.STAINED_GLASS_PANE, (byte) 5), 90 * 20);//Lime glass pane
+        addMeltTime(new MaterialData(Material.STAINED_GLASS_PANE, (byte) 6), 90 * 20);//Pink glass pane
+        addMeltTime(new MaterialData(Material.STAINED_GLASS_PANE, (byte) 7), 90 * 20);//Gray glass pane
+        addMeltTime(new MaterialData(Material.STAINED_GLASS_PANE, (byte) 8), 90 * 20);//Light gray glass pane
+        addMeltTime(new MaterialData(Material.STAINED_GLASS_PANE, (byte) 9), 90 * 20);//Cyan glass pane
+        addMeltTime(new MaterialData(Material.STAINED_GLASS_PANE, (byte) 10), 90 * 20);//Purple glass pane
+        addMeltTime(new MaterialData(Material.STAINED_GLASS_PANE, (byte) 11), 90 * 20);//Blue glass pane
+        addMeltTime(new MaterialData(Material.STAINED_GLASS_PANE, (byte) 12), 90 * 20);//Brown glass pane
+        addMeltTime(new MaterialData(Material.STAINED_GLASS_PANE, (byte) 13), 90 * 20);//Green glass pane
+        addMeltTime(new MaterialData(Material.STAINED_GLASS_PANE, (byte) 14), 90 * 20);//Red glass pane
+        addMeltTime(new MaterialData(Material.STAINED_GLASS_PANE, (byte) 15), 90 * 20);//Black glass pane
+        addMeltTime(new MaterialData(Material.PRISMARINE, (byte) 0), 120 * 20);//Prismarine
+        addMeltTime(new MaterialData(Material.PRISMARINE, (byte) 1), 120 * 20);//Prismarine Bricks
+        addMeltTime(new MaterialData(Material.PRISMARINE, (byte) 2), 120 * 20);//Dark Prismarine
 
         //Elder blocks
         addMeltTime(new MaterialData(Material.GLOWSTONE), 225 * 20);
-        addMeltTime(new MaterialData(Material.NETHERRACK), 270 * 20, 120 * 20);
-        addMeltTime(new MaterialData(Material.MAGMA), 270 * 20, 120 * 20);//Magma block
+        addMeltTime(new MaterialData(Material.NETHERRACK), 270 * 20);
+        addMeltTime(new MaterialData(Material.MAGMA), 270 * 20);//Magma block
         addMeltTime(new MaterialData(Material.NETHER_BRICK), 240 * 20);
         addMeltTime(new MaterialData(Material.RED_NETHER_BRICK), 240 * 20);
         addMeltTime(new MaterialData(Material.NETHER_FENCE), 240 * 20);
@@ -259,33 +257,33 @@ public class PhysicsEngine implements Listener {
         addMeltTime(new MaterialData(Material.END_ROD), 180 * 20);
 
         //Donor blocks Instant melt)
-        addMeltTime(new MaterialData(Material.WOOD, (byte) 1), 30 * 20, 120 * 20);//Spruce planks
-        addMeltTime(new MaterialData(Material.WOOD, (byte) 2), 30 * 20, 120 * 20);//Birch planks
-        addMeltTime(new MaterialData(Material.WOOD, (byte) 3), 30 * 20, 120 * 20);//Jungle planks
-        addMeltTime(new MaterialData(Material.WOOD, (byte) 4), 30 * 20, 120 * 20);//Acacia planks
-        addMeltTime(new MaterialData(Material.WOOD, (byte) 5), 30 * 20, 120 * 20);//Dark oak planks
-        addMeltTime(new MaterialData(Material.SAND, (byte) 1), 90 * 20, 30 * 20);//Red sand
-        addMeltTime(new MaterialData(Material.SPRUCE_FENCE), 30 * 20, 120 * 20);
-        addMeltTime(new MaterialData(Material.BIRCH_FENCE), 30 * 20, 120 * 20);
-        addMeltTime(new MaterialData(Material.JUNGLE_FENCE), 30 * 20, 120 * 20);
-        addMeltTime(new MaterialData(Material.ACACIA_FENCE), 30 * 20, 120 * 20);
-        addMeltTime(new MaterialData(Material.DARK_OAK_FENCE), 30 * 20, 120 * 20);
-        addMeltTime(new MaterialData(Material.FENCE_GATE), 30 * 20, 120 * 20);
-        addMeltTime(new MaterialData(Material.SPRUCE_FENCE_GATE), 30 * 20, 120 * 20);
-        addMeltTime(new MaterialData(Material.BIRCH_FENCE_GATE), 30 * 20, 120 * 20);
-        addMeltTime(new MaterialData(Material.JUNGLE_FENCE_GATE), 30 * 20, 120 * 20);
-        addMeltTime(new MaterialData(Material.ACACIA_FENCE_GATE), 30 * 20, 120 * 20);
-        addMeltTime(new MaterialData(Material.DARK_OAK_FENCE_GATE), 30 * 20, 120 * 20);
-        addMeltTime(new MaterialData(Material.SPRUCE_DOOR), 30 * 20, 120 * 20);
-        addMeltTime(new MaterialData(Material.SPRUCE_DOOR_ITEM), 30 * 20, 120 * 20);
-        addMeltTime(new MaterialData(Material.BIRCH_DOOR), 30 * 20, 120 * 20);
-        addMeltTime(new MaterialData(Material.BIRCH_DOOR_ITEM), 30 * 20, 120 * 20);
-        addMeltTime(new MaterialData(Material.JUNGLE_DOOR), 30 * 20, 120 * 20);
-        addMeltTime(new MaterialData(Material.JUNGLE_DOOR_ITEM), 30 * 20, 120 * 20);
-        addMeltTime(new MaterialData(Material.ACACIA_DOOR), 30 * 20, 120 * 20);
-        addMeltTime(new MaterialData(Material.ACACIA_DOOR_ITEM), 30 * 20, 120 * 20);
-        addMeltTime(new MaterialData(Material.DARK_OAK_DOOR), 30 * 20, 120 * 20);
-        addMeltTime(new MaterialData(Material.DARK_OAK_DOOR_ITEM), 30 * 20, 120 * 20);
+        addMeltTime(new MaterialData(Material.WOOD, (byte) 1), 30 * 20);//Spruce planks
+        addMeltTime(new MaterialData(Material.WOOD, (byte) 2), 30 * 20);//Birch planks
+        addMeltTime(new MaterialData(Material.WOOD, (byte) 3), 30 * 20);//Jungle planks
+        addMeltTime(new MaterialData(Material.WOOD, (byte) 4), 30 * 20);//Acacia planks
+        addMeltTime(new MaterialData(Material.WOOD, (byte) 5), 30 * 20);//Dark oak planks
+        addMeltTime(new MaterialData(Material.SAND, (byte) 1), 90 * 20);//Red sand
+        addMeltTime(new MaterialData(Material.SPRUCE_FENCE), 30 * 20);
+        addMeltTime(new MaterialData(Material.BIRCH_FENCE), 30 * 20);
+        addMeltTime(new MaterialData(Material.JUNGLE_FENCE), 30 * 20);
+        addMeltTime(new MaterialData(Material.ACACIA_FENCE), 30 * 20);
+        addMeltTime(new MaterialData(Material.DARK_OAK_FENCE), 30 * 20);
+        addMeltTime(new MaterialData(Material.FENCE_GATE), 30 * 20);
+        addMeltTime(new MaterialData(Material.SPRUCE_FENCE_GATE), 30 * 20);
+        addMeltTime(new MaterialData(Material.BIRCH_FENCE_GATE), 30 * 20);
+        addMeltTime(new MaterialData(Material.JUNGLE_FENCE_GATE), 30 * 20);
+        addMeltTime(new MaterialData(Material.ACACIA_FENCE_GATE), 30 * 20);
+        addMeltTime(new MaterialData(Material.DARK_OAK_FENCE_GATE), 30 * 20);
+        addMeltTime(new MaterialData(Material.SPRUCE_DOOR), 30 * 20);
+        addMeltTime(new MaterialData(Material.SPRUCE_DOOR_ITEM), 30 * 20);
+        addMeltTime(new MaterialData(Material.BIRCH_DOOR), 30 * 20);
+        addMeltTime(new MaterialData(Material.BIRCH_DOOR_ITEM), 30 * 20);
+        addMeltTime(new MaterialData(Material.JUNGLE_DOOR), 30 * 20);
+        addMeltTime(new MaterialData(Material.JUNGLE_DOOR_ITEM), 30 * 20);
+        addMeltTime(new MaterialData(Material.ACACIA_DOOR), 30 * 20);
+        addMeltTime(new MaterialData(Material.ACACIA_DOOR_ITEM), 30 * 20);
+        addMeltTime(new MaterialData(Material.DARK_OAK_DOOR), 30 * 20);
+        addMeltTime(new MaterialData(Material.DARK_OAK_DOOR_ITEM), 30 * 20);
         addMeltTime(new MaterialData(Material.SEA_LANTERN), 0);
         addMeltTime(new MaterialData(Material.CARPET, (byte) 0), 20 * 20);//White carpet
         addMeltTime(new MaterialData(Material.CARPET, (byte) 1), 20 * 20);//Orange carpet
@@ -324,21 +322,18 @@ public class PhysicsEngine implements Listener {
         addMeltTime(new MaterialData(Material.OBSIDIAN), -1);
         addMeltTime(new MaterialData(Material.BARRIER), -1);
 
-
+        //TODO
+        //TODO
+        //TODO can physics run less often... because melt times are in seconds * 20 ticks so torch is 20 ticks not 1
+        //TODO
+        //TODO
         for (Material m : Material.values())
             if (m.isSolid())
                 addMeltTime(new MaterialData(m), 30 * 20);//Checks in itself if either already contain it
     }
 
     public static String getLavaMeltTimeAsString(MaterialData data) {
-        return getMeltTimeAsString(lavaTicksToMelt.getOrDefault(data, (short) 0));
-    }
-
-    public static String getWaterMeltTimeAsString(MaterialData data) {
-        return getMeltTimeAsString(waterTicksToMelt.getOrDefault(data, (short) 0));
-    }
-
-    private static String getMeltTimeAsString(int seconds) {
+        int seconds = ticksToMelt.getOrDefault(data, (short) 0);
         if (seconds < 0)
             return "Never";
         seconds = seconds / 20;
@@ -348,10 +343,7 @@ public class PhysicsEngine implements Listener {
     }
 
     public static String getLavaMeltRangeTimeAsString(MaterialData data) {
-        return getMeltRangeAsString(lavaTicksToMelt.getOrDefault(data, (short) 0));
-    }
-
-    private static String getMeltRangeAsString(int seconds) {
+        int seconds = ticksToMelt.getOrDefault(data, (short) 0);
         if (seconds < 0)
             return "Never";
         seconds = seconds / 20;
@@ -362,26 +354,16 @@ public class PhysicsEngine implements Listener {
         return (min == max ? max : min + " to " + max) + " Second" + (max == 1 ? "" : "s");
     }
 
-    public static String getWaterMeltRangeTimeAsString(MaterialData data) {
-        return getMeltRangeAsString(waterTicksToMelt.getOrDefault(data, (short) 0));
-    }
-
     private static void addMeltTime(MaterialData data, int time) {
-        addMeltTime(data, time, time);
-    }
-
-    private static void addMeltTime(MaterialData data, int lava, int water) {
-        if (!lavaTicksToMelt.containsKey(data))
-            lavaTicksToMelt.put(data, (short) lava);
-        if (!waterTicksToMelt.containsKey(data))
-            waterTicksToMelt.put(data, (short) water);
+        if (!ticksToMelt.containsKey(data))
+            ticksToMelt.put(data, (short) time);
     }
 
     public static short getMeltTime(MaterialData type) {
         //Can use Air or null to remove it
-        if (!lavaTicksToMelt.containsKey(type))
+        if (!ticksToMelt.containsKey(type))
             type = new MaterialData(type.getItemType());
-        return lavaTicksToMelt.getOrDefault(type, (short) 0);
+        return ticksToMelt.getOrDefault(type, (short) 0);
     }
 
     public static long convert(int x, int y, int z) {
@@ -391,6 +373,8 @@ public class PhysicsEngine implements Listener {
 
     @SuppressWarnings("unchecked")
     private void loadMeltMap(String worldName) {
+        //TODO: Dynamic physics start with few chunks that lava spawns in... then load neighboring chunks dynamically
+        //Start load should be near instant 3072 blocks max for 3 spawns
         File fileMeltMap = new File("plugins/ClassicPhysics", worldName + ".txt");
         if (fileMeltMap.exists()) {
             HashMap<Short, ArrayList<Long>> compressedMeltMap = new HashMap<>();
@@ -509,7 +493,7 @@ public class PhysicsEngine implements Listener {
             queue.clear();
     }
 
-    private void tick() {//TODO maybe have water be -3 etc to determine what kind of classic block something is. How to handle different melt times?
+    private void tick() {
         tickCount++;
 
         if (!meltTimers.isEmpty()) {
@@ -536,7 +520,7 @@ public class PhysicsEngine implements Listener {
             attemptFlow(l, l - Z);
             attemptFlow(l, l - Y);
         }
-        queue.flush();//TODO should this be a small number inside instead of default 10000
+        queue.flush();
         queue.clear();//Clears the queue which makes it less laggy in the future
         running = false;
     }
@@ -557,12 +541,12 @@ public class PhysicsEngine implements Listener {
         placeAt(convert(x, y, z));
     }
 
-    private void placeAt(long to) {//TODO call ClassicBlockPlaceEvent or better yet come up with some better way to do it for when water becomes active (not needed yet)
+    private void placeAt(long to) {
         if (blockedMap.containsKey(to))
             return;//Cancel if it is blocked (could happen from a melt or order issue)
         meltMap.put(to, (short) -2);
         activeBlocks.add(to);
-        queue.setBlock(getX(to), getY(to), getZ(to), 11);//11 is LAVA, 9 is WATER
+        queue.setBlock(getX(to), getY(to), getZ(to), 11);//LAVA
     }
 
     private void startMelt(long from, long to, int time) {
@@ -570,10 +554,8 @@ public class PhysicsEngine implements Listener {
         melts.add(new MeltLocationInfo(to, from, time));
     }
 
-    public void placeSponge(int xLoc, int yLoc, int zLoc, BlockingType blockingType) {
-        //TODO Care about blockingType: maybe use some of the extra bits at beginning of location?
+    public void placeSponge(int xLoc, int yLoc, int zLoc, int range) {
         ArrayList<Long> locations = new ArrayList<>(), outerLocations = new ArrayList<>();
-        int range = blockingType.equals(BlockingType.BOTH) ? 10 : 5; //TODO make this a param if we end up making a sponge with a range other than 10 that can block both
         range++;//add the outside rim
         long loc = convert(xLoc, yLoc, zLoc);
         for (int x = -range; x <= range; x++) {
@@ -583,21 +565,21 @@ public class PhysicsEngine implements Listener {
                     if (Math.abs(x) == range || Math.abs(y) == range || Math.abs(z) == range)
                         outerLocations.add(blockedLocation); //Make the x,y,z be ints
                     else {
-                        addBlockedLocation(blockedLocation, blockingType, loc != blockedLocation);
+                        addBlockedLocation(blockedLocation, loc != blockedLocation);
                         locations.add(blockedLocation);
                     }
                 }
             }
         }
-        int spongeDuration = 300;
+        int spongeDuration = range == 5 ? 300 : 500;
         ArrayList<Long> spngs = spongeTimers.computeIfAbsent(tickCount + spongeDuration, k -> new ArrayList<>());
         spngs.add(loc);
         SpongeInfo info;
-        sponges.put(loc, info = new SpongeInfo(blockingType, locations, outerLocations));
+        sponges.put(loc, info = new SpongeInfo(locations, outerLocations));
         info.curParticle = spawnParticleEffect(loc, spongeDuration);
     }
 
-    private void addBlockedLocation(long loc, BlockingType blockingType, boolean clearIfClassic) {
+    private void addBlockedLocation(long loc, boolean clearIfClassic) {
         blockedMap.merge(loc, (short) 1, (a, b) -> (short) (a + b));
         if (clearIfClassic && isClassicBlock(loc)) {
             setAirNoPhysics(loc);
@@ -692,18 +674,16 @@ public class PhysicsEngine implements Listener {
 
     public class SpongeInfo {
         private List<Long> blockingLocations;
-        private BlockingType blockingType;
         private List<Long> outerLocations;
         private AreaEffectCloud curParticle;
 
-        SpongeInfo(BlockingType blockingType, List<Long> blocked, List<Long> outerLocations) {
+        SpongeInfo(List<Long> blocked, List<Long> outerLocations) {
             this.blockingLocations = blocked;
-            this.blockingType = blockingType;
             this.outerLocations = outerLocations;
         }
     }
 
-    public void placeClassicBlock(Location location, Material material) {//TODO make the material do things
+    public void placeClassicBlock(Location location) {
         placeAt(location.getBlockX(), location.getBlockY(), location.getBlockZ());
     }
 

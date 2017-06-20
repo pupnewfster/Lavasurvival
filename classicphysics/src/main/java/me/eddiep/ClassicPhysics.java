@@ -1,7 +1,6 @@
 package me.eddiep;
 
 import org.bukkit.ChatColor;
-import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -36,18 +35,7 @@ public class ClassicPhysics extends JavaPlugin {
                 return true;
             }
             if (sender instanceof Player)
-                pe.placeClassicBlock(((Player) sender).getLocation(), Material.STATIONARY_LAVA);
-            else
-                sender.sendMessage("This command can only be used in-game!");
-            return true;
-        } else if (cmd.getName().equalsIgnoreCase("pcw")) {
-            if (!sender.hasPermission("classicphysics.pcw")) {
-                sender.sendMessage(ChatColor.RED + "You don't have permission to do that!");
-                return true;
-            }
-            if (sender instanceof Player)
-                sender.sendMessage("This command currently does not work, because physics does not work for water, yet.");
-                //pe.placeClassicBlock(((Player) sender).getLocation(), Material.STATIONARY_WATER);
+                pe.placeClassicBlock(((Player) sender).getLocation());
             else
                 sender.sendMessage("This command can only be used in-game!");
             return true;

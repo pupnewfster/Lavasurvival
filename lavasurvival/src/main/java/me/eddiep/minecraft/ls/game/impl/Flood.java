@@ -27,13 +27,13 @@ public class Flood extends Gamemode {
         this.doubleReward = Math.random() < 0.25;
         this.objective = getScoreboard().getObjective("game") == null ? getScoreboard().registerNewObjective("game", "dummy") : getScoreboard().getObjective("game");
         this.objective.setDisplaySlot(DisplaySlot.SIDEBAR);
-        this.objective.setDisplayName((LAVA ? "Lava" : "Water") + "Pour");
+        this.objective.setDisplayName("Lava Pour");
         this.bonusScore = this.objective.getScore(ChatColor.GOLD + "" + ChatColor.BOLD + "Reward Bonus");
         this.type = TYPE;
         super.onStart();
         this.duration = getCurrentMap().getFloodOptions().generateRandomPrepareTime();
         this.lavaPoints = getCurrentMap().getFloodOptions().getSpawnLocations();
-        globalMessage("The " + (LAVA ? "lava" : "water") + " will pour in " + ChatColor.DARK_RED + TimeUtils.toFriendlyTime(duration));
+        globalMessage("The lava will pour in " + ChatColor.DARK_RED + TimeUtils.toFriendlyTime(duration));
         this.gameStart = System.currentTimeMillis();
         this.lastMinute = 0;
 
@@ -107,7 +107,7 @@ public class Flood extends Gamemode {
         int seconds = (int) ((dif) / 1000 % 60);
         String time = (int) ((dif) / 60000) + ":" + (seconds < 10 ? "0" + seconds : seconds);
         if (!super.poured)
-            setObjectiveDisplay((LAVA ? "Lava" : "Water") + " Pour: " + ChatColor.BOLD + time);
+            setObjectiveDisplay("Lava Pour: " + ChatColor.BOLD + time);
         else
             setObjectiveDisplay("Round Ends In: " + ChatColor.BOLD + time);
         if (super.poured) {
@@ -125,13 +125,13 @@ public class Flood extends Gamemode {
             if (nextMinute != this.lastMinute) {
                 this.lastMinute = nextMinute;
                 getCurrentWorld().strikeLightningEffect(this.lavaPoints.get(RANDOM.nextInt(this.lavaPoints.size()))); //Changed to just effect not to kill unknowing player nearby
-                globalMessage("The " + (LAVA ? "lava" : "water") + " will pour in " + ChatColor.DARK_RED + TimeUtils.toFriendlyTime(dif));
+                globalMessage("The lava will pour in " + ChatColor.DARK_RED + TimeUtils.toFriendlyTime(dif));
             }
         } else {
             super.poured = true;
-            globalMessage(ChatColor.DARK_RED + "Here comes the " + (LAVA ? "lava" : "water") + "!");
+            globalMessage(ChatColor.DARK_RED + "Here comes the lava!");
             this.gameStart = System.currentTimeMillis();
-            this.lavaPoints.forEach(l -> ClassicPhysics.getPhysicsEngine().placeClassicBlock(l, getMat()));
+            this.lavaPoints.forEach(l -> ClassicPhysics.getPhysicsEngine().placeClassicBlock(l));
             this.duration = getCurrentMap().getFloodOptions().generateRandomEndTime();
             this.objective.setDisplayName("Round Ends In: " + ChatColor.BOLD + time);
         }

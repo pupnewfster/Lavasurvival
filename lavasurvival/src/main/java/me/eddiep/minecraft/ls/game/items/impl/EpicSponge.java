@@ -15,7 +15,7 @@ public class EpicSponge extends LavaItem {
     @Override
     protected ItemStack displayItem() {
         ItemStack item = new ItemStack(Material.SPONGE);
-        item.setDurability((short) 0);
+        item.setDurability((short) 1);
         return item;
     }
 
@@ -26,7 +26,7 @@ public class EpicSponge extends LavaItem {
 
     @Override
     protected String description() {
-        return "Absorb water AND lava in a\n10 block radius for 25 seconds";
+        return "Absorb lava in a\n10 block radius for 25 seconds";
     }
 
 

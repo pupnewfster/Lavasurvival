@@ -1,21 +1,15 @@
 package me.eddiep.minecraft.ls.ranks;
 
 import com.crossge.necessities.Necessities;
-import me.eddiep.ClassicPhysics;
 import me.eddiep.PhysicsEngine;
 import me.eddiep.minecraft.ls.Lavasurvival;
 import me.eddiep.minecraft.ls.game.Gamemode;
 import me.eddiep.minecraft.ls.game.items.LavaItem;
-import me.eddiep.minecraft.ls.game.status.PlayerStatusManager;
 import me.eddiep.minecraft.ls.system.BukkitUtils;
 import me.eddiep.minecraft.ls.system.bank.BankInventory;
 import net.minecraft.server.v1_12_R1.DamageSource;
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.GameMode;
 import org.bukkit.Material;
-import org.bukkit.block.Block;
-import org.bukkit.block.BlockFace;
 import org.bukkit.craftbukkit.v1_12_R1.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
@@ -29,7 +23,7 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -37,7 +31,6 @@ import java.util.stream.Collectors;
 public class UserInfo {
     private final ArrayList<MaterialData> ownedBlocks = new ArrayList<>();
     private long lastBreak = System.currentTimeMillis(), blockChangeCount;
-    private boolean inWater;
     private Player bukkitPlayer;
     private int taskID;
     private final UUID userUUID;
@@ -192,28 +185,6 @@ public class UserInfo {
         this.lastBreak = lastBreak;
     }
 
-    public boolean isInWater() {
-        return this.inWater;
-    }
-
-    @SuppressWarnings("ConstantConditions")
-    public void setInWater(boolean value) {
-        this.inWater = value;
-        if (!isInWater())
-            Bukkit.getScheduler().cancelTask(this.taskID);
-        if (value && getPlayer() != null && Gamemode.getCurrentGame() != null && Gamemode.DAMAGE != 0 && Gamemode.getCurrentGame().isAlive(getPlayer()))
-            this.taskID = Bukkit.getScheduler().scheduleSyncDelayedTask(Lavasurvival.INSTANCE, () -> {
-                if (isInWater() && getPlayer() != null) {
-                    if (!PlayerStatusManager.isInvincible(getPlayer()) && !getPlayer().getGameMode().equals(GameMode.CREATIVE) && !getPlayer().getGameMode().equals(GameMode.SPECTATOR))
-                        damagePlayer();
-                    Block b = getPlayer().getLocation().getBlock(), above = b.getRelative(BlockFace.UP);
-                    setInWater(((b.getType().equals(Material.WATER) || b.getType().equals(Material.STATIONARY_WATER)) &&
-                            ClassicPhysics.getPhysicsEngine().isClassicBlock(b.getLocation())) || ((above.getType().equals(Material.WATER) ||
-                            above.getType().equals(Material.STATIONARY_WATER)) && ClassicPhysics.getPhysicsEngine().isClassicBlock(above.getLocation())));
-                }
-            }, (int) (20 * Gamemode.DAMAGE_FREQUENCY));
-    }
-
     public void damagePlayer() {
         if (getPlayer() == null)
             return;
@@ -284,7 +255,7 @@ public class UserInfo {
     private ItemStack getItem(MaterialData dat) {
         ItemStack i = dat.toItemStack(1);
         ItemMeta im = i.getItemMeta();
-        im.setLore(Arrays.asList("Lava MeltTime: " + PhysicsEngine.getLavaMeltTimeAsString(dat), "Water MeltTime: " + PhysicsEngine.getWaterMeltTimeAsString(dat)));
+        im.setLore(Collections.singletonList("Lava MeltTime: " + PhysicsEngine.getLavaMeltTimeAsString(dat)));
         i.setItemMeta(im);
         return i;
     }

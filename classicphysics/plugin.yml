@@ -1,6 +1,6 @@
 name: ClassicPhysics
 main: me.eddiep.ClassicPhysics
-version: 0.3
+version: 1.0
 load: POSTWORLD
 authors: [hypereddie, pupnewfster]
 website: eddiep.me
@@ -8,11 +8,6 @@ depend: [FastAsyncWorldEdit]
 commands:
   pcl:
     description: Place only classic lava blocks
-    usage: /<command>
-    permission: classicphysics.pcl
-    permission-message: You don't have <permission>
-  pcw:
-    description: Place only classic water blocks
     usage: /<command>
     permission: classicphysics.pcl
     permission-message: You don't have <permission>

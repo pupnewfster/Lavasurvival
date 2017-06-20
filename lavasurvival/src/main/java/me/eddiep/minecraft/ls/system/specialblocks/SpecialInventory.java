@@ -17,10 +17,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.material.MaterialData;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 
 import static me.eddiep.minecraft.ls.system.util.RandomDistribution.NEGATIVE_EXPONENTIAL;
 import static me.eddiep.minecraft.ls.system.util.RandomDistribution.POSITIVE_EXPONENTIAL;
@@ -87,7 +84,7 @@ public class SpecialInventory {
             MaterialData dat = is.getData();
             if (!dat.getItemType().equals(Material.AIR)) {
                 ItemMeta im = is.getItemMeta();
-                im.setLore(Arrays.asList("Lava MeltTime: " + PhysicsEngine.getLavaMeltTimeAsString(dat), "Water MeltTime: " + PhysicsEngine.getWaterMeltTimeAsString(dat)));
+                im.setLore(Collections.singletonList("Lava MeltTime: " + PhysicsEngine.getLavaMeltTimeAsString(dat)));
                 is.setItemMeta(im);
             }
         }
