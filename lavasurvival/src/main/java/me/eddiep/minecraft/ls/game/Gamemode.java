@@ -954,7 +954,12 @@ public abstract class Gamemode {
     }
 
     private void globalRawMessage(String rawMessage) {
-        getCurrentWorld().getPlayers().forEach(p -> Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "tellraw " + p.getName() + " " + rawMessage));
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+                getCurrentWorld().getPlayers().forEach(p -> Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "tellraw " + p.getName() + " " + rawMessage));
+            }
+        }.runTask(Lavasurvival.INSTANCE);
     }
 
     private boolean isInSpawn(Player player) {

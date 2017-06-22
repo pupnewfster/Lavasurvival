@@ -510,13 +510,14 @@ public class PhysicsEngine implements Listener {
         running = true;
         List<Long> lastActive = activeBlocks;
         activeBlocks = new ArrayList<>();
-        for (long l : lastActive) {//TODO try taking only some at a time
-            attemptFlow(l, l + X);
-            attemptFlow(l, l - X);
-            attemptFlow(l, l + Z);
-            attemptFlow(l, l - Z);
-            attemptFlow(l, l - Y);
-        }
+        if (lastActive != null)
+            for (long l : lastActive) {//TODO try taking only some at a time
+                attemptFlow(l, l + X);
+                attemptFlow(l, l - X);
+                attemptFlow(l, l + Z);
+                attemptFlow(l, l - Z);
+                attemptFlow(l, l - Y);
+            }
         queue.flush();
         queue.clear();//Clears the queue which makes it less laggy in the future
         running = false;
