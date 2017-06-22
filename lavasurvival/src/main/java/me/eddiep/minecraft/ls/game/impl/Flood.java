@@ -72,11 +72,11 @@ public class Flood extends Gamemode {
     }
 
     @Override
-    public void endRound() {
+    public void endRound(boolean skipVote, boolean giveRewards) {
         if (this.objective != null)
             this.objective.unregister();
         this.objective = null;
-        super.endRound();
+        super.endRound(skipVote, giveRewards);
     }
 
     @Override

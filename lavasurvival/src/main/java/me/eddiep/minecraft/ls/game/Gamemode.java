@@ -92,7 +92,16 @@ public abstract class Gamemode {
     private static Gamemode currentGame;
     protected String type = "Rise";
     protected boolean poured;
-    private BukkitRunnable tickTask;
+    private BukkitRunnable tickTask = new BukkitRunnable() {
+        @Override
+        public void run() {
+            if (System.currentTimeMillis() - lastMoneyCheck >= 20000) {
+                Lavasurvival.INSTANCE.MONEY_VIEWER.run();
+                lastMoneyCheck = System.currentTimeMillis();
+            }
+            tick();
+        }
+    };
     private Gamemode nextGame;
     private LavaMap map;
     private boolean endGame;
@@ -282,16 +291,6 @@ public abstract class Gamemode {
             spawnSpecialBlocks(false);
         }, 20); //Delay it slightly to ensure things are set
         Lavasurvival.INSTANCE.MONEY_VIEWER.run();
-        this.tickTask = new BukkitRunnable() {
-            @Override
-            public void run() {
-                if (System.currentTimeMillis() - lastMoneyCheck >= 20000) {
-                    Lavasurvival.INSTANCE.MONEY_VIEWER.run();
-                    lastMoneyCheck = System.currentTimeMillis();
-                }
-                tick();
-            }
-        };
         this.tickTask.runTaskTimer(Lavasurvival.INSTANCE, 0, 1);
     }
 

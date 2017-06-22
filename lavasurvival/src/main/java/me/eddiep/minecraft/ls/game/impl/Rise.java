@@ -23,7 +23,12 @@ public class Rise extends Gamemode {
     public Score layersLeft;
     private boolean doubleReward;
     private Objective objective;
-    private BukkitRunnable upTask;
+    private BukkitRunnable upTask = new BukkitRunnable() {
+        @Override
+        public void run() {
+            pourAndAdvance();
+        }
+    };
     private List<Location> locations;
 
     @Override
@@ -62,12 +67,6 @@ public class Rise extends Gamemode {
             this.specialGap = (getCurrentMap().getHeight() / this.layerCount) / this.specialLayers;
             this.specialDelay = (getCurrentMap().getHeight() / this.layerCount) % this.specialLayers;
         }
-        this.upTask = new BukkitRunnable() {
-            @Override
-            public void run() {
-                pourAndAdvance();
-            }
-        };
         /*if (Gamemode.getPlayerListener().survival)
             globalMessage("The building style will be " + ChatColor.RED + "" + ChatColor.BOLD + "SURVIVAL STYLE");
         else
@@ -93,7 +92,7 @@ public class Rise extends Gamemode {
     }
 
     @Override
-    public void endRound() {
+    public void endRound(boolean skipVote, boolean giveRewards) {
         if (this.objective != null)
             this.objective.unregister();
         try {
@@ -101,7 +100,7 @@ public class Rise extends Gamemode {
         } catch (Exception ignored) {//Not running
         }
         this.locations = null;
-        super.endRound();
+        super.endRound(skipVote, giveRewards);
     }
 
     private void setObjectiveDisplay(String display) {

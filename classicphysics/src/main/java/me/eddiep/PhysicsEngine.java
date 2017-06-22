@@ -380,8 +380,8 @@ public class PhysicsEngine implements Listener {
             } catch (IOException | ClassNotFoundException ignored) {
             }
             for (Map.Entry<Short, ArrayList<Long>> cMelt : compressedMeltMap.entrySet()) {
-                short s = cMelt.getKey();
                 for (Long l : cMelt.getValue()) {
+                    short s = cMelt.getKey();
                     short bonus = (short) RANDOM.nextInt((short) (s * percent + 0.5) + 1);
                     if (RANDOM.nextBoolean())
                         s += bonus;
