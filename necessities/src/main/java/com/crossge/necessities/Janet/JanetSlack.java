@@ -661,13 +661,10 @@ public class JanetSlack {
                 m += Utils.getTPS() + "\n";
                 int mb = 1024 * 1024;
                 Runtime runtime = Runtime.getRuntime();
-                m += "Max Memory: " + runtime.maxMemory() / mb + " mb.\n";
-                m += "Total Memory: " + runtime.totalMemory() / mb + " mb.\n";
-                m += "Free Memory: " + runtime.freeMemory() / mb + " mb.\n";
-                m += "Used Memory: " + (runtime.totalMemory() - runtime.freeMemory()) / mb + " mb.\n";
+                m += "Used Memory: " + (runtime.totalMemory() - runtime.freeMemory()) / mb + " mb / " + runtime.maxMemory() / mb + " mb\n";
                 StringBuilder mBuilder = new StringBuilder(m);
                 for (World w : Bukkit.getWorlds())
-                    mBuilder.append("World: ").append(w.getName()).append("\n").append("    Entities Loaded: ").append(w.getEntities().size()).append("\n");
+                    mBuilder.append("World: ").append(w.getName()).append(", Entities Loaded: ").append(w.getEntities().size()).append(", Chunks Loaded: ").append(w.getLoadedChunks().length).append("\n");
                 m = mBuilder.toString();
             } else if (message.startsWith("!restart") && info.isAdmin()) {
                 sendMessage("Restarting...", isPM, info);
