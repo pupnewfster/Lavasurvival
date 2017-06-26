@@ -72,6 +72,7 @@ public class JanetSlack {
         this.userMap.values().stream().filter(SlackUser::viewingChat).forEach(u -> u.sendPrivateMessage(message));
     }
 
+    @SuppressWarnings("WeakerAccess")
     public void sendMessage(String message, boolean isPM, SlackUser u) {
         if (isPM)
             u.sendPrivateMessage(message);
@@ -691,7 +692,6 @@ public class JanetSlack {
             sendMessage(m, isPM, info);
         } else if (!isPM)
             Bukkit.broadcast(var.getMessages() + "From Slack - " + ChatColor.WHITE + name + ": " + message, "Necessities.slack");
-        Necessities.getAI().parseMessage(message, JanetAI.Source.Slack, isPM, info);
     }
 
     @SuppressWarnings("unused")

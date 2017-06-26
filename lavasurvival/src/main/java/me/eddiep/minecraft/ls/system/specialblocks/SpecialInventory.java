@@ -79,7 +79,7 @@ public class SpecialInventory {
         return ArrayHelper.transform(temp, m -> addMeltTime(m.toItemStack(1)));
     }
 
-    private static ItemStack addMeltTime(ItemStack is) { //TODO maybe move this into some utils class
+    private static ItemStack addMeltTime(ItemStack is) {
         if (is != null) {
             MaterialData dat = is.getData();
             if (!dat.getItemType().equals(Material.AIR)) {

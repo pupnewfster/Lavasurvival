@@ -40,6 +40,7 @@ public class CmdCalculateCPMap implements Cmd {
         return true;
     }
 
+    @SuppressWarnings("deprecation")
     private boolean calculateMeltMap(Location left, Location right) {
         World w = left.getWorld();
         String worldName = w.getName();
@@ -79,9 +80,11 @@ public class CmdCalculateCPMap implements Cmd {
         }
         File fileMeltMap = new File("plugins/ClassicPhysics", worldName + ".txt");
         if (fileMeltMap.exists()) //Clear it
-            fileMeltMap.delete();
+            if (!fileMeltMap.delete())
+                return false;
         try {
-            fileMeltMap.createNewFile();
+            if (!fileMeltMap.createNewFile())
+                return false;
         } catch (IOException ignored) {
             return false;
         }

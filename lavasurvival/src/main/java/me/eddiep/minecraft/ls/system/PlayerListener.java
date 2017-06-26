@@ -42,7 +42,6 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.player.*;
 import org.bukkit.inventory.EquipmentSlot;
-import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -59,16 +58,16 @@ public class PlayerListener implements Listener {
             Material.WOOD_PLATE,
             Material.BEDROCK,
             Material.BARRIER));
-    private final ArrayList<Material> clickOnBlocks = new ArrayList<>(Arrays.asList(//TODO: add other things that torches cannot be placed on but should be able to
+    private final ArrayList<Material> clickOnBlocks = new ArrayList<>(Arrays.asList(
             Material.GLASS,
             Material.STAINED_GLASS,
             Material.TNT,
             Material.GLOWSTONE,
             Material.LEAVES,
             Material.LEAVES_2,
-            Material.ICE));
+            Material.ICE,
+            Material.SEA_LANTERN));
     private final Random rand = new Random();
-    public boolean survival;
 
     @EventHandler(priority = EventPriority.LOWEST)
     public void onChat(AsyncPlayerChatEvent event) {
@@ -113,7 +112,7 @@ public class PlayerListener implements Listener {
             event.setCancelled(true);
             return;
         }
-        if (!this.survival && event.getEntity() instanceof Player && Gamemode.getCurrentGame() != null && Gamemode.getCurrentGame().isAlive((Player) event.getEntity())) {
+        if (event.getEntity() instanceof Player && Gamemode.getCurrentGame() != null && Gamemode.getCurrentGame().isAlive((Player) event.getEntity())) {
             if (!event.getCause().equals(EntityDamageEvent.DamageCause.VOID)) {
                 event.setCancelled(true);
                 if (event.getCause().equals(EntityDamageEvent.DamageCause.LAVA))
@@ -181,23 +180,6 @@ public class PlayerListener implements Listener {
                     return;
                 u.setLastBreak(System.currentTimeMillis());
                 u.incrementBlockCount();
-                if (this.survival) {
-                    Inventory inventory = p.getInventory();
-                    int index = inventory.first(block.getType());
-                    if (index == -1)
-                        index = inventory.firstEmpty();
-                    if (index != -1) {
-                        ItemStack stack = inventory.getItem(index);
-                        if (stack == null) {
-                            stack = new ItemStack(block.getType(), 1);
-                            inventory.setItem(index, stack);
-                            block.setType(Material.AIR);
-                            return;
-                        }
-                        stack.setType(block.getType());
-                        stack.setAmount(stack.getAmount() + 1);
-                    }
-                }
                 if (block.getType().equals(Material.SPONGE)) {
                     Location l = block.getLocation();
                     ClassicPhysics.getPhysicsEngine().removeSponge(l.getBlockX(), l.getBlockY(), l.getBlockZ());
@@ -286,7 +268,6 @@ public class PlayerListener implements Listener {
                 if (sendUpdate) {
                     event.setCancelled(true);
                     ClassicPhysics.getPhysicsEngine().placeBlock(relative.getX(), relative.getY(), relative.getZ(), item.getType(), data);
-                    //TODO: if we add a survival mode make it remove the item from them
                 }
             }
         }
@@ -313,16 +294,13 @@ public class PlayerListener implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void dropItem(PlayerDropItemEvent event) {
-        if (!this.survival)
-            event.setCancelled(true);
+        event.setCancelled(true);
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void pickupItem(PlayerPickupItemEvent event) {//Stops items from being picked up if they somehow drop
-        if (!this.survival) {
-            event.getItem().remove();//Remove the dropped item
-            event.setCancelled(true);
-        }
+        event.getItem().remove();//Remove the dropped item
+        event.setCancelled(true);
     }
 
     @EventHandler(priority = EventPriority.MONITOR)
@@ -436,13 +414,10 @@ public class PlayerListener implements Listener {
                 Lavasurvival.INSTANCE.getUserManager().getUser(event.getPlayer().getUniqueId()).incrementBlockCount();
                 return;
             }
-
-            if (!this.survival) {
-                if (event.getHand().equals(EquipmentSlot.OFF_HAND))
-                    event.getPlayer().getInventory().setItemInOffHand(event.getPlayer().getInventory().getItemInOffHand().clone());
-                else
-                    event.getPlayer().getInventory().setItemInMainHand(event.getPlayer().getInventory().getItemInMainHand().clone());
-            }
+            if (event.getHand().equals(EquipmentSlot.OFF_HAND))
+                event.getPlayer().getInventory().setItemInOffHand(event.getPlayer().getInventory().getItemInOffHand().clone());
+            else
+                event.getPlayer().getInventory().setItemInMainHand(event.getPlayer().getInventory().getItemInMainHand().clone());
         }
         Lavasurvival.INSTANCE.getUserManager().getUser(event.getPlayer().getUniqueId()).incrementBlockCount();
     }
@@ -488,20 +463,19 @@ public class PlayerListener implements Listener {
                 if (!pe.isClassicBlock(player.getLocation()) && !pe.isClassicBlock(player.getEyeLocation()))
                     player.teleport(Gamemode.getCurrentWorld().getSpawnLocation().clone());
             }
-            event.getPlayer().setScoreboard(Gamemode.getScoreboard());
-            Gamemode.getCurrentGame().addBars(event.getPlayer());
+            player.setScoreboard(Gamemode.getScoreboard());
+            Gamemode.getCurrentGame().addBars(player);
         }
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void foodLevelChange(FoodLevelChangeEvent event) {
-        if (!survival)
-            event.setCancelled(true);
+        event.setCancelled(true);
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void healthRegen(EntityRegainHealthEvent event) {
-        if (!survival && event.getEntity() instanceof Player)
+        if (event.getEntity() instanceof Player)
             event.setCancelled(true);
     }
 

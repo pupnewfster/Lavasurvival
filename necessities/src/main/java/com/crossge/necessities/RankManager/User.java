@@ -1,8 +1,6 @@
 package com.crossge.necessities.RankManager;
 
 import com.crossge.necessities.Commands.CmdHide;
-import com.crossge.necessities.Hats.Hat;
-import com.crossge.necessities.Hats.HatType;
 import com.crossge.necessities.Necessities;
 import com.crossge.necessities.ScoreBoards;
 import org.bukkit.Bukkit;
@@ -32,7 +30,6 @@ public class User {
     private Location right, left;
     private Player bukkitPlayer;
     private int pastTotal;
-    private Hat hat;
     private final UUID userUUID;
     private Rank rank;
 
@@ -52,8 +49,6 @@ public class User {
             this.muted = configUsers.getBoolean(getUUID().toString() + ".muted");
         if (configUsers.contains(getUUID().toString() + ".timePlayed"))
             this.pastTotal = configUsers.getInt(getUUID().toString() + ".timePlayed");
-        if (configUsers.contains(getUUID().toString() + ".hat"))
-            this.hat = Hat.fromType(HatType.fromString(configUsers.getString(getUUID().toString() + ".hat")), this.bukkitPlayer.getLocation());
         this.login = System.currentTimeMillis();
         readIgnored();
         updateListName();
@@ -98,8 +93,6 @@ public class User {
         updateTimePlayed();
         ScoreBoards sb = Necessities.getSBs();
         sb.delPlayer(this);
-        if (this.hat != null)
-            this.hat.despawn();
         this.bukkitPlayer = null;
     }
 
@@ -222,31 +215,6 @@ public class User {
 
     public String getStatus() {
         return this.status;
-    }
-
-    public Hat getHat() {
-        return this.hat;
-    }
-
-    public void respawnHat() {
-        if (this.hat == null || this.bukkitPlayer == null)
-            return;
-        this.hat.despawn();
-        this.hat = Hat.fromType(this.hat.getType(), this.bukkitPlayer.getLocation());
-    }
-
-    public void setHat(Hat hat) {
-        if (this.hat != null)
-            this.hat.despawn();
-        this.hat = hat;
-        YamlConfiguration configUsers = YamlConfiguration.loadConfiguration(this.configFileUsers);
-        if (!configUsers.contains(getUUID().toString()))
-            return;
-        configUsers.set(getUUID().toString() + ".hat", this.hat == null ? null : this.hat.getType().getName());
-        try {
-            configUsers.save(this.configFileUsers);
-        } catch (Exception ignored) {
-        }
     }
 
     public void updateListName() {

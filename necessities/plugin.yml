@@ -1,6 +1,6 @@
 name: Necessities
 main: com.crossge.necessities.Necessities
-version: 3.0.0
+version: 3.1.0
 description: Adds the necessities a server needs
 authors: [pupnewfster]
 softdepend: [OpenAnalytics, ClassicPhysics]
@@ -71,21 +71,11 @@ commands:
       usage: /<command> <message>
       permission: Necessities.logoutmessage
       aliases: [setlogoutmessage, logoutmsg, setlogoutmsg, nsetlogoutmessage, nlogoutmsg, nlogoutmessage, nsetlogoutmsg]
-   slap:
-      description: Slaps <name> sky high.
-      usage: /<command> <name>
-      permission: Necessities.slap
-      aliases: [nslap]
    opbroadcast:
       description: Toggles opchat.
       usage: /<command>
       permission: Necessities.opBroadcast
       aliases: [nopbroadcast, opchat, nopchat, adminchat, nadminchat, oc, noc, ac, nac]
-   hat:
-      description: Put a hat on.
-      usage: /<command> <type>
-      permission: Necessities.hat
-      aliases: [nhat]
    hide:
       description: Hides yourself from the server with fake leave message.
       usage: /<command>
@@ -261,16 +251,6 @@ commands:
       usage: /<command> <name>
       permission: Necessities.worldmanager.removeworld
       aliases: [nremoveworld]
-   createportal:
-      description: Creates a portal called <name> that teleports to given <world>.
-      usage: /<command> <name> <world teleporting to>
-      permission: Necessities.worldmanager.createportal
-      aliases: [ncreateportal, cportal, ncportal]
-   removeportal:
-      description: Removes the portal called <name>.
-      usage: /<command> <name>
-      permission: Necessities.worldmanager.removeportal
-      aliases: [nremoveportal, rportal, nrportal]
    setworldspawn:
       description: Sets the spawn for the world you are in.
       usage: /<command>
@@ -291,26 +271,6 @@ commands:
       usage: /<command> <name>
       permission: Necessities.worldmanager.unloadworld
       aliases: [nunloadworld, unload, nunload, nmvunload, mvunload]
-   warps:
-      description: Displays the list of warps.
-      usage: /<command>
-      permission: Necessities.worldmanager.warps
-      aliases: [nwarps, locations, nlocations]
-   warp:
-      description: Teleports you to given warp.
-      usage: /<command> <name>
-      permission: Necessities.worldmanager.warp
-      aliases: [nwarp, location, nlocation]
-   createwarp:
-      description: Creates a warp called <name> at your current location.
-      usage: /<command> <name>
-      permission: Necessities.worldmanager.createwarp
-      aliases: [ncreatewarp, cwarp, ncwarp, ncreatelocation, createlocation, clocation, nclocation, setwarp, nsetwarp]
-   removewarp:
-      description: Removes the warp called <name>.
-      usage: /<command> <name>
-      permission: Necessities.worldmanager.removewarp
-      aliases: [nremovewarp, rwarp, nrwarp, nremovelocation, removelocation, rlocation, nrlocation, deletewarp, ndeletewarp, dwarp, ndwarp, deletelocation, ndeletelocation, ndlocation, dlocation]
    bal:
       description: Shows your balance.
       usage: /<command> <name>
@@ -489,14 +449,12 @@ permissions:
             Necessities.caps: true
             Necessities.devs: true
             Necessities.warn: true
-            Necessities.slap: true
             Necessities.hide: true
             Necessities.mute: true
             Necessities.motd: true
             Necessities.help: true
             Necessities.msg: true
             Necessities.top: true
-            Necessities.hat: true
             Necessities.spy: true
             Necessities.fly: true
             Necessities.tps: true
@@ -536,20 +494,14 @@ permissions:
             Necessities.worldmanager.*:
               children:
                 Necessities.worldmanager.setworldspawn: true
-                Necessities.worldmanager.createportal: true
-                Necessities.worldmanager.removeportal: true
                 Necessities.worldmanager.createworld: true
                 Necessities.worldmanager.unloadworld: true
                 Necessities.worldmanager.removeworld: true
                 Necessities.worldmanager.modifyworld: true
                 Necessities.worldmanager.worldspawn: true
-                Necessities.worldmanager.removewarp: true
-                Necessities.worldmanager.createwarp: true
                 Necessities.worldmanager.loadworld: true
                 Necessities.worldmanager.worlds: true
                 Necessities.worldmanager.world: true
-                Necessities.worldmanager.warps: true
-                Necessities.worldmanager.warp: true
             Necessities.economy.*:
               children:
                 Necessities.economy.editbal: true
@@ -600,12 +552,6 @@ permissions:
         default: true
     Necessities.worldmanager.worlds:
         description: Allows you to view loaded worlds.
-        default: true
-    Necessities.worldmanager.warps:
-        description: Allows you to view the list of warps.
-        default: true
-    Necessities.worldmanager.warp:
-        description: Allows you to teleport to a specified warp.
         default: true
     Necessities.requestmod:
         description: Allows you to request a mod to get on.
@@ -690,12 +636,6 @@ permissions:
         default: op
     Necessities.warn:
         description: Allows you to warn players.
-        default: op
-    Necessities.slap:
-        description: Allows you to slap a player.
-        default: op
-    Necessities.hat:
-        description: Allows you to do put fancy hats on.
         default: op
     Necessities.caps:
         description: Allows you to use caps.
@@ -841,12 +781,6 @@ permissions:
     Necessities.worldmanager.setworldspawn:
         description: Allows you to set the spawn for the world you are in.
         default: op
-    Necessities.worldmanager.createportal:
-        description: Allows you to create portals to other worlds.
-        default: op
-    Necessities.worldmanager.removeportal:
-        description: Allows you to remove portals that take you to other worlds.
-        default: op
     Necessities.titleOthers:
         description: Change the title of others.
         default: op
@@ -858,12 +792,6 @@ permissions:
         default: op
     Necessities.flyOthers:
         description: Allows you toggle fly for others.
-        default: op
-    Necessities.worldmanager.createwarp:
-        description: Allows you to create warps.
-        default: op
-    Necessities.worldmanager.removewarp:
-        description: Allows you to remove warps.
         default: op
     Necessities.tempban:
         description: Allows one to tempban others.

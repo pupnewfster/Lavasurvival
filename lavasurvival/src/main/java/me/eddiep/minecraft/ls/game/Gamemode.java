@@ -489,8 +489,11 @@ public abstract class Gamemode {
         else {
             try {
                 String[] files = LavaMap.getPossibleMaps();
-                if (this.nextGame == null)
+                if (this.nextGame == null) {
                     this.nextGame = pickRandomGame(null);
+                    if (this.nextGame == null)//Should never happen
+                        return;
+                }
                 if (this.nextGame.map == null)
                     this.nextGame.map = LavaMap.load(files[random(files.length)]);
                 Bukkit.getScheduler().scheduleSyncDelayedTask(Lavasurvival.INSTANCE, () -> {
@@ -1084,7 +1087,14 @@ public abstract class Gamemode {
     }
 
     public void spawnSpecialBlock(int x, int y, int z, MaterialData data, boolean gravity) {
-        //TODO: Announce what type of block is falling
+        if (data.equals(money))
+            globalMessage(ChatColor.GREEN + "A bookshelf filled with money has fallen.");
+        else if (data.equals(common))
+            globalMessage(ChatColor.AQUA + "A common drop has fallen.");
+        else if (data.equals(uncommon))
+            globalMessage(ChatColor.BLUE + "An uncommon drop has fallen.");
+        else if (data.equals(epic))
+            globalMessage(ChatColor.DARK_PURPLE + "An " + ChatColor.ITALIC + "epic" + ChatColor.DARK_PURPLE + " drop has fallen.");
         FallingBlock b = getCurrentWorld().spawnFallingBlock(new Location(getCurrentWorld(), x + 0.5, y, z + 0.5), data); //Should y be + 0.5 as well probably not
         b.setGlowing(true);
         b.setDropItem(true);

@@ -19,7 +19,8 @@ public class ClassicPhysics extends JavaPlugin {
         this.getServer().getPluginManager().registerEvents(pe = new PhysicsEngine(), this);
         File d = getDataFolder();
         if (!d.exists())
-            d.mkdir();
+            if (!d.mkdir())
+                log("Failed to create directory for Classic Physics.");
     }
 
     @Override

@@ -1,7 +1,5 @@
 package com.crossge.necessities;
 
-import com.crossge.necessities.Hats.HatType;
-import org.apache.commons.io.FileUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.PluginCommand;
@@ -23,15 +21,7 @@ class Initialization {
         fileCreate("plugins/Necessities/rules.txt");
         fileCreate("plugins/Necessities/faq.txt");
         fileCreate("plugins/Necessities/announcements.txt");
-        File cWords = new File("plugins/Necessities", "customWords.txt");
-        if (!cWords.exists())
-            try {
-                cWords.createNewFile();
-                FileUtils.copyURLToFile(getClass().getResource("/customWords.txt"), cWords);
-            } catch (Exception ignored) {
-            }
         createYaml();
-        HatType.mapHats();
 
         YamlConfiguration config = Necessities.getInstance().getConfig();
         if (config.contains("Necessities.customDeny") && config.getBoolean("Necessities.customDeny")) //At the moment only is checked on startup
@@ -60,19 +50,14 @@ class Initialization {
         Necessities.getSBs().createScoreboard();
 
         //WorldManager
-        if (config.contains("Necessities.WorldManager") && config.getBoolean("Necessities.WorldManager")) {
+        if (config.contains("Necessities.WorldManager") && config.getBoolean("Necessities.WorldManager"))
             Necessities.getWM().initiate();
-            Necessities.getWarps().initiate();
-            Necessities.getPM().initiate();
-        }
 
-        Necessities.getNet().readCustom();
         Necessities.getBot().initiate();
         Necessities.getSpy().init();
         Necessities.getHide().init();
         Necessities.getWarns().initiate();
         Necessities.getSlack().init();
-        Necessities.getAI().initiate();
         Necessities.getAnnouncer().init();
         Necessities.getEconomy().init();
     }
@@ -108,12 +93,10 @@ class Initialization {
         addYML(new File("plugins/Necessities", "titles.yml"));
         addYML(new File("plugins/Necessities", "spying.yml"));
         addYML(new File("plugins/Necessities", "hiding.yml"));
-        addYML(new File("plugins/Necessities/WorldManager", "warps.yml"));
         addYML(new File("plugins/Necessities", "loginmessages.yml"));
         addYML(new File("plugins/Necessities", "logoutmessages.yml"));
         addYML(new File("plugins/Necessities/RankManager", "users.yml"));
         addYML(new File("plugins/Necessities/WorldManager", "worlds.yml"));
-        addYML(new File("plugins/Necessities/WorldManager", "portals.yml"));
         File configFileCensors = new File("plugins/Necessities", "censors.yml");
         if (!configFileCensors.exists())
             try {
@@ -136,7 +119,6 @@ class Initialization {
                 config.set("Necessities.cmdSpam", true);
                 config.set("Necessities.chatSpam", true);
                 config.set("Necessities.advertise", true);
-                config.set("Necessities.AI", false);
                 config.set("Necessities.log", false);
                 config.set("Necessities.customDeny", false);
                 config.set("Necessities.ChatFormat", "{TITLE} {RANK} {NAME}&4:&f {MESSAGE}");
@@ -176,8 +158,6 @@ class Initialization {
                 config.set("Console.AliveStatus", "Alive");
             if (!config.contains("Necessities.WorldManager"))
                 config.set("Necessities.WorldManager", true);
-            if (!config.contains("Necessities.AI"))
-                config.set("Necessities.AI", false);
             if (!config.contains("Necessities.log"))
                 config.set("Necessities.log", false);
             if (!config.contains("Necessities.customDeny"))

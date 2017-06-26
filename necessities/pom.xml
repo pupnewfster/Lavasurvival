@@ -14,8 +14,12 @@
             <url>http://repo.dmulloy2.net/content/groups/public/</url>
         </repository>
         <repository>
-            <id>spigot-repo</id>
-            <url>https://hub.spigotmc.org/nexus/content/repositories/snapshots/</url>
+            <id>galaxygaming-repo</id>
+            <url>http://galaxygaming.gg/maven/</url>
+        </repository>
+        <repository>
+            <id>destroystokyo-repo</id>
+            <url>https://repo.destroystokyo.com/repository/maven-public//</url>
         </repository>
         <repository>
             <id>libs</id>
@@ -29,6 +33,12 @@
     </repositories>
 
     <dependencies>
+        <dependency>
+            <groupId>com.destroystokyo.paper</groupId>
+            <artifactId>paper-api</artifactId>
+            <version>1.12-R0.1-SNAPSHOT</version>
+            <scope>provided</scope>
+        </dependency>
         <dependency>
             <groupId>org.spigotmc</groupId>
             <artifactId>spigot</artifactId>
@@ -57,11 +67,6 @@
             <version>2.1.2</version>
         </dependency>
         <dependency>
-            <groupId>mysql</groupId>
-            <artifactId>mysql-connector-java</artifactId>
-            <version>6.0.6</version>
-        </dependency>
-        <dependency>
             <groupId>me.eddiep.minecraft</groupId>
             <artifactId>classicphysics</artifactId>
             <version>1.0</version>
@@ -74,8 +79,6 @@
                 <directory>${project.basedir}</directory>
                 <includes>
                     <include>plugin.yml</include>
-                    <include>englishWords.txt</include>
-                    <include>customWords.txt</include>
                 </includes>
             </resource>
         </resources>

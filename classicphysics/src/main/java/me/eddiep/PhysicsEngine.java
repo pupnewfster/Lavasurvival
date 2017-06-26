@@ -86,22 +86,38 @@ public class PhysicsEngine implements Listener {
         addMeltTime(new MaterialData(Material.SANDSTONE), 120 * tickModifier);
         addMeltTime(new MaterialData(Material.RED_SANDSTONE), 120 * tickModifier);
         addMeltTime(new MaterialData(Material.HARD_CLAY), 120 * tickModifier);
-        addMeltTime(new MaterialData(Material.STAINED_CLAY, (byte) 0), 120 * tickModifier);//White clay
-        addMeltTime(new MaterialData(Material.STAINED_CLAY, (byte) 1), 120 * tickModifier);//Orange clay
-        addMeltTime(new MaterialData(Material.STAINED_CLAY, (byte) 2), 120 * tickModifier);//Magenta clay
-        addMeltTime(new MaterialData(Material.STAINED_CLAY, (byte) 3), 120 * tickModifier);//Light blue clay
-        addMeltTime(new MaterialData(Material.STAINED_CLAY, (byte) 4), 120 * tickModifier);//Yellow clay
-        addMeltTime(new MaterialData(Material.STAINED_CLAY, (byte) 5), 120 * tickModifier);//Lime clay
-        addMeltTime(new MaterialData(Material.STAINED_CLAY, (byte) 6), 120 * tickModifier);//Pink clay
-        addMeltTime(new MaterialData(Material.STAINED_CLAY, (byte) 7), 120 * tickModifier);//Gray clay
-        addMeltTime(new MaterialData(Material.STAINED_CLAY, (byte) 8), 120 * tickModifier);//Light gray clay
-        addMeltTime(new MaterialData(Material.STAINED_CLAY, (byte) 9), 120 * tickModifier);//Cyan clay
-        addMeltTime(new MaterialData(Material.STAINED_CLAY, (byte) 10), 120 * tickModifier);//Purple clay
-        addMeltTime(new MaterialData(Material.STAINED_CLAY, (byte) 11), 120 * tickModifier);//Blue clay
-        addMeltTime(new MaterialData(Material.STAINED_CLAY, (byte) 12), 120 * tickModifier);//Brown clay
-        addMeltTime(new MaterialData(Material.STAINED_CLAY, (byte) 13), 120 * tickModifier);//Green clay
-        addMeltTime(new MaterialData(Material.STAINED_CLAY, (byte) 14), 120 * tickModifier);//Red clay
-        addMeltTime(new MaterialData(Material.STAINED_CLAY, (byte) 15), 120 * tickModifier);//Black clay
+        addMeltTime(new MaterialData(Material.STAINED_CLAY, (byte) 0), 120 * tickModifier);//White terracotta
+        addMeltTime(new MaterialData(Material.STAINED_CLAY, (byte) 1), 120 * tickModifier);//Orange terracotta
+        addMeltTime(new MaterialData(Material.STAINED_CLAY, (byte) 2), 120 * tickModifier);//Magenta terracotta
+        addMeltTime(new MaterialData(Material.STAINED_CLAY, (byte) 3), 120 * tickModifier);//Light blue terracotta
+        addMeltTime(new MaterialData(Material.STAINED_CLAY, (byte) 4), 120 * tickModifier);//Yellow terracotta
+        addMeltTime(new MaterialData(Material.STAINED_CLAY, (byte) 5), 120 * tickModifier);//Lime terracotta
+        addMeltTime(new MaterialData(Material.STAINED_CLAY, (byte) 6), 120 * tickModifier);//Pink terracotta
+        addMeltTime(new MaterialData(Material.STAINED_CLAY, (byte) 7), 120 * tickModifier);//Gray terracotta
+        addMeltTime(new MaterialData(Material.STAINED_CLAY, (byte) 8), 120 * tickModifier);//Light gray terracotta
+        addMeltTime(new MaterialData(Material.STAINED_CLAY, (byte) 9), 120 * tickModifier);//Cyan terracotta
+        addMeltTime(new MaterialData(Material.STAINED_CLAY, (byte) 10), 120 * tickModifier);//Purple terracotta
+        addMeltTime(new MaterialData(Material.STAINED_CLAY, (byte) 11), 120 * tickModifier);//Blue terracotta
+        addMeltTime(new MaterialData(Material.STAINED_CLAY, (byte) 12), 120 * tickModifier);//Brown terracotta
+        addMeltTime(new MaterialData(Material.STAINED_CLAY, (byte) 13), 120 * tickModifier);//Green terracotta
+        addMeltTime(new MaterialData(Material.STAINED_CLAY, (byte) 14), 120 * tickModifier);//Red terracotta
+        addMeltTime(new MaterialData(Material.STAINED_CLAY, (byte) 15), 120 * tickModifier);//Black terracotta
+        addMeltTime(new MaterialData(Material.CONCRETE_POWDER, (byte) 0), 90 * tickModifier);//White concrete powder
+        addMeltTime(new MaterialData(Material.CONCRETE_POWDER, (byte) 1), 90 * tickModifier);//Orange concrete powder
+        addMeltTime(new MaterialData(Material.CONCRETE_POWDER, (byte) 2), 90 * tickModifier);//Magenta concrete powder
+        addMeltTime(new MaterialData(Material.CONCRETE_POWDER, (byte) 3), 90 * tickModifier);//Light blue concrete powder
+        addMeltTime(new MaterialData(Material.CONCRETE_POWDER, (byte) 4), 90 * tickModifier);//Yellow concrete powder
+        addMeltTime(new MaterialData(Material.CONCRETE_POWDER, (byte) 5), 90 * tickModifier);//Lime concrete powder
+        addMeltTime(new MaterialData(Material.CONCRETE_POWDER, (byte) 6), 90 * tickModifier);//Pink concrete powder
+        addMeltTime(new MaterialData(Material.CONCRETE_POWDER, (byte) 7), 90 * tickModifier);//Gray concrete powder
+        addMeltTime(new MaterialData(Material.CONCRETE_POWDER, (byte) 8), 90 * tickModifier);//Light gray concrete powder
+        addMeltTime(new MaterialData(Material.CONCRETE_POWDER, (byte) 9), 90 * tickModifier);//Cyan concrete powder
+        addMeltTime(new MaterialData(Material.CONCRETE_POWDER, (byte) 10), 90 * tickModifier);//Purple concrete powder
+        addMeltTime(new MaterialData(Material.CONCRETE_POWDER, (byte) 11), 90 * tickModifier);//Blue concrete powder
+        addMeltTime(new MaterialData(Material.CONCRETE_POWDER, (byte) 12), 90 * tickModifier);//Brown concrete powder
+        addMeltTime(new MaterialData(Material.CONCRETE_POWDER, (byte) 13), 90 * tickModifier);//Green concrete powder
+        addMeltTime(new MaterialData(Material.CONCRETE_POWDER, (byte) 14), 90 * tickModifier);//Red concrete powder
+        addMeltTime(new MaterialData(Material.CONCRETE_POWDER, (byte) 15), 90 * tickModifier);//Black concrete powder
 
         //Advanced blocks
         addMeltTime(new MaterialData(Material.STEP, (byte) 0), 120 * tickModifier);//Stone slab
@@ -151,6 +167,22 @@ public class PhysicsEngine implements Listener {
         addMeltTime(new MaterialData(Material.MOSSY_COBBLESTONE), 150 * tickModifier);
         addMeltTime(new MaterialData(Material.SMOOTH_BRICK, (byte) 2), 120 * tickModifier);//Cracked stone brick
         addMeltTime(new MaterialData(Material.GLASS), 90 * tickModifier);
+        addMeltTime(new MaterialData(Material.CONCRETE, (byte) 0), 120 * tickModifier);//White concrete
+        addMeltTime(new MaterialData(Material.CONCRETE, (byte) 1), 120 * tickModifier);//Orange concrete
+        addMeltTime(new MaterialData(Material.CONCRETE, (byte) 2), 120 * tickModifier);//Magenta concrete
+        addMeltTime(new MaterialData(Material.CONCRETE, (byte) 3), 120 * tickModifier);//Light blue concrete
+        addMeltTime(new MaterialData(Material.CONCRETE, (byte) 4), 120 * tickModifier);//Yellow concrete
+        addMeltTime(new MaterialData(Material.CONCRETE, (byte) 5), 120 * tickModifier);//Lime concrete
+        addMeltTime(new MaterialData(Material.CONCRETE, (byte) 6), 120 * tickModifier);//Pink concrete
+        addMeltTime(new MaterialData(Material.CONCRETE, (byte) 7), 120 * tickModifier);//Gray concrete
+        addMeltTime(new MaterialData(Material.CONCRETE, (byte) 8), 120 * tickModifier);//Light gray concrete
+        addMeltTime(new MaterialData(Material.CONCRETE, (byte) 9), 120 * tickModifier);//Cyan concrete
+        addMeltTime(new MaterialData(Material.CONCRETE, (byte) 10), 120 * tickModifier);//Purple concrete
+        addMeltTime(new MaterialData(Material.CONCRETE, (byte) 11), 120 * tickModifier);//Blue concrete
+        addMeltTime(new MaterialData(Material.CONCRETE, (byte) 12), 120 * tickModifier);//Brown concrete
+        addMeltTime(new MaterialData(Material.CONCRETE, (byte) 13), 120 * tickModifier);//Green concrete
+        addMeltTime(new MaterialData(Material.CONCRETE, (byte) 14), 120 * tickModifier);//Red concrete
+        addMeltTime(new MaterialData(Material.CONCRETE, (byte) 15), 120 * tickModifier);//Black concrete
 
         //Survivor blocks
         addMeltTime(new MaterialData(Material.PACKED_ICE), 30 * tickModifier);
@@ -165,6 +197,7 @@ public class PhysicsEngine implements Listener {
         addMeltTime(new MaterialData(Material.QUARTZ_BLOCK, (byte) 0), 150 * tickModifier);
         addMeltTime(new MaterialData(Material.QUARTZ_BLOCK, (byte) 1), 150 * tickModifier);
         addMeltTime(new MaterialData(Material.QUARTZ_BLOCK, (byte) 2), 150 * tickModifier);
+        addMeltTime(new MaterialData(Material.NETHER_WART_BLOCK), 150 * tickModifier);
         addMeltTime(new MaterialData(Material.WOOL, (byte) 0), 20 * tickModifier);//White wool
         addMeltTime(new MaterialData(Material.WOOL, (byte) 1), 20 * tickModifier);//Orange wool
         addMeltTime(new MaterialData(Material.WOOL, (byte) 2), 20 * tickModifier);//Magenta wool
@@ -181,7 +214,22 @@ public class PhysicsEngine implements Listener {
         addMeltTime(new MaterialData(Material.WOOL, (byte) 13), 20 * tickModifier);//Green wool
         addMeltTime(new MaterialData(Material.WOOL, (byte) 14), 20 * tickModifier);//Red wool
         addMeltTime(new MaterialData(Material.WOOL, (byte) 15), 20 * tickModifier);//Black wool
-        addMeltTime(new MaterialData(Material.NETHER_WART_BLOCK), 150 * tickModifier);
+        addMeltTime(new MaterialData(Material.WHITE_GLAZED_TERRACOTTA), 120 * tickModifier);
+        addMeltTime(new MaterialData(Material.ORANGE_GLAZED_TERRACOTTA), 120 * tickModifier);
+        addMeltTime(new MaterialData(Material.MAGENTA_GLAZED_TERRACOTTA), 120 * tickModifier);
+        addMeltTime(new MaterialData(Material.LIGHT_BLUE_GLAZED_TERRACOTTA), 120 * tickModifier);
+        addMeltTime(new MaterialData(Material.YELLOW_GLAZED_TERRACOTTA), 120 * tickModifier);
+        addMeltTime(new MaterialData(Material.LIME_GLAZED_TERRACOTTA), 120 * tickModifier);
+        addMeltTime(new MaterialData(Material.PINK_GLAZED_TERRACOTTA), 120 * tickModifier);
+        addMeltTime(new MaterialData(Material.GRAY_GLAZED_TERRACOTTA), 120 * tickModifier);
+        addMeltTime(new MaterialData(Material.SILVER_GLAZED_TERRACOTTA), 120 * tickModifier);//Light gray glazed terracotta
+        addMeltTime(new MaterialData(Material.CYAN_GLAZED_TERRACOTTA), 120 * tickModifier);
+        addMeltTime(new MaterialData(Material.PURPLE_GLAZED_TERRACOTTA), 120 * tickModifier);
+        addMeltTime(new MaterialData(Material.BLUE_GLAZED_TERRACOTTA), 120 * tickModifier);
+        addMeltTime(new MaterialData(Material.BROWN_GLAZED_TERRACOTTA), 120 * tickModifier);
+        addMeltTime(new MaterialData(Material.GREEN_GLAZED_TERRACOTTA), 120 * tickModifier);
+        addMeltTime(new MaterialData(Material.RED_GLAZED_TERRACOTTA), 120 * tickModifier);
+        addMeltTime(new MaterialData(Material.BLACK_GLAZED_TERRACOTTA), 120 * tickModifier);
 
         //Trusted blocks
         addMeltTime(new MaterialData(Material.WOOD_DOOR), 30 * tickModifier);
@@ -476,7 +524,7 @@ public class PhysicsEngine implements Listener {
         tickCount = 0;
         loadMeltMap(world = worldName);
         queue = FaweAPI.createQueue(worldName, true);
-        Bukkit.broadcastMessage("[DEBUG]: " + worldName + " loaded.");//TODO remove debug message
+        //Bukkit.broadcastMessage("[DEBUG]: " + worldName + " loaded.");//TODO add a debug thing for people to listen to
         if (stopped)
             stopped = false;
         else
@@ -529,9 +577,8 @@ public class PhysicsEngine implements Listener {
         Short time = meltMap.get(to);
         if (time == null || time == 0) //Instant melt
             placeAt(to);
-        else if (time < 0) //Not in map probably should just stop it or Ummeltable
-            return;
-        else if (!blockedMap.containsKey(to))//if not blocked start melting
+            //else if (time < 0)//Not in map probably should just stop it or Ummeltable
+        else if (time > 0 && !blockedMap.containsKey(to))//if not blocked start melting
             startMelt(from, to, time);
     }
 

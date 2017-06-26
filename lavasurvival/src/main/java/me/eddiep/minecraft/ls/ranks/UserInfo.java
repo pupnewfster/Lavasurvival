@@ -59,48 +59,46 @@ public class UserInfo {
 
     @SuppressWarnings({"unchecked", "deprecation"})
     private void load() {
-        if (this.ownedBlocks.isEmpty()) { //TODO see if this will end up ever getting called when it is not empty
-            this.BANK.clear(); //Make sure the bank is empty
-            new BukkitRunnable() {
-                @Override
-                public void run() {
-                    String curOwned = "", curBank = "";
-                    try {
-                        Connection conn = DriverManager.getConnection(Lavasurvival.INSTANCE.getDBURL(), Lavasurvival.INSTANCE.getDBProperties());
-                        Statement stmt = conn.createStatement();
-                        ResultSet rs = stmt.executeQuery("SELECT * FROM users WHERE uuid = '" + UserInfo.this.userUUID + "'");
-                        if (rs.next()) {
-                            curOwned = rs.getString("ownedBlocks");
-                            curBank = rs.getString("bank");
-                            String toAdd = rs.getString("addToBank");
-                            if (!toAdd.equals("")) {
-                                if (curBank.equals(""))
-                                    curBank = toAdd;
-                                else
-                                    curBank += "|" + toAdd;
-                                stmt.executeUpdate("UPDATE users SET addToBank = '', bank = '" + curBank + "' WHERE uuid = '" + UserInfo.this.userUUID + "'");
-                            }
+        this.BANK.clear(); //Make sure the bank is empty
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+                String curOwned = "", curBank = "";
+                try {
+                    Connection conn = DriverManager.getConnection(Lavasurvival.INSTANCE.getDBURL(), Lavasurvival.INSTANCE.getDBProperties());
+                    Statement stmt = conn.createStatement();
+                    ResultSet rs = stmt.executeQuery("SELECT * FROM users WHERE uuid = '" + UserInfo.this.userUUID + "'");
+                    if (rs.next()) {
+                        curOwned = rs.getString("ownedBlocks");
+                        curBank = rs.getString("bank");
+                        String toAdd = rs.getString("addToBank");
+                        if (!toAdd.equals("")) {
+                            if (curBank.equals(""))
+                                curBank = toAdd;
+                            else
+                                curBank += "|" + toAdd;
+                            stmt.executeUpdate("UPDATE users SET addToBank = '', bank = '" + curBank + "' WHERE uuid = '" + UserInfo.this.userUUID + "'");
                         }
-                        rs.close();
-                        stmt.close();
-                        conn.close();
-                    } catch (Exception ignored) {
                     }
-                    if (!curOwned.equals("")) {
-                        for (String key : curOwned.split("\\|"))
-                            if (!key.equals("") && key.split(":").length == 2) { //Key should never be an empty string unless something broke
-                                String name = key.split(":")[0];
-                                byte damage = (byte) Integer.parseInt(key.split(":")[1]);
-                                UserInfo.this.ownedBlocks.add(new MaterialData(Material.valueOf(name), damage));
-                            }
-                    }
-                    if (!curBank.equals(""))
-                        for (String key : curBank.split("\\|"))
-                            if (key.split(":").length == 2)
-                                UserInfo.this.BANK.add(new MaterialData(Material.valueOf(key.split(":")[0]), (byte) Integer.parseInt(key.split(":")[1])));
+                    rs.close();
+                    stmt.close();
+                    conn.close();
+                } catch (Exception ignored) {
                 }
-            }.runTaskAsynchronously(Lavasurvival.INSTANCE);
-        }
+                if (!curOwned.equals("")) {
+                    for (String key : curOwned.split("\\|"))
+                        if (!key.equals("") && key.split(":").length == 2) { //Key should never be an empty string unless something broke
+                            String name = key.split(":")[0];
+                            byte damage = (byte) Integer.parseInt(key.split(":")[1]);
+                            UserInfo.this.ownedBlocks.add(new MaterialData(Material.valueOf(name), damage));
+                        }
+                }
+                if (!curBank.equals(""))
+                    for (String key : curBank.split("\\|"))
+                        if (key.split(":").length == 2)
+                            UserInfo.this.BANK.add(new MaterialData(Material.valueOf(key.split(":")[0]), (byte) Integer.parseInt(key.split(":")[1])));
+            }
+        }.runTaskAsynchronously(Lavasurvival.INSTANCE);
     }
 
     @SuppressWarnings("UnusedReturnValue")

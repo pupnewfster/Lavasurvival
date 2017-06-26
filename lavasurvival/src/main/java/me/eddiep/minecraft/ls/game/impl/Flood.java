@@ -40,8 +40,6 @@ public class Flood extends Gamemode {
         this.bonus = Gamemode.RANDOM.nextInt(80) + 50;
         this.bonusScore.setScore(this.bonus);
 
-        Gamemode.getPlayerListener().survival = false;
-
         if (this.doubleReward) {
             globalMessage("" + ChatColor.GREEN + ChatColor.BOLD + "All rewards this round are doubled!");
             globalMessage("but.." + ChatColor.RED + ChatColor.BOLD + "THE TIME HAS BEEN CUT IN HALF");

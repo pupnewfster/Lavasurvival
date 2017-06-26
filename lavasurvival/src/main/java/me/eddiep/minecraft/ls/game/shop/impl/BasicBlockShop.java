@@ -16,7 +16,7 @@ import org.bukkit.Material;
 import org.bukkit.inventory.Inventory;
 
 @SuppressWarnings({"SameParameterValue", "unused"})
-@MenuInventory(slots = 36, name = "Basic Block Shop")
+@MenuInventory(slots = 45, name = "Basic Block Shop")
 public class BasicBlockShop extends Menu implements BlockShop {
     public BasicBlockShop(MenuManager manager, Inventory inv) {
         super(manager, inv);
@@ -94,99 +94,195 @@ public class BasicBlockShop extends Menu implements BlockShop {
     }
 
     @MenuItem(slot = 12, item = @ItemStackAnnotation(material = Material.STAINED_CLAY, name = ""))
-    public void buyWhiteClay(MenuPlayer player) {
+    public void buyWhiteTerracotta(MenuPlayer player) {
         if (canBuy(player))
             getUser(player).buyBlock(Material.STAINED_CLAY, price(Material.STAINED_CLAY), (byte) 0);
     }
 
     @MenuItem(slot = 13, item = @ItemStackAnnotation(material = Material.STAINED_CLAY, durability = 1, name = ""))
-    public void buyOrangeClay(MenuPlayer player) {
+    public void buyOrangeTerracotta(MenuPlayer player) {
         if (canBuy(player))
             getUser(player).buyBlock(Material.STAINED_CLAY, price(Material.STAINED_CLAY), (byte) 1);
     }
 
     @MenuItem(slot = 14, item = @ItemStackAnnotation(material = Material.STAINED_CLAY, durability = 2, name = ""))
-    public void buyMagentaClay(MenuPlayer player) {
+    public void buyMagentaTerracotta(MenuPlayer player) {
         if (canBuy(player))
             getUser(player).buyBlock(Material.STAINED_CLAY, price(Material.STAINED_CLAY), (byte) 2);
     }
 
     @MenuItem(slot = 15, item = @ItemStackAnnotation(material = Material.STAINED_CLAY, durability = 3, name = ""))
-    public void buyLightBlueClay(MenuPlayer player) {
+    public void buyLightBlueTerracotta(MenuPlayer player) {
         if (canBuy(player))
             getUser(player).buyBlock(Material.STAINED_CLAY, price(Material.STAINED_CLAY), (byte) 3);
     }
 
     @MenuItem(slot = 16, item = @ItemStackAnnotation(material = Material.STAINED_CLAY, durability = 4, name = ""))
-    public void buyYellowClay(MenuPlayer player) {
+    public void buyYellowTerracotta(MenuPlayer player) {
         if (canBuy(player))
             getUser(player).buyBlock(Material.STAINED_CLAY, price(Material.STAINED_CLAY), (byte) 4);
     }
 
     @MenuItem(slot = 17, item = @ItemStackAnnotation(material = Material.STAINED_CLAY, durability = 5, name = ""))
-    public void buyLimeClay(MenuPlayer player) {
+    public void buyLimeTerracotta(MenuPlayer player) {
         if (canBuy(player))
             getUser(player).buyBlock(Material.STAINED_CLAY, price(Material.STAINED_CLAY), (byte) 5);
     }
 
     @MenuItem(slot = 18, item = @ItemStackAnnotation(material = Material.STAINED_CLAY, durability = 6, name = ""))
-    public void buyPinkClay(MenuPlayer player) {
+    public void buyPinkTerracotta(MenuPlayer player) {
         if (canBuy(player))
             getUser(player).buyBlock(Material.STAINED_CLAY, price(Material.STAINED_CLAY), (byte) 6);
     }
 
     @MenuItem(slot = 19, item = @ItemStackAnnotation(material = Material.STAINED_CLAY, durability = 7, name = ""))
-    public void buyGrayClay(MenuPlayer player) {
+    public void buyGrayTerracotta(MenuPlayer player) {
         if (canBuy(player))
             getUser(player).buyBlock(Material.STAINED_CLAY, price(Material.STAINED_CLAY), (byte) 7);
     }
 
     @MenuItem(slot = 20, item = @ItemStackAnnotation(material = Material.STAINED_CLAY, durability = 8, name = ""))
-    public void buyLightGrayClay(MenuPlayer player) {
+    public void buyLightGrayTerracotta(MenuPlayer player) {
         if (canBuy(player))
             getUser(player).buyBlock(Material.STAINED_CLAY, price(Material.STAINED_CLAY), (byte) 8);
     }
 
     @MenuItem(slot = 21, item = @ItemStackAnnotation(material = Material.STAINED_CLAY, durability = 9, name = ""))
-    public void buyCyanClay(MenuPlayer player) {
+    public void buyCyanTerracotta(MenuPlayer player) {
         if (canBuy(player))
             getUser(player).buyBlock(Material.STAINED_CLAY, price(Material.STAINED_CLAY), (byte) 9);
     }
 
     @MenuItem(slot = 22, item = @ItemStackAnnotation(material = Material.STAINED_CLAY, durability = 10, name = ""))
-    public void buyPurpleClay(MenuPlayer player) {
+    public void buyPurpleTerracotta(MenuPlayer player) {
         if (canBuy(player))
             getUser(player).buyBlock(Material.STAINED_CLAY, price(Material.STAINED_CLAY), (byte) 10);
     }
 
     @MenuItem(slot = 23, item = @ItemStackAnnotation(material = Material.STAINED_CLAY, durability = 11, name = ""))
-    public void buyBlueClay(MenuPlayer player) {
+    public void buyBlueTerracotta(MenuPlayer player) {
         if (canBuy(player))
             getUser(player).buyBlock(Material.STAINED_CLAY, price(Material.STAINED_CLAY), (byte) 11);
     }
 
     @MenuItem(slot = 24, item = @ItemStackAnnotation(material = Material.STAINED_CLAY, durability = 12, name = ""))
-    public void buyBrownClay(MenuPlayer player) {
+    public void buyBrownTerracotta(MenuPlayer player) {
         if (canBuy(player))
             getUser(player).buyBlock(Material.STAINED_CLAY, price(Material.STAINED_CLAY), (byte) 12);
     }
 
     @MenuItem(slot = 25, item = @ItemStackAnnotation(material = Material.STAINED_CLAY, durability = 13, name = ""))
-    public void buyGreenClay(MenuPlayer player) {
+    public void buyGreenTerracotta(MenuPlayer player) {
         if (canBuy(player))
             getUser(player).buyBlock(Material.STAINED_CLAY, price(Material.STAINED_CLAY), (byte) 13);
     }
 
     @MenuItem(slot = 26, item = @ItemStackAnnotation(material = Material.STAINED_CLAY, durability = 14, name = ""))
-    public void buyRedClay(MenuPlayer player) {
+    public void buyRedTerracotta(MenuPlayer player) {
         if (canBuy(player))
             getUser(player).buyBlock(Material.STAINED_CLAY, price(Material.STAINED_CLAY), (byte) 14);
     }
 
     @MenuItem(slot = 27, item = @ItemStackAnnotation(material = Material.STAINED_CLAY, durability = 15, name = ""))
-    public void buyBlackClay(MenuPlayer player) {
+    public void buyBlackTerracotta(MenuPlayer player) {
         if (canBuy(player))
             getUser(player).buyBlock(Material.STAINED_CLAY, price(Material.STAINED_CLAY), (byte) 15);
+    }
+
+    @MenuItem(slot = 28, item = @ItemStackAnnotation(material = Material.CONCRETE_POWDER, name = ""))
+    public void buyWhiteConcretePowder(MenuPlayer player) {
+        if (canBuy(player))
+            getUser(player).buyBlock(Material.CONCRETE_POWDER, price(Material.CONCRETE_POWDER), (byte) 0);
+    }
+
+    @MenuItem(slot = 29, item = @ItemStackAnnotation(material = Material.CONCRETE_POWDER, durability = 1, name = ""))
+    public void buyOrangeConcretePowder(MenuPlayer player) {
+        if (canBuy(player))
+            getUser(player).buyBlock(Material.CONCRETE_POWDER, price(Material.CONCRETE_POWDER), (byte) 1);
+    }
+
+    @MenuItem(slot = 30, item = @ItemStackAnnotation(material = Material.CONCRETE_POWDER, durability = 2, name = ""))
+    public void buyMagentaConcretePowder(MenuPlayer player) {
+        if (canBuy(player))
+            getUser(player).buyBlock(Material.CONCRETE_POWDER, price(Material.CONCRETE_POWDER), (byte) 2);
+    }
+
+    @MenuItem(slot = 31, item = @ItemStackAnnotation(material = Material.CONCRETE_POWDER, durability = 3, name = ""))
+    public void buyLightBlueConcretePowder(MenuPlayer player) {
+        if (canBuy(player))
+            getUser(player).buyBlock(Material.CONCRETE_POWDER, price(Material.CONCRETE_POWDER), (byte) 3);
+    }
+
+    @MenuItem(slot = 32, item = @ItemStackAnnotation(material = Material.CONCRETE_POWDER, durability = 4, name = ""))
+    public void buyYellowConcretePowder(MenuPlayer player) {
+        if (canBuy(player))
+            getUser(player).buyBlock(Material.CONCRETE_POWDER, price(Material.CONCRETE_POWDER), (byte) 4);
+    }
+
+    @MenuItem(slot = 33, item = @ItemStackAnnotation(material = Material.CONCRETE_POWDER, durability = 5, name = ""))
+    public void buyLimeConcretePowder(MenuPlayer player) {
+        if (canBuy(player))
+            getUser(player).buyBlock(Material.CONCRETE_POWDER, price(Material.CONCRETE_POWDER), (byte) 5);
+    }
+
+    @MenuItem(slot = 34, item = @ItemStackAnnotation(material = Material.CONCRETE_POWDER, durability = 6, name = ""))
+    public void buyPinkConcretePowder(MenuPlayer player) {
+        if (canBuy(player))
+            getUser(player).buyBlock(Material.CONCRETE_POWDER, price(Material.CONCRETE_POWDER), (byte) 6);
+    }
+
+    @MenuItem(slot = 35, item = @ItemStackAnnotation(material = Material.CONCRETE_POWDER, durability = 7, name = ""))
+    public void buyGrayConcretePowder(MenuPlayer player) {
+        if (canBuy(player))
+            getUser(player).buyBlock(Material.CONCRETE_POWDER, price(Material.CONCRETE_POWDER), (byte) 7);
+    }
+
+    @MenuItem(slot = 36, item = @ItemStackAnnotation(material = Material.CONCRETE_POWDER, durability = 8, name = ""))
+    public void buyLightGrayConcretePowder(MenuPlayer player) {
+        if (canBuy(player))
+            getUser(player).buyBlock(Material.CONCRETE_POWDER, price(Material.CONCRETE_POWDER), (byte) 8);
+    }
+
+    @MenuItem(slot = 37, item = @ItemStackAnnotation(material = Material.CONCRETE_POWDER, durability = 9, name = ""))
+    public void buyCyanConcretePowder(MenuPlayer player) {
+        if (canBuy(player))
+            getUser(player).buyBlock(Material.CONCRETE_POWDER, price(Material.CONCRETE_POWDER), (byte) 9);
+    }
+
+    @MenuItem(slot = 38, item = @ItemStackAnnotation(material = Material.CONCRETE_POWDER, durability = 10, name = ""))
+    public void buyPurpleConcretePowder(MenuPlayer player) {
+        if (canBuy(player))
+            getUser(player).buyBlock(Material.CONCRETE_POWDER, price(Material.CONCRETE_POWDER), (byte) 10);
+    }
+
+    @MenuItem(slot = 39, item = @ItemStackAnnotation(material = Material.CONCRETE_POWDER, durability = 11, name = ""))
+    public void buyBlueConcretePowder(MenuPlayer player) {
+        if (canBuy(player))
+            getUser(player).buyBlock(Material.CONCRETE_POWDER, price(Material.CONCRETE_POWDER), (byte) 11);
+    }
+
+    @MenuItem(slot = 40, item = @ItemStackAnnotation(material = Material.CONCRETE_POWDER, durability = 12, name = ""))
+    public void buyBrownConcretePowder(MenuPlayer player) {
+        if (canBuy(player))
+            getUser(player).buyBlock(Material.CONCRETE_POWDER, price(Material.CONCRETE_POWDER), (byte) 12);
+    }
+
+    @MenuItem(slot = 41, item = @ItemStackAnnotation(material = Material.CONCRETE_POWDER, durability = 13, name = ""))
+    public void buyGreenConcretePowder(MenuPlayer player) {
+        if (canBuy(player))
+            getUser(player).buyBlock(Material.CONCRETE_POWDER, price(Material.CONCRETE_POWDER), (byte) 13);
+    }
+
+    @MenuItem(slot = 42, item = @ItemStackAnnotation(material = Material.CONCRETE_POWDER, durability = 14, name = ""))
+    public void buyRedConcretePowder(MenuPlayer player) {
+        if (canBuy(player))
+            getUser(player).buyBlock(Material.CONCRETE_POWDER, price(Material.CONCRETE_POWDER), (byte) 14);
+    }
+
+    @MenuItem(slot = 43, item = @ItemStackAnnotation(material = Material.CONCRETE_POWDER, durability = 15, name = ""))
+    public void buyBlackConcretePowder(MenuPlayer player) {
+        if (canBuy(player))
+            getUser(player).buyBlock(Material.CONCRETE_POWDER, price(Material.CONCRETE_POWDER), (byte) 15);
     }
 
     private UserInfo getUser(MenuPlayer player) {

@@ -1,11 +1,12 @@
 package com.crossge.necessities;
 
 import com.crossge.necessities.Commands.CmdHide;
-import com.crossge.necessities.Hats.Hat;
-import com.crossge.necessities.Janet.JanetAI;
 import com.crossge.necessities.RankManager.User;
 import com.crossge.necessities.RankManager.UserManager;
-import org.bukkit.*;
+import org.bukkit.BanEntry;
+import org.bukkit.BanList;
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.block.CommandBlock;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
@@ -16,7 +17,6 @@ import org.bukkit.event.block.BlockRedstoneEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.*;
 import org.bukkit.event.server.ServerCommandEvent;
-import org.bukkit.scheduler.BukkitRunnable;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -144,26 +144,6 @@ class Listeners implements Listener {
     }
 
     @EventHandler
-    public void onPlayerMove(final PlayerMoveEvent e) {
-        if (e.isCancelled())
-            return;
-        Hat h = Necessities.getUM().getUser(e.getPlayer().getUniqueId()).getHat();
-        if (h != null) {
-            Location from = e.getFrom(), to = e.getTo();
-            h.move(to.getX() - from.getX(), to.getY() - from.getY(), to.getZ() - from.getZ(), to.getYaw() - from.getYaw(), to.getPitch() - from.getPitch());
-        }
-        YamlConfiguration config = Necessities.getInstance().getConfig();
-        if (config.contains("Necessities.WorldManager") && config.getBoolean("Necessities.WorldManager")) {
-            Location from = e.getFrom(), to = e.getTo();
-            if (Math.abs(from.getX() - to.getX()) > 0.1 || Math.abs(from.getY() - to.getY()) > 0.1 || Math.abs(from.getZ() - to.getZ()) > 0.1) {
-                Location destination = Necessities.getPM().portalDestination(to);
-                if (destination != null)
-                    e.getPlayer().teleport(destination);
-            }
-        }
-    }
-
-    @EventHandler
     public void onPlayerClick(PlayerInteractEvent e) {
         User u = Necessities.getUM().getUser(e.getPlayer().getUniqueId());
         if (Necessities.getHide().isHidden(u.getPlayer()) && e.getAction().equals(Action.PHYSICAL))//cancel crop breaking when hidden
@@ -263,16 +243,6 @@ class Listeners implements Listener {
                 Necessities.getSlack().handleInGameChat(status + e.getFormat().replaceAll("\\{MESSAGE}", "") + e.getMessage());
         }
         e.setCancelled(true);
-        if (config.contains("Necessities.AI") && config.getBoolean("Necessities.AI") && (!isOp || message.startsWith("!"))) {
-            final String pname = player.getName();
-            BukkitRunnable aiTask = new BukkitRunnable() {
-                @Override
-                public void run() {
-                    Necessities.getAI().parseMessage(message, JanetAI.Source.Server, false, null);
-                }
-            };
-            aiTask.runTaskLaterAsynchronously(Necessities.getInstance(), 1);
-        }
     }
 
     @EventHandler
@@ -304,38 +274,6 @@ class Listeners implements Listener {
         Necessities.getBot().logConsole(e.getCommand());
         if (e.getCommand().startsWith("tps"))
             e.setCommand("necessities:" + e.getCommand());
-    }
-
-    @EventHandler
-    public void onPlayerTeleport(PlayerTeleportEvent e) {
-        if (e.isCancelled())
-            return;
-        Hat h = Necessities.getUM().getUser(e.getPlayer().getUniqueId()).getHat();
-        if (h != null) {
-            if (!e.getFrom().getWorld().equals(e.getTo().getWorld())) {
-                try {
-                    Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(Necessities.getInstance(), Necessities.getUM().getUser(e.getPlayer().getUniqueId())::respawnHat);
-                } catch (Exception ignored) {
-                }
-            } else {
-                Location from = e.getFrom();
-                Location to = e.getTo();
-                h.move(to.getX() - from.getX(), to.getY() - from.getY(), to.getZ() - from.getZ(), to.getYaw() - from.getYaw(), to.getPitch() - from.getPitch());
-            }
-        }
-    }
-
-    @EventHandler
-    public void onSneak(PlayerToggleSneakEvent e) {
-        if (e.isCancelled())
-            return;
-        Hat h = Necessities.getUM().getUser(e.getPlayer().getUniqueId()).getHat();
-        if (h != null) {
-            if (e.isSneaking())
-                h.move(0, -0.25, 0, 0, 0);
-            else
-                h.move(0, 0.25, 0, 0, 0);
-        }
     }
 
     @EventHandler

@@ -54,7 +54,6 @@ public class Rise extends Gamemode {
         this.layersLeft.setScore(getCurrentMap().getHeight());
         if (this.doubleReward)
             this.objective.getScore(ChatColor.GOLD + "" + ChatColor.BOLD + "Double Reward!");
-        Gamemode.getPlayerListener().survival = false;
         if (this.doubleReward) {
             globalMessage("" + ChatColor.GREEN + ChatColor.BOLD + "All rewards this round are doubled!");
             globalMessage("but.." + ChatColor.RED + ChatColor.BOLD + "THE PREPARE TIME HAS BEEN CUT IN HALF");
@@ -124,7 +123,7 @@ public class Rise extends Gamemode {
         long since = System.currentTimeMillis() - this.lastEvent, dif = this.duration - since;
         int seconds = (int) (dif / 1000 % 60);
         String time = (int) (dif / 60000) + ":" + (seconds < 10 ? "0" + seconds : seconds);
-        if (isRoundEnding()) //TODO double check this shows the correct amount
+        if (isRoundEnding())
             setObjectiveDisplay("Round Ends In: " + ChatColor.BOLD + time);
         else if (super.poured)
             setObjectiveDisplay("Next Pour: " + ChatColor.BOLD + time);

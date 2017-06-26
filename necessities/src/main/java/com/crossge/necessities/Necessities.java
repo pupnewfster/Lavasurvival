@@ -8,12 +8,13 @@ import com.crossge.necessities.Commands.Economy.CmdPay;
 import com.crossge.necessities.Commands.RankManager.*;
 import com.crossge.necessities.Commands.WorldManager.*;
 import com.crossge.necessities.Economy.Economy;
-import com.crossge.necessities.Janet.*;
+import com.crossge.necessities.Janet.Janet;
+import com.crossge.necessities.Janet.JanetLog;
+import com.crossge.necessities.Janet.JanetSlack;
+import com.crossge.necessities.Janet.JanetWarn;
 import com.crossge.necessities.RankManager.RankManager;
 import com.crossge.necessities.RankManager.User;
 import com.crossge.necessities.RankManager.UserManager;
-import com.crossge.necessities.WorldManager.PortalManager;
-import com.crossge.necessities.WorldManager.WarpManager;
 import com.crossge.necessities.WorldManager.WorldManager;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
@@ -50,8 +51,6 @@ public class Necessities extends JavaPlugin {
     private final List<DevInfo> devs = new ArrayList<>();
     private PacketPlayOutPlayerInfo janetInfo;
     private CmdCommandSpy spy;
-    private PortalManager pm;
-    private WarpManager warps;
     private WorldManager wm;
     private UserManager um;
     private RankManager rm;
@@ -63,8 +62,6 @@ public class Necessities extends JavaPlugin {
     private JanetLog log;
     private CmdHide hide;
     private Janet bot;
-    private JanetNet net;
-    private JanetAI ai;
     private JanetSlack slack;
     private Announcer announcer;
     private Economy economy;
@@ -261,16 +258,12 @@ public class Necessities extends JavaPlugin {
 
     private Cmd getCmd(String name) {
         Cmd com = null;
-        if (isEqual(name, "slap"))
-            com = new CmdSlap();
-        else if (isEqual(name, "warn"))
+        if (isEqual(name, "warn"))
             com = new CmdWarn();
         else if (isEqual(name, "ragequit"))
             com = new CmdRagequit();
         else if (isEqual(name, "devs"))
             com = new CmdDevs();
-        else if (isEqual(name, "hat"))
-            com = new CmdHat();
         else if (isEqual(name, "hide"))
             com = getHide();
         else if (isEqual(name, "title"))
@@ -422,18 +415,6 @@ public class Necessities extends JavaPlugin {
             com = new CmdSetWorldSpawn();
         else if (isEqual(name, "modifyworld"))
             com = new CmdModifyWorld();
-        else if (isEqual(name, "createportal"))
-            com = new CmdCreatePortal();
-        else if (isEqual(name, "removeportal"))
-            com = new CmdRemovePortal();
-        else if (isEqual(name, "warps"))
-            com = new CmdWarps();
-        else if (isEqual(name, "warp"))
-            com = new CmdWarp();
-        else if (isEqual(name, "createwarp"))
-            com = new CmdCreateWarp();
-        else if (isEqual(name, "removewarp"))
-            com = new CmdRemoveWarp();
         YamlConfiguration config = getConfig();
         if (com instanceof WorldCmd && config.contains("Necessities.WorldManager") && !config.getBoolean("Necessities.WorldManager"))
             com = new DisabledCmd();
@@ -462,20 +443,12 @@ public class Necessities extends JavaPlugin {
         return INSTANCE.um == null ? INSTANCE.um = new UserManager() : INSTANCE.um;
     }
 
-    public static JanetNet getNet() {
-        return INSTANCE.net == null ? INSTANCE.net = new JanetNet() : INSTANCE.net;
-    }
-
     static CmdCommandSpy getSpy() {
         return INSTANCE.spy == null ? INSTANCE.spy = new CmdCommandSpy() : INSTANCE.spy;
     }
 
     public static RankManager getRM() {
         return INSTANCE.rm == null ? INSTANCE.rm = new RankManager() : INSTANCE.rm;
-    }
-
-    public static PortalManager getPM() {
-        return INSTANCE.pm == null ? INSTANCE.pm = new PortalManager() : INSTANCE.pm;
     }
 
     public static JanetSlack getSlack() {
@@ -506,16 +479,8 @@ public class Necessities extends JavaPlugin {
         return INSTANCE.hide == null ? INSTANCE.hide = new CmdHide() : INSTANCE.hide;
     }
 
-    public static JanetAI getAI() {
-        return INSTANCE.ai == null ? INSTANCE.ai = new JanetAI() : INSTANCE.ai;
-    }
-
     static Janet getBot() {
         return INSTANCE.bot == null ? INSTANCE.bot = new Janet() : INSTANCE.bot;
-    }
-
-    public static WarpManager getWarps() {
-        return INSTANCE.warps == null ? INSTANCE.warps = new WarpManager() : INSTANCE.warps;
     }
 
     public static WorldManager getWM() {

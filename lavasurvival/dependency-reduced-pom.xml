@@ -56,8 +56,8 @@
       <url>http://central.maven.org/maven2/</url>
     </repository>
     <repository>
-      <id>spigot-repo</id>
-      <url>https://hub.spigotmc.org/nexus/content/repositories/snapshots/</url>
+      <id>galaxygaming-repo</id>
+      <url>http://galaxygaming.gg/maven/</url>
     </repository>
     <repository>
       <releases>

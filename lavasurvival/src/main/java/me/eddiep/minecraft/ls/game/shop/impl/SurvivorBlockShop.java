@@ -16,7 +16,7 @@ import org.bukkit.Material;
 import org.bukkit.inventory.Inventory;
 
 @SuppressWarnings({"SameParameterValue", "unused"})
-@MenuInventory(slots = 36, name = "Survivor Block Shop")
+@MenuInventory(slots = 54, name = "Survivor Block Shop")
 public class SurvivorBlockShop extends Menu implements BlockShop {
     public SurvivorBlockShop(MenuManager manager, Inventory inv) {
         super(manager, inv);
@@ -189,16 +189,112 @@ public class SurvivorBlockShop extends Menu implements BlockShop {
             getUser(player).buyBlock(Material.WOOL, price(Material.WOOL), (byte) 15);
     }
 
-    @MenuItem(slot = 28, item = @ItemStackAnnotation(material = Material.TRAP_DOOR, name = ""))
-    public void buyTrapdoor(MenuPlayer player) {
+    @MenuItem(slot = 28, item = @ItemStackAnnotation(material = Material.WHITE_GLAZED_TERRACOTTA, name = ""))
+    public void buyWhiteGlazedTerracotta(MenuPlayer player) {
         if (canBuy(player))
-            getUser(player).buyBlock(Material.TRAP_DOOR, price(Material.TRAP_DOOR));
+            getUser(player).buyBlock(Material.WHITE_GLAZED_TERRACOTTA, price(Material.WHITE_GLAZED_TERRACOTTA));
     }
 
-    @MenuItem(slot = 29, item = @ItemStackAnnotation(material = Material.NETHER_WART_BLOCK, name = ""))
+    @MenuItem(slot = 29, item = @ItemStackAnnotation(material = Material.ORANGE_GLAZED_TERRACOTTA, name = ""))
+    public void buyOrangeGlazedTerracotta(MenuPlayer player) {
+        if (canBuy(player))
+            getUser(player).buyBlock(Material.ORANGE_GLAZED_TERRACOTTA, price(Material.ORANGE_GLAZED_TERRACOTTA));
+    }
+
+    @MenuItem(slot = 30, item = @ItemStackAnnotation(material = Material.MAGENTA_GLAZED_TERRACOTTA, name = ""))
+    public void buyMagentaGlazedTerracotta(MenuPlayer player) {
+        if (canBuy(player))
+            getUser(player).buyBlock(Material.MAGENTA_GLAZED_TERRACOTTA, price(Material.MAGENTA_GLAZED_TERRACOTTA));
+    }
+
+    @MenuItem(slot = 31, item = @ItemStackAnnotation(material = Material.LIGHT_BLUE_GLAZED_TERRACOTTA, name = ""))
+    public void buyLightBlueGlazedTerracotta(MenuPlayer player) {
+        if (canBuy(player))
+            getUser(player).buyBlock(Material.LIGHT_BLUE_GLAZED_TERRACOTTA, price(Material.LIGHT_BLUE_GLAZED_TERRACOTTA));
+    }
+
+    @MenuItem(slot = 32, item = @ItemStackAnnotation(material = Material.YELLOW_GLAZED_TERRACOTTA, name = ""))
+    public void buyYellowGlazedTerracotta(MenuPlayer player) {
+        if (canBuy(player))
+            getUser(player).buyBlock(Material.YELLOW_GLAZED_TERRACOTTA, price(Material.YELLOW_GLAZED_TERRACOTTA));
+    }
+
+    @MenuItem(slot = 33, item = @ItemStackAnnotation(material = Material.LIME_GLAZED_TERRACOTTA, name = ""))
+    public void buyLimeGlazedTerracotta(MenuPlayer player) {
+        if (canBuy(player))
+            getUser(player).buyBlock(Material.LIME_GLAZED_TERRACOTTA, price(Material.LIME_GLAZED_TERRACOTTA));
+    }
+
+    @MenuItem(slot = 34, item = @ItemStackAnnotation(material = Material.PINK_GLAZED_TERRACOTTA, name = ""))
+    public void buyPinkGlazedTerracotta(MenuPlayer player) {
+        if (canBuy(player))
+            getUser(player).buyBlock(Material.PINK_GLAZED_TERRACOTTA, price(Material.PINK_GLAZED_TERRACOTTA));
+    }
+
+    @MenuItem(slot = 35, item = @ItemStackAnnotation(material = Material.GRAY_GLAZED_TERRACOTTA, name = ""))
+    public void buyGrayGlazedTerracotta(MenuPlayer player) {
+        if (canBuy(player))
+            getUser(player).buyBlock(Material.GRAY_GLAZED_TERRACOTTA, price(Material.GRAY_GLAZED_TERRACOTTA));
+    }
+
+    @MenuItem(slot = 36, item = @ItemStackAnnotation(material = Material.SILVER_GLAZED_TERRACOTTA, name = ""))
+    public void buyLightGrayGlazedTerracotta(MenuPlayer player) {
+        if (canBuy(player))
+            getUser(player).buyBlock(Material.SILVER_GLAZED_TERRACOTTA, price(Material.SILVER_GLAZED_TERRACOTTA));
+    }
+
+    @MenuItem(slot = 37, item = @ItemStackAnnotation(material = Material.CYAN_GLAZED_TERRACOTTA, name = ""))
+    public void buyCyanGlazedTerracotta(MenuPlayer player) {
+        if (canBuy(player))
+            getUser(player).buyBlock(Material.CYAN_GLAZED_TERRACOTTA, price(Material.CYAN_GLAZED_TERRACOTTA));
+    }
+
+    @MenuItem(slot = 38, item = @ItemStackAnnotation(material = Material.PURPLE_GLAZED_TERRACOTTA, name = ""))
+    public void buyPurpleGlazedTerracotta(MenuPlayer player) {
+        if (canBuy(player))
+            getUser(player).buyBlock(Material.PURPLE_GLAZED_TERRACOTTA, price(Material.PURPLE_GLAZED_TERRACOTTA));
+    }
+
+    @MenuItem(slot = 39, item = @ItemStackAnnotation(material = Material.BLUE_GLAZED_TERRACOTTA, name = ""))
+    public void buyBlueGlazedTerracotta(MenuPlayer player) {
+        if (canBuy(player))
+            getUser(player).buyBlock(Material.BLUE_GLAZED_TERRACOTTA, price(Material.BLUE_GLAZED_TERRACOTTA));
+    }
+
+    @MenuItem(slot = 40, item = @ItemStackAnnotation(material = Material.BROWN_GLAZED_TERRACOTTA, name = ""))
+    public void buyBrownGlazedTerracotta(MenuPlayer player) {
+        if (canBuy(player))
+            getUser(player).buyBlock(Material.BROWN_GLAZED_TERRACOTTA, price(Material.BROWN_GLAZED_TERRACOTTA));
+    }
+
+    @MenuItem(slot = 41, item = @ItemStackAnnotation(material = Material.GREEN_GLAZED_TERRACOTTA, name = ""))
+    public void buyGreenGlazedTerracotta(MenuPlayer player) {
+        if (canBuy(player))
+            getUser(player).buyBlock(Material.GREEN_GLAZED_TERRACOTTA, price(Material.GREEN_GLAZED_TERRACOTTA));
+    }
+
+    @MenuItem(slot = 42, item = @ItemStackAnnotation(material = Material.RED_GLAZED_TERRACOTTA, name = ""))
+    public void buyRedGlazedTerracotta(MenuPlayer player) {
+        if (canBuy(player))
+            getUser(player).buyBlock(Material.RED_GLAZED_TERRACOTTA, price(Material.RED_GLAZED_TERRACOTTA));
+    }
+
+    @MenuItem(slot = 43, item = @ItemStackAnnotation(material = Material.BLACK_GLAZED_TERRACOTTA, name = ""))
+    public void buyBlackGlazedTerracotta(MenuPlayer player) {
+        if (canBuy(player))
+            getUser(player).buyBlock(Material.BLACK_GLAZED_TERRACOTTA, price(Material.BLACK_GLAZED_TERRACOTTA));
+    }
+
+    @MenuItem(slot = 44, item = @ItemStackAnnotation(material = Material.NETHER_WART_BLOCK, name = ""))
     public void buyNetherWartBlock(MenuPlayer player) {
         if (canBuy(player))
             getUser(player).buyBlock(Material.NETHER_WART_BLOCK, price(Material.NETHER_WART_BLOCK));
+    }
+
+    @MenuItem(slot = 45, item = @ItemStackAnnotation(material = Material.TRAP_DOOR, name = ""))
+    public void buyTrapdoor(MenuPlayer player) {
+        if (canBuy(player))
+            getUser(player).buyBlock(Material.TRAP_DOOR, price(Material.TRAP_DOOR));
     }
 
     private UserInfo getUser(MenuPlayer player) {
