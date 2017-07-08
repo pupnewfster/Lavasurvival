@@ -1,0 +1,22 @@
+{
+    "display": {
+        "description": {
+            "text": "Buy the Survivor Rank.",
+            "color": "white"
+        },
+        "title": {
+            "text": "Survivor",
+            "color": "aqua"
+        },
+        "icon": {
+            "item": "lava_bucket",
+            "data": 0
+        }
+    },
+    "criteria": {
+        "buy_survivor": {
+            "trigger": "minecraft:impossible"
+        }
+    },
+    "parent": "lavasurvival:buy_advanced"
+}

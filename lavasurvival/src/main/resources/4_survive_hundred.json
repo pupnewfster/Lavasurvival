@@ -1,0 +1,23 @@
+{
+    "display": {
+        "description": {
+            "text": "Survive 100 rounds.",
+            "color": "white"
+        },
+        "title": {
+            "text": "Lava Defier",
+            "color": "white"
+        },
+        "icon": {
+            "item": "nether_star",
+            "data": 0
+        },
+        "frame": "challenge"
+    },
+    "criteria": {
+        "survive_hundred": {
+            "trigger": "minecraft:impossible"
+        }
+    },
+    "parent": "lavasurvival:survive_fifty"
+}

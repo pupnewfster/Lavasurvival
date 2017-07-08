@@ -12,6 +12,10 @@
           <include>plugin.yml</include>
         </includes>
       </resource>
+      <resource>
+        <targetPath>resources</targetPath>
+        <directory>src/main/resources</directory>
+      </resource>
     </resources>
     <plugins>
       <plugin>
@@ -58,14 +62,6 @@
     <repository>
       <id>galaxygaming-repo</id>
       <url>http://galaxygaming.gg/maven/</url>
-    </repository>
-    <repository>
-      <releases>
-        <checksumPolicy>ignore</checksumPolicy>
-      </releases>
-      <id>libs</id>
-      <name>libs</name>
-      <url>file://${project.basedir}/../libs/</url>
     </repository>
   </repositories>
   <dependencies>

@@ -1,0 +1,23 @@
+{
+    "display": {
+        "description": {
+            "text": "Buy all the Elder Blocks.",
+            "color": "white"
+        },
+        "title": {
+            "text": "Elder Blocks",
+            "color": "white"
+        },
+        "icon": {
+            "item": "nether_brick",
+            "data": 0
+        },
+        "frame": "challenge"
+    },
+    "criteria": {
+        "buy_elder_blocks": {
+            "trigger": "minecraft:impossible"
+        }
+    },
+    "parent": "lavasurvival:buy_elder"
+}

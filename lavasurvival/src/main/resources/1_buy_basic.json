@@ -1,0 +1,22 @@
+{
+    "display": {
+        "description": {
+            "text": "Buy the Basic Rank.",
+            "color": "white"
+        },
+        "title": {
+            "text": "Basic",
+            "color": "aqua"
+        },
+        "icon": {
+            "item": "planks",
+            "data": 0
+        }
+    },
+    "criteria": {
+        "buy_basic": {
+            "trigger": "minecraft:impossible"
+        }
+    },
+    "parent": "lavasurvival:join_server"
+}

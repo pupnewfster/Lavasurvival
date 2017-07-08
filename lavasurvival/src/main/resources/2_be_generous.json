@@ -1,0 +1,21 @@
+{
+    "display": {
+        "description": {
+            "text": "Use the generosity item.",
+            "color": "white"
+        },
+        "title": {
+            "text": "Generous",
+            "color": "white"
+        },
+        "icon": {
+            "item": "potion"
+        }
+    },
+    "criteria": {
+        "be_generous": {
+            "trigger": "minecraft:impossible"
+        }
+    },
+    "parent": "lavasurvival:buy_item"
+}

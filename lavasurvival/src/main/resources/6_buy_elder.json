@@ -1,0 +1,23 @@
+{
+    "display": {
+        "description": {
+            "text": "Buy the Elder Rank.",
+            "color": "white"
+        },
+        "title": {
+            "text": "Elder",
+            "color": "light_purple"
+        },
+        "icon": {
+            "item": "golden_apple",
+            "data": 1
+        },
+        "frame": "challenge"
+    },
+    "criteria": {
+        "buy_elder": {
+            "trigger": "minecraft:impossible"
+        }
+    },
+    "parent": "lavasurvival:buy_trusted"
+}

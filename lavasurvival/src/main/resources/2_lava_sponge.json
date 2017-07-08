@@ -1,0 +1,22 @@
+{
+    "display": {
+        "description": {
+            "text": "Use a Lava Sponge.",
+            "color": "white"
+        },
+        "title": {
+            "text": "Lava Sponge",
+            "color": "white"
+        },
+        "icon": {
+            "item": "sponge",
+            "data": 1
+        }
+    },
+    "criteria": {
+        "lava_sponge": {
+            "trigger": "minecraft:impossible"
+        }
+    },
+    "parent": "lavasurvival:buy_item"
+}

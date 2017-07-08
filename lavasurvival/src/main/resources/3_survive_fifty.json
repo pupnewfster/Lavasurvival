@@ -1,0 +1,22 @@
+{
+    "display": {
+        "description": {
+            "text": "Survive 50 rounds.",
+            "color": "white"
+        },
+        "title": {
+            "text": "Lava Stopper",
+            "color": "white"
+        },
+        "icon": {
+            "item": "dragon_breath",
+            "data": 0
+        }
+    },
+    "criteria": {
+        "survive_fifty": {
+            "trigger": "minecraft:impossible"
+        }
+    },
+    "parent": "lavasurvival:survive_ten"
+}

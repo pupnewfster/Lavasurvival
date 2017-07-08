@@ -21,12 +21,14 @@ import net.nyvaria.openanalytics.bukkit.client.Client;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
+import org.bukkit.NamespacedKey;
 import org.bukkit.boss.BarColor;
 import org.bukkit.boss.BarStyle;
 import org.bukkit.boss.BossBar;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.craftbukkit.v1_12_R1.CraftServer;
 import org.bukkit.craftbukkit.v1_12_R1.boss.CraftBossBar;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
@@ -35,11 +37,10 @@ import org.bukkit.inventory.meta.BookMeta;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import java.io.ByteArrayOutputStream;
-import java.io.DataOutputStream;
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
 import java.util.*;
+import java.util.jar.JarEntry;
+import java.util.jar.JarFile;
 
 public class Lavasurvival extends JavaPlugin {
     public static final Gson GSON = new Gson();
@@ -119,11 +120,13 @@ public class Lavasurvival extends JavaPlugin {
         setupShops();
         setRules();
         setTutorial();
+
         if (LavaMap.getPossibleMaps().length > 0 && Gamemode.runFirstGamemode())
             this.running = true;
         else //Only schedule a listener if no maps. If maps then it already is initialized through Gamemode.prepare()
             getServer().getPluginManager().registerEvents(new PlayerListener(), this);
         //Why do we bother scheduling one if no maps
+        loadAdvancements();
     }
 
     @Override
@@ -229,6 +232,32 @@ public class Lavasurvival extends JavaPlugin {
         this.properties.setProperty("autoReconnect", "true");
         this.properties.setProperty("useLegacyDatetimeCode", "false");
         this.properties.setProperty("serverTimezone", "EST");
+    }
+
+    private void loadAdvancements() {
+        try {
+            JarFile jar = new JarFile(getFile());
+            Enumeration<JarEntry> entries = jar.entries();
+            while (entries.hasMoreElements()) {
+                JarEntry entry = entries.nextElement();
+                String name = entry.getName(), line;
+                if (name.startsWith("resources/") && name.endsWith(".json")) {
+                    InputStream input = jar.getInputStream(entry);
+                    InputStreamReader isr = new InputStreamReader(input);
+                    BufferedReader reader = new BufferedReader(isr);
+                    StringBuilder text = new StringBuilder();
+                    while ((line = reader.readLine()) != null)
+                        text.append(line);
+                    reader.close();
+                    isr.close();
+                    input.close();
+                    Bukkit.getUnsafe().loadAdvancement(new NamespacedKey(this, name.substring(name.indexOf("_") + 1, name.length() - 5)), text.toString());
+                }
+            }
+            ((CraftServer) Bukkit.getServer()).getServer().getAdvancementData().reload();//Fix the advancements overlapping in the menu
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     public ItemStack getRules() {

@@ -1,0 +1,22 @@
+{
+    "display": {
+        "description": {
+            "text": "Use the Second Chance item.",
+            "color": "white"
+        },
+        "title": {
+            "text": "Survive Death",
+            "color": "white"
+        },
+        "icon": {
+            "item": "totem_of_undying",
+            "data": 0
+        }
+    },
+    "criteria": {
+        "second_chance": {
+            "trigger": "minecraft:impossible"
+        }
+    },
+    "parent": "lavasurvival:buy_item"
+}

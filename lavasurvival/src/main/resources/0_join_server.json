@@ -1,0 +1,22 @@
+{
+    "display": {
+        "description": {
+            "text": "Join the server.",
+            "color": "white"
+        },
+        "title": {
+            "text": "Joined the server.",
+            "color": "white"
+        },
+        "icon": {
+            "item": "wooden_door",
+            "data": 0
+        },
+        "background": "minecraft:textures/blocks/wool_colored_orange.png"
+    },
+    "criteria": {
+        "join_server": {
+            "trigger": "minecraft:impossible"
+        }
+    }
+}

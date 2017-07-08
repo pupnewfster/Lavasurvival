@@ -1,0 +1,23 @@
+{
+    "display": {
+        "description": {
+            "text": "Buy all the Trusted Blocks.",
+            "color": "white"
+        },
+        "title": {
+            "text": "Trusted Blocks",
+            "color": "white"
+        },
+        "icon": {
+            "item": "iron_bars",
+            "data": 0
+        },
+        "frame": "challenge"
+    },
+    "criteria": {
+        "buy_trusted_blocks": {
+            "trigger": "minecraft:impossible"
+        }
+    },
+    "parent": "lavasurvival:buy_trusted"
+}

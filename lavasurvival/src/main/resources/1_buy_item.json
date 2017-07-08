@@ -1,0 +1,22 @@
+{
+    "display": {
+        "description": {
+            "text": "Buy an item from the item shop.",
+            "color": "white"
+        },
+        "title": {
+            "text": "Powerups!",
+            "color": "white"
+        },
+        "icon": {
+            "item": "clay_ball",
+            "data": 0
+        }
+    },
+    "criteria": {
+        "buy_item": {
+            "trigger": "minecraft:impossible"
+        }
+    },
+    "parent": "lavasurvival:join_server"
+}

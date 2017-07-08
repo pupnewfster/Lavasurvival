@@ -1,0 +1,23 @@
+{
+    "display": {
+        "description": {
+            "text": "Survive a round.",
+            "color": "white"
+        },
+        "title": {
+            "text": "Won a Game",
+            "color": "white"
+        },
+        "icon": {
+            "item": "diamond",
+            "data": 0
+        },
+        "frame": "goal"
+    },
+    "criteria": {
+        "survive_round": {
+            "trigger": "minecraft:impossible"
+        }
+    },
+    "parent": "lavasurvival:join_server"
+}

@@ -1,0 +1,22 @@
+{
+    "display": {
+        "description": {
+            "text": "Buy the Advanced Rank.",
+            "color": "white"
+        },
+        "title": {
+            "text": "Advanced",
+            "color": "aqua"
+        },
+        "icon": {
+            "item": "iron_block",
+            "data": 0
+        }
+    },
+    "criteria": {
+        "buy_advanced": {
+            "trigger": "minecraft:impossible"
+        }
+    },
+    "parent": "lavasurvival:buy_basic"
+}

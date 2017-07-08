@@ -1,0 +1,22 @@
+{
+    "display": {
+        "description": {
+            "text": "Buy the Trusted Rank.",
+            "color": "white"
+        },
+        "title": {
+            "text": "Trusted",
+            "color": "aqua"
+        },
+        "icon": {
+            "item": "apple",
+            "data": 0
+        }
+    },
+    "criteria": {
+        "buy_trusted": {
+            "trigger": "minecraft:impossible"
+        }
+    },
+    "parent": "lavasurvival:buy_survivor"
+}

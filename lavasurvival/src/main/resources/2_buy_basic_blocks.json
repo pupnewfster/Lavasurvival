@@ -1,0 +1,23 @@
+{
+    "display": {
+        "description": {
+            "text": "Buy all the Basic Blocks.",
+            "color": "white"
+        },
+        "title": {
+            "text": "Basic Blocks",
+            "color": "white"
+        },
+        "icon": {
+            "item": "planks",
+            "data": 0
+        },
+        "frame": "challenge"
+    },
+    "criteria": {
+        "buy_basic_blocks": {
+            "trigger": "minecraft:impossible"
+        }
+    },
+    "parent": "lavasurvival:buy_basic"
+}

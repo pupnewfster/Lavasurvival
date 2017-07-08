@@ -52,24 +52,12 @@
   </build>
   <repositories>
     <repository>
-      <id>dmulloy2-repo</id>
-      <url>http://repo.dmulloy2.net/content/groups/public/</url>
-    </repository>
-    <repository>
       <id>galaxygaming-repo</id>
       <url>http://galaxygaming.gg/maven/</url>
     </repository>
     <repository>
       <id>destroystokyo-repo</id>
       <url>https://repo.destroystokyo.com/repository/maven-public//</url>
-    </repository>
-    <repository>
-      <releases>
-        <checksumPolicy>ignore</checksumPolicy>
-      </releases>
-      <id>libs</id>
-      <name>libs</name>
-      <url>file://${project.basedir}/../libs/</url>
     </repository>
   </repositories>
   <dependencies>

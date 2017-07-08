@@ -21,15 +21,6 @@
             <id>FastAsyncWorldEdit</id>
             <url>http://ci.athion.net/job/FastAsyncWorldEdit/ws/mvn/</url>
         </repository>
-        <repository>
-            <id>libs</id>
-            <name>libs</name>
-            <releases>
-                <enabled>true</enabled>
-                <checksumPolicy>ignore</checksumPolicy>
-            </releases>
-            <url>file://${project.basedir}/../libs/</url>
-        </repository>
     </repositories>
 
     <dependencies>

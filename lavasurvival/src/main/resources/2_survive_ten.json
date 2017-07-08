@@ -1,0 +1,22 @@
+{
+    "display": {
+        "description": {
+            "text": "Survive 10 rounds.",
+            "color": "white"
+        },
+        "title": {
+            "text": "Lava Charm",
+            "color": "white"
+        },
+        "icon": {
+            "item": "ghast_tear",
+            "data": 0
+        }
+    },
+    "criteria": {
+        "survive_ten": {
+            "trigger": "minecraft:impossible"
+        }
+    },
+    "parent": "lavasurvival:survive_round"
+}

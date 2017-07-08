@@ -1,0 +1,23 @@
+{
+    "display": {
+        "description": {
+            "text": "Buy all the Survivor Blocks.",
+            "color": "white"
+        },
+        "title": {
+            "text": "Survivor Blocks",
+            "color": "white"
+        },
+        "icon": {
+            "item": "fence_gate",
+            "data": 0
+        },
+        "frame": "challenge"
+    },
+    "criteria": {
+        "buy_survivor_blocks": {
+            "trigger": "minecraft:impossible"
+        }
+    },
+    "parent": "lavasurvival:buy_survivor"
+}

@@ -1,0 +1,23 @@
+{
+    "display": {
+        "description": {
+            "text": "Buy all the Advanced Blocks.",
+            "color": "white"
+        },
+        "title": {
+            "text": "Advanced Blocks",
+            "color": "white"
+        },
+        "icon": {
+            "item": "iron_block",
+            "data": 0
+        },
+        "frame": "challenge"
+    },
+    "criteria": {
+        "buy_advaced_blocks": {
+            "trigger": "minecraft:impossible"
+        }
+    },
+    "parent": "lavasurvival:buy_advanced"
+}
